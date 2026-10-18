@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#3730a3">
 <meta name="color-scheme" content="only light">
 <meta name="description" content="大白话、可交互地拆解：一句话让 AI 干活的软件，从 Agent 应用到 Transformer 内部，再到训练与算力。">
@@ -13,7 +13,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%233730a3'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='700'%3EAI%3C/text%3E%3C/svg%3E">
 
-<title>大白话拆解（第三版）：一句话让 AI 干活的软件是怎么搭起来的</title>
+<title>大白话拆解（手机版）：一句话让 AI 干活的软件是怎么搭起来的</title>
 <style>
 :root{--bg:#f6f7fb;--card:#fff;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;--accent:#4f46e5;--train:#f97316;--use:#0ea5e9;
 --io:#64748b;--io-f:#f1f5f9;--tok:#7c3aed;--tok-f:#f3e8ff;--emb:#4f46e5;--emb-f:#e0e7ff;--blk:#0f766e;--blk-f:#ccfbf1;
@@ -122,7 +122,8 @@ body.mode-use #trainBanner{display:none}
 @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-@media (max-width:820px){.two{grid-template-columns:1fr}.mode{margin-left:0}}
+
+/*phone*/.two{grid-template-columns:1fr}.mode{margin-left:0}
 /* attention demo */
 .toks{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
 .toks button{font:inherit;font-size:20px;padding:6px 18px;border-radius:12px;border:2px solid #bae6fd;background:#f0f9ff;cursor:pointer}
@@ -170,7 +171,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .whyrow h4{margin:0 0 2px;font-size:14.5px}.whyrow p{margin:0}
 .whyrow .why{background:#f5f3ff;border-left:4px solid #7c3aed}
 .whyrow .eff{background:#ecfdf5;border-left:4px solid #059669}
-@media (max-width:820px){.whyrow{grid-template-columns:1fr}}
+
+/*phone*/.whyrow{grid-template-columns:1fr}
 details.whyitem{border:1px solid var(--line);border-left:5px solid var(--c,#7c3aed);border-radius:12px;padding:8px 12px;margin:8px 0;background:#fff}
 details.whyitem summary{cursor:pointer;font-weight:700}
 details.whyitem summary span{font-weight:400;color:var(--muted);font-size:14px;margin-left:6px}
@@ -211,15 +213,18 @@ footer{max-width:1200px;margin:0 auto;padding:0 16px 30px;color:var(--muted);fon
 .btn.up{background:#ecfeff;border-color:#67e8f9;color:#0e7490;font-size:13.5px;margin:2px;padding:3px 11px}
 .btn.down{background:#f0fdf4;border-color:#86efac;color:#15803d;font-size:13.5px;margin:2px;padding:3px 11px}
 .btn.here{background:#fff7ed;border-color:#fdba74;color:#c2410c;font-size:13.5px;margin:2px;padding:3px 11px}
-@media (max-width:640px){.nav2{grid-template-columns:1fr}.search input{width:130px}}
+
+/*phone*/.nav2{grid-template-columns:1fr}.search input{width:130px}
 .three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-@media (max-width:900px){.three{grid-template-columns:1fr}}
+
+/*phone*/.three{grid-template-columns:1fr}
 pre.json{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px 12px;font-size:12.5px;overflow:auto;white-space:pre-wrap;word-break:break-all;margin:6px 0;font-family:ui-monospace,Menlo,Consolas,monospace;line-height:1.55}
 textarea.json{width:100%;min-height:110px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;border-radius:10px;border:1px solid var(--line);padding:8px;resize:vertical}
 .log{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:10px 14px;font-size:13.5px;min-height:110px;max-height:320px;overflow:auto;font-family:ui-monospace,Menlo,Consolas,"PingFang SC",monospace;white-space:pre-wrap;line-height:1.6}
 .log .k{color:#93c5fd}.log .g{color:#86efac}.log .y{color:#fde68a}.log .r{color:#fca5a5}
 .walk{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media (max-width:900px){.walk{grid-template-columns:1fr}}
+
+/*phone*/.walk{grid-template-columns:1fr}
 .wstep{border-radius:12px;padding:10px 14px;background:#fefce8;border:1px solid #fde68a;min-height:92px}
 .wstep b.n{display:inline-block;background:#ca8a04;color:#fff;border-radius:999px;padding:0 10px;margin-right:6px;font-size:13px}
 .fired{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
@@ -285,8 +290,10 @@ table.gl tr.grp td{background:#eef2ff;font-weight:700;color:#312e81}
 .pref{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .pref .ans{border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff;cursor:pointer;font-size:14.5px}
 .pref .ans:hover{border-color:var(--accent)}
-@media (max-width:640px){.pref{grid-template-columns:1fr}.experts{grid-template-columns:repeat(4,1fr)}}
-@media (max-width:640px){#tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;width:100%;gap:6px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}#tabs::-webkit-scrollbar{display:none}#tabs button{flex:0 0 auto;padding:6px 12px;font-size:14px}.toolbar .wrap{padding:8px 12px}.search{flex:1 1 140px}}
+
+/*phone*/.pref{grid-template-columns:1fr}.experts{grid-template-columns:repeat(4,1fr)}
+
+/*phone*/#tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;width:100%;gap:6px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}#tabs::-webkit-scrollbar{display:none}#tabs button{flex:0 0 auto;padding:6px 12px;font-size:14px}.toolbar .wrap{padding:8px 12px}.search{flex:1 1 140px}
 .mini b{padding-right:62px}
 
 
@@ -521,15 +528,18 @@ canvas.chart{width:100%;height:230px;display:block}
 :focus-visible{outline:3px solid #6366f1;outline-offset:2px}
 footer{margin-left:0}
 /* responsive */
-@media (max-width:1180px){.stepnav .lbl,.tourbtn .lbl{display:none}.tb-where{max-width:120px}}
-@media (max-width:1000px){
+
+/*phone*/.stepnav .lbl,.tourbtn .lbl{display:none}.tb-where{max-width:120px}
+
+/*phone*/
  :root{--sideW:0px}
  #side{width:300px;max-width:86vw;transform:translateX(-102%);transition:transform .25s;box-shadow:0 0 40px rgba(0,0,0,.25)}
  body.side-open #side{transform:none}
  body.side-open #sideMask{display:block;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:55}
  #sideBtn,#sideClose{display:inline-block}
-}
-@media (max-width:640px){
+
+
+/*phone*/
  .tb-in{padding:7px 10px;gap:6px}
  .tb-where{flex:1;max-width:none;font-size:14px}
  .topbar .search{order:5;flex:1 1 100%;margin-left:0}
@@ -545,7 +555,7 @@ footer{margin-left:0}
  .ntr{grid-template-columns:56px 1fr 52px}
  #tour{right:8px;left:8px;bottom:8px;width:auto;max-height:46vh}
  .txt{width:100%}
-}
+
 .mebars{display:flex;align-items:flex-end;gap:4px;height:140px;border-bottom:2px solid #cbd5e1;position:relative;margin-top:6px}
 .mebars div{flex:1;background:#0d9488;border-radius:5px 5px 0 0;position:relative;min-width:0;transition:height .3s}
 .mebars div.over{background:#dc2626}
@@ -559,8 +569,9 @@ footer{margin-left:0}
 .log:empty::before{content:attr(data-ph);color:#94a3b8}
 .tour-btns{position:sticky;bottom:-14px;background:#fff;padding:8px 0 6px;margin:0 0 -6px}
 .tour-f .hint{width:100%}
-@media (min-width:1001px) and (max-width:1400px){.tb-where{display:none}.topbar .search input{width:150px}}
-@media (max-width:640px){
+
+
+/*phone*/
  .tb-where{order:1}#sideBtn{order:0}#searchBtn{display:inline-block;order:6}
  .topbar .mode{order:2}.zoom{order:3}.stepnav{order:4}.tourbtn{order:5}
  .topbar .search{display:none}
@@ -571,12 +582,15 @@ footer{margin-left:0}
  .card>h3 .tag,.card>h2 .tag{font-size:11.5px;padding:0 7px}
  #toast{top:112px;bottom:auto}
  body.touring #toast{display:none}
-}
+
 .two>*,.grid>*,.three>*,.walk>*{min-width:0}
-@media (max-width:640px){#gw{grid-template-columns:repeat(6,44px)}#gw .cell{width:44px;height:44px;font-size:18px}}
-@media (max-width:640px){.card>h2{position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}}
+
+/*phone*/#gw{grid-template-columns:repeat(6,44px)}#gw .cell{width:44px;height:44px;font-size:18px}
+
+/*phone*/.card>h2{position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}
 
 
+/* ---- v3 phone design system (flattened) ---- */
 /* ===================== v3: design system + mobile-first ===================== */
 :root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--r:14px;--r-sm:10px;
  --ink2:#334155;--muted:#5b6678;--soft:#f6f7fb;--soft2:#f1f4f9;--shadow:0 1px 2px rgba(15,23,42,.05),0 4px 14px rgba(15,23,42,.05);
@@ -785,9 +799,10 @@ body.sheet-open #sheetMask{display:block;opacity:1}
 .sheet .mode,.sheet .zoom,.sheet .seg{display:flex;width:100%;margin:0}
 .sheet .mode button,.sheet .zoom button,.sheet .seg button{flex:1;min-height:var(--tap);font-size:15px;padding:6px 8px}
 /* tooltips are mouse-only */
-@media (hover:none){#tip{display:none!important}.mini:hover,.fc:hover{transform:none}}
+#tip{display:none!important}.mini:hover,.fc:hover{transform:none}
 /* =============== ≤1000px: app-like chrome =============== */
-@media (max-width:1000px){
+
+/*phone*/
  :root{--bnh:calc(60px + var(--sab))}
  body{padding-bottom:var(--bnh)}
  #bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid #e5e8ef;padding:0 var(--sar) var(--sab) var(--sal);height:var(--bnh)}
@@ -824,9 +839,10 @@ body.sheet-open #sheetMask{display:block;opacity:1}
  body.touring #toast{display:none}
  .card>h2,.card>h3{position:static;margin-left:0;margin-right:0;padding-left:0;padding-right:0}
  .on-mob{display:inline}.on-desk{display:none}
-}
+
 /* =============== ≤640px: phones =============== */
-@media (max-width:640px){
+
+/*phone*/
  body{font-size:16px}
  header{padding:calc(14px + var(--sat)) 16px 16px}
  header h1{font-size:21px}
@@ -906,29 +922,25 @@ body.sheet-open #sheetMask{display:block;opacity:1}
  table.stack tr.grp td::before{content:none}
  .glbox{max-height:none!important;overflow:visible!important}
  footer{padding:0 16px 24px}
-}
+
 @media (max-width:380px){#bnav button{font-size:11.5px}}
 @keyframes sheetUp{from{transform:translateY(40%);opacity:.4}to{transform:none;opacity:1}}
 /* touch devices: 44px targets everywhere */
-@media (pointer:coarse){
+
  .btn,.qz .opt,.seg button,.m-tabs button,#modal .close,.icon-btn{min-height:var(--tap)}
  .icon-btn{min-width:var(--tap)}
  .chip,.ph-map button,.subnav button,.tour-f button,.toolchip,.fired span{min-height:40px;display:inline-flex;align-items:center}
  .tn .car{width:36px;height:36px}
-}
+
 /* desktop niceties */
-@media (min-width:1001px){
- .tb-in{max-width:1180px}
- .topbar .search input{min-height:38px}
- #sideClose{display:none}
-}
+
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){
  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
  svg .arrow.flow{animation:none!important}
 }
 /* print */
-@media print{#bnav,#side,.topbar,#tour,.sheet,#sheetMask,.dg-bar{display:none!important}.shell-main{margin:0}}
+
 .flab{font-size:13px;font-weight:700;color:#64748b;margin:2px 0 6px;letter-spacing:.3px}
 
 /* ===================== v3.1: audit fixes ===================== */
@@ -963,7 +975,8 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
 #progDetail .mini>b{grid-column:1}
 #progDetail .mini>p{grid-column:1;margin:0}
 #progDetail .mini>.btn{grid-column:2;grid-row:1/3;margin:0!important;font-size:14px!important;padding:6px 14px!important}
-@media (max-width:1000px){
+
+/*phone*/
  /* touch targets >= 44px */
  .btn,.btn.up,.btn.down,.btn.here,.btn.link,select,.txt,input[type=text],input[type=search],input[type=number],.qz .opt,.seg button,.m-tabs button,.ph-map button,.subnav button,.chip,.toolchip{min-height:var(--tap)}
  input[type=range]{height:var(--tap)}
@@ -974,8 +987,9 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
  #tour{max-width:600px;margin:0 auto}
  #modal{z-index:96}
  .ph-nav .btn{min-height:var(--tap)}
-}
-@media (max-width:640px){
+
+
+/*phone*/
  /* stacked controls: inputs must not grow vertically */
  .ctrls>*{flex:0 0 auto}
  .ctrls .txt{flex:0 0 auto;height:auto}
@@ -1005,20 +1019,22 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
  details.whyitem{padding:8px 12px}
  details.whyitem .why,details.whyitem .eff,details.whyitem .lim,details.whyitem>div{padding-left:10px;padding-right:10px}
  #progDetail .mini{padding:10px 12px}
-}
-@media (max-width:1000px){
+
+
+/*phone*/
  label:has(>input[type=checkbox]),label:has(>input[type=radio]){min-height:var(--tap);display:inline-flex;align-items:center;gap:8px}
  .wsel button{min-height:var(--tap);min-width:var(--tap)}
  table.stack a,table.gl a{display:inline-flex;align-items:center;min-height:var(--tap)}
-}
-@media (max-width:640px){
+
+
+/*phone*/
  .ctrls>label input[type=range],.ctrls input[type=range],.kvgrid input[type=range],input[type=range]{height:var(--tap)}
  label:has(>input[type=checkbox]),label:has(>input[type=radio]){display:flex}
-}
+
 
 .fgrp.fold>.fc:nth-child(n+5){display:none}
 .fmore{width:100%;margin:8px 0 0;background:#fff;border:1px dashed #c7cfe0;color:#3730a3;font-weight:700}
-@media (min-width:641px){.m-grip{display:none!important}}
+
 
 /* ===================== v3.2: audit fixes ===================== */
 .bzp{margin:0 0 var(--s3)}
@@ -1026,24 +1042,173 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
 .hint.bzp ul.pts li{margin:2px 0}
 .dgwrap{margin-bottom:var(--s4)}
 .dgwrap+h3,.dgwrap+h4,.dgwrap+b,.dgwrap+.flab{margin-top:var(--s5)}
-@media (max-width:640px){
+
+/*phone*/
  #ntBars>.hint:first-child{display:block!important;text-align:left;margin:4px 0 8px}
  #ntBars>.hint:first-child>span:empty{display:none}
-}
+
 .mini p b,.mini p strong{display:inline;padding:0;margin:0}
 .formula .tag,.note .tag{vertical-align:1px;margin-right:6px;line-height:1.5}
-@media (max-width:1000px){
+
+/*phone*/
  label:has(>input[type=checkbox]):has(>span,>b,>code,>em),label:has(>input[type=radio]):has(>span,>b,>code,>em){display:block!important;padding:10px 0;line-height:1.6}
  label:has(>input[type=checkbox]):has(>span,>b,>code,>em)>input,label:has(>input[type=radio]):has(>span,>b,>code,>em)>input{margin:0 8px 0 0}
-}
+
 .card ol+p,.card ul+p,.card ol+.bzp,.card ul+.bzp{margin-top:var(--s2)}
-@media (max-width:640px){
+
+/*phone*/
  .ph-nav>span:first-child{display:none}
  .ph-nav>.btn:only-child,.ph-nav>span:first-child+.btn:last-child{grid-column:1/-1}
-}
-@media (max-width:640px){.ntr{min-height:var(--tap)}}
-@media (max-width:1000px){table.stack a,table.gl a{min-width:var(--tap);justify-content:center}}
 
+
+/*phone*/.ntr{min-height:var(--tap)}
+
+/*phone*/table.stack a,table.gl a{min-width:var(--tap);justify-content:center}
+
+/* ===================== mobile-only layout (phone portrait 360–430px) ===================== */
+:root{--tbh:52px;--bnh:calc(58px + var(--sab));--mpad:8px}
+html{scroll-padding-top:calc(var(--tbh) + 12px)}
+body{padding-bottom:calc(var(--bnh) + 8px);background:#f2f4f8;font-size:16px;-webkit-tap-highlight-color:rgba(79,70,229,.12)}
+.shell-main{margin-left:0!important;min-width:0}
+#side,#sideMask,#sideBtn,.side-keys,header,#tip,.tb-keep{display:none!important}
+/* ---------- top bar: title · search · tour ---------- */
+.topbar{position:sticky;top:0;z-index:70;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-top:var(--sat);border-bottom:1px solid #e8ebf1}
+.tb-in{display:flex;align-items:center;gap:4px;padding:4px calc(6px + var(--sar)) 4px calc(14px + var(--sal));min-height:var(--tbh);max-width:none;margin:0;flex-wrap:nowrap}
+.tb-where{order:0!important;display:flex!important;align-items:baseline;gap:8px;flex:1;min-width:0;text-align:left!important;font-size:17.5px;max-width:none!important;overflow:hidden;white-space:nowrap}
+.tb-where b{font-weight:800;overflow:hidden;text-overflow:ellipsis;color:#1e1b4b}
+.tb-where small{font-size:12.5px;color:#64748b;font-weight:700;flex:none}
+body.mode-train .tb-where b::before{content:"🔥 ";}
+.tb-ic{order:2;display:inline-flex!important;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;font-size:19px;border:none;background:transparent;border-radius:12px;padding:0}
+.tb-ic.on{background:#eef2ff;box-shadow:inset 0 0 0 2px #6366f1}
+.topbar .mode,.topbar .zoom{display:none!important}
+.topbar .search{display:none}
+/* ---------- crumb chips ---------- */
+.crumb{padding:8px var(--mpad) 0!important;max-width:none;font-size:13.5px}
+.chips{display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 0 4px;overscroll-behavior-x:contain}
+.chips::-webkit-scrollbar{display:none}
+.chips .chip{flex:none;font:inherit;font-size:13px;border:1px solid #dfe3ee;background:#fff;color:#334155;border-radius:999px;padding:4px 11px;min-height:36px;display:inline-flex;align-items:center;cursor:pointer;white-space:nowrap}
+.chips .chip.on{background:#1e1b4b;color:#fff;border-color:#1e1b4b;font-weight:700}
+.chips .chip.down{border-style:dashed;color:#4338ca;background:#f5f7ff}
+.chips .sep{font-style:normal;color:#94a3b8;flex:none;font-size:14px}
+.chips .sep.dn{margin-left:4px}
+main{max-width:none!important;padding:0 var(--mpad) 24px!important;margin:0}
+/* ---------- page head ---------- */
+.pagehead{padding:14px 16px 10px!important;margin:6px 0 8px!important;border-radius:18px!important}
+.pagehead .ph-top,.pagehead .ph-map,.pagehead .ph-more{display:none!important}
+.pg-t{display:flex;align-items:center;gap:10px;font-size:23px;line-height:1.3;margin:0 0 4px;font-weight:800;color:#1e1b4b;letter-spacing:.2px}
+.pg-n{flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:9px;background:#4f46e5;color:#fff;font-size:15px}
+.pg-s{font-size:15.5px;line-height:1.6;margin:0;color:#334155;font-weight:600}
+details.pg-more{margin:4px 0 0}
+details.pg-more>summary{cursor:pointer;color:#4338ca;font-size:13.5px;font-weight:700;list-style:none;display:inline-flex;align-items:center;gap:4px;min-height:36px}
+details.pg-more>summary::-webkit-details-marker{display:none}
+details.pg-more>summary::after{content:"▾"}
+details.pg-more[open]>summary::after{content:"▴"}
+details.pg-more .ph-one{font-size:15px!important;line-height:1.7;margin:2px 0 6px;font-weight:400}
+.zoomnote{margin-top:8px}
+/* ---------- diagram stage + viewer ---------- */
+.m-stage{margin:0 -4px 10px;background:#fff;border-radius:18px;box-shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.07);overflow:clip}
+.m-dg{position:relative;background:#fff}
+.card .m-dg{margin:10px -14px;border-top:1px solid #eef0f5;border-bottom:1px solid #eef0f5}
+.m-vbar{position:sticky;top:calc(var(--tbh) + var(--sat));z-index:6;display:flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid #f1f3f8}
+.m-vh{flex:1;min-width:0;font-size:12.5px;line-height:1.35;color:#64748b}
+.vz{flex:none;width:40px;height:40px;border-radius:12px;border:1px solid #e3e7ef;background:#fff;color:#1e1b4b;font:inherit;font-size:19px;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.vz:active{background:#eef2ff}
+.vz[disabled]{opacity:.38}
+.vp{flex:none;min-width:40px;text-align:center;font-size:12.5px;color:#475569;font-variant-numeric:tabular-nums}
+.m-dg.zoomed .m-vh{color:#4338ca;font-weight:700}
+.diagram{overflow:hidden!important}
+.m-vw{position:relative;overflow:hidden!important;touch-action:pan-y;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;padding:6px 0}
+.m-vw>svg{display:block;width:100%!important;height:auto!important;min-width:0!important;max-width:none!important;margin:0!important;transform-origin:0 0}
+.m-vw.anim>svg{transition:transform .24s cubic-bezier(.2,.8,.2,1)}
+.m-vw.zoomed{touch-action:none;box-shadow:inset 0 0 0 2px #c7d2fe}
+.m-stage .m-vw{padding:8px 0 10px}
+svg .comp.tapped rect.main{stroke-width:4;filter:drop-shadow(0 3px 8px rgba(79,70,229,.35))}
+svg .comp:hover rect.main{stroke-width:2;filter:none}
+svg .comp:focus-visible rect.main{stroke-width:3.5}
+svg .comp:focus{outline:none}
+svg .badge text{font-size:12px}
+.tnode text.t{font-size:15.5px}
+.tnode text.s{font-size:12.5px}
+details.m-leg{margin:0;padding:0 12px 6px;border-top:1px solid #f1f3f8}
+details.m-leg>summary{cursor:pointer;font-size:13.5px;color:#475569;font-weight:700;min-height:42px;display:flex;align-items:center;list-style:none}
+details.m-leg>summary::-webkit-details-marker{display:none}
+details.m-leg>summary::after{content:"▾";margin-left:6px}
+details.m-leg[open]>summary::after{content:"▴"}
+details.m-leg .legend{margin:0 0 6px}
+/* ---------- fullscreen diagram ---------- */
+#dgFull{position:fixed;inset:0;z-index:94;background:#fff;display:none;flex-direction:column}
+#dgFull.open{display:flex}
+body.fs-open{overflow:hidden}
+.fs-bar{display:flex;align-items:center;gap:4px;padding:calc(6px + var(--sat)) calc(6px + var(--sar)) 6px calc(14px + var(--sal));border-bottom:1px solid #eef0f5;background:#fff}
+.fs-bar b{flex:1;min-width:0;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fs-x{font-size:24px}
+.fs-host{flex:1;position:relative;overflow:hidden!important;touch-action:none;background:#f8fafc;padding:0!important}
+.fs-host>svg{position:absolute;left:0;top:0;width:auto!important;transform-origin:0 0;display:block}
+.fs-hint{font-size:12.5px;color:#64748b;text-align:center;padding:6px 10px calc(8px + var(--sab));border-top:1px solid #eef0f5}
+/* ---------- cards: collapsible ---------- */
+.card{padding:14px 14px!important;margin:10px 0!important;border-radius:16px!important}
+.card[data-cc]>h2,.card[data-cc]>h3{margin:0!important;font-size:17px!important;line-height:1.45}
+.cc-h{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;min-height:44px;cursor:pointer;font:inherit;font-weight:800;color:#0f172a;line-height:1.45;-webkit-tap-highlight-color:transparent}
+.cc-h:focus-visible{outline:2px solid #6366f1;outline-offset:3px;border-radius:8px}
+.cc-h::after{content:"";flex:none;margin-left:auto;width:30px;height:30px;border-radius:50%;background:#eef2ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 6l4.5 4.5L12.5 6' fill='none' stroke='%234338ca' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/15px no-repeat;transition:transform .2s}
+.card:not(.cc-closed)>h2>.cc-h::after,.card:not(.cc-closed)>h3>.cc-h::after{transform:rotate(180deg)}
+.card.cc-closed>.cc-body{display:none}
+.card.cc-closed>.zl{margin-bottom:2px}
+.cc-body{padding-top:6px}
+.cc-h .tag{display:inline-block!important;margin:0 0 0 6px!important;font-weight:600}
+.two>.card{margin:10px 0!important}
+.card.intro .intro-h{font-size:16px;line-height:1.6}
+.card.intro .hero-act{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.card.intro .hero-act .btn{width:100%}
+/* labs: full-width, big controls */
+.card.lab{margin:12px -4px!important;border-radius:18px!important;padding:16px 14px!important}
+.card.lab .row>.btn,.card.lab .ctrls>.btn{min-height:48px;font-size:15.5px}
+.card.lab select,.card.lab .txt{min-height:46px}
+.card.lab input[type=range]{height:44px}
+.lab-divider{margin:22px 0 4px!important}
+.card.quiz .qz .opt{min-height:48px}
+.ph-nav{display:grid!important;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 6px}
+.ph-nav .btn{width:100%;min-height:48px}
+/* ---------- bottom tabs ---------- */
+#bnav{display:grid!important;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:80;height:var(--bnh);padding:0 var(--sar) var(--sab) var(--sal);background:rgba(255,255,255,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid #e5e8ef}
+#bnav button{font:inherit;border:none;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#475569;font-size:11.5px;min-height:56px;cursor:pointer;position:relative;padding:0 2px;min-width:0;-webkit-tap-highlight-color:transparent}
+#bnav button span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bnav button i{font-style:normal;font-size:21px;line-height:1.15}
+#bnav button.on{color:#3730a3;font-weight:800}
+#bnav button.on::before{content:"";position:absolute;top:0;left:26%;right:26%;height:3px;border-radius:0 0 3px 3px;background:#4f46e5}
+body.fs-open #bnav{display:none!important}
+/* ---------- more sheet ---------- */
+.sheet{max-width:none!important;margin:0!important;bottom:0}
+.sh-st{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.st-b{font:inherit;text-align:left;border:1px solid #e3e7ef;background:#f8fafc;border-radius:14px;padding:10px 12px;min-height:76px;display:flex;flex-direction:column;gap:2px;cursor:pointer;color:#0f172a}
+.st-b i{font-style:normal;font-size:20px;line-height:1.2}
+.st-b b{font-size:15px}
+.st-b small{font-size:12.5px;color:#64748b;line-height:1.4}
+.st-b.on{border-color:#6366f1;background:#eef2ff;box-shadow:inset 0 0 0 1px #6366f1}
+.st-all{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.st-all .chip{font:inherit;font-size:13px;border:1px solid #e3e7ef;background:#fff;border-radius:999px;padding:4px 10px;min-height:38px;cursor:pointer;color:#334155}
+.st-all .chip.on{background:#1e1b4b;color:#fff;border-color:#1e1b4b}
+#slotBanner .banner{margin:10px 0 0;max-height:none!important;border-bottom:0!important;padding-bottom:10px!important;cursor:default}
+#slotBanner .banner::after{content:none!important}
+body.mode-use #slotBanner .banner.train,body.mode-train #slotBanner .banner.use{display:none!important}
+#slotBanner .banner.use{display:block}
+body.mode-train #slotBanner .banner.train{display:block}
+details.sh-map>summary{cursor:pointer;font-weight:700;font-size:15px;min-height:44px;display:flex;align-items:center}
+#slotTree #tree{font-size:15px}
+main>.banner{display:none}
+/* ---------- tour: bottom panel above tabs ---------- */
+#tour{left:6px!important;right:6px!important;width:auto!important;max-width:none!important;bottom:calc(var(--bnh) + 6px)!important;top:auto!important;max-height:46vh;max-height:46dvh;overflow:auto;margin:0!important}
+body.touring .m-vbar{top:calc(var(--tbh) + var(--sat))}
+.tour-btns .btn{min-height:46px}
+/* ---------- search top sheet ---------- */
+body.search-open .topbar .search{display:block}
+/* ---------- misc phone fixes ---------- */
+.grid,.two,.three,.walk,.whyrow,.pref{grid-template-columns:1fr!important}
+.diagram svg{min-width:0!important}
+#toast{bottom:calc(var(--bnh) + 14px)!important;top:auto!important}
+body.touring #tour{z-index:82}
+@media (max-width:370px){:root{--mpad:4px}.card .m-dg{margin:10px -15px}.pg-t{font-size:21px}.tb-where{font-size:16.5px}#bnav button{font-size:11px}}
+body.search-open .topbar{z-index:96!important}
 </style>
 </head>
 <body class="mode-use">
@@ -1064,32 +1229,33 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
 <header><div class="wrap">
   <h1>大白话拆解：“一句话，AI 就把事办了”的软件是怎么搭起来的</h1>
   <p>从你说的一句话出发，一层层往下拆：<b>Agent 应用</b> → <b>大模型</b> → <b>Transformer 块</b> → <b>注意力 / 前馈网络</b>，再看旁边的 <b>多模态</b>、<b>训练体系</b> 和 <b>底层算力</b>。<b>图里的每个方块都能点</b>：弹窗里有它的作用、一开始怎么来、训练中怎么调整、使用时做什么、为什么这么设计、为什么有效、局限，还能“往上”“往下”继续跳。</p>
-  <div class="hero-act"><button class="btn hero" data-tour="start">🎬 开始导览：跟着一句话走 14 步</button><span><span class="on-desk">或者从左侧“学习地图”</span><span class="on-mob">或者点底部“🧭 导航”</span>按顺序往下看：宏观 → 微观</span></div>
+  <div class="hero-act"><button class="btn hero" data-tour="start">🎬 开始导览：跟着一句话走 14 步</button><span>或者点底部标签栏，按顺序往下看：宏观 → 微观</span></div>
 </div></header>
 
 <div class="topbar" id="topbar"><i id="tbProg" aria-hidden="true"></i><div class="tb-in">
-  <button class="icon-btn" id="sideBtn" aria-label="打开学习地图" aria-controls="side">☰</button>
-  <div class="tb-where" id="tbWhere"></div>
-  <button class="icon-btn" id="searchBtn" aria-label="搜索零件">🔎</button>
-  <div class="search"><input id="search" type="search" placeholder="🔎 搜零件（按 / ）" autocomplete="off" aria-label="搜索零件"><div id="searchRes"></div></div>
+  <div class="tb-where" id="tbWhere" aria-live="polite"></div>
+  <button class="icon-btn tb-ic" id="mSearch" aria-label="搜索零件" aria-controls="search">🔎</button>
+  <button class="icon-btn tb-ic" id="mTour" aria-label="开始导览" aria-pressed="false">🎬</button>
+  <div class="tb-keep" hidden>
+    <button class="icon-btn" id="sideBtn" aria-label="打开学习地图" aria-controls="side">☰</button>
+    <button class="icon-btn" id="searchBtn" aria-label="搜索零件">🔎</button>
+    <div class="stepnav"><button class="btn" id="prevBtn">◀ <span class="lbl">上一步</span></button><button class="btn primary" id="nextBtn"><span class="lbl">下一步</span> ▶</button></div>
+    <div class="tabs" id="tabs"><button data-go="T1">全景</button><button data-go="T2">Agent</button><button data-go="T3">大模型</button><button data-go="T4">Transformer 块</button><button data-go="T5">MoE</button><button data-go="T6">多模态</button><button data-go="T7">训练</button><button data-go="T8">速查</button></div>
+  </div>
+  <div class="search"><input id="search" type="search" placeholder="🔎 搜零件：如 注意力、RAG、KV 缓存" autocomplete="off" enterkeyhint="search" aria-label="搜索零件"><div id="searchRes"></div></div>
   <div class="mode" id="mode" title="切换：训练时 vs 使用时">
     <button data-mode="use" class="active">▶ 使用时</button>
     <button data-mode="train">🔥 训练时</button>
   </div>
-  <div class="zoom" id="zoom" role="group" aria-label="缩放级别" title="宏观：只看一句话和结构图；中观：再加原理解释；微观：全部细节和演示">
+  <div class="zoom" id="zoom" role="group" aria-label="详细程度">
     <button data-z="1">🔭 宏观</button><button data-z="2">🗺️ 中观</button><button data-z="3">🔬 微观</button>
-  </div>
-  <div class="stepnav"><button class="btn" id="prevBtn" title="上一步（←）">◀ <span class="lbl">上一步</span></button><button class="btn primary" id="nextBtn" title="下一步（→）"><span class="lbl">下一步</span> ▶</button></div>
-  <button class="btn tourbtn" data-tour="start" title="开始导览">🎬 <span class="lbl">导览</span></button>
-  <div class="tabs" id="tabs" style="display:none">
-    <button data-go="T1">全景</button><button data-go="T2">Agent</button><button data-go="T3">大模型</button><button data-go="T4">Transformer 块</button><button data-go="T5">MoE</button><button data-go="T6">多模态</button><button data-go="T7">训练</button><button data-go="T8">速查</button>
   </div>
 </div></div>
 
 <div class="crumb" id="crumb"></div>
 
 <main>
-  <div class="banner use" id="useBanner">▶ <b>使用模式</b>：模型参数全部<b>冻结、只读</b>，系统只是按流程算一遍。点<span class="on-desk">右上角</span><span class="on-mob">底部“⋯ 更多”里的</span>“🔥 训练时”看看哪些零件里有会被训练调整的参数。</div>
+  <div class="banner use" id="useBanner">▶ <b>使用模式</b>：模型参数全部<b>冻结、只读</b>，系统只是按流程算一遍。点底部“⋯ 更多”里的“🔥 训练时”看看哪些零件里有会被训练调整的参数。</div>
   <div class="banner train" id="trainBanner">🔥 <b>训练模式</b>：<span style="color:#ea580c;font-weight:700">橙色发光</span> 的零件里有“可学习的数字”（参数）或本身就是训练阶段；变灰的是固定程序、固定公式或现场算出的结果，没有要学的东西。注意：Agent 应用层的大部分是普通程序，不靠梯度训练。</div>
 
   <section class="card" id="trainPanel">
@@ -1271,7 +1437,7 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
       <p class="lead">在 Agent 眼里，大模型就是“读一段文字、续写一段文字”的黑盒。打开它：文字从左边进，经过一条流水线，右边吐出“下一个词的概率”。抽一个词接回句子末尾，再走一遍流水线……一个字一个字地写出整段话。</p>
       <div class="diagram"><svg id="svgL1" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg"></svg></div>
       <div class="legend" id="legend1"></div>
-      <p class="hint">💡 鼠标悬停看一句话说明，点击看详情；带 🔍 的方块可以“放大进去”。</p>
+      <p class="hint">💡 点方块看详情；带 🔍 的方块可以“放大进去”。</p>
     </div>
 
     <div class="two">
@@ -1322,7 +1488,7 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
   <div class="card">
     <h3>🧩 变体：MoE（专家混合）块</h3>
     <p class="lead">把块里的“前馈网络”换成“路由器 + 一排专家”，其他零件不变。总参数变多，但每个 token 只用其中一小部分。</p>
-    <div class="diagram"><svg id="svgMoeV" viewBox="0 0 930 230" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="diagram"><svg id="svgMoeV" viewBox="0 0 920 230" xmlns="http://www.w3.org/2000/svg"></svg></div>
     <div class="row" style="justify-content:flex-end"><button class="btn primary" data-go="T5">🔍 放大进去看：MoE 与高效架构 →</button><button class="btn primary" data-go="T4">🔍 放大进去看：Transformer 块 →</button></div>
   </div>
 
@@ -1838,7 +2004,7 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
 <div class="pagehead" id="phT7"></div>
   <div class="card">
     <h2>训练与强化学习：本事是怎么练出来的</h2>
-    <p class="lead">从一个神经元讲起，到大模型的四段训练。<b>点方块看详情</b>；右上角切到“🔥 训练时”可以看到哪些阶段在改参数。</p>
+    <p class="lead">从一个神经元讲起，到大模型的四段训练。<b>点方块看详情</b>；在底部“⋯ 更多”里切到“🔥 训练时”可以看到哪些阶段在改参数。</p>
     <div class="diagram"><svg id="svgTP" viewBox="0 0 1180 200" xmlns="http://www.w3.org/2000/svg"></svg></div>
   </div>
   <div class="card" id="nnCard">
@@ -2013,25 +2179,29 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
   <div class="row tour-btns"><button class="btn" id="tourPrev">◀ 上一步</button><button class="btn primary" id="tourNext">下一步 ▶</button></div>
 </div>
 
-<nav id="bnav" aria-label="底部导航">
-  <button data-bn="home" aria-label="回到首页"><i aria-hidden="true">🏠</i><span>首页</span></button>
-  <button data-bn="nav" aria-label="打开学习地图" aria-controls="side"><i aria-hidden="true">🧭</i><span>导航</span></button>
-  <button data-bn="search" aria-label="搜索零件"><i aria-hidden="true">🔎</i><span>搜索</span></button>
-  <button data-bn="tour" aria-label="开始导览"><i aria-hidden="true">🎬</i><span>导览</span></button>
-  <button data-bn="more" aria-label="更多设置" aria-controls="moreSheet"><i aria-hidden="true">⋯</i><span>更多</span></button>
+<nav id="bnav" aria-label="主要站点">
+  <button data-bn="T1"><i aria-hidden="true">🏠</i><span>应用</span></button>
+  <button data-bn="T2"><i aria-hidden="true">🤖</i><span>Agent</span></button>
+  <button data-bn="T3"><i aria-hidden="true">🧠</i><span>大模型</span></button>
+  <button data-bn="T4"><i aria-hidden="true">🧩</i><span>Transformer</span></button>
+  <button data-bn="more" aria-controls="moreSheet" aria-expanded="false"><i aria-hidden="true">⋯</i><span>更多</span></button>
 </nav>
 <div id="sheetMask" aria-hidden="true"></div>
-<div id="moreSheet" class="sheet" role="dialog" aria-modal="true" aria-label="更多设置" aria-hidden="true">
+<div id="moreSheet" class="sheet" role="dialog" aria-modal="true" aria-label="更多" aria-hidden="true">
   <div class="sh-grip" aria-hidden="true"><i></i></div>
   <div class="sh-head"><b>⋯ 更多</b><button class="icon-btn sh-x" aria-label="关闭">×</button></div>
-  <div class="sh-sec"><div class="sh-lbl">学习进度</div><div class="sh-prog"><div class="prog-bar"><i id="shProgBar"></i></div><div id="shProgTxt" class="sh-small"></div></div></div>
-  <div class="sh-sec"><div class="sh-lbl">看哪个阶段</div><div id="slotMode"></div><p class="sh-small">训练时：哪些零件会被调整；使用时：参数只读，按流程算一遍。</p></div>
+  <div class="sh-sec"><div class="sh-lbl">更多站点</div><div class="sh-st" id="shStations"></div></div>
+  <div class="sh-sec"><div class="sh-lbl">看哪个阶段（训练 / 使用）</div><div id="slotMode"></div><p class="sh-small">训练时：哪些零件会被调整；使用时：参数只读，按流程算一遍。</p><div id="slotBanner"></div></div>
   <div class="sh-sec"><div class="sh-lbl">详细程度</div><div id="slotZoom"></div><p class="sh-small">宏观只看概括和结构图；微观显示全部细节、演示与实验。</p></div>
-  <div class="sh-sec"><div class="sh-lbl">结构图显示方式</div>
-    <div class="seg" id="dgPref" role="group" aria-label="结构图显示方式"><button data-dg="auto">自动</button><button data-dg="list">🗂 步骤卡片</button><button data-dg="svg">🖼 原图</button></div>
-    <p class="sh-small">“自动”：屏幕太窄、图里的字会变太小时，改用竖排的步骤卡片（同样可以点开）。</p></div>
+  <div class="sh-sec"><div class="sh-lbl">学习进度</div><div class="sh-prog"><div class="prog-bar"><i id="shProgBar"></i></div><div id="shProgTxt" class="sh-small"></div></div></div>
   <div class="sh-sec sh-pn"><button class="btn" id="shPrev">◀ 上一站</button><button class="btn primary" id="shNext">下一站 ▶</button></div>
   <div class="sh-sec"><button class="btn wide" id="shProgDetail">🏁 查看学习进度与全部实验</button></div>
+  <div class="sh-sec"><details class="sh-map" id="shMap"><summary>🗺️ 学习地图：全部站点和章节</summary><div id="slotTree"></div></details></div>
+</div>
+<div id="dgFull" role="dialog" aria-modal="true" aria-label="全屏查看结构图" aria-hidden="true">
+  <div class="fs-bar"><b id="fsT"></b><button class="vz" data-fz="out" aria-label="缩小">−</button><span class="vp" id="fsP">100%</span><button class="vz" data-fz="in" aria-label="放大">＋</button><button class="vz" data-fz="reset" aria-label="复位">⟲</button><button class="vz fs-x" data-fz="close" aria-label="关闭全屏">×</button></div>
+  <div class="fs-host" id="fsHost"></div>
+  <div class="fs-hint" id="fsHint"></div>
 </div>
 
 <div id="toast" role="status"></div>
@@ -2554,9 +2724,9 @@ document.getElementById('mode').addEventListener('click',function(e){var b=e.tar
  document.querySelectorAll('#mode button').forEach(function(x){x.classList.toggle('active',x===b);});
  document.body.classList.toggle('mode-train',b.dataset.mode==='train');document.body.classList.toggle('mode-use',b.dataset.mode==='use');});
 var tip=document.getElementById('tip');
-document.addEventListener('mouseover',function(e){var el=e.target.closest('[data-id]');if(!el||!C[el.dataset.id]){tip.style.opacity=0;return;}
+if(0)document.addEventListener('mouseover',function(e){var el=e.target.closest('[data-id]');if(!el||!C[el.dataset.id]){tip.style.opacity=0;return;}
  var c=C[el.dataset.id];tip.innerHTML='<b>'+c.n+'</b>'+c.role+'<em>所在：'+TABN[c.t]+' · '+(c.train==='yes'?'含可学习参数':c.train==='part'?'含少量可学习参数':'无可学习参数')+' · 点击看详情'+(c.zoom?' · 🔍 可放大':'')+'</em>';tip.style.opacity=1;});
-document.addEventListener('mousemove',function(e){if(tip.style.opacity==='1'){var x=e.clientX+14,y=e.clientY+16;if(x+300>window.innerWidth)x=e.clientX-300;if(y+120>window.innerHeight)y=e.clientY-120;tip.style.left=Math.max(4,x)+'px';tip.style.top=Math.max(4,y)+'px';}});
+if(0)document.addEventListener('mousemove',function(e){if(tip.style.opacity==='1'){var x=e.clientX+14,y=e.clientY+16;if(x+300>window.innerWidth)x=e.clientX-300;if(y+120>window.innerHeight)y=e.clientY-120;tip.style.left=Math.max(4,x)+'px';tip.style.top=Math.max(4,y)+'px';}});
 var modal=document.getElementById('modal'),mbox=document.getElementById('modalBox');
 function openInfo(id){var c=C[id];if(!c)return;tip.style.opacity=0;openId=id;renderCrumb();
  var st={yes:['yes','🔥 有可学习参数：训练时会被调整，使用时只读'],part:['part','🔥 部分可学习：只有一小部分数字会被训练调整'],no:['no','⚙️ 没有可学习参数：固定程序 / 固定规则 / 现场计算的结果']}[c.train];
@@ -3167,8 +3337,8 @@ document.getElementById('t2risk').innerHTML=['evalag','inject','perm','guard'].m
 })();
 (function(){var s='Mv',h='';
  h+=txt(10,60,'普通块','lbl','font-weight="700" font-size="14"')+txt(10,175,'MoE 块','lbl','font-weight="700" font-size="14" fill="#0891b2"');
- h+=box('attn',110,25,150,60,'注意力',[])+box('addnorm',290,25,150,60,'残差+归一化',[])+box('ffn',470,25,280,60,'前馈网络（一整块）',[])+box('addnorm',780,25,142,60,'残差+归一化',[]);
- h+=box('attn',110,140,150,60,'注意力',[])+box('addnorm',290,140,150,60,'残差+归一化',[])+box('router',470,140,110,60,'路由器',[])+box('expert',612,140,138,60,'专家 ×N',[],{stack:true})+box('addnorm',780,140,142,60,'残差+归一化',[]);
+ h+=box('attn',110,25,150,60,'注意力',[])+box('addnorm',290,25,150,60,'残差+归一化',[])+box('ffn',470,25,280,60,'前馈网络（一整块）',[])+box('addnorm',780,25,130,60,'残差+归一化',[]);
+ h+=box('attn',110,140,150,60,'注意力',[])+box('addnorm',290,140,150,60,'残差+归一化',[])+box('router',470,140,110,60,'路由器',[])+box('expert',612,140,138,60,'专家 ×N',[],{stack:true})+box('addnorm',780,140,130,60,'残差+归一化',[]);
  [[260,55,288],[440,55,468],[750,55,778],[260,170,288],[440,170,468],[580,170,610],[750,170,778]].forEach(function(a){h+=arr('M'+a[0]+' '+a[1]+' H'+a[2],s);});
  h+=txt(610,222,'只有被路由器选中的少数专家参与计算','lbl','text-anchor="middle" font-size="12.5" fill="#0891b2"');
  svgSet('svgMoeV',h,s);
@@ -3307,7 +3477,7 @@ document.getElementById('t7dc').innerHTML=['data','compute','ssl'].map(function(
  h+=box('pref',690,15,180,76,'策略优化',['得分高的更常写']);h+=box('kl',900,15,160,76,'KL 约束',['别跑离原模型太远']);
  h+=arr('M110 53 H138',s)+arr('M290 53 H318',s)+arr('M470 53 H498',s)+arr('M660 53 H688',s)+arr('M870 53 H898',s);
  h+='<path class="arrow flow" d="M780 91 V104 H215 V93" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>'+txt(480,100,'更新参数，重复','lbl','font-size="11.5" fill="#c2410c"');
- h+=box('dpo',500,121,370,54,'DPO：跳过奖励模型',['直接用偏好对优化']);h+='<path class="arrow res" d="M395 81 C400 130 450 140 498 140" marker-end="url(#ar'+s+')"/>';
+ h+=box('dpo',500,116,370,48,'DPO：跳过奖励模型',['直接用偏好对优化']);h+='<path class="arrow res" d="M395 81 C400 130 450 140 498 140" marker-end="url(#ar'+s+')"/>';
  h+=srect(10,190,150,56,'🧮 数学 / 代码题','','#f8fafc');h+=box('llm',190,185,150,66,'大模型',['多试几次']);
  h+=srect(370,190,250,56,'✅ 程序自动判分','对 / 错 · 跑测试','#f8fafc');h+=box('rlvr',650,185,250,66,'推理强化学习',['提高“做对的过程”的概率']);
  h+=arr('M160 218 H188',s)+arr('M340 218 H368',s)+arr('M620 218 H648',s);
@@ -3337,6 +3507,433 @@ document.getElementById('t7dc').innerHTML=['data','compute','ssl'].map(function(
  TABORDER.forEach(function(t){var ids=Object.keys(C).filter(function(id){return C[id].t===t;});if(!ids.length)return;g+='<tr class="grp"><td colspan="4">'+PATH[t].map(function(k){return TABN[k];}).join(' › ')+'</td></tr>';
   ids.forEach(function(id){var c=C[id];g+='<tr><td><a data-open="'+id+'">'+c.n+'</a></td><td>'+c.role+'</td><td><a data-go="'+t+'">'+TABN[t]+'</a></td><td>'+(c.up&&C[c.up]?'<a data-open="'+c.up+'">'+C[c.up].n+'</a>':'—')+'</td></tr>';});});
  document.getElementById('glTab').innerHTML=g;
+})();
+
+/* ===================== mobile: every architecture diagram re-laid out for a portrait phone =====================
+   Same parts (data-id), same element ids, same words as the original wide diagrams; only the coordinates change.
+   The original wide markup is kept in window.__ORIG so the fullscreen viewer can show it in landscape. */
+(function(){
+var W=380;window.__ORIG=window.__ORIG||{};
+function el(id){return document.getElementById(id);}
+function keep(id){var e=el(id);if(!e||__ORIG[id])return;__ORIG[id]={vb:e.getAttribute('viewBox'),html:e.innerHTML};}
+function put(id,h,H,s){var e=el(id);if(!e)return;keep(id);e.setAttribute('viewBox','0 0 '+W+' '+Math.ceil(H));e.removeAttribute('style');e.removeAttribute('width');e.removeAttribute('height');e.innerHTML=(s?defs(s):'')+h;e.setAttribute('data-m','1');}
+/* text width estimate (px at font-size fs) */
+function tw(t,fs){var w=0;for(var i=0;i<t.length;i++){var c=t.charCodeAt(i);if(c>=0xD800&&c<=0xDBFF){w+=1.25;i++;continue;}w+=c>0x2e7f?1:(c===32?0.32:(c>=48&&c<=57?0.58:0.6));}return w*fs;}
+function wrap(t,maxW,fs){var toks=t.match(/[A-Za-z0-9_.%+\-×÷√·/]+|\s+|[\uD800-\uDBFF][\uDC00-\uDFFF]|./g)||[],lines=[],cur='';
+ toks.forEach(function(k){if(tw(cur+k,fs)>maxW&&cur.trim()){var p=cur.match(/[，。；、：）」”]$/)?'':'';lines.push(cur.replace(/\s+$/,''));cur=k.replace(/^\s+/,'');}else cur+=k;});
+ if(cur.trim())lines.push(cur);
+ /* never start a line with closing punctuation */
+ for(var i=1;i<lines.length;i++){var m=lines[i].match(/^[，。；、：）」”！？…]+/);if(m){lines[i-1]+=m[0];lines[i]=lines[i].slice(m[0].length);}}
+ return lines.filter(function(l){return l.length;});}
+function ml(x,y,t,maxW,fs,attr,lh){var L=wrap(t,maxW,fs),o='';lh=lh||Math.round(fs*1.45);L.forEach(function(l,i){o+=txt(x,y+i*lh,l,'lbl','font-size="'+fs+'" '+(attr||''));});return {s:o,h:L.length*lh,n:L.length};}
+function bx(id,x,y,w,h,t,subs,opt){var g=box(id,x,y,w,h,t,subs,opt);if(opt&&opt.tf)g=g.replace('<text class="t" ','<text class="t" style="font-size:'+opt.tf+'px" ');return g;}
+function hasB(id){return C[id]&&C[id].train!=='no';}
+function tY(id,y){return hasB(id)?y-13:y-2;}
+function V(x,y1,y2,s,cls){return arr('M'+x+' '+y1+' V'+y2,s,cls);}
+function H_(y,x1,x2,s,cls){return arr('M'+x1+' '+y+' H'+x2,s,cls);}
+function cur(x1,y1,x2,y2,s,cls){var m=(y1+y2)/2;return arr('M'+x1+' '+y1+' C'+x1+' '+m+' '+x2+' '+m+' '+x2+' '+y2,s,cls);}
+/* two-column reading-order flow: row by row, left -> right, then down to the next row */
+function flow2(s,items,y0,o){o=o||{};var X=o.x||[12,202],w=o.w||166,hh=o.h||70,g=o.gap||36,out='',P=[];
+ items.forEach(function(it,i){var r=Math.floor(i/2),c=i%2,x=X[c],y=y0+r*(hh+g);if(i===items.length-1&&c===0&&!o.noCenter)x=Math.round((W-w)/2);var h=it.h||hh,yy=y+(hh-h)/2;
+  var id=it.b?it.b[0]:null;P.push({x:x,y:yy,w:w,h:h,id:id,stack:it.b&&it.b[3]&&it.b[3].stack});
+  out+=it.r?srect(x,yy,w,h,it.r[0],it.r[1],it.r[2]):bx(it.b[0],x,yy,w,h,it.b[1],it.b[2],it.b[3]);});
+ var A='';for(var i=0;i<P.length-1;i++){var a=P[i],b=P[i+1];if(o.cut&&o.cut.indexOf(i)>=0)continue;
+  if(Math.floor(i/2)===Math.floor((i+1)/2))A+=H_(a.y+a.h/2,a.x+a.w+(a.stack?12:0),b.x-2,s);
+  else{var x1=a.x+a.w/2,y1=a.y+a.h,x2=b.x+b.w/2,y2=b.id?tY(b.id,b.y):b.y-2;A+=cur(x1,y1,x2,y2,s);}}
+ return {s:out+A,P:P,end:y0+Math.ceil(items.length/2)*(hh+g)-g};}
+var X0=12,X1=202,BW=166;
+
+/* ---------- 大模型整体 svgL1 ---------- */
+(function(){var s='1',h='';
+ h+='<rect x="16" y="6" width="360" height="118" rx="16" fill="#f8fafc" stroke="#e2e8f0"/>'+txt(30,28,'📝 文字世界','lbl','font-weight="700"');
+ h+='<rect x="16" y="136" width="360" height="352" rx="16" fill="#f5f3ff" stroke="#e9e5ff"/>'+txt(30,158,'🔢 数字世界（每个词变成一串数字 = 向量）','lbl','font-weight="700"');
+ h+='<rect x="16" y="500" width="360" height="118" rx="16" fill="#fff1f2" stroke="#ffe4e6"/>'+txt(30,522,'🎯 回到文字','lbl','font-weight="700"');
+ h+=box('input',26,40,160,74,'输入文字',['“今天天气真”']);
+ h+=box('tokenizer',206,40,160,74,'分词器',['切块 + 查编号','[今天][天气][真]']);
+ h+=box('embed',26,184,160,58,'词嵌入表',['编号 → 一串数字']);
+ h+=box('pos',206,184,160,58,'位置信息',['第几个词']);
+ h+='<circle cx="196" cy="276" r="12" fill="#fff" stroke="#4f46e5" stroke-width="2"/>'+txt(196,282,'+','t');
+ h+=box('blocks',66,316,250,72,'Transformer 块',['× N 层（常见几十层）','反复加工、理解上下文'],{stack:true});
+ h+=box('lmhead',66,410,262,66,'输出打分层',['给词表里','每个词打分']);
+ h+=box('prob',26,544,170,66,'下一个词概率',['好 70%','差 10%  冷 8%  …']);
+ h+=box('sample',212,544,154,66,'采样',['按概率抽签','→ 抽中“好”']);
+ h+=H_(77,186,204,s);
+ h+=cur(250,114,106,tY('embed',184),s)+V(300,114,tY('pos',184),s);
+ h+=cur(106,242,182,276,s)+cur(286,242,210,276,s);
+ h+=V(196,288,302,s)+V(196,388,397,s);
+ h+=cur(150,476,111,tY('prob',544),s)+H_(577,196,210,s);
+ h+=arr('M289 610 V640 H7 V77 H24',s,'flow');
+ var t=ml(196,664,'🔁 把“好”接到句子末尾 → “今天天气真好”，整条流水线再跑一遍，猜下一个……这就是“接龙”',350,14,'text-anchor="middle" fill="#334155"');h+=t.s;
+ put('svgL1',h,664+t.h,s);
+})();
+/* ---------- Transformer 块 svgL2 ---------- */
+(function(){var s='2',h='';
+ h+=txt(150,24,'⬇ 每个词一条向量（来自上一层）','lbl','text-anchor="middle" font-size="14"');
+ h+=box('attn',40,50,220,80,'注意力',['词与词之间交换信息','（开会交流）']);
+ h+=box('addnorm',40,170,220,70,'残差 + 归一化',['保留原稿 + 调整尺度']);
+ h+=box('ffn',40,280,220,80,'前馈网络',['每个词各自消化、调用知识']);
+ h+='<g>'+box('addnorm',40,400,220,70,'残差 + 归一化',['保留原稿 + 调整尺度'])+'</g>';
+ h+=V(150,32,tY('attn',50)+2,s)+V(150,130,tY('addnorm',170),s)+V(150,240,tY('ffn',280),s)+V(150,360,tY('addnorm',400),s)+V(150,470,506,s);
+ h+=arr('M150 40 H284 V205 H262',s,'res')+arr('M150 258 H284 V435 H262',s,'res');
+ ['残差：原向量','绕过注意力','直接加过来'].forEach(function(t,i){h+=txt(292,92+i*18,t,'lbl','fill="#b45309"');});
+ ['残差：原向量','绕过前馈','直接加过来'].forEach(function(t,i){h+=txt(292,312+i*18,t,'lbl','fill="#b45309"');});
+ h+='<path d="M34 50 H26 V470 H34" fill="none" stroke="#0f766e" stroke-width="2"/>';
+ h+=txt(14,260,'× N 层（常见几十层）','lbl','text-anchor="middle" fill="#0f766e" font-weight="700" transform="rotate(-90 14 260)"');
+ var t=ml(190,530,'⬇ 送往下一层；最后一层的输出交给“输出打分层”',360,14,'text-anchor="middle"');h+=t.s;
+ put('svgL2',h,530+t.h,s);
+})();
+/* ---------- 注意力内部 svgL3 ---------- */
+(function(){var s='3',h='';
+ h+=txt(190,20,'每个词都看一遍：自己 + 前面的词','lbl','text-anchor="middle" font-size="14" fill="#0369a1"');
+ h+=box('xin',110,34,160,60,'词向量',['每个词一条']);
+ var cx=[66,190,314];
+ h+=box('wq',10,128,112,62,'Q 表',['提问卡生成表']);h+=box('wk',134,128,112,62,'K 表',['标签卡生成表']);h+=box('wv',258,128,112,62,'V 表',['内容卡生成表']);
+ h+=box('q',10,226,112,62,'Q 提问卡',['我在找什么？']);h+=box('k',134,226,112,62,'K 标签卡',['我是什么？']);h+=box('v',258,226,112,62,'V 内容卡',['我能提供什么？']);
+ h+=cur(170,94,66,tY('wq',128),s)+V(190,94,tY('wk',128),s)+cur(210,94,314,tY('wv',128),s);
+ cx.forEach(function(x,i){h+=V(x,190,tY(['q','k','v'][i],226),s);});
+ h+=box('score',10,330,220,64,'① 打分',['Q·K ÷ √长度']);
+ h+=box('mask',10,422,220,64,'② 遮挡',['只看前面']);
+ h+=box('asoft',10,514,220,64,'③ softmax',['变成关注比例']);
+ h+=box('mix',10,606,220,64,'④ 加权混合',['按比例混 V']);
+ h+=box('heads',10,710,220,64,'⑤ 多头',['拼接'],{stack:true});
+ h+=box('wo',10,800,220,64,'⑥ 输出表',['整合各头']);
+ h+=V(66,288,tY('score',330),s)+cur(190,288,170,tY('score',330),s);
+ h+=V(120,394,tY('mask',422),s)+V(120,486,tY('asoft',514),s)+V(120,578,tY('mix',606),s)+V(120,670,692,s)+V(120,774,tY('wo',800),s)+V(120,864,884,s);
+ h+=arr('M314 288 V638 H232',s);
+ ['内容卡','直接送去','混合'].forEach(function(t,i){h+=txt(322,430+i*18,t,'lbl');});
+ h+=txt(120,904,'→ 残差 + 归一化','lbl','text-anchor="middle" font-size="13.5"');
+ put('svgL3',h,914,s);
+})();
+/* ---------- 前馈网络 svgFFN ---------- */
+(function(){var s='4',h='';
+ function row(name,y,n,sp){var x0=190-(n-1)*sp/2,g='';for(var i=0;i<n;i++)g+='<circle id="'+name+i+'" cx="'+(x0+i*sp)+'" cy="'+y+'" r="7.5" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>';return g;}
+ h+=txt(190,20,'对每个词单独做，同一张表所有词共用','lbl','text-anchor="middle" font-size="14" fill="#047857"');
+ h+=txt(12,48,'输入（长度 d）','lbl')+row('fa',66,3,34);
+ h+=box('w1',95,104,190,76,'大表 1',['放大约 4 倍','（特征探测器）']);
+ h+=txt(12,212,'放大后（约 4d）','lbl')+row('fb',230,12,19);
+ h+=box('act',95,268,190,76,'过滤开关',['激活函数','负的/没用的关掉']);
+ h+=txt(12,376,'过滤后','lbl')+row('fc',394,12,19);
+ h+=box('w2',95,432,190,76,'大表 2',['汇总、缩回','原来的长度']);
+ h+=txt(12,540,'输出（长度 d）','lbl')+row('fd',558,3,34);
+ h+=V(190,76,tY('w1',104),s)+V(190,180,220,s)+V(190,240,tY('act',268),s)+V(190,344,384,s)+V(190,404,tY('w2',432),s)+V(190,508,548,s)+V(190,568,592,s);
+ h+=txt(190,614,'→ 残差','lbl','text-anchor="middle" font-size="14"')+txt(190,634,'+ 归一化','lbl','text-anchor="middle" font-size="14"');
+ put('svgFFN',h,644,s);
+})();
+/* ---------- 输出 svgOut ---------- */
+(function(){var s='5',h='';
+ h+='<rect x="12" y="20" width="166" height="80" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>'+txt(95,55,'最后一个位置的向量','lbl','text-anchor="middle" font-size="14" fill="#0f172a" font-weight="700"')+txt(95,77,'（“真”这个位置）','lbl','text-anchor="middle"');
+ h+=box('lmhead',202,15,166,90,'输出打分表',['词表每个词一行','（几万到十几万行）']);
+ h+=box('logits',12,145,166,90,'分数 logits',['好 2.64  差 0.70','冷 0.47 …']);
+ h+=box('prob',202,145,166,90,'softmax',['分数 → 概率','好 70%  差 10% …']);
+ h+=box('sample',107,275,166,90,'采样',['按概率抽一个','接回输入']);
+ h+=H_(60,178,200,s)+cur(285,105,95,tY('logits',145),s)+H_(190,178,200,s)+cur(285,235,190,tY('sample',275),s);
+ put('svgOut',h,375,s);
+})();
+/* ---------- 训练面板 trainSvg ---------- */
+(function(){var s='t',h='';var nodes=[['① 前向计算','模型猜：下一个词的概率'],['② 对答案','原文正确答案是“好”'],['③ 算损失','loss = −log(p“好”)'],['④ 反向传播','从后往前算每个参数','该往哪个方向调'],['⑤ 更新参数','所有表里的数字','各挪一小步']];
+ var P=[];nodes.forEach(function(n,i){var r=Math.floor(i/2),c=i%2,x=c?204:22,y=14+r*128;P.push([x,y]);
+  h+='<g class="tnode" id="tn'+i+'"><rect x="'+x+'" y="'+y+'" width="160" height="92" rx="14"/><text class="t" x="'+(x+80)+'" y="'+(y+32)+'">'+n[0]+'</text>';
+  n.slice(1).forEach(function(t,j){h+='<text class="s" x="'+(x+80)+'" y="'+(y+56+j*18)+'">'+t+'</text>';});h+='</g>';});
+ for(var i=0;i<4;i++){var a=P[i],b=P[i+1];var st=' style="stroke:'+(i===2?'#ea580c':'#94a3b8')+'"';
+  if(i%2===0)h+='<path class="arrow flow" d="M'+(a[0]+162)+' '+(a[1]+46)+' H'+(b[0]-2)+'" marker-end="url(#ah'+s+')"'+st+'/>';
+  else h+='<path class="arrow flow" d="M'+(a[0]+80)+' '+(a[1]+92)+' C'+(a[0]+80)+' '+(a[1]+112)+' '+(b[0]+80)+' '+(b[1]-20)+' '+(b[0]+80)+' '+(b[1]-2)+'" marker-end="url(#ah'+s+')"'+st+'/>';}
+ h+='<path class="arrow flow" d="M102 362 V384 H8 V60 H20" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>';
+ ['换下一道题，','重复几十亿次以上 🔁'].forEach(function(t,i){h+='<text class="lbl" x="200" y="'+(300+i*20)+'" font-size="13.5" fill="#c2410c">'+t+'</text>';});
+ put('trainSvg',h,394,s);
+})();
+/* ---------- 全景 svgT1 ---------- */
+(function(){var s='T1',h='',y=8;
+ function band(y,hh,fill,label){return '<rect x="4" y="'+y+'" width="372" height="'+hh+'" rx="16" fill="'+fill+'" stroke="#e2e8f0"/>'+txt(16,y+22,label,'lbl','font-size="13" font-weight="700"');}
+ function grid(items,y0,cols,hh,g){var o='',w=cols===3?112:170,X=cols===3?[10,134,258]:[12,198];items.forEach(function(a,i){var r=Math.floor(i/cols),c=i%cols,x=X[c];var left=items.length-r*cols;if(left<cols)x=Math.round((380-(left*w+(left-1)*(cols===3?12:16)))/2)+c*(w+(cols===3?12:16));o+=bx(a[0],x,y0+r*(hh+g),w,hh,a[1],a[2],a[3]);});return {s:o,end:y0+Math.ceil(items.length/cols)*(hh+g)-g};}
+ /* ① */
+ h+=band(y,104,'#f8fafc','① 你');h+=box('user',14,y+34,352,62,'🙋 用户的一句话',['“帮我查明天杭州天气并加个带伞提醒”']);var uB=y+96;y+=104;
+ /* ② */
+ var y2=y+40;h+=band(y2,300,'#fdf4ff','② Agent 应用层（普通程序：调度和动手）');
+ h+=box('app',14,y2+40,352,66,'Agent 应用层',['把模型变成','能干活的程序']);
+ var g=grid([['plan','规划',['拆成小步骤'],{tf:15}],['tools','工具调用',['输出 JSON','程序去执行'],{tf:15}],['memory','记忆 / RAG',['查资料、记偏好'],{tf:15}],['loop','Agent 循环',['想→做→看→再想'],{tf:15}],['guard','权限与安全',['写操作要确认','防提示注入'],{tf:15}]],y2+136,3,64,22);h+=g.s;
+ h+=V(190,uB+20,y2-2,s);
+ var aB=y2+300;
+ /* ③ */
+ var y3=aB+56;h+=band(y3,282,'#eef2ff','③ 大模型（负责“想”和“写”）');
+ h+=box('llm',14,y3+40,352,56,'大模型 LLM',['猜下一个词的机器']);
+ g=grid([['tokenizer','分词器',['文字 → token'],{tf:15}],['embed','词嵌入表',['token → 向量'],{tf:15}],['blocks','Transformer 块',['× 几十层'],{stack:false,tf:14}],['lmhead','输出打分层',['给每个词打分'],{tf:15}],['sample','采样',['抽一个接上去'],{tf:15}]],y3+126,3,56,22);h+=g.s;
+ h+=arr('M30 '+(aB+2)+' V'+(y3-2),s)+arr('M50 '+(y3-2)+' V'+(aB+2),s);
+ h+=txt(62,aB+33,'⬇ 提示（文字）　⬆ 回答 / 工具调用','lbl','font-size="12.5"');
+ var lB=y3+282;
+ /* ④ */
+ var y4=lB+56;h+=band(y4,282,'#fdf2f8','④ 多模态编码 / 生成（看、听、画）');
+ h+=box('mmenc',14,y4+40,352,62,'多模态编解码',['把图片声音','变成 token / 变回来']);
+ g=grid([['vit','视觉编码器',['图片 → token'],{tf:15}],['audenc','音频编码器',['声音 → token'],{tf:15}],['projector','投影层',['对齐到词向量'],{tf:15}],['gimg','图片生成',['扩散去噪'],{tf:15}],['gaud','音频生成',['声学 token'],{tf:15}]],y4+130,3,56,22);h+=g.s;
+ h+=arr('M30 '+(y4-2)+' V'+(lB+2),s)+txt(46,lB+33,'⬆ 图片声音变成 token 交给模型','lbl','font-size="12.5"');
+ var mB=y4+282;
+ /* ⑤ */
+ var y5=mB+56;h+=band(y5,236,'#f7fee7','⑤ 训练体系（离线，提前练好）');
+ h+=box('trainsys',14,y5+40,352,56,'训练体系',['本事从哪来']);
+ var T5=[['pretrain','预训练',['海量文本猜下一个词']],['sft','监督微调',['照示范学按指令回答']],['pref','偏好对齐',['人类比较 · RLHF/DPO']],['rlvr','推理强化学习',['可自动判分的奖励']]];
+ T5.forEach(function(a,i){var r=Math.floor(i/2),c=i%2;h+=bx(a[0],c?198:12,y5+114+r*64,170,48,a[1],a[2],{tf:15});});
+ var tL=ml(190,mB+34,'⬆ 训练体系离线“练出”大模型和编码器里的参数（权重）',366,12.5,'text-anchor="middle" fill="#4d7c0f"');h+=tL.s;
+ var iB=y5+236;
+ /* ⑥ */
+ var y6=iB+56;h+=band(y6,236,'#f1f5f9','⑥ 底层算力与服务');
+ h+=box('infra',14,y6+40,352,56,'算力与服务',['GPU · 推理服务']);
+ [['serve','推理服务',['调度、流式返回']],['kvcache','KV 缓存',['前文不用重算']],['batch','批处理',['很多请求一起算']],['quant','量化',['数字少用几位']]].forEach(function(a,i){var r=Math.floor(i/2),c=i%2;h+=bx(a[0],c?198:12,y6+114+r*64,170,48,a[1],a[2],{tf:15});});
+ var iL=ml(190,iB+34,'⬆ 推理服务在 GPU 上加载这些参数，执行每一次计算',366,12.5,'text-anchor="middle" fill="#334155"');h+=iL.s;
+ put('svgT1',h,y6+244,s);
+})();
+/* ---------- Agent 循环 svgAg ---------- */
+(function(){var s='Ag',h='',R=[16,108,200,292,384,476],bh=64,L=14,Rx=200,w=166;
+ h+=box('goal',L,R[0],w,bh,'① 用户目标',['任务从这里开始']);
+ h+=box('answer',Rx,R[0],w,bh,'⑥ 最终回答',['交付给用户']);
+ h+=box('ctx',L,R[1],w,bh,'② 观察 / 上下文',['模型能看到的一切'],{}).replace('<text class="t" ','<text class="t" style="font-size:16px" ');
+ h+=box('think',Rx,R[1],w,bh,'③ 思考 / 决策',['大模型决定下一步']);
+ h+=box('loop',L,R[2],w,bh,'🔁 循环控制',['步数上限 / 停止条件']);
+ h+=box('plan',Rx,R[2],w,bh,'规划',['拆步骤、可改计划']);
+ h+=box('toolres',L,R[3],w,bh,'⑤ 工具结果',['作为“数据”回填']);
+ h+=box('guard',Rx,R[3],w,bh,'权限闸门',['写操作要确认']);
+ h+=box('memory',L,R[4],w,bh,'记忆 / RAG',['按需检索']);
+ h+=box('tools',Rx,R[4],w,bh,'④ 调用工具',['程序真正执行']);
+ h+=box('mcp',Rx,R[5],w,bh,'MCP 工具协议',['工具的统一插座']);
+ h+=V(97,R[0]+bh,tY('ctx',R[1]),s);
+ h+=H_(R[1]+32,L+w,Rx-2,s);
+ h+=V(350,R[1],R[0]+bh+2,s)+txt(344,R[1]-11,'完成','lbl','font-size="12.5" text-anchor="end"');
+ h+=arr('M366 '+(R[1]+32)+' H374 V'+(R[3]+32)+' H368',s);
+ h+=V(330,R[3]+bh,tY('tools',R[4]),s);
+ h+=cur(240,R[4],140,R[3]+bh+2,s);
+ h+=V(97,R[3],R[2]+bh+2,s)+V(97,R[2],R[1]+bh+2,s);
+ h+=V(240,R[1]+bh,tY('plan',R[2]),s,'res');
+ h+=arr('M14 '+(R[4]+32)+' H6 V'+(R[1]+40)+' H12',s,'res');
+ h+=V(283,R[5],R[4]+bh+2,s,'res');
+ ['结果加入上下文，','进入下一圈'].forEach(function(t,i){h+=txt(97,R[5]+26+i*19,t,'lbl','text-anchor="middle" font-size="12.5"');});
+ put('svgAg',h,R[5]+bh+8,s);
+})();
+/* ---------- RAG svgRag ---------- */
+(function(){var s='Rg',h='';
+ h+=txt(14,20,'离线：提前做好','lbl','font-size="12.5" fill="#a21caf" font-weight="700"');
+ h+=srect(12,34,166,60,'📚 资料库','文档 / 笔记 / 网页','#f8fafc');
+ h+=box('chunk',202,34,166,60,'切块',['几百字一段']);
+ h+=box('vemb',12,136,166,64,'向量化',['嵌入模型']);
+ h+=box('vecdb',202,136,166,64,'向量数据库',['存向量 + 原文']);
+ h+='<path d="M8 226 H372" stroke="#e9d5ff" stroke-dasharray="6 5"/>';
+ h+=txt(14,250,'在线：每次提问时','lbl','font-size="12.5" fill="#a21caf" font-weight="700"');
+ h+=srect(12,264,166,60,'❓ 当前问题','“明天要带伞吗”','#f8fafc');
+ h+=box('retr',202,272,166,60,'检索 Top-k',['最相似的几块']);
+ h+=box('ctx',202,370,166,60,'放进上下文',['和问题一起给模型']);
+ h+=H_(64,178,200,s)+cur(285,94,95,tY('vemb',136),s)+H_(168,178,200,s);
+ h+=V(80,264,202,s);
+ h+=cur(130,200,250,tY('retr',272),s)+V(320,200,tY('retr',272),s)+V(285,332,tY('ctx',370),s);
+ put('svgRag',h,438,s);
+})();
+/* ---------- 多 Agent svgMulti ---------- */
+(function(){var s='Mu',h='';
+ h+=box('orch',107,16,166,74,'协调者',['拆任务、汇总']);
+ h+=box('worker',14,136,166,70,'执行者 A',['查资料']);
+ h+=box('worker',200,136,166,70,'执行者 B',['写代码']);
+ h+=box('critic',107,252,166,74,'审查者',['挑错、打回']);
+ h+=cur(160,90,97,tY('worker',136),s)+cur(220,90,283,tY('worker',136),s)+cur(97,206,160,tY('critic',252),s)+cur(283,206,220,tY('critic',252),s);
+ h+=arr('M107 289 H6 V53 H105',s,'res');
+ put('svgMulti',h,336,s);
+})();
+/* ---------- MCP svgMcp ---------- */
+(function(){var s='Mc',h='';
+ h+=box('mcphost',12,14,166,78,'AI 应用（宿主）',['大模型 + 调度逻辑'],{tf:15.5});
+ h+=box('mcpclient',202,14,166,78,'MCP 客户端',['“说协议”的部分']);
+ h+=box('mcp',202,112,166,44,'MCP 协议',[]);
+ h+=H_(53,178,200,s);
+ ['日历 MCP 服务器','天气 MCP 服务器','文件 MCP 服务器'].forEach(function(t,i){var x=6+i*125;h+=bx('mcpserver',x,196,118,52,t,[],{tf:14});});
+ ['日历 API','天气 API','本地文件'].forEach(function(t,i){var x=10+i*125;h+=srect(x,282,110,48,t,'','#f8fafc');h+=V(x+55,248,280,s);});
+ [65,190,315].forEach(function(x){h+=cur(285,156,x,tY('mcpserver',196),s);});
+ put('svgMcp',h,338,s);
+})();
+/* ---------- 训练流水线 svgPipe ---------- */
+(function(){var s='Pp',h='';
+ var f=flow2(s,[{r:['📚 海量文本','网页 / 书 / 代码','#f8fafc'],h:64},{b:['pretrain','① 预训练',['猜下一个词','得到基座模型']]},{b:['sft','② 监督微调',['照示范学','按指令回答']]},{b:['pref','③ 偏好对齐',['人类比较','RLHF / DPO']]},{b:['rlvr','④ 推理强化学习',['可自动判分的题','对了就奖励'],{tf:15.5}]},{b:['llm','可用的大模型',['冻结后上线']]}],16,{h:80,gap:38});h+=f.s;
+ var t=ml(190,f.end+30,'越往右，用的数据越少、越精；但每一步都是“出题 → 打分 → 反向传播 → 改参数”',360,13,'text-anchor="middle"');h+=t.s;
+ put('svgPipe',h,f.end+30+t.h,s);
+})();
+/* ---------- 普通块 vs MoE 块 svgMoeV ---------- */
+(function(){var s='Mv',h='';var L=12,R=200,w=166;
+ h+=txt(L+w/2,22,'普通块','lbl','font-weight="700" font-size="14" text-anchor="middle"')+txt(R+w/2-6,22,'MoE 块','lbl','font-weight="700" font-size="14" fill="#0891b2" text-anchor="middle"');
+ h+=box('attn',L,40,w,52,'注意力',[])+box('addnorm',L,120,w,52,'残差+归一化',[])+box('ffn',L,200,w,132,'前馈网络（一整块）',[],{tf:15.5})+box('addnorm',L,360,w,52,'残差+归一化',[]);
+ h+=box('attn',R,40,w-12,52,'注意力',[])+box('addnorm',R,120,w-12,52,'残差+归一化',[])+box('router',R,200,w-12,52,'路由器',[])+box('expert',R,288,w-12,44,'专家 ×N',[],{stack:true})+box('addnorm',R,360,w-12,52,'残差+归一化',[]);
+ [[92,120],[172,200],[332,360]].forEach(function(a){h+=V(L+w/2,a[0],tY('attn',a[1]),s);});
+ [[92,120],[172,200],[252,288],[332,360]].forEach(function(a){h+=V(R+(w-12)/2,a[0],a[1]===288?a[1]-14:tY('attn',a[1]),s);});
+ var t=ml(190,440,'只有被路由器选中的少数专家参与计算',360,12.5,'text-anchor="middle" fill="#0891b2"');h+=t.s;
+ put('svgMoeV',h,440+t.h,s);
+})();
+/* ---------- MoE svgMoe ---------- */
+(function(){var s='Mo',h='',lines='',boxes='';
+ h+=txt(190,18,'每个专家 = 一个小前馈网络（放大—开关—压回）','lbl','text-anchor="middle" font-size="12.5" fill="#0e7490"');
+ h+=srect(12,34,166,64,'某个 token 的向量','（来自注意力之后）','#f8fafc');
+ h+=box('router',202,34,166,64,'路由器',['给专家打分']);
+ h+=box('topk',202,132,166,60,'Top-k',['只选前 k 个']);
+ h+=H_(66,178,200,s)+V(285,98,tY('topk',132),s);
+ for(var i=0;i<8;i++){var c=i%4,r=Math.floor(i/4),x=8+c*92,y=230+r*76;
+  boxes+='<g id="moeE'+i+'">'+bx('expert',x,y,86,48,'专家 '+(i+1),[],{tf:15})+'</g>';
+  lines+='<path class="arrow" style="stroke:#cbd5e1;stroke-width:1.4" d="M285 192 C285 210 '+(x+43)+' '+(y-24)+' '+(x+43)+' '+(y-12)+'"/>';
+  lines+='<path class="arrow" style="stroke:#cbd5e1;stroke-width:1.4" d="M'+(x+43)+' '+(y+48)+' C'+(x+43)+' 400 190 380 190 400"/>';}
+ h+=lines+boxes;
+ h+=srect(110,402,160,56,'加权求和','→ 残差','#ecfeff');
+ h+=box('lbloss',12,496,166,60,'负载均衡',['训练时的约束'])+box('sparse',202,496,166,60,'稀疏激活',['省算力不省显存']);
+ put('svgMoe',h,564,s);
+})();
+/* ---------- MHA / GQA / MQA svgAttnV ---------- */
+(function(){var s='Av',h='';
+ [['mha','MHA 多头',8],['gqa','GQA 分组查询',2],['gqa','MQA 多查询',1]].forEach(function(g,gi){var y0=14+gi*196;h+=box(g[0],20,y0,340,40,g[1],[]);
+  var qx=function(i){return 50+i*40;};var nk=g[2];var kx=function(j){return 190+(j-(nk-1)/2)*(nk>2?40:140);};
+  for(var i=0;i<8;i++){var j=Math.floor(i/(8/nk));h+='<line x1="'+qx(i)+'" y1="'+(y0+86)+'" x2="'+kx(j)+'" y2="'+(y0+130)+'" stroke="#7dd3fc" stroke-width="1.5"/>';}
+  for(i=0;i<8;i++)h+='<circle cx="'+qx(i)+'" cy="'+(y0+78)+'" r="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>';
+  for(var k=0;k<nk;k++)h+='<rect x="'+(kx(k)-13)+'" y="'+(y0+128)+'" width="26" height="22" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>';
+  h+=txt(370,y0+68,'Q 头 × 8','lbl','text-anchor="end" font-size="12.5"').replace('x="370"','x="372"');
+  h+=txt(190,y0+168,'K/V 头 × '+nk+'（要缓存）','lbl','text-anchor="middle" font-size="12.5" fill="#b45309"');});
+ /* Q label goes left of the circles row so it never overlaps them */
+ h=h.replace(/<text class="lbl" x="372" y="(\d+)" text-anchor="end" font-size="12.5">Q 头 × 8<\/text>/g,function(m,y){return '<text class="lbl" x="190" y="'+(+y-6)+'" text-anchor="middle" font-size="12.5">Q 头 × 8</text>';});
+ put('svgAttnV',h,590,s);
+})();
+/* ---------- LoRA svgLora ---------- */
+(function(){var s='Lr',h='';
+ h+=txt(190,24,'x','t');
+ h+=srect(12,62,170,62,'🔒 原表 W（冻结）','d × d，不训练','#f1f5f9');
+ h+=box('lora',206,66,72,58,'A',['d → r']);h+=box('lora',298,66,72,58,'B',['r → d']);
+ h+='<circle cx="190" cy="172" r="16" fill="#fff" stroke="#65a30d" stroke-width="2"/>'+txt(190,178,'+','t');
+ h+=cur(184,32,97,60,s)+cur(196,32,242,tY('lora',66),s)+H_(95,278,296,s)+cur(97,124,176,166,s)+cur(334,124,204,166,s)+V(190,188,214,s);
+ h+=txt(190,236,'输出','lbl','font-size="14" text-anchor="middle"');
+ put('svgLora',h,246,s);
+})();
+/* ---------- 多模态总览 svgMM ---------- */
+(function(){var s='MM',h='';var Y=[14,84,154,224],ih=54;
+ [['📝 文字',0],['🖼️ 图片',1],['🎤 音频',2],['🎬 视频',3]].forEach(function(a){h+=srect(6,Y[a[1]],92,ih,a[0],'','#f8fafc');h+=H_(Y[a[1]]+27,98,112,s);});
+ h+=bx('tokenizer',114,Y[0],150,ih,'分词器',['切成词元'],{tf:16});h+=bx('vit',114,Y[1],150,ih,'视觉编码器',['切图块 → ViT'],{tf:16});h+=bx('audenc',114,Y[2],150,ih,'音频编码器',['频谱 → 向量'],{tf:16});h+=bx('vit',114,Y[3],150,ih,'视觉编码器',['逐帧 / 时空块'],{tf:16});
+ h+=bx('projector',280,Y[1],86,Y[3]+ih-Y[1],'投影层',['对齐到','词向量格式'],{tf:16});
+ h+=H_(Y[1]+27,264,278,s)+H_(Y[2]+27,264,278,s)+H_(Y[3]+27,264,278,s);
+ h+=arr('M264 '+(Y[0]+27)+' H374 V'+(tY('mmhub',310)-2),s);
+ h+=box('mmhub',12,310,350,74,'统一的',['token 序列','（一串向量）']);
+ h+=V(323,Y[3]+ih,tY('mmhub',310),s);
+ h+=box('mllm',60,422,260,72,'多模态大模型',['统一理解','与推理']);
+ h+=V(190,384,tY('mllm',422),s);
+ var G=[['gtext','文字生成',['自回归接龙']],['gimg','图片生成',['扩散 / 潜空间']],['gaud','音频生成',['声学 token / 声码器']],['gvid','视频生成',['时空潜空间']],['g3d','3D 生成',['多视图 + 重建']]];
+ G.forEach(function(a,i){var r=Math.floor(i/2),c=i%2,x=i===4?107:(c?202:12),y=540+r*86;h+=box(a[0],x,y,166,58,a[1],a[2]);h+=cur(190,494,x+83,tY(a[0],y),s);});
+ put('svgMM',h,540+2*86+66,s);
+})();
+/* ---------- 看图 svgVit ---------- */
+(function(){var s='Vt',h='';
+ h+=srect(12,20,166,56,'🖼️ 图片','','#f8fafc');
+ h+=box('patch',202,14,166,70,'切图块',['16×16 一块 → 向量']);
+ h+=box('vit',12,122,154,70,'视觉编码器 ViT',['几层 Transformer'],{stack:true,tf:15});
+ h+=box('projector',202,122,166,70,'投影层',['变成“视觉 token”']);
+ h+=srect(12,236,166,56,'❓“图里有几只猫？”','','#f8fafc');
+ h+=box('tokenizer',202,230,166,70,'分词器',['文字 token']);
+ h+=box('mllm',60,344,250,80,'多模态大模型',['图文一起理解']);
+ h+=srect(130,468,120,48,'💬 回答','','#f8fafc');
+ h+=H_(48,178,200,s)+cur(285,84,89,tY('vit',122)-10,s)+H_(157,178,200,s);
+ h+=arr('M368 157 H376 V384 H312',s);
+ h+=H_(264,178,200,s)+V(260,300,tY('mllm',344),s);
+ h+=V(190,424,466,s);
+ put('svgVit',h,524,s);
+})();
+/* ---------- 听声 svgAudE ---------- */
+(function(){var s='Ae',h='';
+ var f=flow2(s,[{r:['〰️ 波形','每秒几万个数','#f8fafc'],h:60},{b:['mel','梅尔频谱',['声音的“照片”']]},{b:['audenc','音频编码器',['卷积 / Transformer']]},{b:['projector','投影层',['对齐到词向量']]},{b:['mllm','多模态大模型',['听懂并回答']]}],16,{h:70});h+=f.s;
+ var t=ml(190,f.end+30,'另一条路：用神经音频编解码器直接把波形压成离散“声学 token”',360,12.5,'text-anchor="middle"');h+=t.s;
+ put('svgAudE',h,f.end+30+t.h,s);
+})();
+/* ---------- CLIP svgClip ---------- */
+(function(){var s='Cl',h='';
+ h+=srect(12,20,150,60,'🖼️ 图片','','#f8fafc');h+=box('vit',190,15,178,70,'图像编码器',['出一条向量']);
+ h+=srect(12,124,150,60,'📝 描述','','#f8fafc');h+=box('txtenc',190,119,178,70,'文字编码器',['出一条向量']);
+ h+=box('clip',80,236,220,90,'对比学习',['配对的拉近','不配对的推远']);
+ h+=H_(50,162,188,s)+H_(154,162,188,s)+arr('M368 50 H376 V281 H302',s)+cur(279,189,240,tY('clip',236),s);
+ h+=V(190,326,354,s);
+ h+='<ellipse cx="190" cy="430" rx="176" ry="74" fill="#fdf2f8" stroke="#f9a8d4" stroke-dasharray="6 4"/>'+txt(190,400,'共享的“意思空间”','lbl','text-anchor="middle" font-weight="700" font-size="14" fill="#9d174d"');
+ h+='<circle cx="150" cy="438" r="7" fill="#db2777"/><rect x="162" y="432" width="12" height="12" fill="#7e22ce"/>'+txt(190,474,'● 猫的照片　■ “一只橘猫在睡觉”','lbl','text-anchor="middle" font-size="12.5"');
+ h+='<circle cx="270" cy="424" r="7" fill="#db2777" opacity=".5"/><rect x="88" y="418" width="12" height="12" fill="#7e22ce" opacity=".5"/>';
+ put('svgClip',h,512,s);
+})();
+/* ---------- 文字生成 svgGT ---------- */
+(function(){var s='Gt',h='';
+ var f=flow2(s,[{b:['gtext','文字生成',['自回归']]},{b:['llm','大模型',['算下一个词']]},{b:['prob','下一个词概率',['好 70% …']]},{b:['sample','采样',['抽一个']]},{r:['接到末尾','再来一轮','#f8fafc'],h:60}],16,{h:70});h+=f.s;
+ var p=f.P[4];h+=arr('M'+(p.x+p.w)+' '+(p.y+p.h/2)+' H374 V51 H370',s,'flow');
+ put('svgGT',h,f.end+10,s);
+})();
+/* ---------- 图片生成 svgGI ---------- */
+(function(){var s='Gi',h='';
+ h+=srect(12,20,150,56,'📝 提示词','','#f8fafc');h+=box('tcond',190,15,178,66,'文本条件',['文字编码 + 引导']);
+ h+=srect(12,118,150,56,'🎲 纯噪声','（潜空间里）','#f8fafc');
+ h+=box('denoise',110,230,200,84,'去噪网络',['× 几十步（或更少）'],{stack:true});
+ h+='<path class="arrow flow" d="M110 250 C40 240 40 300 106 296" marker-end="url(#ah'+s+')"/>'+txt(14,226,'反复去噪','lbl','font-size="12.5"');
+ h+=box('vae',12,364,166,74,'潜空间解码器',['潜变量 → 像素']);
+ h+=srect(202,374,166,56,'🖼️ 新图片','','#f8fafc');
+ h+=box('gimg',80,480,220,44,'图片生成（总览）',[]);
+ h+=H_(48,162,188,s)+cur(279,81,260,tY('denoise',230)-12,s)+cur(87,174,150,tY('denoise',230)-12,s);
+ h+=cur(210,314,95,tY('vae',364),s)+H_(401,178,200,s);
+ put('svgGI',h,532,s);
+})();
+/* ---------- 音频生成 svgGA ---------- */
+(function(){var s='Ga',h='';
+ var f=flow2(s,[{r:['📝 文字 + 🎙️ 参考音色','（需授权）','#f8fafc'],h:64},{b:['acoustic','声学模型',['音频语言模型 / 扩散']]},{b:['codec','声学 token',['离散编号序列']]},{b:['vocoder','解码器 / 声码器',['还原成波形'],{tf:16}]},{r:['〰️ 声音','','#f8fafc'],h:50}],16,{h:70});h+=f.s;
+ h+=box('gaud',80,f.end+32,220,48,'音频生成（总览）',[]);
+ put('svgGA',h,f.end+88,s);
+})();
+/* ---------- 视频生成 svgGV ---------- */
+(function(){var s='Gv',h='';
+ var f=flow2(s,[{r:['📝 提示词 / 首帧','','#f8fafc'],h:56},{b:['tcond','条件编码',['文字 / 图片']]},{b:['stlatent','时空潜空间',['几帧×一块 = 1 token']]},{b:['dit','扩散 Transformer',['跨帧注意力·联合去噪'],{stack:true,tf:15}]},{b:['vae','视频解码器',['潜变量 → 帧']]},{r:['🎬','','#f8fafc'],h:50}],16,{h:70,w:154,x:[12,202]});h+=f.s;
+ h+=box('gvid',12,f.end+36,166,46,'视频生成（总览）',[],{tf:15})+box('tempcons',202,f.end+36,166,46,'时序一致性',[]);
+ put('svgGV',h,f.end+90,s);
+})();
+/* ---------- 3D 生成 svgG3 ---------- */
+(function(){var s='G3',h='';
+ h+=srect(12,22,166,60,'📝 提示词 / 一张图','','#f8fafc');
+ h+=box('mview',202,17,166,70,'多视图扩散',['生成几个一致视角']);
+ h+=box('recon',12,126,150,70,'3D 重建',['把视角图拼成 3D']);
+ h+=box('rep3d',178,126,196,70,'3D 表示',['网格 / 点云 / NeRF / 3D 高斯']);
+ h+=srect(202,236,166,50,'🧊 3D 模型','','#f8fafc');
+ h+=box('sds',12,250,166,70,'分数蒸馏',['2D 模型当评委反复改']);
+ h+=box('g3d',107,360,166,56,'3D 生成',['（总览）']);
+ h+=H_(52,178,200,s)+cur(285,87,87,tY('recon',126),s)+H_(161,162,176,s)+V(285,196,234,s);
+ h+='<path class="arrow res" d="M12 60 H6 V285 H10" marker-end="url(#ar'+s+')"/><path class="arrow res" d="M150 250 C150 220 230 215 240 198" marker-end="url(#ar'+s+')"/>'+txt(12,230,'另一条路（较慢）','lbl','font-size="12.5" fill="#b45309"').replace('x="12"','x="14"');
+ put('svgG3',h,424,s);
+})();
+/* ---------- 训练体系 svgTP ---------- */
+(function(){var s='Tp',h='';
+ var f=flow2(s,[{r:['📚 数据','清洗 · 去重 · 配比','#f8fafc'],h:66},{b:['pretrain','① 预训练',['自监督','猜下一个词']]},{b:['sft','② 监督微调',['照示范学']]},{b:['pref','③ 偏好对齐',['RLHF / DPO']]},{b:['rlvr','④ 推理强化学习',['可验证奖励'],{tf:15.5}]},{b:['llm','上线的大模型',['参数冻结']]}],16,{h:80,gap:38});h+=f.s;
+ h+=box('compute',12,f.end+38,356,48,'数据与算力：贯穿每一个阶段',[]);
+ put('svgTP',h,f.end+94,s);
+})();
+/* ---------- RLHF / 可验证奖励 svgRLHF ---------- */
+(function(){var s='Rh',h='';var L=12,R=202,w=166;
+ h+=txt(190,20,'人类偏好','lbl','text-anchor="middle" font-size="13.5" font-weight="700" fill="#4d7c0f"');
+ h+=srect(L,40,w,60,'❓ 问题','','#f8fafc');h+=box('llm',R,34,w,72,'大模型（策略）',['写出回答 A、B'],{tf:16});
+ h+=srect(R,146,w,60,'🧑 人来比较','A 比 B 好','#f8fafc');h+=box('rm',L,140,w,72,'奖励模型',['学会给回答打分']);
+ h+=box('pref',L,252,w,72,'策略优化',['得分高的更常写']);h+=box('kl',R,252,w,72,'KL 约束',['别跑离原模型太远']);
+ h+=H_(70,178,200,s)+V(285,106,144,s)+H_(176,202,180,s)+V(95,212,tY('pref',252),s)+H_(288,178,200,s);
+ h+='<path class="arrow flow" d="M95 324 V346 H376 V70 H370" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>'+txt(368,362,'更新参数，重复','lbl','font-size="12.5" fill="#c2410c" text-anchor="end"');
+ h+=box('dpo',12,392,356,52,'DPO：跳过奖励模型',['直接用偏好对优化']);h+='<path class="arrow res" d="M226 206 C226 232 190 228 190 252 V376" marker-end="url(#ar'+s+')"/>';
+ h+=txt(190,486,'可验证奖励','lbl','text-anchor="middle" font-size="13.5" font-weight="700" fill="#4d7c0f"');
+ h+=srect(L,506,w,60,'🧮 数学 / 代码题','','#f8fafc');h+=box('llm',R,500,w,72,'大模型',['多试几次']);
+ h+=srect(L,612,w,60,'✅ 程序自动判分','对 / 错 · 跑测试','#f8fafc');h+=box('rlvr',R,606,w,72,'推理强化学习',['提高“做对的过程”的概率'],{tf:16});
+ h+=H_(536,178,200,s)+cur(285,572,95,610,s)+H_(642,178,200,s);
+ put('svgRLHF',h,690,s);
+})();
+/* ---------- 关系总图 svgMap ---------- */
+(function(){var e=el('svgMap');if(!e)return;keep('svgMap');
+ var R=[['应用层',[['user','用户一句话'],['app','Agent 应用层'],['plan','规划'],['tools','工具调用'],['mcp','MCP'],['memory','记忆/RAG'],['loop','循环'],['guard','权限安全'],['multi','多 Agent']]],
+ ['大模型',[['llm','大模型'],['tokenizer','分词器'],['embed','词嵌入'],['blocks','Transformer 块'],['lmhead','输出打分'],['sample','采样'],['ctxwin','上下文窗口']]],
+ ['模型内部',[['attn','注意力'],['ffn','前馈网络'],['addnorm','残差+归一化'],['moe','MoE'],['router','路由器'],['gqa','GQA'],['longctx','长上下文']]],
+ ['多模态',[['mmenc','多模态'],['vit','视觉编码'],['audenc','音频编码'],['clip','对比对齐'],['projector','投影层'],['gimg','图片生成'],['gaud','音频生成'],['gvid','视频生成'],['g3d','3D 生成']]],
+ ['训练',[['trainsys','训练体系'],['nnet','神经网络'],['pretrain','预训练'],['sft','监督微调'],['pref','偏好对齐'],['rm','奖励模型'],['dpo','DPO'],['rlvr','推理 RL'],['rl','强化学习']]],
+ ['算力',[['infra','算力与服务'],['serve','推理服务'],['kvcache','KV 缓存'],['batch','批处理'],['quant','量化'],['specdec','投机解码'],['lora','LoRA'],['distill','蒸馏'],['compute','数据与算力']]]];
+ var P={},nodes='',links='',Hh=34,y=8,NM={};
+ R.forEach(function(g,gi){var bandY=y;y+=26;var line=[],lw=0;var lines=[];g[1].forEach(function(a){var w=Math.ceil(tw(a[1],13)+22);if(lw+w+(line.length?10:0)>364&&line.length){lines.push([line,lw]);line=[];lw=0;}lw+=w+(line.length?10:0);line.push([a,w]);});if(line.length)lines.push([line,lw]);
+  lines.forEach(function(L){var x=(380-L[1])/2;L[0].forEach(function(it){P[it[0][0]]=[x+it[1]/2,y+Hh/2,it[1]];NM[it[0][0]]=it[0][1];x+=it[1]+10;});y+=Hh+30;});
+  nodes+='<rect x="2" y="'+bandY+'" width="376" height="'+(y-bandY-8)+'" rx="14" fill="'+(gi%2?'#f8fafc':'#fff')+'" stroke="#eef0f5"/>'+txt(10,bandY+18,g[0],'lbl','font-size="12.5" font-weight="700" fill="#94a3b8"');y+=10;});
+ function link(a,b,x){var A=P[a],B=P[b];if(!A||!B)return '';var dx=x?' x':'';if(Math.abs(A[1]-B[1])<2){var yy=A[1]-Hh/2;return '<path class="maplink'+dx+'" d="M'+A[0]+' '+yy+' Q'+((A[0]+B[0])/2)+' '+(yy-22)+' '+B[0]+' '+yy+'"/>';}
+  var lo=A[1]>B[1]?A:B,hi=A[1]>B[1]?B:A;return '<path class="maplink'+dx+'" d="M'+lo[0]+' '+(lo[1]-Hh/2)+' C'+lo[0]+' '+(lo[1]-Hh/2-24)+' '+hi[0]+' '+(hi[1]+Hh/2+24)+' '+hi[0]+' '+(hi[1]+Hh/2)+'"/>';}
+ Object.keys(P).forEach(function(id){if(C[id].up&&P[C[id].up])links+=link(id,C[id].up);});
+ [['user','app'],['kvcache','attn'],['rl','rlvr'],['rl','pref'],['gqa','kvcache'],['memory','vit'],['quant','serve']].forEach(function(p){links+=link(p[0],p[1],1);});
+ var bands=nodes;nodes='';
+ Object.keys(P).forEach(function(id){var p=P[id],c=C[id];nodes+='<g class="comp mapn cat-'+c.cat+'" data-id="'+id+'" data-train="'+c.train+'" tabindex="0" role="button" aria-label="'+c.n+'"><rect class="main" x="'+(p[0]-p[2]/2)+'" y="'+(p[1]-Hh/2)+'" width="'+p[2]+'" height="'+Hh+'" rx="10"/><text x="'+p[0]+'" y="'+(p[1]+5)+'">'+NM[id]+'</text></g>';});
+ e.setAttribute('viewBox','0 0 380 '+Math.ceil(y));e.removeAttribute('style');e.innerHTML=bands+links+nodes;e.setAttribute('data-m','1');
+})();
+window.__mdiag={W:W,tw:tw};
 })();
 
 /* ================= new demos ================= */
@@ -4181,11 +4778,11 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  var tourOn=false,ti=0,tourEl=document.getElementById('tour');
  document.getElementById('tourDots').innerHTML=TOUR.map(function(_,i){return '<i data-ti="'+i+'" title="第 '+(i+1)+' 步"></i>';}).join('');
  function clearHl(){document.querySelectorAll('.tour-hl').forEach(function(e){e.classList.remove('tour-hl');});document.querySelectorAll('.level .comp.run').forEach(function(g){if(g.dataset.tourrun){g.classList.remove('run');delete g.dataset.tourrun;}});}
- function startTour(){if(zoom<2)applyZoom(2);tourOn=true;closeInfo();tourEl.classList.add('open');document.body.classList.add('touring');tourGo(0);toast('🎬 导览开始：用 ← → 或面板按钮前进后退，Esc 退出');}
+ function startTour(){if(zoom<2)applyZoom(2);tourOn=true;closeInfo();tourEl.classList.add('open');document.body.classList.add('touring');tourGo(0);toast('🎬 导览开始：点下方面板的按钮前进后退，× 退出');}
  function endTour(done){tourOn=false;clearHl();tourEl.classList.remove('open');document.body.classList.remove('touring');updNav();if(done){LS.set('tourDone',1);updProg();toast('🎉 导览完成！可以去每页的“🧪 动手实验”自己试试。');}}
  function tourGo(i){if(i<0)return;if(i>=TOUR.length){endTour(true);return;}ti=i;var s=TOUR[i];if(cur!==s.p)go(s.p,false);clearHl();
   var sec=document.getElementById(s.p),first=null;
-  s.ids.forEach(function(id){sec.querySelectorAll('[data-id="'+id+'"]').forEach(function(el){if(el.closest('.zhide')||(window.__v3vis&&!window.__v3vis(el)))return;if(el.namespaceURI==='http://www.w3.org/2000/svg'){if(!el.classList.contains('run')){el.classList.add('run');el.dataset.tourrun='1';}}else el.classList.add('tour-hl');if(!first)first=el;});});
+  s.ids.forEach(function(id){sec.querySelectorAll('[data-id="'+id+'"]').forEach(function(el){if(el.closest('.zhide'))return;if(el.namespaceURI==='http://www.w3.org/2000/svg'){if(!el.classList.contains('run')){el.classList.add('run');el.dataset.tourrun='1';}}else el.classList.add('tour-hl');if(!first)first=el;});});
   document.getElementById('tourN').textContent='🎬 导览 第 '+(i+1)+' / '+TOUR.length+' 步 · '+TABN[s.p];
   document.getElementById('tourT').textContent=s.t;document.getElementById('tourD').textContent=s.d;
   document.getElementById('tourW').innerHTML='🧠 <b>为什么这样设计：</b>'+s.w;
@@ -4193,8 +4790,7 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
   document.querySelectorAll('#tourDots i').forEach(function(d,k){d.className=k<i?'d':k===i?'c':'';});
   document.getElementById('tourPrev').disabled=i===0;document.getElementById('tourNext').textContent=i===TOUR.length-1?'完成 ✓':'下一步 ▶';
   updNav();
-  if(first){window.__v3reveal&&window.__v3reveal(first);first=(window.__v3tourPick&&window.__v3tourPick(first))||first;var dg=first.closest('.diagram');if(dg&&dg.scrollWidth>dg.clientWidth){var fr=first.getBoundingClientRect(),dr=dg.getBoundingClientRect();dg.scrollLeft+=fr.left+fr.width/2-(dr.left+dr.width/2);}var r=first.getBoundingClientRect(),tb=document.getElementById('topbar').offsetHeight;var target=window.innerWidth<=640?tb+20:Math.max(tb+20,window.innerHeight*0.28-r.height/2);
-   window.scrollTo({top:Math.max(0,r.top+window.pageYOffset-target),behavior:'auto'});}}
+  if(first){window.__mTourFocus(s.ids,sec);}}
  document.getElementById('tourNext').onclick=function(){tourGo(ti+1);};document.getElementById('tourPrev').onclick=function(){tourGo(ti-1);};document.getElementById('tourX').onclick=function(){endTour(false);};
  document.getElementById('tourDots').addEventListener('click',function(e){var d=e.target.closest('[data-ti]');if(d)tourGo(+d.dataset.ti);});
  window.__tour={start:startTour,next:function(){tourGo(ti+1);},on:function(){return tourOn;},i:function(){return ti;},len:TOUR.length,steps:TOUR};
@@ -4262,11 +4858,11 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  window.__shell={applyZoom:applyZoom,visited:function(){return visited.slice();},quizScore:quizScore,openSide:openSide,closeSide:closeSide,zoom:function(){return zoom;}};
 })();
 
-/* ===================== v3: mobile-first overlay (bottom nav, sheets, flow cards, tabbed popups) ===================== */
+/* ===================== mobile base (from v3: sheets, tabbed popups, dense text, tables) — phone-only, no desktop branches ===================== */
 (function(){
  var LS3={get:function(k,d){try{var v=localStorage.getItem('aiexp.v3.'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set:function(k,v){try{localStorage.setItem('aiexp.v3.'+k,JSON.stringify(v));}catch(e){}}};
  var byId=function(i){return document.getElementById(i);};
- var mqM=window.matchMedia('(max-width:640px)'),mqT=window.matchMedia('(max-width:1000px)'),RM=window.matchMedia('(prefers-reduced-motion: reduce)');
+ var mqM={matches:true},mqT={matches:true},RM=window.matchMedia('(prefers-reduced-motion: reduce)');
  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
  /* reduced motion: force instant scrolling for programmatic smooth scrolls */
  if(RM.matches){var _st=window.scrollTo.bind(window);window.scrollTo=function(a,b){if(a&&typeof a==='object'){var o={};for(var k in a)o[k]=a[k];o.behavior='auto';return _st(o);}return _st(a,b);};}
@@ -4280,58 +4876,6 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  window.__v3tourPick=function(first){var card=first.closest('.card')||first.parentNode;var els=Array.prototype.filter.call(card.querySelectorAll('.tour-hl'),visible);if(els.length<2)return first;
   var top=Infinity,bot=-Infinity,best=first;els.forEach(function(e){var r=e.getBoundingClientRect();if(r.top<top){top=r.top;best=e;}bot=Math.max(bot,r.bottom);});
   var tp=byId('tour'),room=window.innerHeight-byId('topbar').offsetHeight-(tp&&tp.offsetHeight||0)-60;return (bot-top)<=room?best:first;};
-
- /* ---------- diagrams -> stacked step cards ---------- */
- var DGPREF=LS3.get('dg','auto');
- function textOf(g){var t=g.querySelector('text.t')||g.querySelector('text');return t?t.textContent.trim():'';}
- function buildFlow(dg){var svg=dg.querySelector('svg');if(!svg||dg.parentNode.classList.contains('dgwrap'))return;
-  var comps=Array.prototype.slice.call(svg.querySelectorAll('g.comp[data-id]'));if(comps.length<2)return;
-  var vb=svg.viewBox&&svg.viewBox.baseVal;if(!vb||!vb.width)return;
-  var items=[],seen={};comps.forEach(function(g){var r=g.querySelector('rect.main');if(!r)return;var id=g.dataset.id;if(!C[id])return;
-   var x=+r.getAttribute('x'),y=+r.getAttribute('y'),w=+r.getAttribute('width'),h=+r.getAttribute('height');
-   var key=id+'|'+textOf(g);if(seen[key])return;seen[key]=1;
-   items.push({id:id,g:g,x:x,y:y,w:w,h:h,cx:x+w/2,cy:y+h/2,t:textOf(g),s:Array.prototype.map.call(g.querySelectorAll('text.s'),function(e){return e.textContent.trim();}).filter(Boolean)});});
-  if(items.length<2)return;
-  var mode=vb.width/vb.height>=1.9?'col':'row';
-  var A=mode==='col'?'cx':'cy',B=mode==='col'?'cy':'cx',S=mode==='col'?'w':'h';
-  var sizes=items.map(function(i){return i[S];}).sort(function(a,b){return a-b;}),thr=sizes[Math.floor(sizes.length/2)]*0.55;
-  items.sort(function(a,b){return a[A]-b[A];});
-  var groups=[];items.forEach(function(it){var g=groups[groups.length-1];if(g&&Math.abs(it[A]-g.c)<=thr){g.a.push(it);}else groups.push({c:it[A],a:[it]});});
-  groups.forEach(function(g){g.a.sort(function(a,b){return a[B]-b[B];});});
-  /* numbered steps (①②③…): if geometric order disagrees with the numbers, follow the numbers; side parts go last */
-  var NUM='①②③④⑤⑥⑦⑧⑨⑩⑪⑫';var numOf=function(it){var i=NUM.indexOf((it.t||'').charAt(0));return i<0?null:i;};
-  var nums=items.filter(function(it){return numOf(it)!=null;});
-  if(nums.length>=3){var geo=[];groups.forEach(function(g){g.a.forEach(function(it){if(numOf(it)!=null)geo.push(numOf(it));});});
-   var mono=geo.every(function(v,i){return !i||v>geo[i-1];});
-   if(!mono){nums.sort(function(a,b){return numOf(a)-numOf(b);});var side=items.filter(function(it){return numOf(it)==null;});
-    groups=nums.map(function(it){return {a:[it]};});if(side.length)groups.push({a:side,side:true});}}
-  /* left-margin row labels (e.g. the big relationship map) */
-  var labels=[];if(mode==='row')Array.prototype.forEach.call(svg.querySelectorAll('text'),function(t){if(t.closest('.comp'))return;var x=+t.getAttribute('x'),y=+t.getAttribute('y');if(x<=12&&t.textContent.trim())labels.push({y:y,t:t.textContent.trim()});});
-  var h='';groups.forEach(function(g,gi){var lab='';if(labels.length){var top=Math.min.apply(null,g.a.map(function(i){return i.y;}));labels.forEach(function(l){if(l.y<=top+4&&l.y>=top-60)lab=l.t;});}
-   if(gi&&!g.side)h+='<div class="farr" aria-hidden="true">↓</div>';
-   if(g.side)h+='<div class="flab side">🔗 配合这些步骤的零件</div>';
-   else if(lab)h+='<div class="flab">'+esc(lab)+'</div>';
-   h+='<div class="fgrp'+(g.a.length===1?' n1':' par')+(g.side?' side':'')+'"'+(g.a.length>1&&!g.side?' data-n="'+g.a.length+'"':'')+(g.a.length>5?' data-fold="1"':'')+'>'+g.a.map(function(it){var c=C[it.id];var col=(CAT[c.cat]||['#94a3b8'])[0];
-    return '<button type="button" class="fc" data-id="'+it.id+'" data-open="'+it.id+'" data-train="'+c.train+'" style="--c:'+col+'"><b>'+esc(it.t||c.n)+(c.train!=='no'?'<span class="fb u">🔒 只读</span><span class="fb t">🔥 训练</span>':'')+'</b>'+(it.s.length?'<small>'+esc(it.s.join(' · '))+'</small>':'<small>'+esc(c.role)+'</small>')+(c.zoom?'<span class="fz" title="可以放大进去看">🔍</span>':'')+'</button>';}).join('')+'</div>';});
-  var wrap=document.createElement('div');wrap.className='dgwrap';wrap.dataset.vbw=vb.width;
-  dg.parentNode.insertBefore(wrap,dg);
-  var bar=document.createElement('div');bar.className='dg-bar';bar.innerHTML='<div class="seg" role="group" aria-label="切换结构图显示方式"><button type="button" data-dgv="list">🗂 步骤卡片</button><button type="button" data-dgv="svg">🖼 原图</button></div><span class="hint dg-h"></span>';
-  wrap.appendChild(bar);wrap.appendChild(dg);
-  var sh=document.createElement('div');sh.className='swipehint';sh.textContent='← 左右滑动查看整张图 →';wrap.appendChild(sh);
-  h=h.replace(/(<div class="fgrp[^"]*)("[^>]*data-fold="1"[^>]*>)([\s\S]*?)(<\/div>)(?=<div class="farr|<div class="flab|$)/g,function(m,a,b,c,d){var n=(c.match(/class="fc"/g)||[]).length;return a+' fold'+b+c+d+'<button type="button" class="btn fmore">再显示 '+(n-4)+' 个零件 ▾</button>';});
-  var fl=document.createElement('div');fl.className='flow';fl.setAttribute('aria-label','结构图：竖排步骤卡片（点卡片看详情）');fl.innerHTML=h;wrap.appendChild(fl);
-  /* mirror highlight (.run) from the svg to the cards, so walkthroughs still show on phones */
-  var pend=false;new MutationObserver(function(){if(pend)return;pend=true;requestAnimationFrame(function(){pend=false;var on={};svg.querySelectorAll('.comp.run[data-id]').forEach(function(g){on[g.dataset.id]=1;});fl.querySelectorAll('.fc').forEach(function(f){f.classList.toggle('run',!!on[f.dataset.id]);});});}).observe(svg,{subtree:true,attributes:true,attributeFilter:['class']});
- }
- function decideView(wrap){var w=wrap.clientWidth;if(!w)return;var vbw=+wrap.dataset.vbw,scale=w/vbw,tight=scale<0.72;
-  var v=wrap.dataset.local||DGPREF;if(v==='auto')v=tight?'list':'svg';
-  wrap.classList.toggle('as-list',v==='list');wrap.classList.toggle('as-svg',v==='svg');wrap.classList.toggle('tight',tight);
-  wrap.classList.toggle('roomy',!tight&&!wrap.dataset.local&&DGPREF==='auto');
-  wrap.style.setProperty('--dgMin',Math.round(vbw*0.74)+'px');
-  wrap.querySelectorAll('[data-dgv]').forEach(function(b){b.classList.toggle('on',b.dataset.dgv===v);b.setAttribute('aria-pressed',b.dataset.dgv===v);});
-  var hh=wrap.querySelector('.dg-h');if(hh)hh.textContent=v==='list'?'屏幕较窄，已改成竖排卡片；点卡片看详情':(tight?'原图较宽：可左右滑动，双指放大':'');}
- document.addEventListener('click',function(e){var m=e.target.closest('.fmore');if(m){var g=m.previousElementSibling;if(g)g.classList.remove('fold');m.remove();}});
- document.addEventListener('click',function(e){var b=e.target.closest('[data-dgv]');if(!b)return;var w=b.closest('.dgwrap');w.dataset.local=b.dataset.dgv;decideView(w);});
 
  /* ---------- tables: stacked cards on phones, or scroll with hint ---------- */
  function fixTables(sec){sec.querySelectorAll('table').forEach(function(t){if(t.closest('svg'))return;
@@ -4366,10 +4910,6 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  function densePass(sec){sec.querySelectorAll('details.whyitem>summary').forEach(function(sm){var l=sm.lastChild;if(l&&l.nodeType===3&&/^[。．.，,；;\s]+$/.test(l.textContent)&&l.previousSibling&&l.previousSibling.nodeType===1){l.previousSibling.appendChild(document.createTextNode(l.textContent.trim()));l.remove();}});sec.querySelectorAll('.lab-why,.lab-obs').forEach(bulletBox);sec.querySelectorAll('.card p').forEach(bulletPara);}
  /* mode banner: two lines on phones, tap to expand */
  document.querySelectorAll('.banner').forEach(function(b){b.setAttribute('role','note');b.addEventListener('click',function(){if(mqM.matches)b.classList.toggle('open');});});
-
- /* ---------- page heads: summary first, section map collapsed ---------- */
- document.querySelectorAll('.pagehead').forEach(function(ph){var pm=ph.querySelector('.ph-map');if(!pm||pm.parentNode.tagName==='DETAILS')return;var n=pm.querySelectorAll('button').length;
-  var d=document.createElement('details');d.className='ph-more';d.innerHTML='<summary>📑 本页结构 · '+n+' 节（点开可直接跳转）</summary>';pm.parentNode.insertBefore(d,pm);d.appendChild(pm);if(!mqT.matches&&n<=6)d.open=true;});
 
  /* ---------- popups: tabs (作用/来历/训练/使用/为什么/局限) + bottom sheet ---------- */
  function splitPts(html){var out=[],buf='',depth=0,inTag=false;for(var i=0;i<html.length;i++){var ch=html[i];buf+=ch;
@@ -4416,7 +4956,6 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  var sheet=byId('moreSheet'),mask=byId('sheetMask');
  function updSheet(){var v=window.__shell?__shell.visited():[];var n=TABORDER.filter(function(k){return v.indexOf(k)>=0;}).length;byId('shProgBar').style.width=(n/TABORDER.length*100)+'%';
   var q=window.__shell?__shell.quizScore():[0,0,0];byId('shProgTxt').textContent='已看 '+n+' / '+TABORDER.length+' 站 · 测验答对 '+q[0]+' / '+q[2]+(q[1]<q[2]?'（已答 '+q[1]+'）':'');
-  byId('dgPref').querySelectorAll('[data-dg]').forEach(function(b){b.classList.toggle('on',b.dataset.dg===DGPREF);b.setAttribute('aria-pressed',b.dataset.dg===DGPREF);});
   var i=TABORDER.indexOf(cur);byId('shPrev').disabled=i<=0;byId('shNext').disabled=i>=TABORDER.length-1;}
  var lastFocus=null;
  function openSheet(){if(window.__shell)__shell.closeSide();closeSearch();updSheet();lastFocus=document.activeElement;sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');document.body.classList.add('sheet-open');setTimeout(function(){sheet.querySelector('.sh-x').focus({preventScroll:true});},60);}
@@ -4424,31 +4963,15 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
  sheet.querySelector('.sh-x').onclick=closeSheet;
  mask.onclick=function(){closeSheet();closeSearch();};
  swipeClose(sheet,function(e){return !!e.target.closest('.sh-grip,.sh-head')||sheet.scrollTop<=0;},closeSheet);
- byId('dgPref').addEventListener('click',function(e){var b=e.target.closest('[data-dg]');if(!b)return;DGPREF=b.dataset.dg;LS3.set('dg',DGPREF);document.querySelectorAll('.dgwrap').forEach(function(w){delete w.dataset.local;decideView(w);});updSheet();});
  byId('shPrev').onclick=function(){closeSheet();byId('prevBtn').click();};byId('shNext').onclick=function(){closeSheet();byId('nextBtn').click();};
  byId('shProgDetail').onclick=function(){closeSheet();go('T8',false);jumpTo('progCard');};
  /* move mode/zoom toggles into the sheet on small screens */
  var mH=document.createComment('mode'),zH=document.createComment('zoom');var modeEl=byId('mode'),zoomEl=byId('zoom');modeEl.parentNode.insertBefore(mH,modeEl);zoomEl.parentNode.insertBefore(zH,zoomEl);
- function placeCtl(){if(mqT.matches){byId('slotMode').appendChild(modeEl);byId('slotZoom').appendChild(zoomEl);}else{mH.parentNode.insertBefore(modeEl,mH.nextSibling);zH.parentNode.insertBefore(zoomEl,zH.nextSibling);closeSheet();}}
+ function placeCtl(){byId('slotMode').appendChild(modeEl);byId('slotZoom').appendChild(zoomEl);}
  /* ---------- search as a top sheet ---------- */
  function closeSearch(){if(!document.body.classList.contains('search-open'))return;document.body.classList.remove('search-open');var s=byId('search');s.blur();byId('searchRes').classList.remove('open');}
  byId('searchRes').addEventListener('click',function(e){if(e.target.closest('[data-open]')&&mqT.matches)setTimeout(closeSearch,0);});
- /* ---------- bottom nav ---------- */
- byId('bnav').addEventListener('click',function(e){var b=e.target.closest('[data-bn]');if(!b)return;var k=b.dataset.bn;
-  if(k!=='more')closeSheet();if(k!=='search')closeSearch();
-  if(k==='home'){closeInfo();if(window.__shell)__shell.closeSide();go('T1',false);window.scrollTo(0,0);}
-  else if(k==='nav'){if(document.body.classList.contains('side-open'))__shell.closeSide();else{closeInfo();__shell.openSide();var c=document.querySelector('#tree .tn.cur');if(c)c.scrollIntoView({block:'center'});}}
-  else if(k==='search'){if(document.body.classList.contains('search-open'))closeSearch();else{closeInfo();if(window.__shell)__shell.closeSide();byId('searchBtn').click();}}
-  else if(k==='tour'){if(window.__tour&&__tour.on()){byId('tourX').click();}else{closeInfo();if(window.__shell)__shell.closeSide();__tour.start();}}
-  else if(k==='more'){if(sheet.classList.contains('open'))closeSheet();else{closeInfo();openSheet();}}});
- function updBnav(){var cl=document.body.classList,bn=byId('bnav');var st={home:cur==='T1'&&!cl.contains('side-open')&&!cl.contains('search-open')&&!cl.contains('sheet-open'),nav:cl.contains('side-open'),search:cl.contains('search-open'),tour:cl.contains('touring'),more:cl.contains('sheet-open')};
-  bn.querySelectorAll('[data-bn]').forEach(function(b){b.classList.toggle('on',!!st[b.dataset.bn]);if(b.dataset.bn!=='home'&&b.dataset.bn!=='search')b.setAttribute('aria-expanded',!!st[b.dataset.bn]);});
-  var tb=bn.querySelector('[data-bn=tour] span');tb.textContent=st.tour?'退出导览':'导览';}
- new MutationObserver(updBnav).observe(document.body,{attributes:true,attributeFilter:['class']});
- /* drawer: swipe left to close */
- (function(){var side=byId('side'),x0=null,dx=0;side.addEventListener('touchstart',function(e){if(!mqT.matches)return;x0=e.touches[0].clientX;dx=0;},{passive:true});
-  side.addEventListener('touchmove',function(e){if(x0==null)return;dx=e.touches[0].clientX-x0;if(dx<0){side.style.transition='none';side.style.transform='translateX('+dx+'px)';}},{passive:true});
-  side.addEventListener('touchend',function(){if(x0==null)return;side.style.transition='';side.style.transform='';if(dx<-70)__shell.closeSide();x0=null;});})();
+  function updBnav(){window.__mUpdBnav&&window.__mUpdBnav();}
  /* tour panel: compact on phones, details on demand */
  (function(){var th=document.querySelector('#tour .tour-h');if(!th)return;var b=document.createElement('button');b.type='button';b.className='tour-tog';b.textContent='为什么 ▾';b.setAttribute('aria-expanded','false');th.insertBefore(b,byId('tourX'));
   b.onclick=function(){var t=byId('tour');var on=!t.classList.contains('more');t.classList.toggle('more',on);b.textContent=on?'收起 ▴':'为什么 ▾';b.setAttribute('aria-expanded',on);};})();
@@ -4457,25 +4980,202 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
 
  /* ---------- per-page layout pass ---------- */
  function layout(L){var sec=byId(L||cur);if(!sec)return;
-  sec.querySelectorAll('.diagram').forEach(buildFlow);
-  sec.querySelectorAll('.dgwrap').forEach(decideView);
-  densePass(sec);fixTables(sec);clampCards(sec);}
- var _go3=go;go=function(L,scroll){_go3(L,scroll);if(!PATH[L])return;document.body.dataset.page=L;var i=TABORDER.indexOf(L);byId('tbWhere').textContent=(i+1)+'/'+TABORDER.length+' · '+TABN[L];
+  densePass(sec);fixTables(sec);}
+ var _go3=go;go=function(L,scroll){_go3(L,scroll);if(!PATH[L])return;document.body.dataset.page=L;var i=TABORDER.indexOf(L);window.__mTitle&&__mTitle(L);
   layout(L);setTimeout(function(){layout(L);updProg3();},30);updBnav();};
  var _jt3=jumpTo;jumpTo=function(id,lv){if(lv&&cur!==lv)go(lv,false);reveal(byId(id));_jt3(id,lv);};
  /* scroll progress line */
  var spP=false;function updProg3(){spP=false;var d=document.documentElement,m=d.scrollHeight-window.innerHeight;byId('tbProg').style.width=(m>0?Math.min(100,window.pageYOffset/m*100):0)+'%';}
  window.addEventListener('scroll',function(){if(!spP){spP=true;requestAnimationFrame(updProg3);}},{passive:true});
- var rsT=null;window.addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){document.querySelectorAll('.level.active .dgwrap').forEach(decideView);updHints();updProg3();},120);});
+ var rsT=null;window.addEventListener('resize',function(){clearTimeout(rsT);rsT=setTimeout(function(){updHints();updProg3();},120);});
  document.addEventListener('click',function(){setTimeout(function(){updHints(byId(cur));},60);});
- mqT.addEventListener?mqT.addEventListener('change',placeCtl):mqT.addListener(placeCtl);
- window.__v3init=function(){placeCtl();document.body.dataset.page=cur;var i=TABORDER.indexOf(cur);byId('tbWhere').textContent=(i+1)+'/'+TABORDER.length+' · '+TABN[cur];layout(cur);updBnav();updProg3();};
- window.__v3={layout:layout,openSheet:openSheet,closeSheet:closeSheet,closeSearch:closeSearch,pref:function(){return DGPREF;}};
+ window.__v3init=function(){placeCtl();document.body.dataset.page=cur;window.__mTitle&&__mTitle(cur);layout(cur);updBnav();updProg3();};
+ window.__v3={layout:layout,openSheet:openSheet,closeSheet:closeSheet,closeSearch:closeSearch,reveal:reveal};
+})();
+
+/* ===================== mobile shell: diagram viewer (pinch / pan / double-tap), fullscreen, bottom tabs, collapsible cards, tour focus ===================== */
+(function(){
+var byId=function(i){return document.getElementById(i);};
+var GROUP={T1:'T1',T2:'T2',T3:'T3',T4:'T4',T4a:'T4',T4b:'T4',T5:'more',T6:'more',T7:'more',T8:'more'};
+var ICON={T1:'🏠',T2:'🤖',T3:'🧠',T4:'🧩',T4a:'👀',T4b:'📚',T5:'⚡',T6:'🖼️',T7:'🏋️',T8:'🗺️'};
+var SUB={T5:'MoE、KV 缓存、量化、LoRA',T6:'看图、听声、画画、做视频',T7:'预训练、微调、强化学习',T8:'关系总图、术语表、进度'};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function mtoast(m){var t=byId('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(mtoast.t);mtoast.t=setTimeout(function(){t.classList.remove('show');},2000);}
+function tbH(){var t=byId('topbar');return t?t.offsetHeight:52;}
+function bnH(){var b=byId('bnav');return b?b.offsetHeight:58;}
+
+/* ================= pan / zoom viewer ================= */
+var MAXS=4;
+function Viewer(host,o){var v=this;o=o||{};v.host=host;v.o=o;v.s=1;v.tx=0;v.ty=0;v.pts={};v.moved=false;v.lastTap=0;host.__v=v;host.classList.add('m-vw');
+ v.svg=function(){return host.querySelector('svg');};
+ v.geo=function(){var g=v.svg();if(!g)return {bw:1,bh:1,ox:0,oy:0};if(o.full)return {bw:v.fw||1,bh:v.fh||1,ox:0,oy:0};var gr=g.getBoundingClientRect(),hr=host.getBoundingClientRect();return {bw:g.clientWidth||host.clientWidth,bh:g.clientHeight||host.clientHeight,ox:gr.left-hr.left-host.clientLeft-(v.atx||0),oy:gr.top-hr.top-host.clientTop-(v.aty||0)};};
+ v.apply=function(){var g=v.svg();if(!g)return;var G=v.geo(),W=host.clientWidth,H=host.clientHeight,cw=G.bw*v.s,ch=G.bh*v.s;
+  if(cw<=W+0.5)v.tx=(W-cw)/2-G.ox;else v.tx=Math.min(-G.ox,Math.max(W-cw-G.ox,v.tx));
+  if(ch<=H+0.5)v.ty=(H-ch)/2-G.oy;else v.ty=Math.min(-G.oy,Math.max(H-ch-G.oy,v.ty));
+  g.style.transformOrigin='0 0';var clr=(v.s===1&&!o.full&&Math.abs(v.tx)<0.5&&Math.abs(v.ty)<0.5);g.style.transform=clr?'':'translate('+v.tx.toFixed(1)+'px,'+v.ty.toFixed(1)+'px) scale('+v.s.toFixed(3)+')';v.atx=clr?0:+v.tx.toFixed(1);v.aty=clr?0:+v.ty.toFixed(1);
+  var z=v.s>1.001;host.classList.toggle('zoomed',z);host.style.touchAction=(z||o.full)?'none':'pan-y';
+  if(o.onChange)o.onChange(v);};
+ v.clampS=function(s){return Math.max(1,Math.min(MAXS,s));};
+ v.zoomAt=function(cx,cy,ns,anim){var r=host.getBoundingClientRect(),G=v.geo();ns=v.clampS(ns);var px=(cx-r.left-G.ox-v.tx)/v.s,py=(cy-r.top-G.oy-v.ty)/v.s;v.s=ns;v.tx=cx-r.left-G.ox-px*ns;v.ty=cy-r.top-G.oy-py*ns;v.anim(anim);v.apply();};
+ v.anim=function(on){if(!on)return;host.classList.add('anim');clearTimeout(v.at);v.at=setTimeout(function(){host.classList.remove('anim');},260);};
+ v.center=function(){var r=host.getBoundingClientRect();var top=Math.max(r.top,tbH()),bot=Math.min(r.bottom,window.innerHeight-(o.full?0:bnH()));if(bot<=top){top=r.top;bot=r.bottom;}return {x:r.left+r.width/2,y:(top+bot)/2};};
+ v.step=function(f){var c=v.center();v.zoomAt(c.x,c.y,v.s*f,true);};
+ v.reset=function(anim){v.s=1;v.tx=0;v.ty=0;v.sup=0;v.anim(anim);v.apply();};
+ v.dbl=function(x,y){if(v.s>1.001)v.reset(true);else v.zoomAt(x,y,2.2,true);};
+ function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}function mid(a,b){return {x:(a.x+b.x)/2,y:(a.y+b.y)/2};}
+ function ids(){return Object.keys(v.pts);}
+ function move(e){var p=v.pts[e.pointerId];if(!p)return;var lx=p.x,ly=p.y;p.x=e.clientX;p.y=e.clientY;var k=ids();
+  if(k.length>=2&&v.pin){var a=v.pts[k[0]],b=v.pts[k[1]],d=dist(a,b),c=mid(a,b),r=host.getBoundingClientRect(),G=v.geo();var ns=v.clampS(v.pin.s*d/Math.max(10,v.pin.d));
+   var px=(v.pin.c.x-r.left-G.ox-v.pin.tx)/v.pin.s,py=(v.pin.c.y-r.top-G.oy-v.pin.ty)/v.pin.s;v.s=ns;v.tx=c.x-r.left-G.ox-px*ns;v.ty=c.y-r.top-G.oy-py*ns;v.apply();if(e.cancelable)e.preventDefault();return;}
+  if(k.length===1&&v.start){var dx=e.clientX-v.start.x,dy=e.clientY-v.start.y;if(Math.abs(dx)+Math.abs(dy)>8)v.moved=true;
+   if(v.s>1.001||o.full){var want=v.ty+(e.clientY-ly);v.tx+=e.clientX-lx;v.ty=want;v.apply();var left=want-v.ty;if(!o.full&&Math.abs(left)>0.5)window.scrollBy(0,-left);if(e.cancelable)e.preventDefault();}}}
+ function up(e){if(!v.pts[e.pointerId])return;delete v.pts[e.pointerId];var k=ids();
+  if(k.length<2&&v.pin){v.pin=null;host.classList.remove('gest');if(v.s<1.04)v.reset(true);}
+  if(k.length===1){var p=v.pts[k[0]];v.start={x:p.x,y:p.y};}
+  if(!k.length){v.start=null;if(v.moved)v.sup=Date.now();detach();}}
+ function attach(){if(v.att)return;v.att=1;window.addEventListener('pointermove',move,{passive:false});window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);}
+ function detach(){v.att=0;window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);}
+ host.addEventListener('pointerdown',function(e){if(e.pointerType==='mouse'&&e.button!==0)return;v.pts[e.pointerId]={x:e.clientX,y:e.clientY};var k=ids();
+  if(k.length===1){v.start={x:e.clientX,y:e.clientY};v.moved=false;}
+  if(k.length===2){var a=v.pts[k[0]],b=v.pts[k[1]];v.pin={d:dist(a,b),c:mid(a,b),s:v.s,tx:v.tx,ty:v.ty};v.moved=true;host.classList.add('gest');}
+  attach();});
+ /* iOS Safari: block the page's own pinch on the diagram */
+ host.addEventListener('gesturestart',function(e){e.preventDefault();});
+ host.addEventListener('touchmove',function(e){if(e.touches.length>1&&e.cancelable)e.preventDefault();},{passive:false});
+ /* taps: single tap opens the part (after a short wait for a possible double tap), double tap zooms */
+ host.addEventListener('click',function(e){e.stopPropagation();if(v.sup&&Date.now()-v.sup<450){e.preventDefault();return;}
+  var now=Date.now();if(now-v.lastTap<330&&Math.hypot(e.clientX-v.lx,e.clientY-v.ly)<40){clearTimeout(v.tapT);v.lastTap=0;v.dbl(e.clientX,e.clientY);return;}
+  v.lastTap=now;v.lx=e.clientX;v.ly=e.clientY;var comp=e.target.closest&&e.target.closest('.comp[data-id]');clearTimeout(v.tapT);
+  if(comp){var id=comp.dataset.id;comp.classList.add('tapped');setTimeout(function(){comp.classList.remove('tapped');},300);v.tapT=setTimeout(function(){v.lastTap=0;if(o.onTap)o.onTap(id);else openInfo(id);},300);}},true);
+ host.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();v.zoomAt(e.clientX,e.clientY,v.s*(e.deltaY<0?1.15:1/1.15));},{passive:false});
+}
+window.__MViewer=Viewer;
+
+/* ---------- inline diagram: toolbar + viewer ---------- */
+function vbarHTML(main){return '<div class="m-vbar"><span class="m-vh">👆 点方块看详情<br>🤏 双指 / 双击放大</span><button type="button" class="vz" data-vz="out" aria-label="缩小">−</button><span class="vp" aria-live="polite">100%</span><button type="button" class="vz" data-vz="in" aria-label="放大">＋</button><button type="button" class="vz" data-vz="reset" aria-label="复位" disabled>⟲</button><button type="button" class="vz" data-vz="full" aria-label="全屏查看">⛶</button></div>';}
+function setupDiagram(dg,main){if(dg.__v||!dg.querySelector('svg'))return;var wrap=document.createElement('div');wrap.className='m-dg'+(main?' main':'');dg.parentNode.insertBefore(wrap,dg);wrap.innerHTML=vbarHTML(main);wrap.appendChild(dg);
+ new Viewer(dg,{onChange:function(v){var p=wrap.querySelector('.vp');if(p)p.textContent=Math.round(v.s*100)+'%';var rb=wrap.querySelector('[data-vz=reset]');if(rb)rb.disabled=v.s<=1.001;wrap.classList.toggle('zoomed',v.s>1.001);}});
+ wrap.querySelector('.m-vbar').addEventListener('click',function(e){var b=e.target.closest('[data-vz]');if(!b)return;var v=dg.__v,k=b.dataset.vz;if(k==='in')v.step(1.5);else if(k==='out')v.step(1/1.5);else if(k==='reset')v.reset(true);else if(k==='full')openFull(dg);});}
+window.addEventListener('resize',function(){document.querySelectorAll('.m-vw').forEach(function(h){if(h.__v&&!h.closest('#dgFull'))h.__v.apply();});});
+
+/* ================= fullscreen diagram (portrait: the phone layout; landscape: the original wide layout) ================= */
+var FS={src:null,ph:null,svg:null,mode:null},fsHost=byId('fsHost'),fsEl=byId('dgFull');
+var fsV=new Viewer(fsHost,{full:true,onChange:function(v){byId('fsP').textContent=Math.round(v.s*100)+'%';}});
+function fsFit(){var g=fsHost.querySelector('svg');if(!g)return;var vb=g.viewBox.baseVal,W=fsHost.clientWidth,H=fsHost.clientHeight,a=vb.width/vb.height;var bw,bh;if(W/H>a){bh=H;bw=H*a;}else{bw=W;bh=W/a;}
+ /* tall phone layouts: fit width, drag to scroll */
+ if(!FS.orig&&vb.height/vb.width>H/W){bw=W;bh=W/a;}
+ fsV.fw=bw;fsV.fh=bh;g.style.width=bw+'px';g.style.height=bh+'px';fsV.s=1;fsV.tx=0;fsV.ty=0;fsV.apply();}
+function cardTitle(dg){var c=dg.closest('.card');var h=c&&c.querySelector(':scope>h2,:scope>h3');if(dg.closest('.m-stage'))return TABN[cur]+' · 结构图';return h?h.textContent.replace(/\s*(示例数据|示意|玩具).*$/,'').trim():TABN[cur];}
+function openFull(dg){var svg=dg.querySelector('svg');if(!svg)return;closeFullDom();FS.src=dg;FS.sid=svg.id;var land=window.innerWidth>window.innerHeight,O=window.__ORIG&&__ORIG[svg.id];FS.orig=!!(land&&O);
+ if(FS.orig){var ns='http://www.w3.org/2000/svg',c=document.createElementNS(ns,'svg');c.setAttribute('viewBox',O.vb);c.setAttribute('class','fs-orig');
+  var html=O.html;var tmp=document.createElementNS(ns,'svg');tmp.innerHTML=html;
+  /* mirror live state: highlighted parts, lit nodes, recoloured circles */
+  var on={};svg.querySelectorAll('.comp.run[data-id]').forEach(function(g){on[g.dataset.id]=1;});tmp.querySelectorAll('.comp[data-id]').forEach(function(g){if(on[g.dataset.id])g.classList.add('run');});
+  tmp.querySelectorAll('[id]').forEach(function(e){var l=document.getElementById(e.id);if(l&&svg.contains(l)){['class','fill','stroke'].forEach(function(a){if(l.getAttribute(a)!=null)e.setAttribute(a,l.getAttribute(a));});}});
+  html=tmp.innerHTML.replace(/\sid="([^"]+)"/g,' id="$1__fs"').replace(/url\(#([^)]+)\)/g,'url(#$1__fs)');c.innerHTML=html;fsHost.appendChild(c);FS.svg=c;}
+ else{FS.ph=document.createComment('dg');svg.parentNode.insertBefore(FS.ph,svg);svg.style.transform='';fsHost.appendChild(svg);FS.svg=svg;}
+ byId('fsT').textContent=cardTitle(dg);byId('fsHint').textContent=FS.orig?'🖼 原版宽图 · 双指缩放、拖动 · 点方块看详情':(window.__ORIG&&__ORIG[svg.id]?'📱 横过手机可看原版宽图 · 双指缩放、拖动 · 点方块看详情':'双指缩放、拖动 · 点方块看详情');
+ fsEl.classList.add('open');fsEl.setAttribute('aria-hidden','false');document.body.classList.add('fs-open');requestAnimationFrame(fsFit);setTimeout(function(){var x=fsEl.querySelector('.fs-x');x&&x.focus({preventScroll:true});},60);}
+function closeFullDom(){if(FS.svg){if(FS.orig)FS.svg.remove();else if(FS.ph){FS.svg.style.width='';FS.svg.style.height='';FS.svg.style.transform='';FS.ph.parentNode.insertBefore(FS.svg,FS.ph);FS.ph.remove();}}FS.svg=null;FS.ph=null;}
+function closeFull(){if(!fsEl.classList.contains('open'))return;var src=FS.src;closeFullDom();FS.src=null;fsEl.classList.remove('open');fsEl.setAttribute('aria-hidden','true');document.body.classList.remove('fs-open');if(src&&src.__v)src.__v.reset();var b=src&&src.parentNode.querySelector('[data-vz=full]');if(b)try{b.focus({preventScroll:true});}catch(e){}}
+fsEl.querySelector('.fs-bar').addEventListener('click',function(e){var b=e.target.closest('[data-fz]');if(!b)return;var k=b.dataset.fz;if(k==='close')closeFull();else if(k==='reset')fsV.reset(true);else fsV.step(k==='in'?1.5:1/1.5);});
+var fsRT=null;window.addEventListener('resize',function(){if(!fsEl.classList.contains('open'))return;clearTimeout(fsRT);fsRT=setTimeout(function(){var src=FS.src,land=window.innerWidth>window.innerHeight;if(src&&land!==FS.orig&&window.__ORIG&&__ORIG[FS.sid]!==undefined){openFull(src);}else fsFit();},150);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&fsEl.classList.contains('open')&&!byId('modal').classList.contains('open')){closeFull();e.stopPropagation();}},true);
+window.__mFull={open:openFull,close:closeFull,viewer:fsV};
+
+/* ================= page restructure: title + one-line summary → diagram → collapsible cards → labs → quiz ================= */
+function heading(c){return c.querySelector(':scope>h2,:scope>h3');}
+function ccSet(c,open){c.classList.toggle('cc-closed',!open);var b=c.querySelector(':scope>h2>.cc-h,:scope>h3>.cc-h');if(b)b.setAttribute('aria-expanded',open?'true':'false');if(open){setTimeout(function(){c.querySelectorAll('.m-vw').forEach(function(h){h.__v&&h.__v.apply();});window.__v3&&__v3.layout&&__v3.layout(cur);},0);}}
+function makeCC(c,open){if(c.dataset.cc)return;var h=heading(c);if(!h)return;c.dataset.cc='1';
+ var b=document.createElement('button');b.type='button';b.className='cc-h';while(h.firstChild)b.appendChild(h.firstChild);h.appendChild(b);
+ var body=document.createElement('div');body.className='cc-body';var n=h.nextSibling;while(n){var nx=n.nextSibling;body.appendChild(n);n=nx;}c.appendChild(body);
+ b.addEventListener('click',function(){ccSet(c,c.classList.contains('cc-closed'));});ccSet(c,open);}
+function ccOpen(el){var n=el;while(n&&n!==document.body){if(n.classList&&n.classList.contains('cc-closed'))ccSet(n,true);if(n.tagName==='DETAILS'&&!n.open)n.open=true;n=n.parentNode;}}
+window.__mOpen=ccOpen;
+function splitSummary(t){var i=t.indexOf('：');if(i<0||i>40)i=t.indexOf('，');if(i<0||i>48)return [t,''];return [t.slice(0,i),t.slice(i+1)];}
+function restructure(sec){var id=sec.id,ph=byId('ph'+id);if(!ph||sec.dataset.mr)return;sec.dataset.mr='1';
+ /* page head */
+ var one=ph.querySelector('.ph-one'),why=ph.querySelector('.ph-why'),nav=ph.querySelector('.ph-nav');var full=one?one.innerHTML:'';var sp=splitSummary(one?one.textContent:'');
+ var t=document.createElement('h1');t.className='pg-t';t.innerHTML='<span class="pg-n">'+(TABORDER.indexOf(id)+1)+'</span>'+esc(TABN[id]);ph.insertBefore(t,ph.firstChild);
+ var s=document.createElement('p');s.className='pg-s';s.textContent=sp[0]+(sp[1]?'。':'');ph.insertBefore(s,t.nextSibling);
+ var d=document.createElement('details');d.className='pg-more';d.innerHTML='<summary>展开本站说明</summary>';ph.insertBefore(d,s.nextSibling);if(one)d.appendChild(one);if(why)d.appendChild(why);
+ /* main diagram goes to the top */
+ var cards=Array.prototype.slice.call(sec.querySelectorAll('.card'));var first=null,dg=null;for(var ci=0;ci<cards.length&&!dg;ci++){if(cards[ci].classList.contains('lab'))continue;dg=cards[ci].querySelector('.diagram');if(dg)first=cards[ci];}
+ var stage=document.createElement('div');stage.className='m-stage';ph.parentNode.insertBefore(stage,ph.nextSibling);
+ if(dg){stage.appendChild(dg);setupDiagram(dg,true);var leg=first.querySelector('.legend');if(leg&&leg.id){var ld=document.createElement('details');ld.className='m-leg';ld.innerHTML='<summary>🎨 图例：颜色和虚线是什么意思</summary>';ld.appendChild(leg);stage.appendChild(ld);}}
+ else stage.remove();
+ /* other diagrams: same viewer, inside their cards */
+ sec.querySelectorAll('.diagram').forEach(function(x){setupDiagram(x,false);});
+ /* collapsible cards: open the first, the rest closed; labs and quizzes stay open */
+ var k=0;cards.forEach(function(c){if(c.classList.contains('lab')||c.classList.contains('quiz'))return;if(c.parentNode.closest&&c.parentNode.closest('.card'))return;makeCC(c,k===0);k++;});
+ /* station nav at the end */
+ if(nav)sec.appendChild(nav);
+}
+function mountExtras(){
+ /* intro card from the old header, on 应用全景 */
+ var hd=document.querySelector('header'),t1=byId('T1');if(hd&&t1){var c=document.createElement('div');c.className='card intro';var w=hd.querySelector('.wrap')||hd;var h1=w.querySelector('h1');c.innerHTML='<h3>📖 这份讲解怎么看</h3>';if(h1){var p=document.createElement('p');p.className='intro-h';p.innerHTML='<b>'+h1.innerHTML+'</b>';c.appendChild(p);h1.remove();}while(w.firstChild)c.appendChild(w.firstChild);
+  var after=t1.querySelector('.m-stage')||byId('phT1');after.parentNode.insertBefore(c,after.nextSibling);hd.remove();makeCC(c,false);}
+ /* mode banners live next to the switch */
+ var sb=byId('slotBanner');document.querySelectorAll('main>.banner').forEach(function(b){sb.appendChild(b);});
+ /* learning map tree into the sheet */
+ var tr=byId('tree');if(tr)byId('slotTree').appendChild(tr);
+ /* training panel: collapsible */
+ var tp=byId('trainPanel');if(tp){if(tp.querySelector('.diagram'))setupDiagram(tp.querySelector('.diagram'),false);makeCC(tp,false);}
+ /* stations in the sheet */
+ var st=byId('shStations');st.innerHTML=['T5','T6','T7','T8'].map(function(k){return '<button type="button" class="st-b" data-st="'+k+'"><i aria-hidden="true">'+ICON[k]+'</i><b>'+TABN[k]+'</b><small>'+SUB[k]+'</small></button>';}).join('')+
+  '<div class="st-all">'+TABORDER.map(function(k,i){return '<button type="button" class="chip" data-st="'+k+'">'+(i+1)+'. '+TABN[k]+'</button>';}).join('')+'</div>';
+}
+function placeTrainPanel(L){var tp=byId('trainPanel');if(!tp)return;var sec=byId(L);if(L.indexOf('T4')===0&&sec){var st=sec.querySelector('.m-stage')||byId('ph'+L);st.parentNode.insertBefore(tp,st.nextSibling);}}
+
+/* ================= top bar, crumb chips, bottom tabs ================= */
+window.__mTitle=function(L){var i=TABORDER.indexOf(L);byId('tbWhere').innerHTML='<b>'+esc(TABN[L])+'</b><small>'+(i+1)+'/'+TABORDER.length+'</small>';document.title='（手机版）'+TABN[L]+' · 大白话拆解 AI';};
+renderCrumb=function(){var p=PATH[cur];if(!p)return;var h='<div class="chips" role="navigation" aria-label="所在位置（点上一层可返回）">';
+ p.forEach(function(k,i){var last=i===p.length-1;h+=(i?'<i class="sep" aria-hidden="true">›</i>':'')+(last?'<b class="chip on" aria-current="page">'+(i===0?'⌂ ':'')+esc(TABN[k])+'</b>':'<button type="button" class="chip" data-go="'+k+'">'+(i===0?'⌂ ':'')+esc(TABN[k])+'</button>');});
+ var ks=TABORDER.filter(function(k){var q=PATH[k];return q.length===p.length+1&&q[p.length-1]===cur;});
+ if(ks.length)h+='<i class="sep dn" aria-hidden="true">↓</i>'+ks.map(function(k){return '<button type="button" class="chip down" data-go="'+k+'">'+esc(TABN[k])+'</button>';}).join('');
+ h+='</div>';crumbEl.innerHTML=h;};
+window.__mUpdBnav=function(){var cl=document.body.classList,g=GROUP[cur],sh=cl.contains('sheet-open');
+ document.querySelectorAll('#bnav [data-bn]').forEach(function(b){var k=b.dataset.bn,on=k==='more'?(sh||g==='more'):(!sh&&g===k);b.classList.toggle('on',on);if(k!=='more')b.setAttribute('aria-current',on?'page':'false');else b.setAttribute('aria-expanded',sh?'true':'false');});
+ var mb=document.querySelector('#bnav [data-bn=more] span');if(mb)mb.textContent=(g==='more'&&!sh)?({T5:'MoE',T6:'多模态',T7:'训练',T8:'速查'}[cur]||TABN[cur].slice(0,4)):'更多';
+ var tb=byId('mTour');tb.setAttribute('aria-pressed',cl.contains('touring')?'true':'false');tb.setAttribute('aria-label',cl.contains('touring')?'退出导览':'开始导览');tb.classList.toggle('on',cl.contains('touring'));
+ document.querySelectorAll('#shStations [data-st]').forEach(function(b){b.classList.toggle('on',b.dataset.st===cur);});};
+new MutationObserver(function(){__mUpdBnav();}).observe(document.body,{attributes:true,attributeFilter:['class']});
+byId('bnav').addEventListener('click',function(e){var b=e.target.closest('[data-bn]');if(!b)return;var k=b.dataset.bn;closeFull();
+ if(k==='more'){if(document.body.classList.contains('sheet-open'))__v3.closeSheet();else{closeInfo();__v3.closeSearch();__v3.openSheet();}__mUpdBnav();return;}
+ __v3.closeSheet();__v3.closeSearch();closeInfo();if(GROUP[cur]===k&&cur===k){window.scrollTo({top:0,behavior:'smooth'});return;}go(k);__mUpdBnav();});
+byId('shStations').addEventListener('click',function(e){var b=e.target.closest('[data-st]');if(!b)return;__v3.closeSheet();go(b.dataset.st);});
+byId('moreSheet').addEventListener('click',function(e){if(e.target.closest('#slotTree [data-go],#slotTree [data-sj],[data-jump]'))setTimeout(function(){__v3.closeSheet();},0);});
+byId('mSearch').addEventListener('click',function(){closeFull();__v3.closeSheet();closeInfo();if(document.body.classList.contains('search-open'))__v3.closeSearch();else byId('searchBtn').click();});
+byId('mTour').addEventListener('click',function(){closeFull();__v3.closeSheet();__v3.closeSearch();closeInfo();if(window.__tour&&__tour.on())byId('tourX').click();else __tour.start();});
+
+/* ================= tour: highlight on the diagram, keep it in view above the bottom panel ================= */
+window.__mTourFocus=function(idsList,sec){var stage=sec.querySelector('.m-stage'),els=[];
+ if(stage)idsList.forEach(function(id){stage.querySelectorAll('.comp[data-id="'+id+'"]').forEach(function(e){els.push(e);});});
+ if(!els.length){var all=[];idsList.forEach(function(id){sec.querySelectorAll('[data-id="'+id+'"]').forEach(function(e){if(!e.closest('.zhide'))all.push(e);});});if(!all.length)return;
+  ccOpen(all[0]);var card=all[0].closest('.card');els=all.filter(function(e){return card&&card.contains(e);});if(!els.length)els=[all[0]];}
+ var host=els[0].closest('.m-vw');if(host&&host.__v)host.__v.reset(false);
+ var top=Infinity,bot=-Infinity;els.forEach(function(e){var r=e.getBoundingClientRect();if(!r.width&&!r.height)return;top=Math.min(top,r.top);bot=Math.max(bot,r.bottom);});if(top===Infinity)return;
+ var tp=byId('tour'),avail=window.innerHeight-tbH()-(tp?tp.offsetHeight:0)-bnH()-28,y=window.pageYOffset+top-tbH()-14;
+ if(bot-top<avail)y-=Math.min(60,(avail-(bot-top))/3);window.scrollTo({top:Math.max(0,y),behavior:'auto'});};
+
+/* ================= swipe left / right between stations (outside diagrams and controls) ================= */
+(function(){var x0=null,y0=0,t0=0,ok=false;var NO='.m-dg,.m-stage,input,textarea,select,canvas,.tscroll,.hm-wrap,.scroll,pre,table,.chips,.m-tabs,.sheet,#tour,#modal,.toks,.experts,.frames,[data-noswipe]';
+ var m=document.querySelector('main');m.addEventListener('touchstart',function(e){if(e.touches.length!==1){x0=null;return;}ok=!e.target.closest(NO);x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();},{passive:true});
+ m.addEventListener('touchend',function(e){if(x0==null||!ok)return;var t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Date.now()-t0>650||Math.abs(dx)<90||Math.abs(dy)>Math.abs(dx)*0.45)return;if(window.__tour&&__tour.on())return;
+  var i=TABORDER.indexOf(cur)+(dx<0?1:-1);if(i<0||i>=TABORDER.length)return;go(TABORDER[i]);mtoast((dx<0?'下一站 ▶ ':'◀ 上一站 ')+TABN[TABORDER[i]]);},{passive:true});})();
+
+/* ================= wrap go / jumpTo ================= */
+var _gom=go;go=function(L,scroll){if(!PATH[L])return;closeFull();var s=byId(L);if(s)restructure(s);_gom(L,scroll);placeTrainPanel(L);setTimeout(function(){document.querySelectorAll('#'+L+' .m-vw').forEach(function(h){h.__v&&h.__v.apply();});},0);__mUpdBnav();};
+var _jtm=jumpTo;jumpTo=function(id,lv){if(lv&&cur!==lv)go(lv,false);var el=byId(id);if(el)ccOpen(el);_jtm(id,lv);};
+
+window.__mInit=function(){TABORDER.forEach(function(k){restructure(byId(k));});mountExtras();placeTrainPanel(cur);renderCrumb();__mTitle(cur);__mUpdBnav();document.querySelectorAll('.m-vw').forEach(function(h){h.__v.apply();});};
+window.__m={restructure:restructure,ccSet:ccSet,ccOpen:ccOpen,setupDiagram:setupDiagram};
 })();
 
 var h0=(location.hash||'').slice(1);go(PATH[h0]?h0:'T1',false);
 window.__u={go:go,openInfo:openInfo,openAnywhere:openAnywhere,C:C,kids:kids,cur:function(){return cur;},PATH:PATH};
 window.__v3init&&window.__v3init();
+window.__mInit&&window.__mInit();
 window.__explainerReady=true;
 })();
 </script>
