@@ -1209,6 +1209,88 @@ body.search-open .topbar .search{display:block}
 body.touring #tour{z-index:82}
 @media (max-width:370px){:root{--mpad:4px}.card .m-dg{margin:10px -15px}.pg-t{font-size:21px}.tb-where{font-size:16.5px}#bnav button{font-size:11px}}
 body.search-open .topbar{z-index:96!important}
+/* ===================== r2: no squeezed text, icon buttons, compact spacing, chain position ===================== */
+:root{--mpad:6px}
+/* top bar: ‹ station name + chain dots › 🔎 🎬 */
+.tb-in{gap:0;padding:2px calc(4px + var(--sar)) 2px calc(2px + var(--sal))}
+.tb-ic{width:40px;height:44px;min-width:40px;font-size:18px}
+.tb-nv{order:0!important;color:#3730a3}
+.tb-nv svg{width:22px;height:22px}
+.tb-nv[disabled]{opacity:.28}
+#mNext{order:1!important}
+.tb-where{flex-direction:column;align-items:flex-start!important;justify-content:center;gap:3px!important;padding:0 2px;line-height:1.15}
+.tb-where b{font-size:17px;max-width:100%;white-space:nowrap}
+.tb-dots{display:flex;align-items:center;gap:4px;line-height:1}
+.tb-dots i{width:6px;height:6px;border-radius:50%;background:#e2e8f0;flex:none}
+.tb-dots i.sub{width:5px;height:5px}
+.tb-dots i.v{background:#a5b4fc}
+.tb-dots i.on{width:16px;border-radius:4px;background:#4f46e5}
+.tb-dots small{margin-left:4px;font-size:11px!important;color:#64748b;font-weight:700}
+/* crumb chips: smaller */
+.crumb{padding:6px var(--mpad) 0!important}
+.chips{gap:3px;padding:0 0 2px}
+.chips .chip{min-height:32px;padding:2px 10px;font-size:12.5px}
+/* page head: one compact block, ⓘ pill for the long explanation */
+.pagehead{position:relative;padding:10px 12px 10px!important;margin:6px 0 8px!important;border-radius:16px!important}
+.pg-t{font-size:19px;gap:8px;margin:0 0 2px;padding-right:78px}
+.pg-n{width:24px;height:24px;font-size:13.5px;border-radius:7px}
+.pg-s{font-size:14.5px;line-height:1.55}
+details.pg-more{margin:0}
+details.pg-more>summary{position:absolute;top:8px;right:8px;min-height:32px;padding:0 10px;border-radius:999px;background:#eef2ff;font-size:12.5px;gap:3px}
+details.pg-more>summary::after{font-size:11px}
+details.pg-more[open]>summary{background:#4f46e5;color:#fff}
+details.pg-more[open]{margin-top:6px}
+/* diagram toolbar: smaller controls */
+.m-vbar{gap:3px;padding:4px 4px 4px 10px}
+.m-vh{font-size:11.5px;line-height:1.3}
+.vz{width:36px;height:36px;border-radius:10px;font-size:17px}
+.vp{min-width:36px;font-size:12px}
+.m-stage .m-vw{padding:6px 0 8px}
+details.m-leg>summary{min-height:38px;font-size:13px}
+/* cards: badges on their own small row, title always full width */
+.card{position:relative;padding:12px 12px!important;margin:8px 0!important}
+.cc-meta{display:flex;flex-wrap:wrap;align-items:center;gap:5px;min-height:26px;margin:0 0 4px;padding-right:40px;cursor:pointer}
+.card.lab>.cc-meta,.card.quiz>.cc-meta,.card:not([data-cc])>.cc-meta{padding-right:0;cursor:default}
+.cc-meta .zl{position:static!important;margin:0!important;font-size:11.5px;padding:2px 9px}
+.cc-meta .tag{display:inline-flex!important;align-items:center;margin:0!important;font-size:11.5px;padding:1px 8px;line-height:1.5;white-space:nowrap;font-weight:700}
+.cc-meta .tag.demo::before{content:"🧪";margin-right:3px;font-size:11px}
+.card>.zl+h2,.card>.zl+h3{margin-top:0}
+.card.cc-closed>.cc-meta{margin-bottom:0}
+.cc-h{display:block;min-height:0;padding:2px 0;text-wrap:pretty}
+.cc-h::after{position:absolute;top:10px;right:10px;margin:0}
+.card[data-cc]:not(.has-meta)>h2>.cc-h,.card[data-cc]:not(.has-meta)>h3>.cc-h{padding-right:40px;min-height:32px;display:flex;align-items:center}
+.card[data-cc]>h2,.card[data-cc]>h3{font-size:16.5px!important}
+.card.lab>h3,.card.quiz>h3,.card>h3{text-wrap:pretty}
+.tag-note{margin:4px 0 6px!important;font-size:12.5px!important;line-height:1.5;color:#9a3412;background:#fff7ed;border-radius:8px;padding:4px 8px}
+.card.lab{padding:14px 12px!important;margin:10px -2px!important}
+.cc-body{padding-top:4px}
+/* end-of-page station nav: ‹ ● ● ● › */
+.m-pn{display:block!important;margin:16px 0 6px!important;background:#fff;border-radius:16px;padding:8px 8px 6px;box-shadow:0 1px 2px rgba(15,23,42,.05)}
+.pn-row{display:flex;align-items:center;gap:4px}
+.pn-b{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid #e3e7ef;background:#fff;color:#3730a3;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.pn-b.pri{background:#4f46e5;border-color:#4f46e5;color:#fff}
+.pn-b[disabled]{opacity:.3}
+.pn-b svg{width:22px;height:22px}
+.pn-dots{flex:1;display:flex;justify-content:center;align-items:center;min-width:0}
+.pn-dots .dt{flex:1;max-width:28px;height:36px;border:0;background:none;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.pn-dots .dt i{width:8px;height:8px;border-radius:50%;background:#e2e8f0}
+.pn-dots .dt.v i{background:#a5b4fc}
+.pn-dots .dt.on i{width:18px;border-radius:5px;background:#4f46e5}
+.pn-cap{margin:2px 0 0;text-align:center;font-size:12.5px;color:#64748b}
+.pn-l{font:inherit;font-weight:800;color:#3730a3;background:none;border:0;padding:4px 2px;cursor:pointer;min-height:32px}
+/* icon buttons in labs / tour */
+.btn.ib{min-width:48px;padding:0 10px;font-size:19px;line-height:1}
+.btn.ib svg{width:22px;height:22px;vertical-align:middle}
+.tour-btns{display:flex!important;gap:8px;flex-wrap:nowrap}
+#tourPrev{flex:none;width:52px}
+#tourNext{flex:1}
+/* icon legend in the 更多 sheet */
+.ic-leg{display:flex;flex-wrap:wrap;gap:4px 12px;margin:0;font-size:12.5px;color:#475569}
+.ic-leg b{display:inline-block;min-width:18px;margin-right:4px;color:#1e1b4b}
+@media (max-width:370px){.tb-ic{width:38px;min-width:38px}.tb-where b{font-size:16px}.pg-t{font-size:18px}}
+.card.has-meta>h2,.card.has-meta>h3,.card[data-cc]>h2,.card[data-cc]>h3{padding:0!important}
+.level>.two,.level .two:not(.card .two){gap:0!important;margin:0!important}
+.two>.card{margin:8px 0!important}
 </style>
 </head>
 <body class="mode-use">
@@ -1233,9 +1315,11 @@ body.search-open .topbar{z-index:96!important}
 </div></header>
 
 <div class="topbar" id="topbar"><i id="tbProg" aria-hidden="true"></i><div class="tb-in">
+  <button class="icon-btn tb-ic tb-nv" id="mPrev" aria-label="上一站" title="上一站"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <div class="tb-where" id="tbWhere" aria-live="polite"></div>
-  <button class="icon-btn tb-ic" id="mSearch" aria-label="搜索零件" aria-controls="search">🔎</button>
-  <button class="icon-btn tb-ic" id="mTour" aria-label="开始导览" aria-pressed="false">🎬</button>
+  <button class="icon-btn tb-ic tb-nv" id="mNext" aria-label="下一站" title="下一站"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="icon-btn tb-ic" id="mSearch" aria-label="搜索零件" title="搜索零件" aria-controls="search">🔎</button>
+  <button class="icon-btn tb-ic" id="mTour" aria-label="开始导览" title="导览" aria-pressed="false">🎬</button>
   <div class="tb-keep" hidden>
     <button class="icon-btn" id="sideBtn" aria-label="打开学习地图" aria-controls="side">☰</button>
     <button class="icon-btn" id="searchBtn" aria-label="搜索零件">🔎</button>
@@ -2194,6 +2278,7 @@ body.search-open .topbar{z-index:96!important}
   <div class="sh-sec"><div class="sh-lbl">看哪个阶段（训练 / 使用）</div><div id="slotMode"></div><p class="sh-small">训练时：哪些零件会被调整；使用时：参数只读，按流程算一遍。</p><div id="slotBanner"></div></div>
   <div class="sh-sec"><div class="sh-lbl">详细程度</div><div id="slotZoom"></div><p class="sh-small">宏观只看概括和结构图；微观显示全部细节、演示与实验。</p></div>
   <div class="sh-sec"><div class="sh-lbl">学习进度</div><div class="sh-prog"><div class="prog-bar"><i id="shProgBar"></i></div><div id="shProgTxt" class="sh-small"></div></div></div>
+  <div class="sh-sec"><div class="sh-lbl">图标说明</div><p class="ic-leg"><span><b>‹ ›</b>上一站 / 下一站</span><span><b>● ● ●</b>站点进度（实心 = 当前）</span><span><b>🔎</b>搜索</span><span><b>🎬</b>导览</span><span><b>ⓘ</b>本站说明</span><span><b>− ＋</b>缩小 / 放大</span><span><b>⟲</b>复位 / 重来</span><span><b>↶</b>撤销</span><span><b>⛶</b>全屏看图</span><span><b>⌄</b>展开卡片</span></p></div>
   <div class="sh-sec sh-pn"><button class="btn" id="shPrev">◀ 上一站</button><button class="btn primary" id="shNext">下一站 ▶</button></div>
   <div class="sh-sec"><button class="btn wide" id="shProgDetail">🏁 查看学习进度与全部实验</button></div>
   <div class="sh-sec"><details class="sh-map" id="shMap"><summary>🗺️ 学习地图：全部站点和章节</summary><div id="slotTree"></div></details></div>
@@ -3516,7 +3601,7 @@ document.getElementById('t7dc').innerHTML=['data','compute','ssl'].map(function(
 var W=380;window.__ORIG=window.__ORIG||{};
 function el(id){return document.getElementById(id);}
 function keep(id){var e=el(id);if(!e||__ORIG[id])return;__ORIG[id]={vb:e.getAttribute('viewBox'),html:e.innerHTML};}
-function put(id,h,H,s){var e=el(id);if(!e)return;keep(id);e.setAttribute('viewBox','0 0 '+W+' '+Math.ceil(H));e.removeAttribute('style');e.removeAttribute('width');e.removeAttribute('height');e.innerHTML=(s?defs(s):'')+h;e.setAttribute('data-m','1');}
+function put(id,h,H,s){var e=el(id);if(!e)return;keep(id);e.setAttribute('viewBox','0 0 '+W+' '+Math.ceil(H));e.removeAttribute('style');e.removeAttribute('width');e.removeAttribute('height');e.innerHTML=(s?defs(s):'')+h;e.setAttribute('data-m','1');fixZoom(e);}
 /* text width estimate (px at font-size fs) */
 function tw(t,fs){var w=0;for(var i=0;i<t.length;i++){var c=t.charCodeAt(i);if(c>=0xD800&&c<=0xDBFF){w+=1.25;i++;continue;}w+=c>0x2e7f?1:(c===32?0.32:(c>=48&&c<=57?0.58:0.6));}return w*fs;}
 function wrap(t,maxW,fs){var toks=t.match(/[A-Za-z0-9_.%+\-×÷√·/]+|\s+|[\uD800-\uDBFF][\uDC00-\uDFFF]|./g)||[],lines=[],cur='';
@@ -3531,7 +3616,8 @@ function hasB(id){return C[id]&&C[id].train!=='no';}
 function tY(id,y){return hasB(id)?y-13:y-2;}
 function V(x,y1,y2,s,cls){return arr('M'+x+' '+y1+' V'+y2,s,cls);}
 function H_(y,x1,x2,s,cls){return arr('M'+x1+' '+y+' H'+x2,s,cls);}
-function cur(x1,y1,x2,y2,s,cls){var m=(y1+y2)/2;return arr('M'+x1+' '+y1+' C'+x1+' '+m+' '+x2+' '+m+' '+x2+' '+y2,s,cls);}
+/* orthogonal elbow: down (or up) from (x1,y1), across at ym, then into (x2,y2). No curves anywhere. */
+function cur(x1,y1,x2,y2,s,cls,ym){if(Math.abs(x1-x2)<0.5)return arr('M'+x1+' '+y1+' V'+y2,s,cls);var m=ym!=null?ym:Math.round((y1+y2)/2);return arr('M'+x1+' '+y1+' V'+m+' H'+x2+' V'+y2,s,cls);}
 /* two-column reading-order flow: row by row, left -> right, then down to the next row */
 function flow2(s,items,y0,o){o=o||{};var X=o.x||[12,202],w=o.w||166,hh=o.h||70,g=o.gap||36,out='',P=[];
  items.forEach(function(it,i){var r=Math.floor(i/2),c=i%2,x=X[c],y=y0+r*(hh+g);if(i===items.length-1&&c===0&&!o.noCenter)x=Math.round((W-w)/2);var h=it.h||hh,yy=y+(hh-h)/2;
@@ -3541,30 +3627,42 @@ function flow2(s,items,y0,o){o=o||{};var X=o.x||[12,202],w=o.w||166,hh=o.h||70,g
   if(Math.floor(i/2)===Math.floor((i+1)/2))A+=H_(a.y+a.h/2,a.x+a.w+(a.stack?12:0),b.x-2,s);
   else{var x1=a.x+a.w/2,y1=a.y+a.h,x2=b.x+b.w/2,y2=b.id?tY(b.id,b.y):b.y-2;A+=cur(x1,y1,x2,y2,s);}}
  return {s:out+A,P:P,end:y0+Math.ceil(items.length/2)*(hh+g)-g};}
+function P_(pts,s,cls){var d='M'+pts[0][0]+' '+pts[0][1];for(var i=1;i<pts.length;i++){var a=pts[i-1],b=pts[i];d+=(a[0]===b[0])?' V'+b[1]:' H'+b[0];}return arr(d,s,cls);}
+/* badge clearance: an arrow touching the top edge of a box within ±52px of its centre meets the badge instead */
+function bY(id,dx){return hasB(id)&&Math.abs(dx)<=52?11:0;}
+function inT(id,x,bx,w,y){return y-2-bY(id,x-(bx+w/2));}
+function outT(id,x,bx,w,y){return y-bY(id,x-(bx+w/2));}
+/* the 🔍 'zoom in' mark must never sit on a label: try the bottom-right corner, then top-right, smaller */
+function fixZoom(svg){svg.querySelectorAll('g.comp').forEach(function(g){var z=null,T=[];g.querySelectorAll(':scope>text').forEach(function(t){if(t.textContent.indexOf('🔍')>=0)z=t;else T.push(t);});if(!z)return;var r=g.querySelector('rect.main');if(!r)return;
+ var x=+r.getAttribute('x'),y=+r.getAttribute('y'),w=+r.getAttribute('width'),h=+r.getAttribute('height');
+ var bb=T.map(function(t){var fs=parseFloat((t.getAttribute('style')||'').replace(/.*font-size:\s*/,''))||(t.classList.contains('t')?17:12.5);var cx=+t.getAttribute('x'),by=+t.getAttribute('y'),ww=tw(t.textContent,fs)*1.06+2;return [cx-ww/2-1,by-fs*0.85,cx+ww/2+1,by+fs*0.22];});
+ function free(a){return bb.every(function(b){return a[2]<=b[0]||a[0]>=b[2]||a[3]<=b[1]||a[1]>=b[3];});}
+ var cand=[[x+w-14,y+h-8,13],[x+w-10,y+h-4,12],[x+w-10,y+16,12],[x+10,y+h-4,12]];
+ for(var i=0;i<cand.length;i++){var c=cand[i],a=[c[0]-c[2]*0.66,c[1]-c[2]*0.9,c[0]+c[2]*0.66,c[1]+c[2]*0.15];if(free(a)){z.setAttribute('x',c[0]);z.setAttribute('y',c[1]);z.setAttribute('font-size',c[2]);return;}}
+ z.setAttribute('x',x+w-10);z.setAttribute('y',y+h-4);z.setAttribute('font-size',12);});}
 var X0=12,X1=202,BW=166;
 
 /* ---------- 大模型整体 svgL1 ---------- */
 (function(){var s='1',h='';
- h+='<rect x="16" y="6" width="360" height="118" rx="16" fill="#f8fafc" stroke="#e2e8f0"/>'+txt(30,28,'📝 文字世界','lbl','font-weight="700"');
- h+='<rect x="16" y="136" width="360" height="352" rx="16" fill="#f5f3ff" stroke="#e9e5ff"/>'+txt(30,158,'🔢 数字世界（每个词变成一串数字 = 向量）','lbl','font-weight="700"');
- h+='<rect x="16" y="500" width="360" height="118" rx="16" fill="#fff1f2" stroke="#ffe4e6"/>'+txt(30,522,'🎯 回到文字','lbl','font-weight="700"');
+ h+='<rect x="16" y="6" width="360" height="118" rx="16" fill="#f8fafc" stroke="#e2e8f0"/>'+txt(30,28,'📝 文字世界','lbl','font-weight="700"')+txt(366,28,'↺ 每轮从这里重新开始','lbl','text-anchor="end" font-size="12" fill="#c2410c"');
+ h+='<rect x="16" y="136" width="360" height="380" rx="16" fill="#f5f3ff" stroke="#e9e5ff"/>'+txt(196,158,'🔢 数字世界','lbl','font-weight="700" text-anchor="middle"')+txt(196,176,'（每个词变成一串数字 = 向量）','lbl','font-size="12.5" text-anchor="middle"');
+ h+='<rect x="16" y="528" width="360" height="118" rx="16" fill="#fff1f2" stroke="#ffe4e6"/>'+txt(30,550,'🎯 回到文字','lbl','font-weight="700"');
  h+=box('input',26,40,160,74,'输入文字',['“今天天气真”']);
  h+=box('tokenizer',206,40,160,74,'分词器',['切块 + 查编号','[今天][天气][真]']);
- h+=box('embed',26,184,160,58,'词嵌入表',['编号 → 一串数字']);
- h+=box('pos',206,184,160,58,'位置信息',['第几个词']);
- h+='<circle cx="196" cy="276" r="12" fill="#fff" stroke="#4f46e5" stroke-width="2"/>'+txt(196,282,'+','t');
- h+=box('blocks',66,316,250,72,'Transformer 块',['× N 层（常见几十层）','反复加工、理解上下文'],{stack:true});
- h+=box('lmhead',66,410,262,66,'输出打分层',['给词表里','每个词打分']);
- h+=box('prob',26,544,170,66,'下一个词概率',['好 70%','差 10%  冷 8%  …']);
- h+=box('sample',212,544,154,66,'采样',['按概率抽签','→ 抽中“好”']);
+ h+=box('embed',26,198,160,58,'词嵌入表',['编号 → 一串数字']);
+ h+=box('pos',206,198,160,58,'位置信息',['第几个词']);
+ h+='<circle cx="196" cy="290" r="12" fill="#fff" stroke="#4f46e5" stroke-width="2"/>'+txt(196,296,'+','t');
+ h+=box('blocks',66,330,250,72,'Transformer 块',['× N 层（常见几十层）','反复加工、理解上下文'],{stack:true});
+ h+=box('lmhead',66,440,262,66,'输出打分层',['给词表里','每个词打分']);
+ h+=box('prob',26,572,170,66,'下一个词概率',['好 70%','差 10%  冷 8%  …']);
+ h+=box('sample',212,572,154,66,'采样',['按概率抽签','→ 抽中“好”']);
  h+=H_(77,186,204,s);
- h+=cur(250,114,106,tY('embed',184),s)+V(300,114,tY('pos',184),s);
- h+=cur(106,242,182,276,s)+cur(286,242,210,276,s);
- h+=V(196,288,302,s)+V(196,388,397,s);
- h+=cur(150,476,111,tY('prob',544),s)+H_(577,196,210,s);
- h+=arr('M289 610 V640 H7 V77 H24',s,'flow');
- var t=ml(196,664,'🔁 把“好”接到句子末尾 → “今天天气真好”，整条流水线再跑一遍，猜下一个……这就是“接龙”',350,14,'text-anchor="middle" fill="#334155"');h+=t.s;
- put('svgL1',h,664+t.h,s);
+ h+=P_([[250,114],[250,130],[60,130],[60,inT('embed',60,26,160,198)]],s)+V(330,114,inT('pos',330,206,160,198),s);
+ h+=P_([[106,256],[106,290],[182,290]],s)+P_([[286,256],[286,290],[210,290]],s);
+ h+=V(196,302,316,s)+V(196,402,tY('lmhead',440),s);
+ h+=V(130,506,inT('prob',130,26,170,572),s)+H_(605,196,210,s);
+ var t=ml(196,676,'🔁 把“好”接到句子末尾 → “今天天气真好”，回到最上面的“输入文字”，整条流水线再跑一遍，猜下一个……这就是“接龙”',350,14,'text-anchor="middle" fill="#334155"');h+=t.s;
+ put('svgL1',h,676+t.h,s);
 })();
 /* ---------- Transformer 块 svgL2 ---------- */
 (function(){var s='2',h='';
@@ -3629,17 +3727,18 @@ var X0=12,X1=202,BW=166;
  h+=H_(60,178,200,s)+cur(285,105,95,tY('logits',145),s)+H_(190,178,200,s)+cur(285,235,190,tY('sample',275),s);
  put('svgOut',h,375,s);
 })();
-/* ---------- 训练面板 trainSvg ---------- */
+/* ---------- 训练面板 trainSvg：一圈 = 一道题 ---------- */
 (function(){var s='t',h='';var nodes=[['① 前向计算','模型猜：下一个词的概率'],['② 对答案','原文正确答案是“好”'],['③ 算损失','loss = −log(p“好”)'],['④ 反向传播','从后往前算每个参数','该往哪个方向调'],['⑤ 更新参数','所有表里的数字','各挪一小步']];
- var P=[];nodes.forEach(function(n,i){var r=Math.floor(i/2),c=i%2,x=c?204:22,y=14+r*128;P.push([x,y]);
+ var POS=[[22,14],[204,14],[204,142],[204,270],[22,270]];
+ nodes.forEach(function(n,i){var x=POS[i][0],y=POS[i][1];
   h+='<g class="tnode" id="tn'+i+'"><rect x="'+x+'" y="'+y+'" width="160" height="92" rx="14"/><text class="t" x="'+(x+80)+'" y="'+(y+32)+'">'+n[0]+'</text>';
   n.slice(1).forEach(function(t,j){h+='<text class="s" x="'+(x+80)+'" y="'+(y+56+j*18)+'">'+t+'</text>';});h+='</g>';});
- for(var i=0;i<4;i++){var a=P[i],b=P[i+1];var st=' style="stroke:'+(i===2?'#ea580c':'#94a3b8')+'"';
-  if(i%2===0)h+='<path class="arrow flow" d="M'+(a[0]+162)+' '+(a[1]+46)+' H'+(b[0]-2)+'" marker-end="url(#ah'+s+')"'+st+'/>';
-  else h+='<path class="arrow flow" d="M'+(a[0]+80)+' '+(a[1]+92)+' C'+(a[0]+80)+' '+(a[1]+112)+' '+(b[0]+80)+' '+(b[1]-20)+' '+(b[0]+80)+' '+(b[1]-2)+'" marker-end="url(#ah'+s+')"'+st+'/>';}
- h+='<path class="arrow flow" d="M102 362 V384 H8 V60 H20" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>';
- ['换下一道题，','重复几十亿次以上 🔁'].forEach(function(t,i){h+='<text class="lbl" x="200" y="'+(300+i*20)+'" font-size="13.5" fill="#c2410c">'+t+'</text>';});
- put('trainSvg',h,394,s);
+ var g=' style="stroke:#94a3b8"',o=' style="stroke:#ea580c"';
+ function A(d,st){return '<path class="arrow flow" d="'+d+'" marker-end="url(#ah'+s+')"'+st+'/>';}
+ h+=A('M184 60 H202',g)+A('M284 106 V140',g)+A('M284 234 V268',o)+A('M204 316 H184',g);
+ h+='<path class="arrow flow" d="M44 270 V108" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>';
+ ['换下一道题，','重复几十亿次以上 🔁'].forEach(function(t,i){h+='<text class="lbl" x="56" y="'+(184+i*20)+'" font-size="12.5" fill="#c2410c">'+t+'</text>';});
+ put('trainSvg',h,370,s);
 })();
 /* ---------- 全景 svgT1 ---------- */
 (function(){var s='T1',h='',y=8;
@@ -3680,31 +3779,30 @@ var X0=12,X1=202,BW=166;
  var iL=ml(190,iB+34,'⬆ 推理服务在 GPU 上加载这些参数，执行每一次计算',366,12.5,'text-anchor="middle" fill="#334155"');h+=iL.s;
  put('svgT1',h,y6+244,s);
 })();
-/* ---------- Agent 循环 svgAg ---------- */
-(function(){var s='Ag',h='',R=[16,108,200,292,384,476],bh=64,L=14,Rx=200,w=166;
- h+=box('goal',L,R[0],w,bh,'① 用户目标',['任务从这里开始']);
- h+=box('answer',Rx,R[0],w,bh,'⑥ 最终回答',['交付给用户']);
- h+=box('ctx',L,R[1],w,bh,'② 观察 / 上下文',['模型能看到的一切'],{}).replace('<text class="t" ','<text class="t" style="font-size:16px" ');
- h+=box('think',Rx,R[1],w,bh,'③ 思考 / 决策',['大模型决定下一步']);
- h+=box('loop',L,R[2],w,bh,'🔁 循环控制',['步数上限 / 停止条件']);
- h+=box('plan',Rx,R[2],w,bh,'规划',['拆步骤、可改计划']);
- h+=box('toolres',L,R[3],w,bh,'⑤ 工具结果',['作为“数据”回填']);
- h+=box('guard',Rx,R[3],w,bh,'权限闸门',['写操作要确认']);
- h+=box('memory',L,R[4],w,bh,'记忆 / RAG',['按需检索']);
- h+=box('tools',Rx,R[4],w,bh,'④ 调用工具',['程序真正执行']);
- h+=box('mcp',Rx,R[5],w,bh,'MCP 工具协议',['工具的统一插座']);
- h+=V(97,R[0]+bh,tY('ctx',R[1]),s);
- h+=H_(R[1]+32,L+w,Rx-2,s);
- h+=V(350,R[1],R[0]+bh+2,s)+txt(344,R[1]-11,'完成','lbl','font-size="12.5" text-anchor="end"');
- h+=arr('M366 '+(R[1]+32)+' H374 V'+(R[3]+32)+' H368',s);
- h+=V(330,R[3]+bh,tY('tools',R[4]),s);
- h+=cur(240,R[4],140,R[3]+bh+2,s);
- h+=V(97,R[3],R[2]+bh+2,s)+V(97,R[2],R[1]+bh+2,s);
- h+=V(240,R[1]+bh,tY('plan',R[2]),s,'res');
- h+=arr('M14 '+(R[4]+32)+' H6 V'+(R[1]+40)+' H12',s,'res');
- h+=V(283,R[5],R[4]+bh+2,s,'res');
- ['结果加入上下文，','进入下一圈'].forEach(function(t,i){h+=txt(97,R[5]+26+i*19,t,'lbl','text-anchor="middle" font-size="12.5"');});
- put('svgAg',h,R[5]+bh+8,s);
+/* ---------- Agent 循环 svgAg：三列，主循环是左两列的一个方框圈 ---------- */
+(function(){var s='Ag',h='',A=3,B=131,Cx=259,w=114,bh=74,R=[20,142,256,370],cA=A+w/2,cB=B+w/2,cC=Cx+w/2;
+ h+=bx('goal',A,R[0],w,bh,'① 用户目标',['任务从这里开始'],{tf:15});
+ h+=bx('memory',B,R[0],w,bh,'记忆 / RAG',['按需检索'],{tf:15});
+ h+=bx('answer',Cx,R[0],w,bh,'⑥ 最终回答',['交付给用户'],{tf:15});
+ h+=bx('ctx',A,R[1],w,bh,'② 观察 / 上下文',['模型能看到的一切'],{tf:14});
+ h+=bx('think',B,R[1],w,bh,'③ 思考 / 决策',['大模型','决定下一步'],{tf:15});
+ h+=bx('plan',Cx,R[1],w,bh,'规划',['拆步骤、','可改计划'],{tf:15});
+ h+=bx('loop',A,R[2],w,bh,'🔁 循环控制',['步数上限','停止条件'],{tf:15});
+ h+=bx('guard',B,R[2],w,bh,'权限闸门',['写操作要确认'],{tf:15});
+ h+=bx('toolres',A,R[3],w,bh,'⑤ 工具结果',['作为“数据”回填'],{tf:15});
+ h+=bx('tools',B,R[3],w,bh,'④ 调用工具',['程序真正执行'],{tf:15});
+ h+=bx('mcp',Cx,R[3],w,bh,'MCP 工具协议',['工具的统一插座'],{tf:14});
+ var gy=R[0]+bh+24,my=R[1]+bh/2,ty=R[3]+bh/2;
+ h+=V(cA,R[0]+bh,inT('ctx',cA,A,w,R[1]),s);
+ h+=P_([[B+30,R[0]+bh],[B+30,gy],[A+w-14,gy],[A+w-14,inT('ctx',A+w-14,A,w,R[1])]],s,'res');
+ h+=P_([[B+w-10,outT('think',B+w-10,B,w,R[1])],[B+w-10,gy],[cC,gy],[cC,R[0]+bh+2]],s);
+ h+=txt((B+w-10+cC)/2+4,gy-6,'完成','lbl','font-size="12.5" text-anchor="middle"');
+ h+=H_(my,A+w,B-2,s)+H_(my,B+w,Cx-2,s,'res');
+ h+=V(cB,R[1]+bh,inT('guard',cB,B,w,R[2]),s)+V(cB,R[2]+bh,inT('tools',cB,B,w,R[3]),s);
+ h+=H_(ty,B,A+w+2,s)+H_(ty,Cx,B+w+2,s,'res');
+ h+=V(cA,outT('toolres',cA,A,w,R[3]),R[2]+bh+2,s)+V(cA,outT('loop',cA,A,w,R[2]),R[1]+bh+2,s);
+ ['结果加入上下文，','进入下一圈'].forEach(function(t,i){h+=txt(cA,R[3]+bh+22+i*18,t,'lbl','text-anchor="middle" font-size="12.5"');});
+ put('svgAg',h,R[3]+bh+50,s);
 })();
 /* ---------- RAG svgRag ---------- */
 (function(){var s='Rg',h='';
@@ -3714,24 +3812,25 @@ var X0=12,X1=202,BW=166;
  h+=box('vemb',12,136,166,64,'向量化',['嵌入模型']);
  h+=box('vecdb',202,136,166,64,'向量数据库',['存向量 + 原文']);
  h+='<path d="M8 226 H372" stroke="#e9d5ff" stroke-dasharray="6 5"/>';
- h+=txt(14,250,'在线：每次提问时','lbl','font-size="12.5" fill="#a21caf" font-weight="700"');
+ h+=txt(60,250,'在线：每次提问时','lbl','font-size="12.5" fill="#a21caf" font-weight="700"');
  h+=srect(12,264,166,60,'❓ 当前问题','“明天要带伞吗”','#f8fafc');
  h+=box('retr',202,272,166,60,'检索 Top-k',['最相似的几块']);
  h+=box('ctx',202,370,166,60,'放进上下文',['和问题一起给模型']);
- h+=H_(64,178,200,s)+cur(285,94,95,tY('vemb',136),s)+H_(168,178,200,s);
- h+=V(80,264,202,s);
- h+=cur(130,200,250,tY('retr',272),s)+V(320,200,tY('retr',272),s)+V(285,332,tY('ctx',370),s);
+ h+=H_(64,178,200,s)+cur(285,94,95,tY('vemb',136),s,'',115)+H_(168,178,200,s);
+ h+=V(40,264,202,s);
+ h+=P_([[130,200],[130,213],[250,213],[250,inT('retr',250,202,166,272)]],s)+V(320,200,inT('retr',320,202,166,272),s)+V(285,332,tY('ctx',370),s);
  put('svgRag',h,438,s);
 })();
-/* ---------- 多 Agent svgMulti ---------- */
+/* ---------- 多 Agent svgMulti：打回走中间的空隙，不绕边 ---------- */
 (function(){var s='Mu',h='';
  h+=box('orch',107,16,166,74,'协调者',['拆任务、汇总']);
  h+=box('worker',14,136,166,70,'执行者 A',['查资料']);
  h+=box('worker',200,136,166,70,'执行者 B',['写代码']);
- h+=box('critic',107,252,166,74,'审查者',['挑错、打回']);
- h+=cur(160,90,97,tY('worker',136),s)+cur(220,90,283,tY('worker',136),s)+cur(97,206,160,tY('critic',252),s)+cur(283,206,220,tY('critic',252),s);
- h+=arr('M107 289 H6 V53 H105',s,'res');
- put('svgMulti',h,336,s);
+ h+=box('critic',107,262,166,74,'审查者',['挑错、打回']);
+ h+=P_([[150,90],[150,112],[97,112],[97,tY('worker',136)]],s)+P_([[230,90],[230,112],[283,112],[283,tY('worker',136)]],s);
+ h+=P_([[97,206],[97,232],[150,232],[150,inT('critic',150,107,166,262)]],s)+P_([[283,206],[283,232],[230,232],[230,inT('critic',230,107,166,262)]],s);
+ h+=V(190,outT('critic',190,107,166,262),92,s,'res')+txt(196,226,'打回','lbl','font-size="12" fill="#b45309"');
+ put('svgMulti',h,346,s);
 })();
 /* ---------- MCP svgMcp ---------- */
 (function(){var s='Mc',h='';
@@ -3760,33 +3859,30 @@ var X0=12,X1=202,BW=166;
  var t=ml(190,440,'只有被路由器选中的少数专家参与计算',360,12.5,'text-anchor="middle" fill="#0891b2"');h+=t.s;
  put('svgMoeV',h,440+t.h,s);
 })();
-/* ---------- MoE svgMoe ---------- */
-(function(){var s='Mo',h='',lines='',boxes='';
+/* ---------- MoE svgMoe：专家放进一个“专家池”，进出各一根线 ---------- */
+(function(){var s='Mo',h='',boxes='';
  h+=txt(190,18,'每个专家 = 一个小前馈网络（放大—开关—压回）','lbl','text-anchor="middle" font-size="12.5" fill="#0e7490"');
  h+=srect(12,34,166,64,'某个 token 的向量','（来自注意力之后）','#f8fafc');
  h+=box('router',202,34,166,64,'路由器',['给专家打分']);
  h+=box('topk',202,132,166,60,'Top-k',['只选前 k 个']);
  h+=H_(66,178,200,s)+V(285,98,tY('topk',132),s);
- for(var i=0;i<8;i++){var c=i%4,r=Math.floor(i/4),x=8+c*92,y=230+r*76;
-  boxes+='<g id="moeE'+i+'">'+bx('expert',x,y,86,48,'专家 '+(i+1),[],{tf:15})+'</g>';
-  lines+='<path class="arrow" style="stroke:#cbd5e1;stroke-width:1.4" d="M285 192 C285 210 '+(x+43)+' '+(y-24)+' '+(x+43)+' '+(y-12)+'"/>';
-  lines+='<path class="arrow" style="stroke:#cbd5e1;stroke-width:1.4" d="M'+(x+43)+' '+(y+48)+' C'+(x+43)+' 400 190 380 190 400"/>';}
- h+=lines+boxes;
- h+=srect(110,402,160,56,'加权求和','→ 残差','#ecfeff');
+ h+='<rect x="4" y="226" width="372" height="154" rx="16" fill="#f0fdfa" stroke="#99f6e4"/>';
+ for(var i=0;i<8;i++){var c=i%4,r=Math.floor(i/4),x=10+c*92,y=250+r*70;boxes+='<g id="moeE'+i+'">'+bx('expert',x,y,86,48,'专家 '+(i+1),[],{tf:15})+'</g>';}
+ h+=boxes+V(285,192,224,s);
+ h+=srect(110,402,160,56,'加权求和','→ 残差','#ecfeff')+V(190,380,400,s);
  h+=box('lbloss',12,496,166,60,'负载均衡',['训练时的约束'])+box('sparse',202,496,166,60,'稀疏激活',['省算力不省显存']);
  put('svgMoe',h,564,s);
 })();
-/* ---------- MHA / GQA / MQA svgAttnV ---------- */
+/* ---------- MHA / GQA / MQA svgAttnV：同组的 Q 先汇到一根横线，再竖直接到共用的 K/V ---------- */
 (function(){var s='Av',h='';
  [['mha','MHA 多头',8],['gqa','GQA 分组查询',2],['gqa','MQA 多查询',1]].forEach(function(g,gi){var y0=14+gi*196;h+=box(g[0],20,y0,340,40,g[1],[]);
-  var qx=function(i){return 50+i*40;};var nk=g[2];var kx=function(j){return 190+(j-(nk-1)/2)*(nk>2?40:140);};
-  for(var i=0;i<8;i++){var j=Math.floor(i/(8/nk));h+='<line x1="'+qx(i)+'" y1="'+(y0+86)+'" x2="'+kx(j)+'" y2="'+(y0+130)+'" stroke="#7dd3fc" stroke-width="1.5"/>';}
-  for(i=0;i<8;i++)h+='<circle cx="'+qx(i)+'" cy="'+(y0+78)+'" r="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>';
+  var qx=function(i){return 50+i*40;};var nk=g[2];var kx=function(j){return 190+(j-(nk-1)/2)*(nk>2?40:140);};var per=8/nk,L='';
+  for(var j=0;j<nk;j++){if(per===1){L+='M'+qx(j)+' '+(y0+88)+' V'+(y0+128)+' ';continue;}var a=qx(j*per),b=qx(j*per+per-1);for(var i=j*per;i<j*per+per;i++)L+='M'+qx(i)+' '+(y0+88)+' V'+(y0+104)+' ';L+='M'+a+' '+(y0+104)+' H'+b+' M'+kx(j)+' '+(y0+104)+' V'+(y0+128)+' ';}
+  h+='<path d="'+L+'" fill="none" stroke="#7dd3fc" stroke-width="1.6"/>';
+  for(var i=0;i<8;i++)h+='<circle cx="'+qx(i)+'" cy="'+(y0+78)+'" r="10" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>';
   for(var k=0;k<nk;k++)h+='<rect x="'+(kx(k)-13)+'" y="'+(y0+128)+'" width="26" height="22" rx="6" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>';
-  h+=txt(370,y0+68,'Q 头 × 8','lbl','text-anchor="end" font-size="12.5"').replace('x="370"','x="372"');
+  h+='<text class="lbl" x="190" y="'+(y0+62)+'" text-anchor="middle" font-size="12.5">Q 头 × 8</text>';
   h+=txt(190,y0+168,'K/V 头 × '+nk+'（要缓存）','lbl','text-anchor="middle" font-size="12.5" fill="#b45309"');});
- /* Q label goes left of the circles row so it never overlaps them */
- h=h.replace(/<text class="lbl" x="372" y="(\d+)" text-anchor="end" font-size="12.5">Q 头 × 8<\/text>/g,function(m,y){return '<text class="lbl" x="190" y="'+(+y-6)+'" text-anchor="middle" font-size="12.5">Q 头 × 8</text>';});
  put('svgAttnV',h,590,s);
 })();
 /* ---------- LoRA svgLora ---------- */
@@ -3795,40 +3891,41 @@ var X0=12,X1=202,BW=166;
  h+=srect(12,62,170,62,'🔒 原表 W（冻结）','d × d，不训练','#f1f5f9');
  h+=box('lora',206,66,72,58,'A',['d → r']);h+=box('lora',298,66,72,58,'B',['r → d']);
  h+='<circle cx="190" cy="172" r="16" fill="#fff" stroke="#65a30d" stroke-width="2"/>'+txt(190,178,'+','t');
- h+=cur(184,32,97,60,s)+cur(196,32,242,tY('lora',66),s)+H_(95,278,296,s)+cur(97,124,176,166,s)+cur(334,124,204,166,s)+V(190,188,214,s);
+ h+=P_([[190,30],[190,44],[97,44],[97,60]],s)+P_([[190,30],[190,44],[242,44],[242,tY('lora',66)]],s)+H_(95,278,296,s);
+ h+=P_([[97,124],[97,172],[172,172]],s)+P_([[334,124],[334,172],[208,172]],s)+V(190,188,214,s);
  h+=txt(190,236,'输出','lbl','font-size="14" text-anchor="middle"');
  put('svgLora',h,246,s);
 })();
-/* ---------- 多模态总览 svgMM ---------- */
+/* ---------- 多模态总览 svgMM：文字放最后一行，绕开投影层；生成用中间一根“主干”分出去 ---------- */
 (function(){var s='MM',h='';var Y=[14,84,154,224],ih=54;
- [['📝 文字',0],['🖼️ 图片',1],['🎤 音频',2],['🎬 视频',3]].forEach(function(a){h+=srect(6,Y[a[1]],92,ih,a[0],'','#f8fafc');h+=H_(Y[a[1]]+27,98,112,s);});
- h+=bx('tokenizer',114,Y[0],150,ih,'分词器',['切成词元'],{tf:16});h+=bx('vit',114,Y[1],150,ih,'视觉编码器',['切图块 → ViT'],{tf:16});h+=bx('audenc',114,Y[2],150,ih,'音频编码器',['频谱 → 向量'],{tf:16});h+=bx('vit',114,Y[3],150,ih,'视觉编码器',['逐帧 / 时空块'],{tf:16});
- h+=bx('projector',280,Y[1],86,Y[3]+ih-Y[1],'投影层',['对齐到','词向量格式'],{tf:16});
- h+=H_(Y[1]+27,264,278,s)+H_(Y[2]+27,264,278,s)+H_(Y[3]+27,264,278,s);
- h+=arr('M264 '+(Y[0]+27)+' H374 V'+(tY('mmhub',310)-2),s);
+ [['🖼️ 图片',0],['🎤 音频',1],['🎬 视频',2],['📝 文字',3]].forEach(function(a){h+=srect(6,Y[a[1]],92,ih,a[0],'','#f8fafc');h+=H_(Y[a[1]]+27,98,112,s);});
+ h+=bx('vit',114,Y[0],150,ih,'视觉编码器',['切图块 → ViT'],{tf:16});h+=bx('audenc',114,Y[1],150,ih,'音频编码器',['频谱 → 向量'],{tf:16});h+=bx('vit',114,Y[2],150,ih,'视觉编码器',['逐帧 / 时空块'],{tf:16});h+=bx('tokenizer',114,Y[3],150,ih,'分词器',['切成词元'],{tf:16});
+ h+=bx('projector',280,Y[0],86,Y[2]+ih-Y[0],'投影层',['对齐到','词向量格式'],{tf:16});
+ h+=H_(Y[0]+27,264,278,s)+H_(Y[1]+27,264,278,s)+H_(Y[2]+27,264,278,s);
  h+=box('mmhub',12,310,350,74,'统一的',['token 序列','（一串向量）']);
- h+=V(323,Y[3]+ih,tY('mmhub',310),s);
+ h+=P_([[264,Y[3]+27],[300,Y[3]+27],[300,inT('mmhub',300,12,350,310)]],s)+V(340,Y[2]+ih,inT('mmhub',340,12,350,310),s);
  h+=box('mllm',60,422,260,72,'多模态大模型',['统一理解','与推理']);
  h+=V(190,384,tY('mllm',422),s);
  var G=[['gtext','文字生成',['自回归接龙']],['gimg','图片生成',['扩散 / 潜空间']],['gaud','音频生成',['声学 token / 声码器']],['gvid','视频生成',['时空潜空间']],['g3d','3D 生成',['多视图 + 重建']]];
- G.forEach(function(a,i){var r=Math.floor(i/2),c=i%2,x=i===4?107:(c?202:12),y=540+r*86;h+=box(a[0],x,y,166,58,a[1],a[2]);h+=cur(190,494,x+83,tY(a[0],y),s);});
- put('svgMM',h,540+2*86+66,s);
+ G.forEach(function(a,i){var r=Math.floor(i/2),c=i%2,x=c?212:8,y=530+r*86;h+=box(a[0],x,y,160,58,a[1],a[2]);h+=P_([[190,494],[190,y+29],[c?210:170,y+29]],s);});
+ put('svgMM',h,530+2*86+66,s);
 })();
-/* ---------- 看图 svgVit ---------- */
+/* ---------- 看图 svgVit：左列看图、右列文字，两路向下汇合 ---------- */
 (function(){var s='Vt',h='';
- h+=srect(12,20,166,56,'🖼️ 图片','','#f8fafc');
- h+=box('patch',202,14,166,70,'切图块',['16×16 一块 → 向量']);
- h+=box('vit',12,122,154,70,'视觉编码器 ViT',['几层 Transformer'],{stack:true,tf:15});
- h+=box('projector',202,122,166,70,'投影层',['变成“视觉 token”']);
- h+=srect(12,236,166,56,'❓“图里有几只猫？”','','#f8fafc');
- h+=box('tokenizer',202,230,166,70,'分词器',['文字 token']);
- h+=box('mllm',60,344,250,80,'多模态大模型',['图文一起理解']);
- h+=srect(130,468,120,48,'💬 回答','','#f8fafc');
- h+=H_(48,178,200,s)+cur(285,84,89,tY('vit',122)-10,s)+H_(157,178,200,s);
- h+=arr('M368 157 H376 V384 H312',s);
- h+=H_(264,178,200,s)+V(260,300,tY('mllm',344),s);
- h+=V(190,424,466,s);
- put('svgVit',h,524,s);
+ h+=srect(12,16,166,52,'🖼️ 图片','','#f8fafc');
+ h+=box('patch',12,100,166,66,'切图块',['16×16 一块 → 向量']);
+ h+=box('vit',12,200,154,66,'视觉编码器 ViT',['几层 Transformer'],{stack:true,tf:15});
+ h+=box('projector',12,300,166,66,'投影层',['变成“视觉 token”']);
+ h+=ml(285,40,'图片先切块、编码、投影成“视觉 token”；文字直接分词。两路在多模态大模型里汇合。',150,12.5,'text-anchor="middle" fill="#64748b"').s;
+ h+=srect(202,206,166,52,'❓“图里有几只猫？”','','#f8fafc');
+ h+=box('tokenizer',202,300,166,66,'分词器',['文字 token']);
+ h+=box('mllm',60,410,260,80,'多模态大模型',['图文一起理解']);
+ h+=srect(130,522,120,48,'💬 回答','','#f8fafc');
+ h+=V(95,68,inT('patch',95,12,166,100),s)+V(89,166,inT('vit',89,12,154,200)-(hasB('vit')?0:12),s)+V(89,266,inT('projector',89,12,166,300),s);
+ h+=V(285,258,tY('tokenizer',300),s);
+ h+=V(95,366,inT('mllm',95,60,260,410),s)+V(285,366,inT('mllm',285,60,260,410),s);
+ h+=V(190,490,520,s);
+ put('svgVit',h,578,s);
 })();
 /* ---------- 听声 svgAudE ---------- */
 (function(){var s='Ae',h='';
@@ -3836,35 +3933,39 @@ var X0=12,X1=202,BW=166;
  var t=ml(190,f.end+30,'另一条路：用神经音频编解码器直接把波形压成离散“声学 token”',360,12.5,'text-anchor="middle"');h+=t.s;
  put('svgAudE',h,f.end+30+t.h,s);
 })();
-/* ---------- CLIP svgClip ---------- */
+/* ---------- CLIP svgClip：两路各自编码，向下汇合 ---------- */
 (function(){var s='Cl',h='';
- h+=srect(12,20,150,60,'🖼️ 图片','','#f8fafc');h+=box('vit',190,15,178,70,'图像编码器',['出一条向量']);
- h+=srect(12,124,150,60,'📝 描述','','#f8fafc');h+=box('txtenc',190,119,178,70,'文字编码器',['出一条向量']);
- h+=box('clip',80,236,220,90,'对比学习',['配对的拉近','不配对的推远']);
- h+=H_(50,162,188,s)+H_(154,162,188,s)+arr('M368 50 H376 V281 H302',s)+cur(279,189,240,tY('clip',236),s);
- h+=V(190,326,354,s);
- h+='<ellipse cx="190" cy="430" rx="176" ry="74" fill="#fdf2f8" stroke="#f9a8d4" stroke-dasharray="6 4"/>'+txt(190,400,'共享的“意思空间”','lbl','text-anchor="middle" font-weight="700" font-size="14" fill="#9d174d"');
- h+='<circle cx="150" cy="438" r="7" fill="#db2777"/><rect x="162" y="432" width="12" height="12" fill="#7e22ce"/>'+txt(190,474,'● 猫的照片　■ “一只橘猫在睡觉”','lbl','text-anchor="middle" font-size="12.5"');
- h+='<circle cx="270" cy="424" r="7" fill="#db2777" opacity=".5"/><rect x="88" y="418" width="12" height="12" fill="#7e22ce" opacity=".5"/>';
- put('svgClip',h,512,s);
+ h+=srect(12,16,166,52,'🖼️ 图片','','#f8fafc');h+=srect(202,16,166,52,'📝 描述','','#f8fafc');
+ h+=box('vit',12,100,166,70,'图像编码器',['出一条向量']);h+=box('txtenc',202,100,166,70,'文字编码器',['出一条向量']);
+ h+=box('clip',80,220,220,90,'对比学习',['配对的拉近','不配对的推远']);
+ h+=V(95,68,tY('vit',100),s)+V(285,68,tY('txtenc',100),s);
+ h+=P_([[95,170],[95,195],[150,195],[150,inT('clip',150,80,220,220)]],s)+P_([[285,170],[285,195],[230,195],[230,inT('clip',230,80,220,220)]],s);
+ h+=V(190,310,338,s);
+ h+='<ellipse cx="190" cy="414" rx="176" ry="74" fill="#fdf2f8" stroke="#f9a8d4" stroke-dasharray="6 4"/>'+txt(190,384,'共享的“意思空间”','lbl','text-anchor="middle" font-weight="700" font-size="14" fill="#9d174d"');
+ h+='<circle cx="150" cy="422" r="7" fill="#db2777"/><rect x="162" y="416" width="12" height="12" fill="#7e22ce"/>'+txt(190,458,'● 猫的照片　■ “一只橘猫在睡觉”','lbl','text-anchor="middle" font-size="12.5"');
+ h+='<circle cx="270" cy="408" r="7" fill="#db2777" opacity=".5"/><rect x="88" y="402" width="12" height="12" fill="#7e22ce" opacity=".5"/>';
+ put('svgClip',h,496,s);
 })();
-/* ---------- 文字生成 svgGT ---------- */
+/* ---------- 文字生成 svgGT：接龙是一个方框圈 ---------- */
 (function(){var s='Gt',h='';
- var f=flow2(s,[{b:['gtext','文字生成',['自回归']]},{b:['llm','大模型',['算下一个词']]},{b:['prob','下一个词概率',['好 70% …']]},{b:['sample','采样',['抽一个']]},{r:['接到末尾','再来一轮','#f8fafc'],h:60}],16,{h:70});h+=f.s;
- var p=f.P[4];h+=arr('M'+(p.x+p.w)+' '+(p.y+p.h/2)+' H374 V51 H370',s,'flow');
- put('svgGT',h,f.end+10,s);
+ h+=box('gtext',107,14,166,60,'文字生成',['自回归']);
+ h+=box('llm',12,116,166,70,'大模型',['算下一个词']);h+=box('prob',202,116,166,70,'下一个词概率',['好 70% …']);
+ h+=box('sample',202,228,166,70,'采样',['抽一个']);h+=srect(12,233,166,60,'接到末尾','再来一轮','#f8fafc');
+ h+=P_([[150,74],[150,96],[95,96],[95,tY('llm',116)]],s);
+ h+=H_(151,178,200,s)+V(285,186,tY('sample',228),s)+H_(263,202,180,s)+V(95,233,188,s,'flow');
+ put('svgGT',h,306,s);
 })();
 /* ---------- 图片生成 svgGI ---------- */
 (function(){var s='Gi',h='';
  h+=srect(12,20,150,56,'📝 提示词','','#f8fafc');h+=box('tcond',190,15,178,66,'文本条件',['文字编码 + 引导']);
  h+=srect(12,118,150,56,'🎲 纯噪声','（潜空间里）','#f8fafc');
  h+=box('denoise',110,230,200,84,'去噪网络',['× 几十步（或更少）'],{stack:true});
- h+='<path class="arrow flow" d="M110 250 C40 240 40 300 106 296" marker-end="url(#ah'+s+')"/>'+txt(14,226,'反复去噪','lbl','font-size="12.5"');
+ h+=P_([[110,252],[88,252],[88,294],[108,294]],s,'flow')+txt(14,278,'反复去噪','lbl','font-size="12.5"');
  h+=box('vae',12,364,166,74,'潜空间解码器',['潜变量 → 像素']);
  h+=srect(202,374,166,56,'🖼️ 新图片','','#f8fafc');
  h+=box('gimg',80,480,220,44,'图片生成（总览）',[]);
- h+=H_(48,162,188,s)+cur(279,81,260,tY('denoise',230)-12,s)+cur(87,174,150,tY('denoise',230)-12,s);
- h+=cur(210,314,95,tY('vae',364),s)+H_(401,178,200,s);
+ h+=H_(48,162,188,s)+P_([[279,81],[279,150],[260,150],[260,216]],s)+P_([[87,174],[87,192],[150,192],[150,216]],s);
+ h+=P_([[210,314],[210,338],[95,338],[95,tY('vae',364)]],s)+H_(401,178,200,s);
  put('svgGI',h,532,s);
 })();
 /* ---------- 音频生成 svgGA ---------- */
@@ -3879,18 +3980,21 @@ var X0=12,X1=202,BW=166;
  h+=box('gvid',12,f.end+36,166,46,'视频生成（总览）',[],{tf:15})+box('tempcons',202,f.end+36,166,46,'时序一致性',[]);
  put('svgGV',h,f.end+90,s);
 })();
-/* ---------- 3D 生成 svgG3 ---------- */
+/* ---------- 3D 生成 svgG3：主路在右列，较慢的另一条路在左列，最后汇合 ---------- */
 (function(){var s='G3',h='';
- h+=srect(12,22,166,60,'📝 提示词 / 一张图','','#f8fafc');
- h+=box('mview',202,17,166,70,'多视图扩散',['生成几个一致视角']);
- h+=box('recon',12,126,150,70,'3D 重建',['把视角图拼成 3D']);
- h+=box('rep3d',178,126,196,70,'3D 表示',['网格 / 点云 / NeRF / 3D 高斯']);
- h+=srect(202,236,166,50,'🧊 3D 模型','','#f8fafc');
- h+=box('sds',12,250,166,70,'分数蒸馏',['2D 模型当评委反复改']);
- h+=box('g3d',107,360,166,56,'3D 生成',['（总览）']);
- h+=H_(52,178,200,s)+cur(285,87,87,tY('recon',126),s)+H_(161,162,176,s)+V(285,196,234,s);
- h+='<path class="arrow res" d="M12 60 H6 V285 H10" marker-end="url(#ar'+s+')"/><path class="arrow res" d="M150 250 C150 220 230 215 240 198" marker-end="url(#ar'+s+')"/>'+txt(12,230,'另一条路（较慢）','lbl','font-size="12.5" fill="#b45309"').replace('x="12"','x="14"');
- put('svgG3',h,424,s);
+ h+=srect(107,14,166,52,'📝 提示词 / 一张图','','#f8fafc');
+ h+=box('sds',12,110,166,70,'分数蒸馏',['2D 模型当评委反复改']);
+ h+=box('mview',202,110,166,70,'多视图扩散',['生成几个一致视角']);
+ h+=box('recon',202,214,166,70,'3D 重建',['把视角图拼成 3D']);
+ h+=box('rep3d',92,318,196,70,'3D 表示',['网格 / 点云 / NeRF / 3D 高斯']);
+ h+=srect(202,428,166,50,'🧊 3D 模型','','#f8fafc');
+ h+=box('g3d',12,425,166,56,'3D 生成',['（总览）']);
+ h+=P_([[150,66],[150,88],[95,88],[95,tY('sds',110)]],s,'res')+P_([[230,66],[230,88],[285,88],[285,tY('mview',110)]],s);
+ h+=V(285,180,tY('recon',214),s)+V(270,284,inT('rep3d',270,92,196,318),s);
+ h+=V(110,180,inT('rep3d',110,92,196,318),s,'res');
+ ['另一条路','（较慢）'].forEach(function(t,i){h+=txt(100,244+i*18,t,'lbl','font-size="12.5" fill="#b45309" text-anchor="end"');});
+ h+=V(270,388,426,s);
+ put('svgG3',h,490,s);
 })();
 /* ---------- 训练体系 svgTP ---------- */
 (function(){var s='Tp',h='';
@@ -3898,40 +4002,51 @@ var X0=12,X1=202,BW=166;
  h+=box('compute',12,f.end+38,356,48,'数据与算力：贯穿每一个阶段',[]);
  put('svgTP',h,f.end+94,s);
 })();
-/* ---------- RLHF / 可验证奖励 svgRLHF ---------- */
-(function(){var s='Rh',h='';var L=12,R=202,w=166;
+/* ---------- RLHF / 可验证奖励 svgRLHF：偏好对齐是左两列的一个方框圈 ---------- */
+(function(){var s='Rh',h='';var L=8,R=222,w=150,cL=L+w/2,cR=R+w/2;
  h+=txt(190,20,'人类偏好','lbl','text-anchor="middle" font-size="13.5" font-weight="700" fill="#4d7c0f"');
- h+=srect(L,40,w,60,'❓ 问题','','#f8fafc');h+=box('llm',R,34,w,72,'大模型（策略）',['写出回答 A、B'],{tf:16});
- h+=srect(R,146,w,60,'🧑 人来比较','A 比 B 好','#f8fafc');h+=box('rm',L,140,w,72,'奖励模型',['学会给回答打分']);
- h+=box('pref',L,252,w,72,'策略优化',['得分高的更常写']);h+=box('kl',R,252,w,72,'KL 约束',['别跑离原模型太远']);
- h+=H_(70,178,200,s)+V(285,106,144,s)+H_(176,202,180,s)+V(95,212,tY('pref',252),s)+H_(288,178,200,s);
- h+='<path class="arrow flow" d="M95 324 V346 H376 V70 H370" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>'+txt(368,362,'更新参数，重复','lbl','font-size="12.5" fill="#c2410c" text-anchor="end"');
- h+=box('dpo',12,392,356,52,'DPO：跳过奖励模型',['直接用偏好对优化']);h+='<path class="arrow res" d="M226 206 C226 232 190 228 190 252 V376" marker-end="url(#ar'+s+')"/>';
- h+=txt(190,486,'可验证奖励','lbl','text-anchor="middle" font-size="13.5" font-weight="700" fill="#4d7c0f"');
- h+=srect(L,506,w,60,'🧮 数学 / 代码题','','#f8fafc');h+=box('llm',R,500,w,72,'大模型',['多试几次']);
- h+=srect(L,612,w,60,'✅ 程序自动判分','对 / 错 · 跑测试','#f8fafc');h+=box('rlvr',R,606,w,72,'推理强化学习',['提高“做对的过程”的概率'],{tf:16});
- h+=H_(536,178,200,s)+cur(285,572,95,610,s)+H_(642,178,200,s);
- put('svgRLHF',h,690,s);
+ h+=box('kl',L,36,w,64,'KL 约束',['别跑离原模型太远']);h+=srect(R,40,w,56,'❓ 问题','','#f8fafc');
+ h+=box('pref',L,132,w,72,'策略优化',['得分高的更常写']);h+=box('llm',R,132,w,72,'大模型（策略）',['写出回答 A、B'],{tf:16});
+ h+=box('rm',L,236,w,72,'奖励模型',['学会给回答打分']);h+=srect(R,242,w,60,'🧑 人来比较','A 比 B 好','#f8fafc');
+ h+=V(cR,96,tY('llm',132),s)+V(cL,100,tY('pref',132),s,'res');
+ h+='<path class="arrow flow" d="M'+(L+w)+' 168 H'+(R-2)+'" marker-end="url(#ah'+s+')" style="stroke:#f97316"/>';
+ h+=txt(190,160,'更新参数','lbl','font-size="12" fill="#c2410c" text-anchor="middle"')+txt(190,186,'重复 🔁','lbl','font-size="12" fill="#c2410c" text-anchor="middle"');
+ h+=V(cR,204,240,s)+H_(272,R,L+w+2,s)+V(cL,outT('rm',cL,L,w,236),206,s);
+ h+=box('dpo',L,344,364,52,'DPO：跳过奖励模型',['直接用偏好对优化'])+V(330,302,inT('dpo',330,L,364,344),s,'res');
+ h+=txt(190,436,'可验证奖励','lbl','text-anchor="middle" font-size="13.5" font-weight="700" fill="#4d7c0f"');
+ h+=srect(L,456,w,60,'🧮 数学 / 代码题','','#f8fafc');h+=box('llm',R,450,w,72,'大模型',['多试几次']);
+ h+=srect(L,560,w,60,'✅ 程序自动判分','对 / 错 · 跑测试','#f8fafc');h+=box('rlvr',R,554,w,72,'推理强化学习',['提高“做对的过程”','的概率'],{tf:16});
+ h+=H_(486,L+w,R-2,s)+P_([[cR,522],[cR,540],[cL,540],[cL,558]],s)+H_(590,L+w,R-2,s);
+ put('svgRLHF',h,636,s);
 })();
-/* ---------- 关系总图 svgMap ---------- */
+/* ---------- 关系总图 svgMap：每层一个“托盘”，上一层的根节点竖线接进托盘；跨层关系单独列在最后 ---------- */
 (function(){var e=el('svgMap');if(!e)return;keep('svgMap');
- var R=[['应用层',[['user','用户一句话'],['app','Agent 应用层'],['plan','规划'],['tools','工具调用'],['mcp','MCP'],['memory','记忆/RAG'],['loop','循环'],['guard','权限安全'],['multi','多 Agent']]],
- ['大模型',[['llm','大模型'],['tokenizer','分词器'],['embed','词嵌入'],['blocks','Transformer 块'],['lmhead','输出打分'],['sample','采样'],['ctxwin','上下文窗口']]],
- ['模型内部',[['attn','注意力'],['ffn','前馈网络'],['addnorm','残差+归一化'],['moe','MoE'],['router','路由器'],['gqa','GQA'],['longctx','长上下文']]],
- ['多模态',[['mmenc','多模态'],['vit','视觉编码'],['audenc','音频编码'],['clip','对比对齐'],['projector','投影层'],['gimg','图片生成'],['gaud','音频生成'],['gvid','视频生成'],['g3d','3D 生成']]],
- ['训练',[['trainsys','训练体系'],['nnet','神经网络'],['pretrain','预训练'],['sft','监督微调'],['pref','偏好对齐'],['rm','奖励模型'],['dpo','DPO'],['rlvr','推理 RL'],['rl','强化学习']]],
- ['算力',[['infra','算力与服务'],['serve','推理服务'],['kvcache','KV 缓存'],['batch','批处理'],['quant','量化'],['specdec','投机解码'],['lora','LoRA'],['distill','蒸馏'],['compute','数据与算力']]]];
- var P={},nodes='',links='',Hh=34,y=8,NM={};
- R.forEach(function(g,gi){var bandY=y;y+=26;var line=[],lw=0;var lines=[];g[1].forEach(function(a){var w=Math.ceil(tw(a[1],13)+22);if(lw+w+(line.length?10:0)>364&&line.length){lines.push([line,lw]);line=[];lw=0;}lw+=w+(line.length?10:0);line.push([a,w]);});if(line.length)lines.push([line,lw]);
-  lines.forEach(function(L){var x=(380-L[1])/2;L[0].forEach(function(it){P[it[0][0]]=[x+it[1]/2,y+Hh/2,it[1]];NM[it[0][0]]=it[0][1];x+=it[1]+10;});y+=Hh+30;});
-  nodes+='<rect x="2" y="'+bandY+'" width="376" height="'+(y-bandY-8)+'" rx="14" fill="'+(gi%2?'#f8fafc':'#fff')+'" stroke="#eef0f5"/>'+txt(10,bandY+18,g[0],'lbl','font-size="12.5" font-weight="700" fill="#94a3b8"');y+=10;});
- function link(a,b,x){var A=P[a],B=P[b];if(!A||!B)return '';var dx=x?' x':'';if(Math.abs(A[1]-B[1])<2){var yy=A[1]-Hh/2;return '<path class="maplink'+dx+'" d="M'+A[0]+' '+yy+' Q'+((A[0]+B[0])/2)+' '+(yy-22)+' '+B[0]+' '+yy+'"/>';}
-  var lo=A[1]>B[1]?A:B,hi=A[1]>B[1]?B:A;return '<path class="maplink'+dx+'" d="M'+lo[0]+' '+(lo[1]-Hh/2)+' C'+lo[0]+' '+(lo[1]-Hh/2-24)+' '+hi[0]+' '+(hi[1]+Hh/2+24)+' '+hi[0]+' '+(hi[1]+Hh/2)+'"/>';}
- Object.keys(P).forEach(function(id){if(C[id].up&&P[C[id].up])links+=link(id,C[id].up);});
- [['user','app'],['kvcache','attn'],['rl','rlvr'],['rl','pref'],['gqa','kvcache'],['memory','vit'],['quant','serve']].forEach(function(p){links+=link(p[0],p[1],1);});
- var bands=nodes;nodes='';
- Object.keys(P).forEach(function(id){var p=P[id],c=C[id];nodes+='<g class="comp mapn cat-'+c.cat+'" data-id="'+id+'" data-train="'+c.train+'" tabindex="0" role="button" aria-label="'+c.n+'"><rect class="main" x="'+(p[0]-p[2]/2)+'" y="'+(p[1]-Hh/2)+'" width="'+p[2]+'" height="'+Hh+'" rx="10"/><text x="'+p[0]+'" y="'+(p[1]+5)+'">'+NM[id]+'</text></g>';});
- e.setAttribute('viewBox','0 0 380 '+Math.ceil(y));e.removeAttribute('style');e.innerHTML=bands+links+nodes;e.setAttribute('data-m','1');
+ var B=[['应用层',['user','app'],[['plan','规划'],['tools','工具调用'],['mcp','MCP'],['memory','记忆/RAG'],['loop','循环'],['guard','权限安全'],['multi','多 Agent']]],
+ ['大模型',['llm'],[['tokenizer','分词器'],['embed','词嵌入'],['lmhead','输出打分'],['sample','采样'],['ctxwin','上下文窗口'],['blocks','Transformer 块']]],
+ ['模型内部',null,[['attn','注意力'],['ffn','前馈网络'],['addnorm','残差+归一化'],['moe','MoE'],['router','路由器'],['gqa','GQA'],['longctx','长上下文']]],
+ ['多模态',['mmenc'],[['vit','视觉编码'],['audenc','音频编码'],['clip','对比对齐'],['projector','投影层'],['gimg','图片生成'],['gaud','音频生成'],['gvid','视频生成'],['g3d','3D 生成']]],
+ ['训练',['trainsys'],[['nnet','神经网络'],['pretrain','预训练'],['sft','监督微调'],['pref','偏好对齐'],['rm','奖励模型'],['dpo','DPO'],['rlvr','推理 RL'],['rl','强化学习']]],
+ ['算力',['infra'],[['serve','推理服务'],['kvcache','KV 缓存'],['batch','批处理'],['quant','量化'],['specdec','投机解码'],['lora','LoRA'],['distill','蒸馏'],['compute','数据与算力']]]];
+ var RN={user:'用户一句话',app:'Agent 应用层',llm:'大模型',mmenc:'多模态',trainsys:'训练体系',infra:'算力与服务'};
+ var XR=[['kvcache','KV 缓存','attn','注意力'],['gqa','GQA','kvcache','KV 缓存'],['rl','强化学习','rlvr','推理 RL'],['rl','强化学习','pref','偏好对齐'],['memory','记忆/RAG','vit','视觉编码'],['quant','量化','serve','推理服务']];
+ var Hh=32,G=8,nodes='',bands='',links='',y=8,prevDrop=null;
+ function cw(t){return Math.ceil(tw(t,13)+22);}
+ function chip(id,t,x,yy,w){var c=C[id];return '<g class="comp mapn cat-'+c.cat+'" data-id="'+id+'" data-train="'+c.train+'" tabindex="0" role="button" aria-label="'+c.n+'"><rect class="main" x="'+x+'" y="'+yy+'" width="'+w+'" height="'+Hh+'" rx="10"/><text x="'+(x+w/2)+'" y="'+(yy+Hh/2+5)+'">'+t+'</text></g>';}
+ function lk(d,x){links+='<path class="maplink'+(x?' x':'')+'" d="'+d+'"/>';}
+ B.forEach(function(b,bi){var by=y;y+=28;var rootC=null;
+  if(b[1]){var x=14;b[1].forEach(function(id,i){var w=cw(RN[id]);nodes+=chip(id,RN[id],x,y,w);if(i)lk('M'+(x-18)+' '+(y+Hh/2)+' H'+(x-2));if(i===b[1].length-1)rootC=x+w/2;x+=w+20;});y+=Hh+14;}
+  var ty=y;y+=G;var x=22,rows=[],row=[];b[2].forEach(function(a){var w=cw(a[1]);if(x+w>358&&row.length){rows.push(row);row=[];x=22;}row.push([a,x,w]);x+=w+G;});if(row.length)rows.push(row);
+  var drop=null;rows.forEach(function(r,ri){r.forEach(function(it){nodes+=chip(it[0][0],it[0][1],it[1],y,it[2]);if(it[0][0]==='blocks')drop={x:it[1]+it[2]/2,y:y+Hh};});y+=Hh+G;});
+  var tb=y;bands+='<rect x="12" y="'+ty+'" width="356" height="'+(tb-ty)+'" rx="12" fill="#fff" stroke="#e2e8f0"/>';
+  if(rootC!=null)lk('M'+rootC+' '+(ty-14)+' V'+ty);
+  if(!b[1]&&prevDrop)lk('M'+prevDrop.x+' '+prevDrop.y+' V'+ty);
+  bands=('<rect x="2" y="'+by+'" width="376" height="'+(tb-by+8)+'" rx="14" fill="'+(bi%2?'#f8fafc':'#f1f5f9')+'" stroke="#eef0f5"/>'+txt(12,by+19,b[0],'lbl','font-size="12.5" font-weight="700" fill="#64748b"'))+bands;
+  prevDrop=drop;y=tb+18;});
+ /* cross links */
+ var by=y;y+=28;var x=14;var rowsX=[],row=[],lw=0;XR.forEach(function(p){var w=cw(p[1])+22+cw(p[3]);if(lw+w>352&&row.length){rowsX.push(row);row=[];lw=0;}row.push([p,w]);lw+=w+18;});if(row.length)rowsX.push(row);
+ rowsX.forEach(function(r){var x=14;r.forEach(function(it){var p=it[0],w1=cw(p[1]),w2=cw(p[3]);nodes+=chip(p[0],p[1],x,y,w1)+chip(p[2],p[3],x+w1+22,y,w2);lk('M'+(x+w1)+' '+(y+Hh/2)+' H'+(x+w1+22),1);x+=it[1]+18;});y+=Hh+G;});
+ bands+='<rect x="2" y="'+by+'" width="376" height="'+(y-by+4)+'" rx="14" fill="#faf5ff" stroke="#eef0f5"/>'+txt(12,by+19,'补充关系（虚线 = 互相影响）','lbl','font-size="12.5" font-weight="700" fill="#7c3aed"');
+ y+=10;e.setAttribute('viewBox','0 0 380 '+Math.ceil(y));e.removeAttribute('style');e.innerHTML=bands+links+nodes;e.setAttribute('data-m','1');
 })();
 window.__mdiag={W:W,tw:tw};
 })();
@@ -4999,6 +5114,9 @@ var byId=function(i){return document.getElementById(i);};
 var GROUP={T1:'T1',T2:'T2',T3:'T3',T4:'T4',T4a:'T4',T4b:'T4',T5:'more',T6:'more',T7:'more',T8:'more'};
 var ICON={T1:'🏠',T2:'🤖',T3:'🧠',T4:'🧩',T4a:'👀',T4b:'📚',T5:'⚡',T6:'🖼️',T7:'🏋️',T8:'🗺️'};
 var SUB={T5:'MoE、KV 缓存、量化、LoRA',T6:'看图、听声、画画、做视频',T7:'预训练、微调、强化学习',T8:'关系总图、术语表、进度'};
+var ICO={prev:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',next:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'};
+function visitedList(){try{return JSON.parse(localStorage.getItem('aiexp.v2.visited')||'[]')||[];}catch(e){return [];}}
+function dotsHTML(L,tap){var v=visitedList();return TABORDER.map(function(k,i){var c=(k===L?'on':'')+(v.indexOf(k)>=0?' v':'')+(PATH[k].length>PATH[TABORDER[Math.max(0,i-1)]].length&&i?' sub':'');return tap?'<button type="button" class="dt '+c+'" data-go="'+k+'" aria-label="第 '+(i+1)+' 站：'+esc(TABN[k])+(k===L?'（当前）':'')+'"><i></i></button>':'<i class="'+c+'"></i>';}).join('');}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 function mtoast(m){var t=byId('toast');if(!t)return;t.textContent=m;t.classList.add('show');clearTimeout(mtoast.t);mtoast.t=setTimeout(function(){t.classList.remove('show');},2000);}
 function tbH(){var t=byId('topbar');return t?t.offsetHeight:52;}
@@ -5086,6 +5204,14 @@ window.__mFull={open:openFull,close:closeFull,viewer:fsV};
 /* ================= page restructure: title + one-line summary → diagram → collapsible cards → labs → quiz ================= */
 function heading(c){return c.querySelector(':scope>h2,:scope>h3');}
 function ccSet(c,open){c.classList.toggle('cc-closed',!open);var b=c.querySelector(':scope>h2>.cc-h,:scope>h3>.cc-h');if(b)b.setAttribute('aria-expanded',open?'true':'false');if(open){setTimeout(function(){c.querySelectorAll('.m-vw').forEach(function(h){h.__v&&h.__v.apply();});window.__v3&&__v3.layout&&__v3.layout(cur);},0);}}
+function normHead(c){if(c.dataset.nh)return;var h=heading(c);if(!h)return;c.dataset.nh='1';
+ var zl=c.querySelector(':scope>.zl'),meta=document.createElement('div');meta.className='cc-meta';if(zl)meta.appendChild(zl);
+ var notes=[];h.querySelectorAll('.tag').forEach(function(t){var full=t.textContent.replace(/\s+/g,' ').trim(),m=full.match(/^(.{2,10}?)[：:，,]\s*/),short=m?m[1]:full;
+  var p=document.createElement('span');p.className=t.className+' tag-s';p.textContent=short;p.title=full;meta.appendChild(p);if(short!==full)notes.push(full);t.remove();});
+ /* trim the space left behind by the tag */
+ var last=h.lastChild;if(last&&last.nodeType===3)last.textContent=last.textContent.replace(/\s+$/,'');
+ if(meta.children.length){c.insertBefore(meta,h);c.classList.add('has-meta');meta.addEventListener('click',function(){var b=h.querySelector('.cc-h');if(b)b.click();});}
+ if(notes.length){var n=document.createElement('p');n.className='tag-note';n.textContent='ⓘ '+notes.join('；');h.parentNode.insertBefore(n,h.nextSibling);}}
 function makeCC(c,open){if(c.dataset.cc)return;var h=heading(c);if(!h)return;c.dataset.cc='1';
  var b=document.createElement('button');b.type='button';b.className='cc-h';while(h.firstChild)b.appendChild(h.firstChild);h.appendChild(b);
  var body=document.createElement('div');body.className='cc-body';var n=h.nextSibling;while(n){var nx=n.nextSibling;body.appendChild(n);n=nx;}c.appendChild(body);
@@ -5098,7 +5224,7 @@ function restructure(sec){var id=sec.id,ph=byId('ph'+id);if(!ph||sec.dataset.mr)
  var one=ph.querySelector('.ph-one'),why=ph.querySelector('.ph-why'),nav=ph.querySelector('.ph-nav');var full=one?one.innerHTML:'';var sp=splitSummary(one?one.textContent:'');
  var t=document.createElement('h1');t.className='pg-t';t.innerHTML='<span class="pg-n">'+(TABORDER.indexOf(id)+1)+'</span>'+esc(TABN[id]);ph.insertBefore(t,ph.firstChild);
  var s=document.createElement('p');s.className='pg-s';s.textContent=sp[0]+(sp[1]?'。':'');ph.insertBefore(s,t.nextSibling);
- var d=document.createElement('details');d.className='pg-more';d.innerHTML='<summary>展开本站说明</summary>';ph.insertBefore(d,s.nextSibling);if(one)d.appendChild(one);if(why)d.appendChild(why);
+ var d=document.createElement('details');d.className='pg-more';d.innerHTML='<summary aria-label="展开本站说明" title="本站说明"><span aria-hidden="true">ⓘ</span> 说明</summary>';ph.insertBefore(d,s.nextSibling);if(one)d.appendChild(one);if(why)d.appendChild(why);
  /* main diagram goes to the top */
  var cards=Array.prototype.slice.call(sec.querySelectorAll('.card'));var first=null,dg=null;for(var ci=0;ci<cards.length&&!dg;ci++){if(cards[ci].classList.contains('lab'))continue;dg=cards[ci].querySelector('.diagram');if(dg)first=cards[ci];}
  var stage=document.createElement('div');stage.className='m-stage';ph.parentNode.insertBefore(stage,ph.nextSibling);
@@ -5107,9 +5233,10 @@ function restructure(sec){var id=sec.id,ph=byId('ph'+id);if(!ph||sec.dataset.mr)
  /* other diagrams: same viewer, inside their cards */
  sec.querySelectorAll('.diagram').forEach(function(x){setupDiagram(x,false);});
  /* collapsible cards: open the first, the rest closed; labs and quizzes stay open */
+ cards.forEach(normHead);
  var k=0;cards.forEach(function(c){if(c.classList.contains('lab')||c.classList.contains('quiz'))return;if(c.parentNode.closest&&c.parentNode.closest('.card'))return;makeCC(c,k===0);k++;});
  /* station nav at the end */
- if(nav)sec.appendChild(nav);
+ if(nav){sec.appendChild(nav);nav.className='ph-nav m-pn';nav.dataset.sec=id;}
 }
 function mountExtras(){
  /* intro card from the old header, on 应用全景 */
@@ -5128,7 +5255,7 @@ function mountExtras(){
 function placeTrainPanel(L){var tp=byId('trainPanel');if(!tp)return;var sec=byId(L);if(L.indexOf('T4')===0&&sec){var st=sec.querySelector('.m-stage')||byId('ph'+L);st.parentNode.insertBefore(tp,st.nextSibling);}}
 
 /* ================= top bar, crumb chips, bottom tabs ================= */
-window.__mTitle=function(L){var i=TABORDER.indexOf(L);byId('tbWhere').innerHTML='<b>'+esc(TABN[L])+'</b><small>'+(i+1)+'/'+TABORDER.length+'</small>';document.title='（手机版）'+TABN[L]+' · 大白话拆解 AI';};
+window.__mTitle=function(L){var i=TABORDER.indexOf(L);byId('tbWhere').innerHTML='<b>'+esc(TABN[L])+'</b><span class="tb-dots" aria-hidden="true">'+dotsHTML(L,false)+'<small>'+(i+1)+'/'+TABORDER.length+'</small></span>';var pv=TABORDER[i-1],nx=TABORDER[i+1],bp=byId('mPrev'),bn=byId('mNext');if(bp){bp.disabled=!pv;bp.setAttribute('aria-label',pv?'上一站：'+TABN[pv]:'已是第一站');bp.title=bp.getAttribute('aria-label');}if(bn){bn.disabled=!nx;bn.setAttribute('aria-label',nx?'下一站：'+TABN[nx]:'已是最后一站');bn.title=bn.getAttribute('aria-label');}renderPN();document.title='（手机版）'+TABN[L]+' · 大白话拆解 AI';};
 renderCrumb=function(){var p=PATH[cur];if(!p)return;var h='<div class="chips" role="navigation" aria-label="所在位置（点上一层可返回）">';
  p.forEach(function(k,i){var last=i===p.length-1;h+=(i?'<i class="sep" aria-hidden="true">›</i>':'')+(last?'<b class="chip on" aria-current="page">'+(i===0?'⌂ ':'')+esc(TABN[k])+'</b>':'<button type="button" class="chip" data-go="'+k+'">'+(i===0?'⌂ ':'')+esc(TABN[k])+'</button>');});
  var ks=TABORDER.filter(function(k){var q=PATH[k];return q.length===p.length+1&&q[p.length-1]===cur;});
@@ -5168,7 +5295,15 @@ window.__mTourFocus=function(idsList,sec){var stage=sec.querySelector('.m-stage'
 var _gom=go;go=function(L,scroll){if(!PATH[L])return;closeFull();var s=byId(L);if(s)restructure(s);_gom(L,scroll);placeTrainPanel(L);setTimeout(function(){document.querySelectorAll('#'+L+' .m-vw').forEach(function(h){h.__v&&h.__v.apply();});},0);__mUpdBnav();};
 var _jtm=jumpTo;jumpTo=function(id,lv){if(lv&&cur!==lv)go(lv,false);var el=byId(id);if(el)ccOpen(el);_jtm(id,lv);};
 
-window.__mInit=function(){TABORDER.forEach(function(k){restructure(byId(k));});mountExtras();placeTrainPanel(cur);renderCrumb();__mTitle(cur);__mUpdBnav();document.querySelectorAll('.m-vw').forEach(function(h){h.__v.apply();});};
+function renderPN(){document.querySelectorAll('.m-pn').forEach(function(nav){var L=nav.dataset.sec,i=TABORDER.indexOf(L),pv=TABORDER[i-1],nx=TABORDER[i+1];
+ nav.innerHTML='<div class="pn-row"><button type="button" class="pn-b"'+(pv?' data-go="'+pv+'" aria-label="上一站：'+esc(TABN[pv])+'"':' disabled aria-label="已是第一站"')+'>'+ICO.prev+'</button><div class="pn-dots">'+dotsHTML(L,true)+'</div><button type="button" class="pn-b pri"'+(nx?' data-go="'+nx+'" aria-label="下一站：'+esc(TABN[nx])+'"':' disabled aria-label="已是最后一站"')+'>'+ICO.next+'</button></div>'+
+  '<p class="pn-cap">'+(i+1)+' / '+TABORDER.length+' · '+(nx?'下一站：<button type="button" class="pn-l" data-go="'+nx+'">'+esc(TABN[nx])+' ›</button>':'已经是最后一站 🎉')+'</p>';});}
+/* icon-only buttons where the meaning is obvious (label kept for screen readers and long-press) */
+function iconize(){var M={'重置':'⟲','重来':'⟲','撤销':'↶'};document.querySelectorAll('.level button, #trainPanel button').forEach(function(b){var t=b.textContent.trim();if(M[t]&&!b.dataset.ic){b.dataset.ic='1';b.setAttribute('aria-label',t);b.title=t;b.textContent=M[t];b.classList.add('ib');}});
+ var tp=byId('tourPrev');if(tp&&!tp.dataset.ic){tp.dataset.ic='1';tp.setAttribute('aria-label','上一步');tp.title='上一步';tp.innerHTML=ICO.prev;tp.classList.add('ib');}}
+byId('mPrev').addEventListener('click',function(){var i=TABORDER.indexOf(cur);if(i>0)go(TABORDER[i-1]);});
+byId('mNext').addEventListener('click',function(){var i=TABORDER.indexOf(cur);if(i<TABORDER.length-1)go(TABORDER[i+1]);});
+window.__mInit=function(){TABORDER.forEach(function(k){restructure(byId(k));});mountExtras();iconize();placeTrainPanel(cur);renderCrumb();__mTitle(cur);__mUpdBnav();document.querySelectorAll('.m-vw').forEach(function(h){h.__v.apply();});};
 window.__m={restructure:restructure,ccSet:ccSet,ccOpen:ccOpen,setupDiagram:setupDiagram};
 })();
 
