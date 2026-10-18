@@ -1020,6 +1020,30 @@ body.sheet-open #toast,body.side-open #toast,body.search-open #toast,body:has(#m
 .fmore{width:100%;margin:8px 0 0;background:#fff;border:1px dashed #c7cfe0;color:#3730a3;font-weight:700}
 @media (min-width:641px){.m-grip{display:none!important}}
 
+/* ===================== v3.2: audit fixes ===================== */
+.bzp{margin:0 0 var(--s3)}
+.bzp ul.pts{font-size:inherit;line-height:1.7;margin:0}
+.hint.bzp ul.pts li{margin:2px 0}
+.dgwrap{margin-bottom:var(--s4)}
+.dgwrap+h3,.dgwrap+h4,.dgwrap+b,.dgwrap+.flab{margin-top:var(--s5)}
+@media (max-width:640px){
+ #ntBars>.hint:first-child{display:block!important;text-align:left;margin:4px 0 8px}
+ #ntBars>.hint:first-child>span:empty{display:none}
+}
+.mini p b,.mini p strong{display:inline;padding:0;margin:0}
+.formula .tag,.note .tag{vertical-align:1px;margin-right:6px;line-height:1.5}
+@media (max-width:1000px){
+ label:has(>input[type=checkbox]):has(>span,>b,>code,>em),label:has(>input[type=radio]):has(>span,>b,>code,>em){display:block!important;padding:10px 0;line-height:1.6}
+ label:has(>input[type=checkbox]):has(>span,>b,>code,>em)>input,label:has(>input[type=radio]):has(>span,>b,>code,>em)>input{margin:0 8px 0 0}
+}
+.card ol+p,.card ul+p,.card ol+.bzp,.card ul+.bzp{margin-top:var(--s2)}
+@media (max-width:640px){
+ .ph-nav>span:first-child{display:none}
+ .ph-nav>.btn:only-child,.ph-nav>span:first-child+.btn:last-child{grid-column:1/-1}
+}
+@media (max-width:640px){.ntr{min-height:var(--tap)}}
+@media (max-width:1000px){table.stack a,table.gl a{min-width:var(--tap);justify-content:center}}
+
 </style>
 </head>
 <body class="mode-use">
@@ -4333,9 +4357,13 @@ function v2chart(c,o){var g=v2cv(c),x=g.x,w=g.w,h=g.h,L=46,R=10,T=22,B=26;
   var m=html.match(/^(\s*(?:[^<]{0,4})?<b>[^<]{1,16}<\/b>\s*)([\s\S]*)$/);var head=m?m[1]:'',rest=m?m[2]:html;
   if(el.textContent.length<70)return;var pts=splitPts(rest);if(pts.length<2||pts.length>7||pts.some(function(s){return s.replace(/<[^>]*>/g,'').trim().length<6;}))return;
   el.innerHTML=(head?'<div class="bz-h">'+head.trim()+'</div>':'')+'<ul class="pts">'+pts.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul>';el.classList.add('bz');}
- function bulletPara(p){if(p.dataset.bz)return;p.dataset.bz='1';if(p.id||p.querySelector('[id],input,button,select,code.j'))return;if(p.closest('.qz,.ph-one,.pagehead,#modal,.tour,.lab-why,.lab-obs,.formula,.hint,.note'))return;
-  if(p.textContent.length<150)return;bulletize(p,150);}
- function densePass(sec){sec.querySelectorAll('details.whyitem>summary').forEach(function(sm){var l=sm.lastChild;if(l&&l.nodeType===3&&/^[。．.，,；;\s]+$/.test(l.textContent)&&l.previousSibling&&l.previousSibling.nodeType===1){l.previousSibling.appendChild(document.createTextNode(l.textContent.trim()));l.remove();}});sec.querySelectorAll('.lab-why,.lab-obs').forEach(bulletBox);sec.querySelectorAll('.card>p,.card .clampbox>p').forEach(bulletPara);}
+ function bulletPara(p){if(p.dataset.bz)return;p.dataset.bz='1';if(p.id||p.querySelector('[id],input,button,select,textarea,code.j,br'))return;if(p.closest('.qz,.ph-one,.pagehead,#modal,#tour,.lab-why,.lab-obs,.formula,.note,.ctrls,label,button,.tryit,.sh-sec,.mini,.fc'))return;
+  var isHint=p.classList.contains('hint');var len=p.textContent.trim().length;if(len<(isHint?110:150))return;
+  var html=p.innerHTML.trim();var m=html.match(/^(\s*(?:[^<]{0,4})?<b>[^<]{1,40}<\/b>\s*)([\s\S]*)$/);var head=m?m[1]:'',rest=m?m[2]:html;
+  var pts=splitPts(rest);if(pts.length<2||pts.length>7||pts.some(function(x){return x.replace(/<[^>]*>/g,'').trim().length<6;}))return;
+  var d=document.createElement('div');d.className=(p.className?p.className+' ':'')+'bz bzp';var st=p.getAttribute('style');if(st)d.setAttribute('style',st);d.dataset.bz='1';
+  d.innerHTML=(head?'<div class="bz-h">'+head.trim()+'</div>':'')+'<ul class="pts">'+pts.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';p.parentNode.replaceChild(d,p);}
+ function densePass(sec){sec.querySelectorAll('details.whyitem>summary').forEach(function(sm){var l=sm.lastChild;if(l&&l.nodeType===3&&/^[。．.，,；;\s]+$/.test(l.textContent)&&l.previousSibling&&l.previousSibling.nodeType===1){l.previousSibling.appendChild(document.createTextNode(l.textContent.trim()));l.remove();}});sec.querySelectorAll('.lab-why,.lab-obs').forEach(bulletBox);sec.querySelectorAll('.card p').forEach(bulletPara);}
  /* mode banner: two lines on phones, tap to expand */
  document.querySelectorAll('.banner').forEach(function(b){b.setAttribute('role','note');b.addEventListener('click',function(){if(mqM.matches)b.classList.toggle('open');});});
 
