@@ -1,0 +1,41 @@
+{
+  "name": "si-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "AI learning site (superjackman/SI) — React rewrite. Built locally, copied into the repo, served by GitHub Pages.",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "size": "node scripts/size.mjs",
+    "test": "npm run typecheck && npm run test:unit && npm run build && npm run test:e2e && npm run size",
+    "deploy": "node scripts/deploy.mjs --target next",
+    "deploy:cutover": "node scripts/deploy.mjs --target root --confirm-cutover"
+  },
+  "engines": {
+    "node": ">=18.18"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.16"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "acorn": "^8.19.0",
+    "acorn-walk": "^8.3.5",
+    "eslint-scope": "^8.4.0",
+    "jsdom": "^25.0.1",
+    "typescript": "~5.6.3",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}

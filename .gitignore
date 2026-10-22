@@ -1,0 +1,11 @@
+# React app (web/) — build output and tooling caches are never committed;
+# the deploy script copies the build into next/ (or the repo root at cutover), which IS committed.
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+web/blob-report/
+web/.vite/
+*.log
+.DS_Store
+Thumbs.db

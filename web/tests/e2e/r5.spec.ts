@@ -1,0 +1,128 @@
+import { test, expect, type Page } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { resolveBase } from '../../base.config.mjs';
+/* R5 cutover checks on the committed repo layout served like GitHub Pages (SI_E2E_SERVE=repo, base /SI/):
+   old shared links, /SI/legacy.html, the /SI/next/ redirect, the analytics pixel (intercepted, never sent) and
+   recovery for a browser that still has the old /SI/next/index.html cached. */
+const BASE: string = resolveBase();
+const REPO = process.env.SI_E2E_SERVE === 'repo' && BASE === '/SI/';
+const PORT = 4173;
+const GC = 'https://superjackman-si.goatcounter.com/count';
+const git = (...a: string[]) => execFileSync('git', a, { cwd: new URL('../../..', import.meta.url).pathname });
+
+async function ready(page: Page, key: string) {
+  await page.locator(`html[data-si-ready="${key}"]`).waitFor({ state: 'attached', timeout: 15_000 });
+  await expect(page.locator('section.level.active .pagehead')).toBeVisible();
+}
+const path = (page: Page) => { const u = new URL(page.url()); return u.pathname + u.search + u.hash; };
+
+test.describe('cutover (repo layout under /SI/)', () => {
+  test.skip(!REPO, 'needs SI_TARGET=root SI_E2E_SERVE=repo');
+
+  for (const [link, key] of [['?lang=en', 'T1.en'], ['#T3&lang=en', 'T3.en'], ['?lang=zh#T5', 'T5.zh'], ['?lang=en#T4a', 'T4a.en'], ['#N', 'N.zh'], ['#/T6?lang=en', 'T6.en']] as const) {
+    test(`old shared link /SI/${link} opens ${key}`, async ({ page }) => {
+      await page.goto(BASE + link);
+      await ready(page, key);
+      expect(await page.evaluate(() => document.documentElement.lang)).toBe(key.endsWith('en') ? 'en' : 'zh-CN');
+    });
+  }
+
+  test('/SI/legacy.html is the old page byte for byte and still works on its own', async ({ page }) => {
+    const errors: string[] = [], external: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    page.on('request', (r) => { const u = new URL(r.url()); if (u.hostname !== 'localhost' && u.hostname !== '127.0.0.1' && u.protocol !== 'data:') external.push(r.url()); });
+    const body = await (await page.request.get(BASE + 'legacy.html')).body();
+    const sha = (b: Buffer) => createHash('sha256').update(b).digest('hex');
+    expect(sha(body)).toBe(sha(git('show', 'a7eba9d:index.html')));
+    await page.goto(BASE + 'legacy.html?lang=en#T3');
+    await page.waitForFunction(() => (window as unknown as { __explainerReady?: boolean }).__explainerReady === true);
+    await expect(page.locator('section#T3.active')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.lang)).toBe('en');
+    expect(await page.evaluate(() => (window as unknown as { __gc: { off: boolean } }).__gc.off)).toBe(true); // no count from localhost
+    expect(errors).toEqual([]);
+    expect(external).toEqual([]);
+  });
+
+  for (const [from, to, key] of [
+    ['next/?lang=en#T3', '?lang=en#T3', 'T3.en'],
+    ['next/#T3&lang=en', '#T3&lang=en', 'T3.en'],
+    ['next?lang=en#T5', '?lang=en#T5', 'T5.en'],
+    ['next/?_r=123&lang=en#T4', '?lang=en#T4', 'T4.en'],
+    ['next/', '', 'T1.zh'],
+    ['next/index.html#T7', '#T7', 'T7.zh'],
+  ] as const) {
+    test(`/SI/${from} → /SI/${to}`, async ({ page }) => {
+      await page.goto(BASE + from);
+      await expect.poll(() => path(page)).toBe(BASE + to);
+      await ready(page, key);
+    });
+  }
+
+  test('a browser with the old /SI/next/index.html cached (its assets are gone) ends up on /SI/ with query + hash', async ({ page }) => {
+    const oldNext = git('show', '38cc174:next/index.html').toString();
+    let served = 0;
+    await page.route((u) => u.pathname === BASE + 'next/', (r) => {
+      if (served++) return r.fallback();
+      return r.fulfill({ status: 200, contentType: 'text/html', headers: { 'cache-control': 'max-age=600' }, body: oldNext });
+    });
+    const missing: string[] = [];
+    page.on('response', (r) => { if (r.status() === 404) missing.push(new URL(r.url()).pathname); });
+    await page.goto(BASE + 'next/?lang=en#T3');
+    await expect.poll(() => path(page), { timeout: 15_000 }).toBe(BASE + '?lang=en#T3');
+    await ready(page, 'T3.en');
+    expect(missing.some((m) => m.startsWith(BASE + 'next/assets/index-'))).toBe(true);
+    expect(served).toBe(2); // the stale copy once, then the cache-busting reload got the redirect page
+  });
+
+  test('analytics: one GoatCounter pixel per stop and language, only after load, never from localhost (intercepted, not sent)', async ({ playwright, page }) => {
+    /* localhost: nothing */
+    const local: string[] = [];
+    page.on('request', (r) => { if (r.url().startsWith(GC)) local.push(r.url()); });
+    await page.goto(BASE + '?lang=en#T3'); await ready(page, 'T3.en');
+    await page.waitForTimeout(1500);
+    expect(local).toEqual([]);
+
+    /* a real-looking host (si.test → 127.0.0.1) */
+    const b = await playwright.chromium.launch({ channel: 'chrome', args: ['--host-resolver-rules=MAP si.test 127.0.0.1'] });
+    try {
+      const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, screen: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+      const hits: string[] = [];
+      await ctx.route(GC + '**', (r) => { hits.push(r.request().url()); return r.fulfill({ status: 200, contentType: 'image/gif', body: Buffer.from('R0lGODlhAQABAAAAACw=', 'base64') }); });
+      await ctx.route((u) => u.hostname !== 'si.test' && !u.href.startsWith(GC), (r) => r.abort());
+      const p = await ctx.newPage();
+      await p.addInitScript(() => {
+        const w = window as unknown as { __loadFired: boolean; __imgSets: { src: string; rs: string; load: boolean }[] };
+        w.__loadFired = false; w.__imgSets = [];
+        addEventListener('load', () => { w.__loadFired = true; }, { capture: true });
+        const d = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src')!;
+        Object.defineProperty(HTMLImageElement.prototype, 'src', { ...d, set(v: string) { if (String(v).includes('goatcounter')) w.__imgSets.push({ src: v, rs: document.readyState, load: w.__loadFired }); d.set!.call(this, v); } });
+      });
+      await p.goto(`http://si.test:${PORT}${BASE}?lang=en#T3`);
+      await ready(p, 'T3.en');
+      await expect.poll(() => hits.length).toBe(1);
+      const u = new URL(hits[0]!);
+      expect(u.origin + u.pathname).toBe(GC);
+      expect([...u.searchParams.keys()]).toEqual(['p', 't', 's', 'rnd']);
+      expect(u.searchParams.get('p')).toBe('/en/T3');
+      expect(u.searchParams.get('t')).not.toBe('');
+      expect(u.searchParams.get('s')).toBe('390,844,3');
+      expect(u.searchParams.get('rnd')).toMatch(/^[a-z0-9]{1,7}$/);
+      const sets = await p.evaluate(() => (window as unknown as { __imgSets: { rs: string; load: boolean }[] }).__imgSets);
+      expect(sets.length).toBe(1);
+      expect(sets[0]).toMatchObject({ rs: 'complete', load: true });
+      /* stop change → one more; the same stop again (opening a sheet etc.) → none */
+      await p.evaluate(() => (window as unknown as { __si: { go(s: string): void } }).__si.go('T1'));
+      await ready(p, 'T1.en');
+      await expect.poll(() => hits.length).toBe(2);
+      expect(new URL(hits[1]!).searchParams.get('p')).toBe('/en/home');
+      await p.locator('#bnav [data-bn="more"]').click(); await expect(p.locator('#moreSheet')).toHaveClass(/open/);
+      await p.waitForTimeout(800);
+      expect(hits.length).toBe(2);
+      /* legacy.html keeps its own counter (same virtual paths) */
+      await p.goto(`http://si.test:${PORT}${BASE}legacy.html?lang=zh#T5`);
+      await expect.poll(() => hits.length, { timeout: 10_000 }).toBe(3);
+      expect(new URL(hits[2]!).searchParams.get('p')).toBe('/zh/T5');
+    } finally { await b.close(); }
+  });
+});
