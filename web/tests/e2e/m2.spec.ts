@@ -86,7 +86,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       if (lab) await expect(page.locator(`#${lab}`)).toBeAttached();
       await reveal(page, `#quiz${S}`);
       await expect(page.locator(`#quiz${S} .qz`)).toHaveCount(QN[S]!);
-      await expect(page.locator(`section#${S} .card.m3ph`)).toHaveCount(S === 'U' ? 1 : 0);
+      await expect(page.locator(`section#${S} .card.m3ph`)).toHaveCount(0);
       await page.waitForTimeout(300);
       await noHorizontalOverflow(page);
       await diagramClean(page);
@@ -97,7 +97,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   }
 }
 
-test('navigation: U only in More + all-stops lists, not the bottom bar; ▶ walks T1 → U → Ua … Ud → T2; ◀ back', async ({ page }) => {
+test('navigation: U only in More + all-stops lists, not the bottom bar; ▶ walks T1 → U → Ua … Ud → Up → T2; ◀ back', async ({ page }) => {
   await open(page, 'zh', 'T1');
   for (const s of M2) await expect(page.locator(`#bnav [data-bn="${s}"]`)).toHaveCount(0);
   await page.locator('#bnav [data-bn="more"]').click();
@@ -112,8 +112,8 @@ test('navigation: U only in More + all-stops lists, not the bottom bar; ▶ walk
   for (const s of M2) await expect(page.locator(`#mDrawer [data-dw="${s}"], #mDrawer [data-go="${s}"]`).first()).toBeAttached();
   await page.locator('#mDrawer [data-dw="T1"], #mDrawer [data-go="T1"]').first().click();
   await expect.poll(() => station(page)).toBe('T1');
-  for (const s of [...M2, 'T2']) { await page.locator('#mNext').click(); await expect.poll(() => station(page)).toBe(s); }
-  for (const s of ['Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await page.locator('#mPrev').click(); await expect.poll(() => station(page)).toBe(s); }
+  for (const s of [...M2, 'Up', 'T2']) { await page.locator('#mNext').click(); await expect.poll(() => station(page)).toBe(s); }
+  for (const s of ['Up', 'Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await page.locator('#mPrev').click(); await expect.poll(() => station(page)).toBe(s); }
 });
 
 test('the U diagram: tap a group box → its popup → ⤵ chip zooms into the sub-stop; ↩ returns', async ({ page }) => {
@@ -302,7 +302,7 @@ test('quiz scoring on the M2 stops: right / wrong answers count per stop and in 
   await expect(page.locator('#quizU .opt.right')).toHaveCount(3);
   await expect(page.locator('#quizU .opt.wrong')).toHaveCount(1);
   await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 51（已答 3）');
+  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 76（已答 3）');
   await page.keyboard.press('Escape');
   /* every M2 stop's key matches its rendered options (all right → full marks), in English too */
   for (const S of ['Ua', 'Ub', 'Uc', 'Ud']) {
@@ -345,12 +345,12 @@ test('analytics: M2 stops count as /zh/U …, lab-labPick and quiz-U events (int
   } finally { await b.close(); }
 });
 
-test('each M2 stop is its own lazy chunk: T1 fetches only its neighbour U (prefetch), not Ua–Ud', async ({ page }) => {
+test('each M2 stop is its own lazy chunk: T1 fetches only its neighbour U (prefetch), not Ua–Ud or Up', async ({ page }) => {
   const js: string[] = [];
   page.on('request', (r) => { if (r.url().endsWith('.js')) js.push(new URL(r.url()).pathname.split('/').pop()!); });
   await open(page, 'zh', 'T1');
   await page.waitForTimeout(800);
-  const m2 = () => js.filter((f) => /^U[a-d]?[.-]/.test(f));
+  const m2 = () => js.filter((f) => /^U[a-dp]?[.-]/.test(f));
   expect(m2().every((f) => /^U\.zh-/.test(f)), m2().join()).toBe(true);
   await page.evaluate(() => (window as unknown as SI).__si.go('Ua'));
   await page.locator('html[data-si-ready="Ua.zh"]').waitFor({ state: 'attached' });

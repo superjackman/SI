@@ -9,6 +9,7 @@ import { restoreTags } from '../legacy/restore';
 import type { Lang } from '../i18n/types';
 
 interface NodeCard { title: string; mc: string; body: string }
+import { hasMath, loadMath } from '../station/math';
 const loaders = import.meta.glob<Record<string, NodeCard>>('../legacy/gen/nodes/*.json', { import: 'default' });
 const cache = new Map<string, Record<string, NodeCard>>();
 async function loadCard(id: string, lang: Lang): Promise<NodeCard | null> {
@@ -16,7 +17,9 @@ async function loadCard(id: string, lang: Lang): Promise<NodeCard | null> {
   const key = `../legacy/gen/nodes/${c.t}.${lang}.json`;
   let m = cache.get(key);
   if (!m) { const f = loaders[key]; if (!f) return null; m = await f(); cache.set(key, m); }
-  return m[id] ?? null;
+  const card = m[id] ?? null;
+  if (card && hasMath(card.body)) await loadMath();
+  return card;
 }
 let uidN = 0;
 const unesc = (s: string) => s.replace(/<[^>]*>/g, '').replace(/&(amp|lt|gt|quot|#39);/g, (_m, k: string) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" })[k] as string);
@@ -35,6 +38,7 @@ function DrillRow({ id, cur, lang }: { id: string; cur: string; lang: Lang }) {
   if (c.zoom && PATH[c.zoom] && c.zoom !== cur) it.push(<Chip key="z" cls="pri" attr={{ 'data-ddgo': c.zoom }} icon={IC.drill} label={tabn(c.zoom, lang)} aria={t('nav.drillTo') + tabn(c.zoom, lang)} />);
   kids(id).forEach((k) => { const n = part(k)?.n[lang] ?? k; it.push(<Chip key={'k' + k} attr={{ 'data-open': k }} icon={IC.down} label={n} aria={t('pop.down') + n} />); });
   (c.dn ?? []).forEach((k) => { const n = part(k)?.n[lang]; if (n) it.push(<Chip key={'d' + k} cls="dn" attr={{ 'data-open': k }} icon={IC.down} label={n} aria={t('pop.principle') + n} />); });
+  (c.math ?? []).forEach((s) => { if (s !== cur && PATH[s]) it.push(<Chip key={'m' + s} cls="dn math" attr={{ 'data-ddgo': s }} icon={IC.drill} label={tabn(s, lang)} aria={t('pop.math') + tabn(s, lang)} />); });
   (c.links ?? []).forEach((l, i) => it.push(<Chip key={'l' + i} cls="lk" attr={{ 'data-jump': l[0], 'data-lv': l[2] ?? 'T4b' }} icon="" label={l[1][lang]} />));
   const up = c.up ? part(c.up) : undefined;
   if (c.up && up) it.push(<Chip key="u" cls="upc" attr={{ 'data-open': c.up }} icon={IC.up} label={up.n[lang]} aria={t('pop.up') + up.n[lang]} />);

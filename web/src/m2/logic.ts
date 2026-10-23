@@ -59,3 +59,10 @@ export function briefScore(on: ReadonlySet<Part4>, docs: number) {
   return Math.max(0, Math.min(100, s));
 }
 export const briefTokens = (on: ReadonlySet<Part4>, docs: number) => 20 + on.size * BRIEF.briefTokens + docs * BRIEF.docTokens;
+
+/* ---- Up (M3 products): the list filter ---- */
+export interface ProdFilter { g: string; cn: boolean; os: boolean }
+export interface ProdItem { g: readonly string[]; cn: boolean; os?: boolean }
+export const prodVisible = (p: ProdItem, f: ProdFilter) => (f.g === 'all' || p.g.includes(f.g)) && (!f.cn || p.cn) && (!f.os || !!p.os);
+/** unique products shown under a filter (a product listed under several ways counts once) */
+export const prodCount = (ps: readonly (ProdItem & { n: string })[], f: ProdFilter) => new Set(ps.filter((p) => prodVisible(p, f)).map((p) => p.n)).size;

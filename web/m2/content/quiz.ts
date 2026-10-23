@@ -70,4 +70,15 @@ export const QUIZ = (t: T): Record<string, Q[]> => ({
       [t('直接相信', 'Believe it'), t('让它再说一遍', 'Ask it to say it again'), t('看证据：测试结果、diff、原文出处', 'Look at the evidence: test results, diffs, sources'), t('换一个模型再问', 'Ask a different model')], 2,
       t('模型可能很有把握地说错话；判断完成与否要看证据。', 'Models can be confidently wrong; judge “done” by evidence.')],
   ],
+  Up: [
+    [t('产品清单里的“国内运营”标记是什么意思？', 'What does the “Mainland-run” badge in the product list mean?'),
+      [t('模型一定更强', 'The model is stronger'), t('站点由中国大陆公司运营', 'The site is run by a mainland Chinese company'), t('一定免费', 'It is always free'), t('一定是开源的', 'It is always open source')], 1,
+      t('它只说明运营方；“境外站点”在大陆能否打开没有核实，以你所在网络为准。', 'It only says who runs it; whether an overseas site opens from mainland China was not checked.')],
+    [t('这一站为什么不写价格、免费额度和版本号？', 'Why does this stop leave out prices, free tiers and version numbers?'),
+      [t('变化太快，写了很快就错；以官网为准', 'They change too fast and would soon be wrong; the official site is authoritative'), t('产品都免费', 'All products are free'), t('版本号不重要', 'Versions never matter'), t('官网不公布', 'Official sites never publish them')], 0,
+      t('页面只写核对过、相对稳定的信息，并标出最后核对日期。', 'The page shows only checked, fairly stable facts, with the date they were last checked.')],
+    [t('同一个编程产品出现在“命令行”“编辑器里”“后台 / 云端”三类下，说明什么？', 'One coding product appears under “command line”, “in the editor” and “background”. What does that show?'),
+      [t('分类出错了', 'The categories are wrong'), t('它只能三选一', 'You must pick only one'), t('用法看的是怎么用，同一个产品可以提供几种用法', 'Ways are about how you use it; one product can offer several'), t('三类其实是一回事', 'The three are the same thing')], 2,
+      t('用法由四件事决定（谁发起、在哪跑、能动什么、你的角色）；一个产品可以有几个入口，各自对应不同用法。', 'A way is set by four things (who starts it, where it runs, what it can touch, your role); one product can have several entry points, each a different way.')],
+  ],
 });

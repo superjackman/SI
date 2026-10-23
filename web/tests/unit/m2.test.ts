@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { pickWay, PICK_PRESETS, PICK_TRAITS, sessionSteps, needsAsk, ctxLoad, CTX, briefScore, briefTokens, PARTS4, type Trait, type Part4 } from '../../src/m2/logic';
+import { prodVisible, prodCount, pickWay, PICK_PRESETS, PICK_TRAITS, sessionSteps, needsAsk, ctxLoad, CTX, briefScore, briefTokens, PARTS4, type Trait, type Part4 } from '../../src/m2/logic';
 import { KB, TABORDER, kids, part, isStation, GROUP } from '../../src/legacy/kb';
 import { QUIZ_KEY } from '../../src/station/quiz';
 
@@ -103,7 +103,7 @@ describe('labPrompt: the four things of a brief', () => {
 describe('kb: M2 stops and parts', () => {
   it('U..Ud sit between T1 and T2, in the "more" group only (not the bottom bar)', () => {
     const i = TABORDER.indexOf('T1');
-    expect(TABORDER.slice(i, i + 7)).toEqual(['T1', ...M2, 'T2']);
+    expect(TABORDER.slice(i, i + 8)).toEqual(['T1', ...M2, 'Up', 'T2']);
     for (const s of M2) { expect(isStation(s)).toBe(true); expect(GROUP[s]).toBe('more'); expect(KB.TABN[s]?.zh).toBeTruthy(); expect(KB.TABN[s]?.en).toBeTruthy(); }
   });
   it('every M2 part has a stop, an up link, valid zoom / down links; the hub zooms into the 4 sub-stops', () => {
@@ -125,7 +125,7 @@ describe('kb: M2 stops and parts', () => {
     expect(back.length).toBeGreaterThanOrEqual(8);
     for (const [k, c] of back) {
       expect(c.cat).not.toBe('use');
-      for (const u of c.use!) expect(isStation(u) || part(u)?.cat === 'use', k + ' use ' + u).toBe(true);
+      for (const u of c.use!) expect(isStation(u) || part(u)?.cat === 'use' || (c.cat === 'math' && !!part(u) && part(u)!.cat !== 'math'), k + ' use ' + u).toBe(true);
     }
     expect(part('loop')!.use).toContain('uHub');
     expect(part('mcp')!.use).toContain('uMcp');
@@ -169,8 +169,9 @@ describe('generated content (both languages)', () => {
       expect(h).not.toMatch(/id="lab(Click|Fan|Cron)"/);
     }
   });
-  it('the grey M3 placeholder card sits on U only', () => {
-    for (const l of LANGS) for (const s of M2) expect((gen(`st/${s}.${l}.json`) as { html: string }).html.includes('m3ph')).toBe(s === 'U');
+  it('the grey M3 placeholder is gone; U links to the products stop instead', () => {
+    for (const l of LANGS) for (const s of [...M2, 'Up']) expect((gen(`st/${s}.${l}.json`) as { html: string }).html.includes('m3ph')).toBe(false);
+    for (const l of LANGS) expect((gen(`st/U.${l}.json`) as { html: string }).html).toMatch(/id="c_U_m3"[\s\S]*data-go="Up"/);
   });
   it('search index has every M2 part', () => {
     const txt = JSON.stringify(gen('search.json'));
@@ -193,4 +194,72 @@ describe('gen sync', () => {
     const out = execFileSync(process.execPath, ['node_modules/vite-node/vite-node.mjs', 'm2/build.ts', '--check'], { cwd: process.cwd(), encoding: 'utf8' });
     expect(out).toContain('up to date');
   }, 60_000);
+});
+
+/* ---- M3: the products stop (Up) ---- */
+import { GROUPS, PRODUCTS, VERIFIED } from '../../m2/content/products';
+describe('M3 products (Up)', () => {
+  it('data: unique names, https links, bilingual descriptions, known ways, no prices or versions', () => {
+    expect(new Set(PRODUCTS.map((p) => p.n)).size).toBe(PRODUCTS.length);
+    expect(new Set(PRODUCTS.map((p) => p.u)).size).toBe(PRODUCTS.length);
+    expect(VERIFIED).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    for (const p of PRODUCTS) {
+      expect(p.u, p.n).toMatch(/^https:\/\/[a-z0-9.-]+\.[a-z]+(\/[\w./-]*)?$/);
+      expect(p.g.length, p.n).toBeGreaterThan(0);
+      for (const g of p.g) expect(GROUPS, p.n).toContain(g);
+      expect(p.d.zh.length).toBeGreaterThan(4); expect(p.d.en.length).toBeGreaterThan(4);
+      expect(p.d.en + p.v.en + (p.ne ?? '')).not.toMatch(CJK);
+      if (CJK.test(p.n)) expect(p.ne, p.n).toBeTruthy();
+      expect(p.d.zh + p.d.en, p.n).not.toMatch(/[$¥€]|\d+\s*(元|美元|USD|\/月|per month)|\bv\d+\.\d/i);
+    }
+    for (const g of GROUPS) expect(PRODUCTS.some((p) => p.g.includes(g)), g).toBe(true);
+  });
+  it('every way part exists in kb, and the stop sits under U after Ud', () => {
+    for (const g of GROUPS) expect(part(g), g).toBeTruthy();
+    expect(TABORDER.indexOf('Up')).toBe(TABORDER.indexOf('Ud') + 1);
+    expect(KB.PATH.Up).toEqual(['T1', 'U', 'Up']);
+    expect(GROUP.Up).toBe('more');
+    expect(isStation('Up')).toBe(true);
+  });
+  it('filter logic', () => {
+    const all = { g: 'all', cn: false, os: false };
+    expect(prodCount(PRODUCTS, all)).toBe(PRODUCTS.length);
+    const cn = PRODUCTS.filter((p) => p.cn).length;
+    expect(prodCount(PRODUCTS, { ...all, cn: true })).toBe(cn);
+    expect(prodCount(PRODUCTS, { g: 'uChat', cn: false, os: false })).toBe(PRODUCTS.filter((p) => p.g.includes('uChat')).length);
+    expect(prodVisible({ g: ['uCli', 'uIde'], cn: false }, { g: 'uIde', cn: false, os: false })).toBe(true);
+    expect(prodVisible({ g: ['uCli'], cn: false, os: true }, { g: 'uCli', cn: true, os: false })).toBe(false);
+    expect(prodVisible({ g: ['uCli'], cn: true }, { g: 'all', cn: true, os: true })).toBe(false);
+    expect(prodCount([{ n: 'a', g: ['x', 'y'], cn: true }, { n: 'a', g: ['y'], cn: true }], all)).toBe(1);
+  });
+  for (const l of LANGS) it(`Up.${l}: every product once per way, external links safe, date line, quiz, no CJK in en outside product names`, () => {
+    const h = (gen(`st/Up.${l}.json`) as { html: string }).html;
+    const links = [...h.matchAll(/<a class="up-a" href="([^"]+)" target="_blank" rel="noopener noreferrer">/g)].map((m) => m[1]);
+    expect(links.length).toBe(PRODUCTS.reduce((a, p) => a + p.g.length, 0));
+    expect(new Set(links)).toEqual(new Set(PRODUCTS.map((p) => p.u)));
+    expect(h).not.toMatch(/<a [^>]*href="http(?![^"]*" target="_blank" rel="noopener noreferrer")/);
+    expect(h).toContain(VERIFIED);
+    expect(h).toMatch(l === 'zh' ? /以官网为准/ : /official site is authoritative/);
+    expect(h).toContain('id="quizUp"');
+    for (const g of GROUPS) { expect(h).toContain(`data-open="${g}"`); expect(h).toContain(`data-id="${g}"`); }
+    expect(h).toContain('2026-07-15');
+    if (l === 'en') expect(h.replace(/<span lang="zh-CN">[^<]*<\/span>/g, '').replace(/<[^>]+>/g, '')).not.toMatch(CJK);
+    const qz = gen(`quiz.${l}.json`) as Record<string, unknown[]>;
+    expect(qz.Up!.length).toBe(3);
+    expect(gen(`nodes/Up.${l}.json`)).toEqual({});
+  });
+  it('T8 glossary has no empty group row for Up', () => {
+    for (const l of LANGS) expect((gen(`st/T8.${l}.json`) as { html: string }).html).not.toMatch(/data-m2="1"><td colspan="4">[^<]*›[^<]*(具体产品|Products)<\/td>/);
+  });
+});
+describe('T8 learning map carries the M2 usage parts', () => {
+  for (const l of LANGS) it(`T8.${l}: one band with uHub + the four ways, viewBox grown by 154, idempotent marker`, () => {
+    const h = (gen(`st/T8.${l}.json`) as { html: string }).html;
+    const m = /<g data-m2="map" data-h0="(\d+)">([\s\S]*?<\/g>)<\/g>/.exec(h)!;
+    expect(m).toBeTruthy();
+    expect(h.match(/data-m2="map"/g)!.length).toBe(1);
+    expect(h).toMatch(new RegExp(`<svg id="svgMap" viewBox="0 0 380 ${Number(m[1]) + 154}"`));
+    expect([...m[2]!.matchAll(/data-id="([^"]+)"/g)].map((x) => x[1])).toEqual(['uHub', 'uWith', 'uSolo', 'uKit', 'uWell']);
+    if (l === 'en') expect(m[2]!.replace(/<[^>]+>/g, '')).not.toMatch(CJK);
+  });
 });

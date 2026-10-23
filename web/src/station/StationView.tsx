@@ -7,6 +7,7 @@ import { Boot } from '../shell/Boot';
 import { tx } from '../i18n/L';
 import { recover, newerBuild, userReload } from '../boot/stale';
 import { applyZoomDom } from '../shell/zoom';
+import { hasMath, loadMath } from './math';
 /** stations whose labs have started since the page loaded (live starts each lab once per page load; see Tour) */
 export const labsRan = new Set<string>();
 
@@ -68,7 +69,7 @@ export function StationView() {
     setFail(null);
     const f = chunks[keyOf(S, lang)];
     if (!f) { setFail(S); return; }
-    f().then((d) => { if (ok) setSnap({ S, lang, d }); }, (e: unknown) => {
+    f().then(async (d) => { if (hasMath(d.html)) await loadMath(); if (ok) setSnap({ S, lang, d }); }, (e: unknown) => {
       console.error(`[station ${S}]`, e);
       /* stale deploy → one cache-busting reload (keep the skeleton); otherwise ⟳. A ⟳ that fails again reloads the page
          when the server is reachable (some browsers keep a failed module import cached until reload). */

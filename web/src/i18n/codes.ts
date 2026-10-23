@@ -33,6 +33,7 @@ export const CODES = {
   'pop.up': { zh: '往上：属于 ', en: 'Up: part of ' },
   'pop.here': { zh: '去它所在的页面：', en: 'Go to its page: ' },
   'pop.principle': { zh: '往下拆到原理：', en: 'Down to how it works: ' },
+  'pop.math': { zh: '往下看数学推导：', en: 'Down to the math: ' },
   'pop.usage': { zh: '往上看怎么用：', en: 'Up to how it is used: ' },
   'pop.back': { zh: '返回上一张卡片：', en: 'Back to card: ' },
   'fs.label': { zh: '全屏查看结构图', en: 'Full-screen diagram' },

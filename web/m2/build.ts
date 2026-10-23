@@ -1,27 +1,54 @@
-/* M2 generator: writes the "using agents" stations (U, Ua, Ub, Uc, Ud) into src/legacy/gen in the same formats as the
+/* M2 generator: writes the "using agents" stations (U, Ua, Ub, Uc, Ud and the M3 products stop Up) into src/legacy/gen in the same formats as the
    legacy extraction, and merges them idempotently into the shared files (kb, quiz, qkey, search, outline, T8 glossary).
    Run: npm run m2      Check only (used by a unit test): npm run m2 -- --check
    Re-run after any legacy re-extraction (scripts/legacy/extract.mjs / islands.mjs), which rewrites the shared files. */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { esc, Page, popBody, strip, type Bi, type Lang, type OutlineRow, type StationOut, type T, type World } from './lib';
+import { esc, Page, popBody, strip, type Bi, type Lang, type OutlineRow, type PopSpec, type StationOut, type T, type World } from './lib';
 import { PARTS, PATHS, STATIONS, USE_LINKS } from './content/parts';
-import { QUIZ } from './content/quiz';
+import { QUIZ, type Q } from './content/quiz';
 import U from './content/U';
 import Ua from './content/Ua';
 import Ub from './content/Ub';
 import Uc from './content/Uc';
 import Ud from './content/Ud';
+import Up from './content/Up';
+import { KPARTS, KPATHS, KSTATIONS, MATH_LINKS } from './content/math/parts';
+import { KQUIZ } from './content/math/quiz';
+import K1 from './content/math/K1';
+import K2 from './content/math/K2';
+import K3 from './content/math/K3';
+import K4 from './content/math/K4';
+import K5 from './content/math/K5';
+import { katexCss } from './tex';
+import type { Ext } from './content/ext/kit';
+import { M4 } from './content/ext/m4';
+import { M5 } from './content/ext/m5';
+import { M6 } from './content/ext/m6';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
-const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud };
-const SIDS = Object.keys(STATIONS);
+const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud, Up, K1, K2, K3, K4, K5 };
+/* the usage stations go right after T1; the math layer (K1–K5) goes after T8 as its own appendix group */
+const USIDS = Object.keys(STATIONS), KSIDS = Object.keys(KSTATIONS);
+const SIDS = [...USIDS, ...KSIDS];
+const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
+type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
+/* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
+const EXTS: Ext[] = [M4, M5, M6];
+const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
+const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
+for (const e of EXTS) {
+  for (const [S, f] of Object.entries(e.cards)) (XCARDS[S] ??= []).push(f);
+  for (const [S, f] of Object.entries(e.labs ?? {})) (XLABS[S] ??= []).push(f);
+}
+const XSIDS = [...new Set([...Object.keys(XCARDS), ...Object.keys(XLABS), ...Object.values(XPARTS).map((p) => p.t)])];
+const ALLP: Record<string, AnyPart> = { ...PARTS, ...Object.fromEntries(Object.entries(KPARTS).map(([k, p]) => [k, { ...p, cat: 'math' }])), ...XPARTS };
 const LANGS: Lang[] = ['zh', 'en'];
 const MC = '#15803d';
 
-type KPart = { n: Bi; cat: string; train: string; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; links?: unknown };
+type KPart = { n: Bi; cat: string; train: string; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; math?: string[]; links?: unknown };
 interface KB { C: Record<string, KPart>; TABN: Record<string, Bi>; PATH: Record<string, string[]>; TABORDER: string[]; footer: Bi }
 
 const files = new Map<string, string>();
@@ -32,18 +59,20 @@ const nlOf = (p: string) => !existsSync(join(GEN, p)) || read(p).endsWith('\n');
 
 /* ---------- kb.json ---------- */
 const kb = readJ<KB>('kb.json');
-for (const id of Object.keys(PARTS)) delete kb.C[id];
-for (const c of Object.values(kb.C)) delete c.use;
+for (const id of Object.keys(ALLP)) delete kb.C[id];
+for (const c of Object.values(kb.C)) { delete c.use; delete c.math; }
 for (const s of SIDS) { delete kb.TABN[s]; delete kb.PATH[s]; }
 kb.TABORDER = kb.TABORDER.filter((s) => !SIDS.includes(s));
-kb.TABORDER.splice(kb.TABORDER.indexOf('T1') + 1, 0, ...SIDS);
-for (const s of SIDS) { kb.TABN[s] = STATIONS[s] as Bi; kb.PATH[s] = PATHS[s] as string[]; }
-for (const [id, p] of Object.entries(PARTS)) {
-  const o: KPart = { n: p.n, cat: 'use', train: 'no', t: p.t };
-  if (p.up) o.up = p.up; if (p.zoom) o.zoom = p.zoom; if (p.dn) o.dn = p.dn;
+kb.TABORDER.splice(kb.TABORDER.indexOf('T1') + 1, 0, ...USIDS);
+kb.TABORDER.splice(kb.TABORDER.indexOf('T8') + 1, 0, ...KSIDS);
+for (const s of SIDS) { kb.TABN[s] = ALLST[s] as Bi; kb.PATH[s] = ALLPATH[s] as string[]; }
+for (const [id, p] of Object.entries(ALLP)) {
+  const o: KPart = { n: p.n, cat: p.cat ?? 'use', train: p.train ?? 'no', t: p.t };
+  if (p.up) o.up = p.up; if (p.zoom) o.zoom = p.zoom; if (p.dn) o.dn = p.dn; if (p.use) o.use = p.use;
   kb.C[id] = o;
 }
 for (const [id, u] of Object.entries(USE_LINKS)) { const c = kb.C[id]; if (!c) throw new Error('use link on unknown part ' + id); c.use = u; }
+for (const [id, k] of Object.entries(MATH_LINKS)) { const c = kb.C[id]; if (!c) throw new Error('math link on unknown part ' + id); if (k.some((s) => !KSIDS.includes(s))) throw new Error('math link to a non-math station: ' + id); c.math = k; }
 for (const [id, c] of Object.entries(kb.C)) {
   for (const x of [...(c.dn ?? []), ...(c.use ?? []), ...(c.up ? [c.up] : [])]) if (!kb.C[x] && !kb.PATH[x]) throw new Error(`${id}: link target ${x} missing`);
   if (c.zoom && !kb.PATH[c.zoom]) throw new Error(`${id}: zoom ${c.zoom} missing`);
@@ -67,9 +96,41 @@ for (const L of LANGS) {
     const o = (MODS[S] as (P: Page) => StationOut)(P);
     put(`st/${S}.${L}.json`, { cls: 'level', html: P.html(o.sub, o.one, o.why, P.stage(o.svg, o.legend)) });
     const nodes: Record<string, { title: string; mc: string; body: string }> = {};
-    for (const [id, p] of Object.entries(PARTS)) if (p.t === S) nodes[id] = { title: p.n[L], mc: MC, body: popBody(id, S, p.pop(t), W, L) };
+    for (const [id, p] of Object.entries(ALLP)) if (p.t === S) nodes[id] = { title: p.n[L], mc: MC, body: popBody(id, S, p.pop(t), W, L) };
     put(`nodes/${S}.${L}.json`, nodes);
     outline[L][S] = P.rows.map((r) => cutRow(r, L));
+  }
+  /* legacy stations with extension cards/labs: re-insert the marked blocks, page-map buttons, outline rows and popups */
+  for (const S of XSIDS) {
+    if (SIDS.includes(S)) throw new Error('extension on a generated station: ' + S);
+    const p = `st/${S}.${L}.json`, st = readJ<{ cls: string; html: string }>(p);
+    let h = st.html.replace(/<!--m2x-->[\s\S]*?<!--\/m2x-->\n?/g, '').replace(/<button class="[^"]*" data-m2x="1"[^>]*>[^<]*<\/button>/g, '');
+    const Pc = new Page(S, L, W), Pl = new Page(S, L, W);
+    (XCARDS[S] ?? []).forEach((f) => f(Pc)); (XLABS[S] ?? []).forEach((f) => f(Pl));
+    const keep = (outline[L][S] ?? []).filter((r) => r[2] === 'quiz' || !r[0] || h.includes(`id="${r[0]}"`));
+    const qa = h.indexOf('<div class="card quiz'); if (qa < 0) throw new Error('no quiz card on ' + S);
+    const la = h.indexOf('<div class="lab-divider'); if (Pl.out.length && la < 0) throw new Error('no lab divider on ' + S);
+    const ca = la >= 0 ? la : qa;
+    if (Pl.out.length) h = h.slice(0, qa) + `<!--m2x-->${Pl.out.join('\n')}<!--/m2x-->\n` + h.slice(qa);
+    if (Pc.out.length) h = h.slice(0, ca) + `<!--m2x-->${Pc.out.join('\n')}<!--/m2x-->\n` + h.slice(ca);
+    const cut = (s: string) => [...s].slice(0, L === 'en' ? 18 : 16).join('');
+    const btn = (r: OutlineRow) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-m2x="1" data-sj="${r[0]}" data-sp="${S}">${esc(cut(r[1]))}</button>`;
+    const pm = h.indexOf(`<div class="ph-map" id="pm${S}">`); if (pm < 0) throw new Error('no page map on ' + S);
+    const pmEnd = h.indexOf('</div>', pm);
+    const firstLab = keep.find((r) => r[2] === 'lab');
+    let at = firstLab ? h.indexOf(`data-sj="${firstLab[0]}"`, pm) : -1;
+    at = at > 0 && at < pmEnd ? h.lastIndexOf('<button', at) : pmEnd;
+    h = h.slice(0, pmEnd) + Pl.rows.map(btn).join('') + h.slice(pmEnd);
+    h = h.slice(0, at) + Pc.rows.map(btn).join('') + h.slice(at);
+    put(p, { ...st, html: h });
+    const rows = keep.filter((r) => r[2] !== 'quiz'), quiz = keep.filter((r) => r[2] === 'quiz');
+    const li = rows.findIndex((r) => r[2] === 'lab');
+    rows.splice(li < 0 ? rows.length : li, 0, ...Pc.rows.map((r) => cutRow(r, L)));
+    outline[L][S] = [...rows, ...Pl.rows.map((r) => cutRow(r, L)), ...quiz];
+    const np = `nodes/${S}.${L}.json`, nodes = readJ<Record<string, { title: string; mc: string; body: string }>>(np);
+    for (const id of Object.keys(XPARTS)) delete nodes[id];
+    for (const [id, x] of Object.entries(XPARTS)) if (x.t === S) nodes[id] = { title: x.n[L], mc: MC, body: popBody(id, S, x.pop(t), W, L) };
+    put(np, nodes, nlOf(np));
   }
   const ord: Record<string, OutlineRow[]> = {};
   for (const s of kb.TABORDER) if (outline[L][s]) ord[s] = outline[L][s] as OutlineRow[];
@@ -80,13 +141,25 @@ for (const L of LANGS) {
 const qz: Record<Lang, Record<string, unknown>> = { zh: readJ('quiz.zh.json'), en: readJ('quiz.en.json') };
 const qkey = readJ<{ src: string; key: Record<string, number[]> }>('qkey.json');
 for (const L of LANGS) {
-  const Q = QUIZ((zh, en) => (L === 'en' ? en : zh));
+  const tt: T = (zh, en) => (L === 'en' ? en : zh);
+  const Q = { ...QUIZ(tt), ...KQUIZ(tt) };
   for (const S of SIDS) {
     const qs = Q[S]; if (!qs) throw new Error('no quiz for ' + S);
     qz[L][S] = qs;
     const key = qs.map((q) => q[2]);
     if (L === 'zh') qkey.key[S] = key; else if (JSON.stringify(qkey.key[S]) !== JSON.stringify(key)) throw new Error('quiz key differs between languages: ' + S);
     qs.forEach((q, i) => { if (q[2] < 0 || q[2] >= q[1].length) throw new Error(`bad key ${S}.${i}`); });
+  }
+  /* extension questions are appended after the legacy ones (a re-run first drops any question it added before) */
+  const mine = new Set(EXTS.flatMap((e) => [...Object.values(e.quiz((zh) => zh)), ...Object.values(e.quiz((_z, en) => en))].flat().map((q) => q[0])));
+  const XQ: Record<string, Q[]> = {};
+  for (const e of EXTS) for (const [S, qs] of Object.entries(e.quiz(tt))) (XQ[S] ??= []).push(...qs);
+  for (const [S, qs] of Object.entries(XQ)) {
+    const base = ((qz[L][S] ?? []) as Q[]).filter((q) => !mine.has(q[0]));
+    qz[L][S] = [...base, ...qs];
+    const key = [...(qkey.key[S] ?? []).slice(0, base.length), ...qs.map((q) => q[2])];
+    if (L === 'zh') qkey.key[S] = key; else if (JSON.stringify(qkey.key[S]) !== JSON.stringify(key)) throw new Error('quiz key differs between languages: ' + S);
+    qs.forEach((q, i) => { if (q[2] < 0 || q[2] >= q[1].length) throw new Error(`bad key ${S}.x${i}`); });
   }
   const ordered: Record<string, unknown> = {};
   for (const s of Object.keys(qz[L]).filter((s) => !SIDS.includes(s))) ordered[s] = qz[L][s];
@@ -100,7 +173,7 @@ put('qkey.json', { src: qkey.src, key: keyOrd }, nlOf('qkey.json'));
 
 /* ---------- search roles ---------- */
 const search = readJ<Record<string, Bi>>('search.json');
-for (const [id, p] of Object.entries(PARTS)) search[id] = { zh: strip(p.pop((zh) => zh).role), en: strip(p.pop((_z, en) => en).role) };
+for (const [id, p] of Object.entries(ALLP)) search[id] = { zh: strip(p.pop((zh) => zh).role), en: strip(p.pop((_z, en) => en).role) };
 put('search.json', search, nlOf('search.json'));
 
 /* ---------- T8 glossary rows (marked data-m2 so a re-run replaces them) ---------- */
@@ -109,9 +182,11 @@ for (const L of LANGS) {
   let h = st.html.replace(/<tr class="grp" data-m2="1">.*?<\/tr>|<tr data-m2="1">.*?<\/tr>/g, '');
   const lbl = L === 'en' ? { role: 'In one sentence', stop: 'Stop', up: 'Belongs to' } : { role: '一句话', stop: '所在页', up: '往上属于' };
   let rows = '';
-  for (const S of SIDS) {
-    rows += `<tr class="grp" data-m2="1"><td colspan="4">${esc((kb.PATH[S] as string[]).map((s) => (kb.TABN[s] as Bi)[L]).join(' › '))}</td></tr>`;
-    for (const [id, part] of Object.entries(PARTS)) if (part.t === S) {
+  for (const S of [...SIDS, ...XSIDS]) {
+    if (!Object.values(ALLP).some((p) => p.t === S)) continue;
+    const more = SIDS.includes(S) ? '' : L === 'en' ? ' · additions' : ' · 补充';
+    rows += `<tr class="grp" data-m2="1"><td colspan="4">${esc((kb.PATH[S] as string[]).map((s) => (kb.TABN[s] as Bi)[L]).join(' › ') + more)}</td></tr>`;
+    for (const [id, part] of Object.entries(ALLP)) if (part.t === S) {
       const up = part.up ? `<a data-open="${part.up}">${esc((kb.C[part.up] as KPart).n[L])}</a>` : '—';
       rows += `<tr data-m2="1"><td><a data-open="${id}">${esc(part.n[L])}</a></td><td data-label="${lbl.role}">${esc((search[id] as Bi)[L])}</td><td data-label="${lbl.stop}"><a data-go="${S}">${esc((kb.TABN[S] as Bi)[L])}</a></td><td data-label="${lbl.up}">${up}</td></tr>`;
     }
@@ -119,8 +194,25 @@ for (const L of LANGS) {
   const anchor = `<tr class="grp"><td colspan="4">${esc((kb.TABN.T1 as Bi)[L])} › ${esc((kb.TABN.T2 as Bi)[L])}</td></tr>`;
   if (!h.includes(anchor)) throw new Error('T8 glossary anchor not found: ' + anchor);
   h = h.replace(anchor, rows + anchor);
+  /* the learning map (svgMap): one extra band at the bottom for the M2 usage parts (marked data-m2 for re-runs) */
+  const old = /<g data-m2="map" data-h0="(\d+)">[\s\S]*?<\/g><\/g>/.exec(h);
+  if (old) h = h.replace(old[0], '').replace(/(<svg id="svgMap" viewBox="0 0 380 )\d+"/, `$1${old[1]}"`);
+  const vb = /<svg id="svgMap" viewBox="0 0 380 (\d+)"/.exec(h);
+  if (!vb) throw new Error('T8 svgMap not found');
+  const H0 = Number(vb[1]), y0 = H0;
+  const chip = (id: string, x: number, y: number, w: number) => {
+    const n = (kb.C[id] as KPart).n[L];
+    return `<g class="comp mapn cat-use" data-id="${id}" data-train="no" tabindex="0" role="button" aria-label="${esc(n)}"><rect class="main" x="${x}" y="${y}" width="${w}" height="32" rx="10"></rect><text x="${x + w / 2}" y="${y + 21}">${esc(n)}</text></g>`;
+  };
+  const band = `<g data-m2="map" data-h0="${H0}"><rect x="2" y="${y0}" width="376" height="148" rx="14" fill="#f0fdf4" stroke="#eef0f5"></rect>`
+    + `<text class="lbl" x="12" y="${y0 + 19}" font-size="12.5" font-weight="700" fill="#15803d">${L === 'en' ? 'How to use it (on top of the app layer)' : '怎么用（建在应用层之上）'}</text>`
+    + chip('uHub', 14, y0 + 28, 352) + chip('uWith', 14, y0 + 68, 172) + chip('uSolo', 194, y0 + 68, 172) + chip('uKit', 14, y0 + 108, 172) + chip('uWell', 194, y0 + 108, 172) + '</g>';
+  h = h.replace(/(<svg id="svgMap" viewBox="0 0 380 )\d+("[^>]*>[\s\S]*?)<\/svg>/, (_m, a: string, rest: string) => `${a}${H0 + 154}${rest}${band}</svg>`);
   put(p, { ...st, html: h });
 }
+
+/* ---------- the KaTeX stylesheet (woff2 fonts only), loaded lazily by the shell when math is on screen ---------- */
+files.set('../../styles/katex.css', katexCss(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../node_modules/katex/dist/katex.min.css'), 'utf8')));
 
 /* ---------- write or check ---------- */
 let stale = 0;

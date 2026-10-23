@@ -44,7 +44,7 @@ export function Crumb() {
 const BN: [string, string, { zh: string; en: string }][] = [
   ['T1', '🏠', { zh: '应用', en: 'App' }], ['T2', '🤖', { zh: 'Agent', en: 'Agent' }], ['T3', '🧠', { zh: '大模型', en: 'LLM' }], ['T4', '🧩', { zh: 'Transformer', en: 'Transformer' }],
 ];
-const MORE_LBL: Record<string, { zh: string; en: string }> = { N: { zh: '入门', en: 'Basics' }, T5: { zh: 'MoE', en: 'MoE' }, T6: { zh: '多模态', en: 'Multimodal' }, T7: { zh: '训练', en: 'Training' }, T8: { zh: '速查', en: 'Reference' }, U: { zh: '用法', en: 'Usage' }, Ua: { zh: '一起干', en: 'Together' }, Ub: { zh: '自己干', en: 'Solo' }, Uc: { zh: '装本事', en: 'Extend' }, Ud: { zh: '用得好', en: 'Use well' } };
+const MORE_LBL: Record<string, { zh: string; en: string }> = { N: { zh: '入门', en: 'Basics' }, T5: { zh: 'MoE', en: 'MoE' }, T6: { zh: '多模态', en: 'Multimodal' }, T7: { zh: '训练', en: 'Training' }, T8: { zh: '速查', en: 'Reference' }, U: { zh: '用法', en: 'Usage' }, Ua: { zh: '一起干', en: 'Together' }, Ub: { zh: '自己干', en: 'Solo' }, Uc: { zh: '装本事', en: 'Extend' }, Ud: { zh: '用得好', en: 'Use well' }, Up: { zh: '产品', en: 'Products' }, K1: { zh: '微积分', en: 'Calculus' }, K2: { zh: '线代', en: 'Lin. alg.' }, K3: { zh: '概率', en: 'Probability' }, K4: { zh: '优化', en: 'Optimize' }, K5: { zh: '证明', en: 'Proofs' } };
 export function BottomNav() {
   const t = useT(), tx = useTx();
   const S = useApp((s) => s.station), sh = useApp((s) => s.sheetOpen), set = useApp((s) => s.set);

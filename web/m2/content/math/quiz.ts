@@ -1,0 +1,61 @@
+/* K1–K5 quizzes: [question, options, correct index, rationale]; both languages share the answer key. */
+import type { T } from '../../lib';
+import type { Q } from '../quiz';
+
+export const KQUIZ = (t: T): Record<string, Q[]> => ({
+  K1: [
+    [t('f(x)=x² 在 x=3 处的导数是？', 'What is the derivative of f(x) = x² at x = 3?'),
+      ['3', '6', '9', '2'], 1,
+      t('(x²)′ = 2x，代入 x=3 得 6。也可以看割线斜率 (3+h)²−9 再除以 h，等于 6+h，h→0 时趋于 6。', '(x²)′ = 2x, so at x = 3 it is 6. Equivalently the secant slope ((3+h)² − 9)/h = 6 + h tends to 6 as h → 0.')],
+    [t('y = σ(wx+b)，∂y/∂w 等于？', 'For y = σ(wx + b), what is ∂y/∂w?'),
+      [t('σ(z)(1−σ(z))', 'σ(z)(1 − σ(z))'), t('σ(z)(1−σ(z))·x', 'σ(z)(1 − σ(z))·x'), t('σ(z)·w', 'σ(z)·w'), 'x'], 1,
+      t('链式法则：外层 σ 的导数 σ(1−σ)，乘内层 z=wx+b 对 w 的导数 x。', 'Chain rule: the outer σ contributes σ(1 − σ), times the inner z = wx + b differentiated in w, which is x.')],
+    [t('计算图里一个值被两个地方用到，反向传播时它的梯度怎么得到？', 'A value in the computation graph is used in two places. How is its gradient obtained in backprop?'),
+      [t('取两处梯度的最大值', 'Take the larger of the two'), t('两处梯度相乘', 'Multiply the two'), t('两处梯度相加', 'Add the two'), t('只用最后一处', 'Use only the last one')], 2,
+      t('多元链式法则：每条路径的导数相乘，所有路径相加。', 'Multivariable chain rule: multiply along each path, add over all paths.')],
+  ],
+  K2: [
+    [t('A 是 2×3 矩阵，B 是 3×4 矩阵，AB 的形状是？', 'A is 2×3 and B is 3×4. What shape is AB?'),
+      ['3×3', '2×4', '4×2', t('无法相乘', 'Not defined')], 1,
+      t('(m×n)(n×p) 得 m×p：内侧的 3 对上，结果是 2×4。', '(m×n)(n×p) gives m×p: the inner 3s match, so the result is 2×4.')],
+    [t('矩阵 [[2,1],[1,1]] 把平面上的面积放大几倍？', 'By what factor does the matrix [[2,1],[1,1]] scale areas?'),
+      ['1', '2', '3', '5'], 0,
+      t('|det| = |2·1 − 1·1| = 1：形状变了，面积不变。', '|det| = |2·1 − 1·1| = 1: the shape changes but the area does not.')],
+    [t('y = Wx，已知 ∂L/∂y，∂L/∂x 等于？', 'y = Wx and ∂L/∂y is known. What is ∂L/∂x?'),
+      ['W·∂L/∂y', '(∂L/∂y)·xᵀ', 'Wᵀ·∂L/∂y', 'x·∂L/∂y'], 2,
+      t('雅可比 ∂y/∂x = W，反向传播乘它的转置：∇ₓL = Wᵀ∇ᵧL。(∂L/∂y)xᵀ 是对 W 的梯度。', 'The Jacobian ∂y/∂x is W, and backprop multiplies by its transpose: ∇ₓL = Wᵀ∇ᵧL. (∂L/∂y)xᵀ is the gradient with respect to W.')],
+  ],
+  K3: [
+    [t('softmax 的所有输入都加上 5，输出会怎样？', 'Add 5 to every input of softmax. What happens to the output?'),
+      [t('不变', 'Nothing changes'), t('都变大', 'All grow'), t('更集中', 'More peaked'), t('更平均', 'Flatter')], 0,
+      t('分子分母同乘 e⁵，约掉了：softmax 只看分数之间的差。', 'Numerator and denominator both gain a factor e⁵ that cancels: softmax depends only on the differences.')],
+    [t('温度 T 调高，softmax 的输出会？', 'Raising the temperature T makes the softmax output…'),
+      [t('更集中到最高分', 'More concentrated on the top score'), t('更平均', 'Flatter'), t('不变', 'Unchanged'), t('出现负数', 'Contain negatives')], 1,
+      t('分数除以更大的 T，差距缩小，分布更平、熵更高；T 很小时趋向只选最高分。', 'Dividing by a larger T shrinks the gaps, so the distribution flattens and its entropy rises; small T approaches always picking the top score.')],
+    [t('KL(p‖q) 的哪条性质是对的？', 'Which property of KL(p‖q) is true?'),
+      [t('可以是负数', 'It can be negative'), t('总等于 KL(q‖p)', 'It always equals KL(q‖p)'), t('≥ 0，且仅当 p = q 时为 0', '≥ 0, and 0 only when p = q'), t('等于交叉熵', 'It equals cross-entropy')], 2,
+      t('吉布斯不等式（用 ln t ≤ t − 1 证明）；它不对称；交叉熵 = 熵 + KL。', 'Gibbs’ inequality (proved with ln t ≤ t − 1); it is not symmetric; cross-entropy = entropy + KL.')],
+  ],
+  K4: [
+    [t('沿哪个方向走，函数下降得最快？', 'In which direction does a function decrease fastest?'),
+      [t('梯度方向', 'Along the gradient'), t('与梯度垂直', 'Perpendicular to the gradient'), t('负梯度方向', 'Against the gradient'), t('任意坐标轴', 'Along any axis')], 2,
+      t('方向导数 = ∇f·u ≥ −‖∇f‖，由柯西–施瓦茨，等号在 u 与 −∇f 同向时取到。', 'The directional derivative ∇f·u ≥ −‖∇f‖ by Cauchy–Schwarz, with equality when u points along −∇f.')],
+    [t('f(x) = x²（a = 2），梯度下降的学习率在什么范围内收敛？', 'For f(x) = x² (a = 2), which learning rates make gradient descent converge?'),
+      ['0 < η < 1', '0 < η < 2', '0 < η < 0.5', t('任意 η > 0', 'Any η > 0')], 0,
+      t('xₖ₊₁ = (1 − ηa)xₖ，需要 |1 − 2η| < 1，即 0 < η < 2/a = 1。', 'xₖ₊₁ = (1 − ηa)xₖ needs |1 − 2η| < 1, that is 0 < η < 2/a = 1.')],
+    [t('小批量从 B 个独立样本平均梯度，梯度估计的方差变为单样本的？', 'Averaging the gradient over B independent samples changes its variance to what fraction of one sample’s?'),
+      ['1/√B', '1/B', '1/B²', t('不变', 'Unchanged')], 1,
+      t('独立变量的方差相加：Var(平均) = Bσ²/B² = σ²/B；期望不变，所以仍是无偏估计。', 'Variances of independent variables add: Var(mean) = Bσ²/B² = σ²/B; the mean is unchanged, so it stays unbiased.')],
+  ],
+  K5: [
+    [t('softmax 加交叉熵，对分数 z 的梯度是？', 'For softmax with cross-entropy, what is the gradient with respect to the scores z?'),
+      ['p − y', 'y − p', 'p(1 − p)', 'log p'], 0,
+      t('log pₖ = zₖ − log Σeᶻ，求导后用 Σy = 1 化简得 p − y。', 'log pₖ = zₖ − log Σeᶻ; differentiate and use Σy = 1 to get p − y.')],
+    [t('q、k 各分量独立、均值 0、方差 1，q·k 的方差是？', 'q and k have independent components with mean 0 and variance 1. What is the variance of q·k?'),
+      ['1', '√dₖ', 'dₖ', 'dₖ²'], 2,
+      t('每项 qᵢkᵢ 方差为 1，dₖ 项独立相加得 dₖ；所以除以 √dₖ 后方差回到 1。', 'Each qᵢkᵢ has variance 1 and the dₖ independent terms add to dₖ, so dividing by √dₖ brings it back to 1.')],
+    [t('策略梯度里减去不依赖回答的基线 b，会？', 'In the policy gradient, subtracting a baseline b that does not depend on the answer…'),
+      [t('引入偏差', 'Introduces bias'), t('不改变期望，通常减小方差', 'Keeps the expectation and usually lowers variance'), t('让梯度变为 0', 'Makes the gradient 0'), t('只在奖励为负时有效', 'Only works for negative rewards')], 1,
+      t('E[b∇log π] = b∇Σπ = b∇1 = 0，所以期望不变；b 接近平均奖励时方差更小。', 'E[b∇log π] = b∇Σπ = b∇1 = 0, so the expectation is unchanged; a b near the average reward lowers the variance.')],
+  ],
+});

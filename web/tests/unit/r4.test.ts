@@ -16,13 +16,13 @@ describe('native quiz (live parity)', () => {
   });
   it('quizScore counts correct / answered / total over the shared answer key', () => {
     const total = Object.values(QUIZ_KEY).reduce((a, k) => a + k.length, 0);
-    expect(total).toBe(51);
-    expect(quizScore()).toEqual([0, 0, 51]);
+    expect(total).toBe(76); // 69 + M4 (T2, T3) + M5 (T7) + M6 (T7, T6, T1)
+    expect(quizScore()).toEqual([0, 0, 76]);
     const [S, key] = Object.entries(QUIZ_KEY)[0]!;
     localStorage.setItem('aiexp.v2.quiz', JSON.stringify({ [S + '.0']: key[0], [S + '.1']: (key[1]! + 1) % 3 }));
-    expect(quizScore()).toEqual([1, 2, 51]);
+    expect(quizScore()).toEqual([1, 2, 76]);
     localStorage.setItem('aiexp.v2.quiz', 'not json');
-    expect(quizScore()).toEqual([0, 0, 51]);
+    expect(quizScore()).toEqual([0, 0, 76]);
   });
   it('renderQuiz marks the answered question right/wrong and keeps the zl tag first', () => {
     document.body.innerHTML = '<div id="quizT9"></div>';

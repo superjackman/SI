@@ -10,7 +10,7 @@ import { visited } from '../nav';
 type Row = [string, string, '' | 'lab' | 'quiz', number];
 const OUT = import.meta.glob<Record<string, Row[]>>('../legacy/gen/outline.*.json', { import: 'default' });
 type N = [string, N[]];
-const TREE: N[] = [['T1', [['U', [['Ua', []], ['Ub', []], ['Uc', []], ['Ud', []]]], ['T2', [['T3', [['N', []], ['T4', [['T4a', []], ['T4b', []]]]]]]]]], ['T5', []], ['T6', []], ['T7', []], ['T8', []]];
+const TREE: N[] = [['T1', [['U', [['Ua', []], ['Ub', []], ['Uc', []], ['Ud', []], ['Up', []]]], ['T2', [['T3', [['N', []], ['T4', [['T4a', []], ['T4b', []]]]]]]]]], ['T5', []], ['T6', []], ['T7', []], ['T8', []], ['K1', []], ['K2', []], ['K3', []], ['K4', []], ['K5', []]];
 const LSK = 'aiexp.v2.open';
 function loadOpen(): Record<string, number> { try { const v = JSON.parse(localStorage.getItem(LSK) ?? 'null') as unknown; if (v && typeof v === 'object') return v as Record<string, number>; } catch { /* */ } return { T1: 1, T2: 1, T3: 1, T4: 1 }; }
 const saveOpen = (o: Record<string, number>) => { try { localStorage.setItem(LSK, JSON.stringify(o)); } catch { /* private mode */ } };

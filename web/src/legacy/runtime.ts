@@ -28,8 +28,24 @@ export interface Env extends Shell {
   rt: Record<string, unknown>;
 }
 /* one island per station: the live page's lifted labs (gen/islands/<S>.js) and the hand-written M2 labs (m2/labs/<S>.ts) */
+/* extension labs on a legacy station (m2/labs/<S>.x.ts) are merged with that station's island: their LABS come after the island's */
 const loaders: Record<string, () => Promise<IslandModule>> = {};
-for (const [k, f] of Object.entries({ ...import.meta.glob<IslandModule>('./gen/islands/*.js'), ...import.meta.glob<IslandModule>('../m2/labs/*.ts') })) loaders[k.replace(/^.*\/|\.(js|ts)$/g, '')] = f;
+const parts: Record<string, Array<[string, () => Promise<IslandModule>]>> = {};
+for (const [k, f] of Object.entries({ ...import.meta.glob<IslandModule>('./gen/islands/*.js'), ...import.meta.glob<IslandModule>('../m2/labs/*.ts') })) {
+  const n = k.replace(/^.*\/|\.(js|ts)$/g, '');
+  (parts[n.split('.')[0] as string] ??= []).push([n, f]);
+}
+const merge = (ms: IslandModule[]): IslandModule => ({
+  LABS: ms.flatMap((m) => m.LABS),
+  mount(env) {
+    const r = ms.map((m) => m.mount(env));
+    return { labs: r.flatMap((x) => x.labs), eager: () => r.forEach((x) => x.eager()) };
+  },
+});
+for (const [S, fs] of Object.entries(parts)) {
+  fs.sort((a, b) => a[0].length - b[0].length);
+  loaders[S] = fs.length === 1 ? (fs[0] as [string, () => Promise<IslandModule>])[1] : () => Promise.all(fs.map(([, f]) => f())).then(merge);
+}
 /* the labs' translation keys: one shared chunk for all stations (R4; was a copy inside every station chunk) */
 const labI18n = () => import('./gen/lab-i18n.json').then((m) => m.default as Record<string, Bi>);
 export const hasIsland = (s: string) => Object.prototype.hasOwnProperty.call(loaders, s);

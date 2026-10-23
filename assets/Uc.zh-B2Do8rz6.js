@@ -1,0 +1,72 @@
+const a="level",t=`
+<div class="pagehead" id="phUc"><h1 class="pg-t"><span class="pg-n">5</span>给它装本事</h1><p class="pg-s">工具、MCP、Skills：不换模型，多会几样。</p><details class="pg-more"><summary aria-label="展开本站说明" title="本站说明"><span aria-hidden="true">ⓘ</span> 说明</summary><div class="ph-one">工具给它新动作，MCP 让它接上别人做好的工具，Skills 给它按需加载的做法说明。它们的说明都要占上下文。</div><p class="ph-why"><b>为什么这样设计：</b>改模型又贵又慢；在外面给它说明书和手脚，当天就能用上。</p></details><div class="ph-top"><span class="ph-lv">第 5 站 / 共 22 站</span><span>📍 应用全景 › 怎么用 Agent › 给它装本事</span></div><div class="ph-map" id="pmUc"><span>本页结构：</span><button class="" data-sj="c_Uc_0" data-sp="Uc">不换模型，也能多会几样</button><button class="" data-sj="c_Uc_1" data-sp="Uc">🔧 工具：一份说明书 + 一段程</button><button class="" data-sj="c_Uc_2" data-sp="Uc">🔌 MCP：工具的“通用插座”</button><button class="" data-sj="c_Uc_3" data-sp="Uc">📦 Skills：按需加载的“做</button><button class="l3" data-sj="labCtxLoad" data-sp="Uc">🧪 说明书占了多少上下文？</button></div><div class="zoomnote" id="znUc" style="display:none"></div></div><div class="m-stage"><div class="m-dg main"><div class="m-vbar"><span class="m-vh">👆 点方块看详情<br>🤏 双指 / 双击放大</span><button type="button" class="vz" data-vz="out" aria-label="缩小">−</button><span class="vp" aria-live="polite">100%</span><button type="button" class="vz" data-vz="in" aria-label="放大">＋</button><button type="button" class="vz" data-vz="reset" aria-label="复位" disabled="">⟲</button><button type="button" class="vz" data-vz="full" aria-label="全屏查看">⛶</button></div><div class="diagram m-vw"><svg id="svgUc" viewBox="0 0 380 288" xmlns="http://www.w3.org/2000/svg" data-m="1"><defs><marker id="ahsvgUc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"></path></marker></defs><g class="comp cat-use" data-id="uTool" data-train="no" tabindex="0" role="button" aria-label="工具（函数调用）"><rect class="main" x="3" y="6" width="118" height="76" rx="12"></rect><text class="t" style="font-size:15px" x="62" y="33.0">工具</text><text class="s" x="62" y="51.0">多一个</text><text class="s" x="62" y="67.0">能做的动作</text></g><g class="comp cat-use" data-id="uMcp" data-train="no" tabindex="0" role="button" aria-label="MCP（模型上下文协议）"><rect class="main" x="131" y="6" width="118" height="76" rx="12"></rect><text class="t" style="font-size:15px" x="190" y="33.0">MCP</text><text class="s" x="190" y="51.0">接上别人</text><text class="s" x="190" y="67.0">做好的工具</text></g><g class="comp cat-use" data-id="uSkill" data-train="no" tabindex="0" role="button" aria-label="Skills（技能包）"><rect class="main" x="259" y="6" width="118" height="76" rx="12"></rect><text class="t" style="font-size:15px" x="318" y="33.0">Skills</text><text class="s" x="318" y="51.0">一包</text><text class="s" x="318" y="67.0">做法说明</text></g><path class="arrow" d="M62 82 V128" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#ahsvgUc)"></path><path class="arrow" d="M190 82 V128" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#ahsvgUc)"></path><path class="arrow" d="M318 82 V128" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#ahsvgUc)"></path><g class="comp cat-llm" data-id="ctxwin" data-train="no" tabindex="0" role="button" aria-label="上下文窗口"><rect class="main" x="3" y="132" width="374" height="60" rx="12"></rect><text class="t" style="font-size:15px" x="190" y="159.0">原理：上下文窗口</text><text class="s" x="190" y="177.0">它们的说明都要先放进这里</text></g><path class="arrow" d="M190 192 V216" fill="none" stroke="#94a3b8" stroke-width="2" marker-end="url(#ahsvgUc)"></path><g class="comp cat-llm" data-id="think" data-train="no" tabindex="0" role="button" aria-label="③ 思考 / 决策（大模型）"><rect class="main" x="65" y="220" width="250" height="62" rx="12"></rect><text class="t" style="font-size:15px" x="190" y="248.0">原理：大模型决定</text><text class="s" x="190" y="266.0">读说明，挑一个来用</text></g></svg></div></div><details class="m-leg"><summary>🎨 图例：颜色是什么意思</summary><div class="legend"><span><i style="--c:#15803d;--f:#dcfce7"></i>用法（怎么用）</span><span><i style="--c:#4338ca;--f:#e0e7ff"></i>大模型原理</span></div></details></div>
+<div class="card has-meta" id="c_Uc_0" data-z="1" data-zl="② 结构图" data-nh="1" data-cc="1">
+<div class="cc-meta"><span class="zl z2">② 结构图</span></div><h2><button type="button" class="cc-h" aria-expanded="true">不换模型，也能多会几样</button></h2><div class="cc-body">
+
+<p class="lead">模型会什么，训练时就定了。要它做新的事，最便宜的办法是在外面“递说明书、接手脚”。三种方式：</p>
+<ul class="pts">
+<li><a data-open="uTool">工具（函数调用）</a>：给它一个新动作（查库存、发消息）。</li>
+<li><a data-open="uMcp">MCP（模型上下文协议）</a>：用一个开放协议，接上别人已经做好的一整套工具和数据。</li>
+<li><a data-open="uSkill">Skills（技能包）</a>：给它一包“这类事该怎么做”的说明（可带脚本），用到时才读。</li>
+</ul>
+<p>三者有个共同代价：它们的说明都要放进 <a data-open="ctxwin">上下文窗口</a>，模型才知道有这些东西可用。</p>
+</div></div>
+<div class="card has-meta" id="c_Uc_1" data-z="2" data-zl="③ 细节·为什么" data-nh="1" data-cc="1">
+<div class="cc-meta"><span class="zl zm">③ 细节·为什么</span></div><h3><button type="button" class="cc-h" aria-expanded="true">🔧 工具：一份说明书 + 一段程序</button></h3><div class="cc-body">
+
+<p>一个工具由开发者写好两样东西：给模型看的<b>说明书</b>（名字、用途、参数格式），和真正干活的<b>程序</b>。比如： <span class="tag demo tag-s" title="示意">示意</span></p>
+<pre class="json u-code">{
+  "name": "check_stock",
+  "description": "查询某个商品的库存数量",
+  "parameters": {
+    "type": "object",
+    "properties": { "sku": { "type": "string" } },
+    "required": ["sku"]
+  }
+}</pre>
+<p>模型需要时输出 <code>{"name":"check_stock","arguments":{"sku":"A-102"}}</code> 这样的文字，程序检查参数、调用真实接口，再把结果作为文字送回去。细节在 <a data-open="schema">工具说明书（函数描述）</a> 和 <a data-open="toolres">⑤ 工具结果</a>。</p>
+<p>写好工具的要点：名字一看就懂、说明写清什么时候用、参数尽量少；只读的和会改东西的分开，后者加确认。</p>
+</div></div>
+<div class="card has-meta" id="c_Uc_2" data-z="2" data-zl="③ 细节·为什么" data-nh="1" data-cc="1">
+<div class="cc-meta"><span class="zl zm">③ 细节·为什么</span></div><h3><button type="button" class="cc-h" aria-expanded="true">🔌 MCP：工具的“通用插座”</button></h3><div class="cc-body">
+
+<p>MCP（模型上下文协议）是 2024 年底提出的开放协议。以前每个 AI 应用要单独对接每个工具（N 个应用 × M 个工具）；有了统一协议，应用和工具各实现一次就能互相连上（N + M）。</p>
+<ul class="pts">
+<li><b>三个角色</b>：<a data-open="mcphost">AI 应用（宿主）</a>（你在用的 AI 应用）为每个服务器开一个 <a data-open="mcpclient">MCP 客户端</a>，连到 <a data-open="mcpserver">MCP 服务器</a>。</li>
+<li><b>服务器提供三类东西</b>：工具（能做的动作）、资源（能读的数据）、提示模板（现成的用法）。</li>
+<li><b>两种连法</b>：服务器在本机时用标准输入输出（stdio）；在远程时走 HTTP。</li>
+</ul>
+<p><b>安全</b>：装一个服务器，就是信任它的代码和它能访问的一切；它返回的内容也可能带着 <a data-open="inject">提示词注入</a>。只装来源可信的，看清它要的权限。</p>
+</div></div>
+<div class="card has-meta" id="c_Uc_3" data-z="2" data-zl="③ 细节·为什么" data-nh="1" data-cc="1">
+<div class="cc-meta"><span class="zl zm">③ 细节·为什么</span></div><h3><button type="button" class="cc-h" aria-expanded="true">📦 Skills：按需加载的“做法说明”</button></h3><div class="cc-body">
+
+<p>一个技能就是一个文件夹：里面一份 SKILL.md 写着“这类事怎么做”，开头有名字和一句话简介；还可以放脚本、模板。</p>
+<ol class="pts">
+<li><b>平时</b>：上下文里只有每个技能的名字 + 简介，几十个词元一条。</li>
+<li><b>用到时</b>：Agent 判断当前任务和某个技能相关，才读入完整说明，需要的话运行里面的脚本。</li>
+</ol>
+<table class="gl stack"><tbody><tr><th></th><th>工具</th><th>Skill</th></tr>
+<tr><td>给它什么</td><td data-label="工具">一个动作（手）</td><td data-label="Skill">一套做法（经验）</td></tr>
+<tr><td>平时占上下文</td><td data-label="工具">完整说明书</td><td data-label="Skill">只有名字 + 简介</td></tr>
+<tr><td>谁执行</td><td data-label="工具">应用程序</td><td data-label="Skill">Agent 照着做，可调用已有工具</td></tr>
+</tbody></table>
+</div></div>
+<div class="lab-divider" data-z="3"><span>🧪 动手实验室：给它装本事</span></div>
+<div class="card lab has-meta" id="labCtxLoad" data-z="3" data-zl="🧪 动手实验" data-nh="1">
+<div class="cc-meta"><span class="zl z3">🧪 动手实验</span><span class="tag demo tag-s" title="示意">示意</span></div><h3>🧪 说明书占了多少上下文？</h3><p class="tag-note">ⓘ 词元数都是示意的整数，真实数字取决于模型和说明的写法。</p>
+<div class="lab-why bz"><div class="bz-h"><b>设计动机：</b></div><ul class="pts"><li>每个扩展都要先“自我介绍”，介绍写在上下文里，装得越多越挤。</li><li>按需加载（先只放名字和一句话，用到再读全文）是 Skills 和不少工具系统省地方的办法。</li></ul></div>
+<div class="ctrls">
+<label>装了几个扩展 <select id="clN"><option value="3">3</option><option value="10" selected>10</option><option value="30">30</option></select></label>
+<label>加载方式 <select id="clMode"><option value="all">全部塞进去</option><option value="lazy">按需加载</option></select></label>
+</div>
+<div class="u-bar" id="clBar" role="img"></div>
+<div class="u-legend" id="clLeg"></div>
+<p class="u-stat" id="clStat" aria-live="polite"></p>
+<div class="row" style="gap:6px;margin:6px 0"><button class="btn primary" id="clCall">调用一次工具</button><button class="btn" id="clReset">重置</button></div>
+<pre class="json u-code" id="clOut" hidden></pre>
+<div class="lab-obs bz"><div class="bz-h"><b>👀 试试：</b></div><ul class="pts"><li>选 30 个、全部塞进去，看说明书占掉多少</li><li>换成“按需加载”再比一比</li><li>按需加载时点“调用一次工具”，看完整说明是什么时候才读进来的</li></ul></div>
+</div>
+<div class="card quiz has-meta" id="quizUc" data-sec="Uc" data-z="3" data-zl="❓ 小测验" data-nh="1"></div>
+<div class="ph-nav m-pn" data-sec="Uc"></div>
+`,s={cls:a,html:t};export{a as cls,s as default,t as html};

@@ -11,8 +11,9 @@ export const STATIONS: Record<string, Bi> = {
   Ub: { zh: '让它自己干', en: 'Let it run alone' },
   Uc: { zh: '给它装本事', en: 'Extend it' },
   Ud: { zh: '用得好', en: 'Use it well' },
+  Up: { zh: '具体产品', en: 'Products' },
 };
-export const PATHS: Record<string, string[]> = { U: ['T1', 'U'], Ua: ['T1', 'U', 'Ua'], Ub: ['T1', 'U', 'Ub'], Uc: ['T1', 'U', 'Uc'], Ud: ['T1', 'U', 'Ud'] };
+export const PATHS: Record<string, string[]> = { U: ['T1', 'U'], Ua: ['T1', 'U', 'Ua'], Ub: ['T1', 'U', 'Ub'], Uc: ['T1', 'U', 'Uc'], Ud: ['T1', 'U', 'Ud'], Up: ['T1', 'U', 'Up'] };
 
 const tryPick = (t: T): [string, string, string] => ['labPick', 'U', t('🧪 帮我选用法（怎么用 Agent）', '🧪 Pick a way to use it (Using agents)')];
 const trySess = (t: T): [string, string, string] => ['labSession', 'Ua', t('🧪 一次编程会话（跟它一起干）', '🧪 A coding session (Work alongside it)')];

@@ -88,8 +88,8 @@ export default function U(P: Page): StationOut {
 </ul>`);
 
   P.quiz();
-  P.card('c_U_m3', 2, t('具体产品与链接（待补）', 'Specific products and links (coming)'), `
-<p>${t('【M3 占位 · 待补】具体产品与链接：各类用法对应的具体产品、版本和官方链接，在 M3 补充。', '[M3 placeholder · to be added] Specific products and links: the products, versions and official links for each way of using agents will be added in M3.')}</p>`, { cls: 'm3ph', noMap: true });
+  P.card('c_U_m3', 2, t('🗂️ 具体产品去哪找', '🗂️ Where to find real products'), `
+<p>${t(`每种用法对应哪些真实产品、官网在哪，见 ${P.go('Up')} 这一站：按用法分组，附官方链接，可筛选国内运营或开源的。`, `Which real products offer each way, and their official sites, are on the ${P.go('Up')} stop: grouped by way, with official links, filterable by mainland-run or open source.`)}</p>`);
 
   return {
     sub: t('同一个 Agent，八种用法；差别只在四件事。', 'One agent, eight ways to use it; they differ in four things.'),

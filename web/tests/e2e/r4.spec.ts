@@ -151,7 +151,7 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
 test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress detail → T8, learning map navigates', async ({ page }) => {
   await open(page, 'zh', 'T1');
   await sheet(page);
-  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 16 站 · 测验答对 0 / 51（已答 0）');
+  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 22 站 · 测验答对 0 / 76（已答 0）');
   await expect(page.locator('#shPrev')).toBeDisabled();
   await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(13);
   await page.locator('#shNext').click();
@@ -161,7 +161,7 @@ test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress d
   await page.locator('html[data-si-ready="T2.zh"]').waitFor({ state: 'attached' });
   await page.locator('section#T2 #quizT2 .opt[data-q]').first().evaluate((b) => (b as HTMLElement).click());
   await sheet(page);
-  await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 16 站');
+  await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 22 站');
   await expect(page.locator('#shProgTxt')).toContainText('（已答 1）');
   await page.locator('#shMap > summary').click();
   await expect(page.locator('#tree .tn.cur')).toHaveCount(1);
