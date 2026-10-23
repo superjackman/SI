@@ -41,7 +41,7 @@ function onDocClick(e: MouseEvent) {
     if (!t.closest('#modalBox')) return;
   }
   const sj = t.closest<HTMLElement>('[data-sj]');
-  if (sj) { e.preventDefault(); const sec = sj.dataset.sp ?? ''; if (useApp.getState().station !== sec) go(sec, false); jumpTo(sj.dataset.sj ?? '', sec); return; }
+  if (sj) { e.preventDefault(); const sec = sj.dataset.sp ?? ''; jumpTo(sj.dataset.sj ?? '', sec); return; } /* R12: jumpTo switches station first and scrolls once it has rendered */
   const jb = t.closest<HTMLElement>('[data-jump]'); if (jb) { jumpTo(jb.dataset.jump ?? '', jb.dataset.lv); return; }
   const z = t.closest<HTMLElement>('[data-zoom]'); if (z) { closeInfo(); go(z.dataset.zoom ?? ''); return; }
   const g = t.closest<HTMLElement>('[data-go]'); if (g) { closeInfo(); go(g.dataset.go ?? ''); return; }

@@ -30,6 +30,7 @@ import { M6 } from './content/ext/m6';
 import { M7 } from './content/ext/m7';
 import { M8 } from './content/ext/m8';
 import { HAND } from './content/handoff';
+import { KMAP, KSIDE } from './content/kmap';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
@@ -265,6 +266,35 @@ for (const S of kb.TABORDER) {
   for (const [id, [k, z]] of zh) { const e = en.get(id); if (!e) throw new Error(`search index: ${S}#${id} has no English title`); xrows.push([k, id, S, z, e[1]]); }
 }
 put('search-x.json', xrows);
+
+/* ---------- R12: the knowledge map at the top of the home page (T1), between <!--m2k--> markers under the page head ---------- */
+/* one row per layer (macro → micro → maths), each row a link to its first station, sub-items for the others; the lab / card
+   counts come from the search rows above (the same card elements the search box lists), so they can never drift */
+{
+  const cnt = (S: string, k: string) => xrows.filter((r) => r[2] === S && r[0] === k).length;
+  const inMap = KMAP.flatMap((l) => l.st).concat(KSIDE.st);
+  for (const S of kb.TABORDER) if (!inMap.includes(S)) throw new Error('knowledge map misses station ' + S);
+  for (const L of LANGS) {
+    const p = 'st/T1.' + L + '.json', st = stOf(p), nl = nlOfF(p);
+    const name = (s: string) => { const n = kb.TABN[s]; if (!n) throw new Error('knowledge map: unknown station ' + s); return n[L]; };
+    let o = `<nav class="km" id="kmap" aria-labelledby="kmT"><p class="km-t" id="kmT">${CODES['km.title'][L]}</p><p class="km-h">${CODES['km.hint'][L]}<span>${CODES['km.legend'][L]}</span></p><ol class="km-s">`;
+    KMAP.forEach((ly, i) => {
+      const S0 = ly.st[0] as string, labs = ly.st.reduce((a, s) => a + cnt(s, 'l'), 0), cards = ly.st.reduce((a, s) => a + cnt(s, 'c'), 0);
+      const tgt = S0 === 'T1' ? 'data-sj="c_T1_0" data-sp="T1"' : `data-go="${S0}"`;
+      const c = `<span class="km-c" data-labs="${labs}" data-cards="${cards}">${labs ? `🧪${labs} ` : ''}📄${cards}</span>`;
+      o += `<li class="km-l" style="--i:${i}" data-km="${ly.st.join(' ')}"><button type="button" class="km-b" ${tgt}><span class="km-n"><b>${ly.ic} ${esc(ly.n[L])}</b>${S0 === 'T1' ? `<i class="km-here">${CODES['km.here'][L]}</i>` : ''}${c}</span><span class="km-r">${esc(ly.learn[L])}</span></button>`;
+      const subs = ly.st.filter((s) => name(s) !== ly.n[L]);
+      if (ly.st.length > 1) o += `<span class="km-k">${subs.map((s) => `<button type="button" class="km-x" data-go="${s}">${esc(name(s).replace(/^(数学 · |Math · )/, ''))}</button>`).join('')}</span>`;
+      o += '</li>';
+    });
+    o += `</ol><p class="km-side"><span>${CODES['km.side'][L]}</span><button type="button" class="km-x" data-go="${KSIDE.st}">${KSIDE.ic} ${esc(name(KSIDE.st))}</button>${KSIDE.jumps.map(([id, t]) => `<button type="button" class="km-x" data-sj="${id}" data-sp="${KSIDE.st}">${esc(t[L])}</button>`).join('')}</p></nav>`;
+    for (const [id] of KSIDE.jumps) if (!stOf('st/T8.' + L + '.json').html.includes(`id="${id}"`)) throw new Error('knowledge map: T8 has no #' + id);
+    let h = st.html.replace(/<!--m2k-->[\s\S]*?<!--\/m2k-->\n?/g, '');
+    const at = h.indexOf('<div class="m-stage">'); if (at < 0) throw new Error('knowledge map: no diagram stage on T1');
+    h = h.slice(0, at) + `<!--m2k-->${o}<!--/m2k-->\n` + h.slice(at);
+    put(p, { ...st, html: h }, nl);
+  }
+}
 
 /* ---------- the KaTeX stylesheet (woff2 fonts only), loaded lazily by the shell when math is on screen ---------- */
 files.set('../../styles/katex.css', katexCss(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../node_modules/katex/dist/katex.min.css'), 'utf8')));

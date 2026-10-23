@@ -167,3 +167,18 @@ svg.x-fig{display:block;width:100%;height:auto;max-width:420px;margin:8px auto}
 .mh-b.dn{border-color:#93c5fd;background:#eff6ff}.mh-k{font-size:.8em;color:#475569}.mh-r{font-size:.88em;color:#334155;overflow-wrap:anywhere}
 .mh-c{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.mh-c>span{width:100%;font-size:.85em;color:#475569}
 .mh-x{min-height:36px;max-width:100%;padding:6px 10px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;font:inherit;font-size:.88em;color:#1d4ed8;text-align:left;overflow-wrap:anywhere;cursor:pointer}
+/* R12: home-page knowledge map (generated into T1 by m2/build.ts) — one straight spine, macro at the top, maths at the bottom */
+.km{margin:8px 0 12px;padding:8px 8px 6px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}
+.km-t,.km-h,.km-side{margin:0}.km-t{font-weight:700;font-size:15px;line-height:1.3}
+.km-h{font-size:12px;line-height:1.35;color:#475569;margin:1px 0 5px;display:flex;flex-wrap:wrap;column-gap:8px}.km-h>span{color:#64748b}
+.km-s{list-style:none;margin:0 0 0 4px;padding:0 0 0 12px;border-left:2px solid #cbd5e1;display:flex;flex-direction:column;gap:3px}
+.km-l{--h:calc(275 - var(--i) * 26);position:relative}
+.km-l::before{content:'';position:absolute;left:-18px;top:9px;width:10px;height:10px;border-radius:50%;background:hsl(var(--h) 70% 55%);box-shadow:0 0 0 2px #fff}
+.km-b{display:flex;flex-direction:column;width:100%;min-height:34px;padding:3px 8px;border:1px solid hsl(var(--h) 60% 82%);border-radius:10px;background:hsl(var(--h) 80% 97%);font:inherit;color:inherit;text-align:left;cursor:pointer}
+.km-n{display:flex;align-items:baseline;gap:6px;width:100%;font-size:14px;line-height:1.3}.km-n>b{flex:1 1 auto;min-width:0}
+.km-c{flex:none;font-size:11.5px;color:#475569;white-space:nowrap}.km-here{flex:none;font-style:normal;font-size:11.5px;color:#7c3aed}
+.km-r{font-size:11.5px;line-height:1.3;color:#475569;overflow-wrap:anywhere}
+.km-k,.km-side{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.km-x{min-height:26px;max-width:100%;padding:2px 8px;border:1px solid hsl(var(--h,215) 50% 80%);border-radius:999px;background:#fff;font:inherit;font-size:12px;line-height:1.25;color:#1e40af;text-align:left;overflow-wrap:anywhere;cursor:pointer}
+.km-side{align-items:center;margin-top:8px;padding-top:6px;border-top:1px dashed #e2e8f0}.km-side>span{font-size:12px;color:#475569}
+.km-p{flex:none;font-size:11px;color:#15803d;font-weight:600}.km-x.v::after{content:' ✓';color:#15803d}

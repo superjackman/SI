@@ -42,6 +42,10 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
   it('every lab and card is reachable: its station is, and every lab has an explicit jump link', () => {
     for (const S of KB.TABORDER) for (const [id, cls] of cardIds(st(S, L))) if (/\blab\b/.test(cls)) expect(seenE.has(id), `${S}#${id}`).toBe(true);
   });
+  it('R12: every station is one tap from home (the T1 page links all of them directly)', () => {
+    const one = new Set(['T1', ...attrs(st('T1', L), 'data-go'), ...attrs(st('T1', L), 'data-sp')]);
+    expect(KB.TABORDER.filter((S) => !one.has(S))).toEqual([]);
+  });
   it('the "go deeper" hand-off chain alone walks T1 → … → K5 through all 22 stations', () => {
     const seen = new Set<string>(), qq = ['T1'];
     while (qq.length) { const S = qq.shift()!; if (seen.has(S)) continue; seen.add(S); qq.push(...attrs(handOf(st(S, L)).split('mh-b up')[0]!, 'data-go')); }

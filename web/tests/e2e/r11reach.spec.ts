@@ -1,4 +1,4 @@
-/* R11: everything is reachable from T1 by tapping inside the content only — never the sidebar tree (More sheet), the
+/* R11 (+R12: max one tap per station from home): everything is reachable from T1 by tapping inside the content only — never the sidebar tree (More sheet), the
    drawer, the top-bar arrows or search. BFS by real clicks on the rendered pages: a station counts once a content link on an
    already-reached station takes us there; every card / lab / quiz sits on a reached station and every lab has a jump link
    on it; every part is linked from a reached page or from the popup of a reached part. zh + en, 360/390/430. */
@@ -42,6 +42,8 @@ for (const lang of ['zh', 'en'] as Lang[]) test(`${lang}: every station, card, l
     for (const g of l.go) if (KB.TABORDER.includes(g) && !via.has(g)) { via.set(g, S); q.push(g); }
   }
   expect(KB.TABORDER.filter((S) => !via.has(S))).toEqual([]);
+  /* R12: the home page's knowledge map links every station directly, so every station is one tap from T1 */
+  expect(KB.TABORDER.filter((S) => S !== 'T1' && via.get(S) !== 'T1')).toEqual([]);
   /* cards / labs / quizzes: on a reached station; labs also have an explicit jump link on their station */
   let nCards = 0;
   for (const [S, l] of got) for (const [id, cls] of l.cards) { nCards++; if (/\blab\b/.test(cls) && !/lab-fail/.test(cls)) expect(l.jump, `${S}#${id}`).toContain(id); }
