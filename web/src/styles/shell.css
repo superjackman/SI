@@ -157,3 +157,13 @@ table.pl-g.out td{width:30px;height:30px;font-size:13px}
 table.pl-g td.on{background:#fde68a}
 table.pl-g td.sw{outline:2px solid #b45309;outline-offset:-2px}
 svg.x-fig{display:block;width:100%;height:auto;max-width:420px;margin:8px auto}
+/* R11 labs */
+.k-out tr.on td{background:#eff6ff;font-weight:600}
+.lo-bar{height:10px;border-radius:5px;background:#e2e8f0;overflow:hidden;margin:6px 0}.lo-bar span{display:block;height:100%;background:#16a34a}
+/* R11 hand-off block at the end of every station */
+.m-hand{margin:18px 0 8px;padding:12px;border:1px solid #e2e8f0;border-radius:14px;background:#f8fafc;display:flex;flex-direction:column;gap:8px}
+.mh-t,.mh-end,.mh-c{margin:0}.mh-t{font-weight:700}.mh-end{color:#475569}
+.mh-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:44px;padding:9px 12px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.mh-b.dn{border-color:#93c5fd;background:#eff6ff}.mh-k{font-size:.8em;color:#475569}.mh-r{font-size:.88em;color:#334155;overflow-wrap:anywhere}
+.mh-c{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.mh-c>span{width:100%;font-size:.85em;color:#475569}
+.mh-x{min-height:36px;max-width:100%;padding:6px 10px;border:1px solid #cbd5e1;border-radius:999px;background:#fff;font:inherit;font-size:.88em;color:#1d4ed8;text-align:left;overflow-wrap:anywhere;cursor:pointer}

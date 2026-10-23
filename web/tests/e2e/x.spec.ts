@@ -1,4 +1,4 @@
-/* M4–M6 extension cards on legacy stations: each card renders once in both languages at 360/390/430, sits in the page
+/* M4–M8 extension cards on legacy stations: each card renders once in both languages at 360/390/430, sits in the page
    map and outline before the labs, its part popup opens, drill buttons route, the labs compute exact values, the quiz
    key covers the new question, no CJK leaks into English, no overflow, no console errors, no external requests. */
 import { test, expect, type Page } from '@playwright/test';
@@ -9,13 +9,14 @@ type SI = { __si: { state(): { station: string; popup: { id: string } | null } }
 const KEY = (JSON.parse(readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')) as { key: Record<string, number[]> }).key;
 const X: Record<string, { cards: string[]; parts: string[]; labs: string[]; dd?: [string, string] }> = {
   T2: { cards: ['xStruct', 'xRerank', 'xA2a'], parts: ['xstruct', 'xrerank', 'xa2a'], labs: [] },
-  T3: { cards: ['xReason', 'xHalluc', 'xIcl'], parts: ['xreason', 'xhalluc', 'xicl'], labs: ['labVote'], dd: ['xReason', 'T7'] },
-  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg', 'xPool'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg', 'xpool'], labs: ['labPool'], dd: ['xAgentRl', 'T2'] },
+  T3: { cards: ['xReason', 'xHalluc', 'xIcl', 'xDecode'], parts: ['xreason', 'xhalluc', 'xicl', 'xbeam', 'xppl'], labs: ['labVote', 'labBeam', 'labPpl'], dd: ['xReason', 'T7'] },
+  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg', 'xPool', 'xTrainKit'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg', 'xpool', 'xpassk', 'xsched'], labs: ['labPool', 'labDpo', 'labSched', 'labPassK'], dd: ['xAgentRl', 'T2'] },
   T6: { cards: ['xVoice', 'xDoc', 'xEdit'], parts: ['xvoice', 'xdoc', 'xedit'], labs: [] },
   T1: { cards: ['xComply'], parts: ['xcomply'], labs: [] },
   N: { cards: ['xGen'], parts: ['xgen'], labs: [], dd: ['xGen', 'T6'] },
   T4b: { cards: ['xInterp'], parts: ['xinterp'], labs: [] },
-  T5: { cards: ['xSsm', 'xPrec'], parts: ['xssm', 'xprec'], labs: [] },
+  T5: { cards: ['xSsm', 'xPrec'], parts: ['xssm', 'xprec'], labs: ['labLora'] },
+  T4a: { cards: ['xRope'], parts: ['xrope'], labs: ['labRope'] }, /* R11 (M8) */
 };
 
 async function open(page: Page, S: string, lang: Lang) {

@@ -75,6 +75,9 @@ export function scrollToEl(id: string) {
     window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.pageYOffset - 70), behavior: 'smooth' });
     el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
   }, 30);
+  /* R11: content above may still grow (labs mounting, math typesetting) after a cross-station jump — settle once or twice */
+  const at = () => el.getBoundingClientRect().top;
+  for (const ms of [700, 1400]) window.setTimeout(() => { const t = at(); if (el.isConnected && (t > innerHeight * 0.6 || t < 0)) window.scrollTo({ top: Math.max(0, t + window.pageYOffset - 70) }); }, ms);
 }
 /** open the collapsed cards / details around an element (live ccOpen) */
 export function openCollapsed(el: Element) {

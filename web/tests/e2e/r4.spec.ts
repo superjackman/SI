@@ -151,7 +151,7 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
 test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress detail → T8, learning map navigates', async ({ page }) => {
   await open(page, 'zh', 'T1');
   await sheet(page);
-  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 22 站 · 测验答对 0 / 86（已答 0）');
+  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 22 站 · 测验答对 0 / 89（已答 0）');
   await expect(page.locator('#shPrev')).toBeDisabled();
   await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(13);
   await page.locator('#shNext').click();

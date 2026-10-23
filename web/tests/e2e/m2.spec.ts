@@ -302,7 +302,7 @@ test('quiz scoring on the M2 stops: right / wrong answers count per stop and in 
   await expect(page.locator('#quizU .opt.right')).toHaveCount(3);
   await expect(page.locator('#quizU .opt.wrong')).toHaveCount(1);
   await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 86（已答 3）');
+  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 89（已答 3）');
   await page.keyboard.press('Escape');
   /* every M2 stop's key matches its rendered options (all right → full marks), in English too */
   for (const S of ['Ua', 'Ub', 'Uc', 'Ud']) {

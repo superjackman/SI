@@ -144,7 +144,7 @@ export function MoreSheet() {
           <button className="btn" id="shPrev" disabled={i <= 0} onClick={() => step(-1)}>{t('sh.prev')}</button>
           <button className="btn primary" id="shNext" disabled={i >= TABORDER.length - 1} onClick={() => step(1)}>{t('sh.next')}</button>
         </div>
-        <div className="sh-sec"><button className="btn wide" id="shProgDetail" onClick={() => { close(); go('T8', false); jumpTo('progCard'); }}>{t('sh.detail')}</button></div>
+        <div className="sh-sec"><button className="btn wide" id="shProgDetail" onClick={() => { close(); jumpTo('progCard', 'T8'); }}>{t('sh.detail')}</button></div>
         <div className="sh-sec"><details className="sh-map" id="shMap" onToggle={(e) => setMapOn((e.target as HTMLDetailsElement).open)}><summary>{t('sh.map')}</summary>
           <div id="slotTree" onClick={onTree}><Tree active={open && mapOn} /></div>
         </details></div>

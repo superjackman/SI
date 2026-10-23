@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../store/app';
 import { useT } from '../i18n/L';
 import { KB, TABORDER, tabn } from '../legacy/kb';
-import { go, openAnywhere } from '../nav';
+import { go, jumpTo, openAnywhere } from '../nav';
 import { dotClasses } from '../station/hydrate';
 import { loadMath } from '../station/math';
 import { svgHtml } from './common';
@@ -18,16 +18,37 @@ let mathP: Promise<Roles> | null = null;
 const loadMathRoles = () => (mathP ||= Promise.all([import('../legacy/gen/search-math.json'), loadMath()]).then(([m]) => m.default as Roles, (e: unknown) => { mathP = null; console.warn('[search math]', e); return {} as Roles; }));
 /** ids whose role line holds math (the plain role then carries TeX: a backslash command, ^ or _) */
 export const roleHasTex = (s: string) => /\\[a-zA-Z]+|[\^_]\{?/.test(s);
-/** live searchFind: name (both languages) + id first, then the one-line role (both languages); top 14 */
-export function searchFind(q: string, roles: Roles | null): string[] {
-  q = q.trim().toLowerCase(); if (!q) return [];
+/** parts split by match strength: name (both languages) + id, then the one-line role (both languages) */
+function partHits(q: string, roles: Roles | null): [string[], string[]] {
   const a: string[] = [], b: string[] = [];
   for (const [id, c] of Object.entries(KB.C)) {
     if ((c.n.zh + ' ' + c.n.en + ' ' + id).toLowerCase().includes(q)) a.push(id);
     else if (roles?.[id] && (roles[id].zh + ' ' + roles[id].en).toLowerCase().includes(q)) b.push(id);
   }
+  return [a, b];
+}
+/** live searchFind: name (both languages) + id first, then the one-line role (both languages); top 14 */
+export function searchFind(q: string, roles: Roles | null): string[] {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const [a, b] = partHits(q, roles);
   return a.concat(b).slice(0, 14);
 }
+/** R11: stations, cards, labs and quizzes (generated search-x.json): [kind s|c|l|q, element id, station, zh, en] */
+export type XRow = [string, string, string, string, string];
+let xP: Promise<XRow[]> | null = null;
+const loadX = () => (xP ||= import('../legacy/gen/search-x.json').then((m) => m.default as XRow[], (e: unknown) => { xP = null; console.warn('[search x]', e); return [] as XRow[]; }));
+export type Hit = { p: string } | { x: XRow };
+/** one result list over everything: parts by name, then stations / cards / labs / quizzes by title (both languages), then parts by role; top 16 */
+export function searchAll(q: string, roles: Roles | null, xs: XRow[] | null): Hit[] {
+  q = q.trim().toLowerCase(); if (!q) return [];
+  const [a, b] = partHits(q, roles), o: Hit[] = a.map((p) => ({ p }));
+  const kr: Record<string, number> = { s: 0, l: 1, c: 2, q: 3 };
+  const xm = (xs ?? []).filter((r) => (r[3] + ' ' + r[4] + ' ' + r[1]).toLowerCase().includes(q)).sort((r1, r2) => (kr[r1[0]] ?? 9) - (kr[r2[0]] ?? 9));
+  for (const x of xm) o.push({ x });
+  for (const p of b) o.push({ p });
+  return o.slice(0, 16);
+}
+const X_KIND: Record<string, 'search.k.s' | 'search.k.c' | 'search.k.l' | 'search.k.q'> = { s: 'search.k.s', c: 'search.k.c', l: 'search.k.l', q: 'search.k.q' };
 
 function Search({ lang }: { lang: Lang }) {
   const t = useT();
@@ -35,20 +56,26 @@ function Search({ lang }: { lang: Lang }) {
   const [q, setQ] = useState('');
   const [roles, setRoles] = useState<Roles | null>(null);
   const inp = useRef<HTMLInputElement>(null);
-  useEffect(() => { if (open) { void loadRoles().then(setRoles); setTimeout(() => inp.current?.focus(), 30); } else inp.current?.blur(); }, [open]);
-  const res = useMemo(() => searchFind(q, roles), [q, roles]);
+  const [xs, setXs] = useState<XRow[] | null>(null);
+  useEffect(() => { if (open) { void loadRoles().then(setRoles); void loadX().then(setXs); setTimeout(() => inp.current?.focus(), 30); } else inp.current?.blur(); }, [open]);
+  const hits = useMemo(() => searchAll(q, roles, xs), [q, roles, xs]);
+  const res = useMemo(() => hits.flatMap((h) => ('p' in h ? [h.p] : [])), [hits]);
   const [mathRoles, setMathRoles] = useState<Roles | null>(null);
   const needMath = !mathRoles && res.some((id) => roleHasTex(roles?.[id]?.[lang] ?? ''));
   useEffect(() => { if (needMath) void loadMathRoles().then(setMathRoles); }, [needMath]);
   const pick = (id: string) => { useApp.getState().set({ searchOpen: false }); openAnywhere(id); };
+  const pickX = (x: XRow) => { useApp.getState().set({ searchOpen: false }); if (x[0] === 's') go(x[2], 'top'); else jumpTo(x[1], x[2]); };
+  const pickH = (h: Hit | undefined) => { if (h) { if ('p' in h) pick(h.p); else pickX(h.x); } };
   return (
     <div className="search">
       <input id="search" ref={inp} type="search" placeholder={t('search.placeholder')} autoComplete="off" enterKeyHint="search" aria-label={t('search.parts')}
         value={q} onChange={(e) => setQ(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (res[0]) pick(res[0]); } else if (e.key === 'Escape') useApp.getState().set({ searchOpen: false }); }} />
-      <div id="searchRes" className={q.trim() ? 'open' : undefined} onClick={(e) => { const o = (e.target as Element).closest<HTMLElement>('[data-open]'); if (o) { e.stopPropagation(); pick(o.dataset.open ?? ''); } }}>
-        {q.trim() && !res.length ? <div style={{ cursor: 'default' }}>{t('search.none')}</div> : null}
-        {res.map((id, i) => { const c = KB.C[id]; if (!c) return null; return (
+        onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); pickH(hits[0]); } else if (e.key === 'Escape') useApp.getState().set({ searchOpen: false }); }} />
+      <div id="searchRes" className={q.trim() ? 'open' : undefined} onClick={(e) => { const o = (e.target as Element).closest<HTMLElement>('[data-open],[data-sx]'); if (o) { e.stopPropagation(); if (o.dataset.open) pick(o.dataset.open); else pickH(hits[Number(o.dataset.sx)]); } }}>
+        {q.trim() && !hits.length ? <div style={{ cursor: 'default' }}>{t('search.none')}</div> : null}
+        {hits.map((h, i) => { if ('x' in h) { const x = h.x; return (
+          <div key={x[0] + x[1]} data-sx={i} data-kind={x[0]} data-id={x[1]} data-st={x[2]} className={i === 0 ? 'on' : ''}>{x[lang === 'en' ? 4 : 3]}<small>{t(X_KIND[x[0]] ?? 'search.k.c')}{x[0] === 's' ? '' : ' · ' + tabn(x[2], lang)}</small></div>
+        ); } const id = h.p, c = KB.C[id]; if (!c) return null; return (
           <div key={id} data-open={id} className={i === 0 ? 'on' : ''}>{c.n[lang]}{mathRoles?.[id] ? <small>{tabn(c.t, lang)} · <span className="sr-math" dangerouslySetInnerHTML={{ __html: mathRoles[id][lang] }} /></small> : <small>{tabn(c.t, lang)} · {roles?.[id]?.[lang] ?? ''}</small>}</div>
         ); })}
       </div>

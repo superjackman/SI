@@ -28,6 +28,8 @@ import { M4 } from './content/ext/m4';
 import { M5 } from './content/ext/m5';
 import { M6 } from './content/ext/m6';
 import { M7 } from './content/ext/m7';
+import { M8 } from './content/ext/m8';
+import { HAND } from './content/handoff';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
@@ -38,7 +40,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 for (const e of EXTS) {
@@ -219,6 +221,50 @@ for (const L of LANGS) {
   h = h.replace(/(<svg id="svgMap" viewBox="0 0 380 )\d+("[^>]*>[\s\S]*?)<\/svg>/, (_m, a: string, rest: string) => `${a}${H0 + 154}${rest}${band}</svg>`);
   put(p, { ...st, html: h });
 }
+
+/* ---------- R11: the hand-off block at the end of every station (between <!--m2h--> markers, before the prev/next bar) ---------- */
+const stOf = (p: string) => (files.has(p) ? JSON.parse(files.get(p) as string) : readJ(p)) as { cls: string; html: string };
+const nlOfF = (p: string) => (files.has(p) ? (files.get(p) as string).endsWith('\n') : nlOf(p));
+for (const S of kb.TABORDER) if (!HAND[S]) throw new Error('no hand-off for ' + S);
+for (const L of LANGS) for (const S of kb.TABORDER) {
+  const H = HAND[S]!, p = `st/${S}.${L}.json`, st = stOf(p), nl = nlOfF(p);
+  const name = (s: string) => { const n = kb.TABN[s]; if (!n) throw new Error(`hand-off ${S}: unknown station ${s}`); return esc(n[L]); };
+  const hop = (cls: string, k: string) => ([s, why]: [string, Bi]) => `<button type="button" class="mh-b ${cls}" data-go="${s}"><span class="mh-k">${CODES[k as 'hand.dn'][L]}</span><b>${name(s)}</b><span class="mh-r">${esc(why[L])}</span></button>`;
+  const use = (H.use ?? []).filter((id) => { const c = kb.C[id]; if (!c) throw new Error(`hand-off ${S}: unknown part ${id}`); return c.t !== S; });
+  const labs = (outline[L][S] ?? []).filter((r) => r[2] === 'lab');
+  let o = `<nav class="m-hand" aria-label="${esc(CODES['hand.title'][L].replace(/^\S+\s/, ''))}"><p class="mh-t">${CODES['hand.title'][L]}</p>`;
+  o += H.dn.length ? H.dn.map(hop('dn', 'hand.dn')).join('') : `<p class="mh-end">${CODES['hand.end'][L]}</p>`;
+  o += H.up.map(hop('up', 'hand.up')).join('');
+  if (labs.length) o += `<p class="mh-c"><span>${CODES['hand.labs'][L]}</span>${labs.map((r) => `<button type="button" class="mh-x" data-sj="${r[0]}" data-sp="${S}">${esc(r[1].replace(/^🧪\s*/, ''))}</button>`).join('')}</p>`;
+  if (use.length) o += `<p class="mh-c"><span>${CODES['hand.use'][L]}</span>${use.map((id) => `<button type="button" class="mh-x" data-open="${id}">${esc((kb.C[id] as KPart).n[L])}</button>`).join('')}</p>`;
+  o += '</nav>';
+  let h = st.html.replace(/<!--m2h-->[\s\S]*?<!--\/m2h-->\n?/g, '');
+  const at = h.indexOf(`<div class="ph-nav m-pn" data-sec="${S}"`); if (at < 0) throw new Error('no prev/next bar on ' + S);
+  h = h.slice(0, at) + `<!--m2h-->${o}<!--/m2h-->\n` + h.slice(at);
+  put(p, { ...st, html: h }, nl);
+}
+
+/* ---------- R11: search index of stations, cards, labs and quizzes (parts are searched from kb.json + search.json) ---------- */
+/* one row per item: [kind s|c|l|q, element id (the station id for s), station, zh title, en title]; the search box loads it lazily */
+type XRow = [string, string, string, string, string];
+const xrows: XRow[] = [];
+const titles = (S: string, L: Lang) => {
+  const h = stOf(`st/${S}.${L}.json`).html, o = new Map<string, [string, string]>();
+  for (const m of h.matchAll(/<div class="card( [^"]*)?" id="([^"]+)"[^>]*>/g)) {
+    const cls = m[1] ?? '', id = m[2] as string;
+    if (/\bquiz\b/.test(cls)) { o.set(id, ['q', (L === 'en' ? 'Quiz: ' : '小测验：') + (kb.TABN[S] as Bi)[L]]); continue; }
+    const hm = /<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/.exec(h.slice((m.index ?? 0) + m[0].length, (m.index ?? 0) + m[0].length + 4000));
+    const tt = hm ? strip(hm[1] as string).replace(/\s+/g, ' ').trim() : '';
+    if (tt) o.set(id, [/\blab\b/.test(cls) ? 'l' : 'c', tt]);
+  }
+  return o;
+};
+for (const S of kb.TABORDER) {
+  xrows.push(['s', S, S, (kb.TABN[S] as Bi).zh, (kb.TABN[S] as Bi).en]);
+  const zh = titles(S, 'zh'), en = titles(S, 'en');
+  for (const [id, [k, z]] of zh) { const e = en.get(id); if (!e) throw new Error(`search index: ${S}#${id} has no English title`); xrows.push([k, id, S, z, e[1]]); }
+}
+put('search-x.json', xrows);
 
 /* ---------- the KaTeX stylesheet (woff2 fonts only), loaded lazily by the shell when math is on screen ---------- */
 files.set('../../styles/katex.css', katexCss(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../node_modules/katex/dist/katex.min.css'), 'utf8')));
