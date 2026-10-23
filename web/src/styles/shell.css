@@ -220,3 +220,10 @@ details.deep[open]>summary .ic{transform:none}
 .mh-k .ic{width:14px;height:14px;margin-right:3px}
 @media(max-width:640px){.tb-dots i.far{display:none}}
 @media(max-width:370px){.tb-in{padding-left:0;padding-right:0}.tb-where{padding:0}.tb-where b{font-size:14px}}
+
+/* R18: the station name in the top bar is never cut with '…': one line when it fits, else two lines at 12.5px, else 11.5px.
+   Two lines + the dot row stay inside the 54px bar. line-height leaves room for CJK glyphs (no vertical clip). */
+.tb-where b{line-height:1.3}
+.tb-where b.fit{white-space:normal;font-size:12.5px;line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;text-overflow:clip;max-height:2.4em}
+.tb-where b.fit2{font-size:11.5px}
+

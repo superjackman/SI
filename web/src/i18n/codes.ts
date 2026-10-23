@@ -15,6 +15,7 @@ export const CODES = {
   'nav.lastStopPn': { zh: '已是最后一站', en: 'Already the last stop' },
   'nav.lastStopCap': { zh: '已经是最后一站 🎉', en: 'This is the last stop 🎉' },
   'nav.stopN': { zh: '第 {n} 站：', en: 'Stop {n}: ' },
+  'nav.dots': { zh: '全部站点：按住滑动选择，松手前往', en: 'All stops: press and slide to pick, lift to go' },
   'nav.current': { zh: '（当前）', en: ' (current)' },
   'nav.seen': { zh: '（已看）', en: ' (seen)' },
   'nav.main': { zh: '主要站点', en: 'Main stops' },

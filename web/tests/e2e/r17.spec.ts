@@ -10,8 +10,8 @@ const ready = (page: Page, S: string, lang: Lang) => page.locator(`html[data-si-
 const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
 const SHARE: Record<Lang, string> = { zh: '分享本页', en: 'Share this page' };
 
-/** visible icon-only buttons (no visible text) with their label, title and size; the 22-stop dot strip under each
-    station (10 px dots between 44 px prev/next) is a secondary path and keeps its compact size */
+/** visible icon-only buttons (no visible text) with their label, title and size; the 22 stop dots under each station
+    are slots of one 44px-tall scrub strip (R18, checked in r18.spec.ts), so a single dot is not held to 40×40 here */
 const iconOnly = (page: Page, scope = 'body') => page.evaluate((scope) => {
   const TC = Object.getOwnPropertyDescriptor(Node.prototype, 'textContent')!.get!;
   const out: { k: string; al: string; ti: string; w: number; h: number; dot: boolean }[] = [];
@@ -67,7 +67,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       });
       expect(r.overlap, S).toBe(false); expect(r.out, S).toBe(false);
       expect(r.dots, S).toBeLessThanOrEqual(0.5); expect(r.small, S).toBeLessThanOrEqual(0.5); expect(r.cur, S).toBe(true);
-      if (lang === 'zh') expect(r.title, `${S} title clipped`).toBeLessThanOrEqual(1); // en long names ellipsize (full name in title=)
+      expect(r.title, `${S} title clipped`).toBeLessThanOrEqual(1); // R18: long names wrap to two lines instead of '…'
     }
   });
 

@@ -45,7 +45,7 @@ export function renumber(root: ParentNode, S: string, lang: Lang) {
 export function renderPN(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('.m-pn').forEach((nav) => {
     const L = nav.dataset.sec ?? '', i = TABORDER.indexOf(L), pv = TABORDER[i - 1], nx = TABORDER[i + 1];
-    nav.innerHTML = '<div class="pn-row"><button type="button" class="pn-b"' + (pv ? ' data-go="' + pv + '"' + lbl(tx('nav.prevStop', lang) + esc(tabn(pv, lang))) : ' disabled' + lbl(tx('nav.firstStop', lang))) + '>' + ICO.prev + '</button><div class="pn-dots">' + dotsHTML(L, true, lang) + '</div><button type="button" class="pn-b pri"' + (nx ? ' data-go="' + nx + '"' + lbl(tx('nav.nextStop', lang) + esc(tabn(nx, lang))) : ' disabled' + lbl(tx('nav.lastStopPn', lang))) + '>' + ICO.next + '</button></div>' +
+    nav.innerHTML = '<div class="pn-row"><button type="button" class="pn-b"' + (pv ? ' data-go="' + pv + '"' + lbl(tx('nav.prevStop', lang) + esc(tabn(pv, lang))) : ' disabled' + lbl(tx('nav.firstStop', lang))) + '>' + ICO.prev + '</button><div class="pn-dots" role="group" aria-label="' + esc(tx('nav.dots', lang)) + '">' + dotsHTML(L, true, lang) + '</div><button type="button" class="pn-b pri"' + (nx ? ' data-go="' + nx + '"' + lbl(tx('nav.nextStop', lang) + esc(tabn(nx, lang))) : ' disabled' + lbl(tx('nav.lastStopPn', lang))) + '>' + ICO.next + '</button></div>' +
       '<p class="pn-cap">' + (i + 1) + ' / ' + TABORDER.length + ' · ' + (nx ? tx('nav.nextStop', lang).trim() + ' <button type="button" class="pn-l" data-go="' + nx + '">' + esc(tabn(nx, lang)) + ' ›</button>' : tx('nav.lastStopCap', lang)) + '</p>';
   });
 }
@@ -105,5 +105,8 @@ export async function hydrate(sec: HTMLElement, S: string, lang: Lang, alive: ()
   });
   if (!alive()) { quiz(); islands?.dispose(); vs.forEach((v) => v.destroy()); return { islands: null, dispose() {} }; }
   const prog = mountProgress(sec, S, lang);
-  return { islands, dispose() { quiz(); prog(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
+  /* R18: the dot-strip scrubber + its css load after the station is up (not first load); the dots work as plain buttons until then */
+  let scrub: (() => void) | null = null, gone = false;
+  void import('./scrub').then((m) => { if (!gone && alive()) scrub = m.mountScrub(sec); }, () => undefined);
+  return { islands, dispose() { gone = true; scrub?.(); quiz(); prog(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
 }

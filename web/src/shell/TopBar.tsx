@@ -1,5 +1,5 @@
 import { recover } from '../boot/stale';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '../store/app';
 import { useT } from '../i18n/L';
 import { KB, TABORDER, tabn } from '../legacy/kb';
@@ -103,6 +103,20 @@ export function TopBar() {
     on();
     return () => { removeEventListener('scroll', on); removeEventListener('resize', on); document.removeEventListener('si-station-ready', on); };
   }, []);
+  /* R18: a name that does not fit on one line wraps to two at a smaller size (fit), then smaller still (fit2); never '…' */
+  const ttl = useRef<HTMLElement>(null), nm = tabn(S, lang);
+  useLayoutEffect(() => {
+    const b = ttl.current; if (!b) return;
+    const fit = () => {
+      b.classList.remove('fit', 'fit2');
+      if (b.scrollWidth <= b.clientWidth + 1) return;
+      b.classList.add('fit');
+      if (b.scrollHeight > b.clientHeight + 1) b.classList.add('fit2');
+    };
+    fit();
+    addEventListener('resize', fit); void document.fonts?.ready.then(fit);
+    return () => removeEventListener('resize', fit);
+  }, [nm]);
   const pvL = pv ? t('nav.prevStop') + tabn(pv, lang) : t('nav.firstStop');
   const nxL = nx ? t('nav.nextStop') + tabn(nx, lang) : t('nav.lastStop');
   const langL = t('lang.switchTo');
@@ -113,7 +127,7 @@ export function TopBar() {
         <button className="icon-btn tb-ic tb-menu" id="mMenu" aria-label={t('nav.menu.open')} title={t('nav.allStops')} aria-controls="mDrawer" aria-expanded={drawer ? 'true' : 'false'}
           onClick={toggleDrawer} {...svgHtml('menu')} />
         <button className="icon-btn tb-ic tb-nv" id="mPrev" disabled={!pv} aria-label={pvL} title={pvL} onClick={() => pv && go(pv)} {...svgHtml('prev')} />
-        <div className="tb-where" id="tbWhere" aria-live="polite"><b title={tabn(S, lang)}>{tabn(S, lang)}</b><span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span></div>
+        <div className="tb-where" id="tbWhere" aria-live="polite"><b ref={ttl} title={nm}>{nm}</b><span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span></div>
         <button className="icon-btn tb-ic tb-nv" id="mNext" disabled={!nx} aria-label={nxL} title={nxL} onClick={() => nx && go(nx)} {...svgHtml('next')} />
         <button className="icon-btn tb-ic" id="mSearch" aria-label={t('search.parts')} title={t('search.parts')} aria-controls="search"
           onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }} {...svgHtml('search')} />
