@@ -97,3 +97,32 @@ describe('R11 search coverage', () => {
     expect(searchAll('beam', null, XS).filter((x) => 'x' in x).map((x) => ('x' in x ? x.x[1] : ''))).toContain('labBeam');
   });
 });
+
+/* R14: the two deferred labs — placed next to their anchor, linked from T1's hand-off and from their popups, searchable */
+describe('R14 labs: labChin (T7) and labBpe (T3)', () => {
+  const ids = (h: string) => cardIds(h).map((c) => c[0]);
+  for (const L of LANGS) {
+    it(`placement right after the anchor card (${L})`, () => {
+      const t7 = ids(st('T7', L)), t3 = ids(st('T3', L));
+      expect(t7[t7.indexOf('xScale') + 1]).toBe('labChin');
+      expect(t3[t3.indexOf('labTok') + 1]).toBe('labBpe');
+      expect(st('T7', L).match(/id="labChin"/g)?.length).toBe(1);
+      expect(st('T3', L).match(/id="labBpe"/g)?.length).toBe(1);
+    });
+    it(`T1 hand-off jumps straight to both labs; their stations' hand-offs and popups too (${L})`, () => {
+      const h1 = handOf(st('T1', L));
+      expect(h1).toContain('data-sj="labChin" data-sp="T7"'); expect(h1).toContain('data-sj="labBpe" data-sp="T3"');
+      expect(handOf(st('T7', L))).toContain('data-sj="labChin" data-sp="T7"');
+      expect(handOf(st('T3', L))).toContain('data-sj="labBpe" data-sp="T3"');
+      expect(pop('xchin', L)).toContain('data-jump="labChin" data-lv="T7"');
+      expect(pop('xbpe', L)).toContain('data-jump="labBpe" data-lv="T3"');
+      expect(st('T7', L)).toMatch(/id="xScale"[\s\S]*?data-sj="labChin" data-sp="T7"[\s\S]*?id="labChin"/);
+    });
+  }
+  it('search finds both labs in both languages', () => {
+    const labs = (q: string) => searchAll(q, null, XS).filter((x) => 'x' in x).map((x) => ('x' in x ? x.x[1] : ''));
+    for (const q of ['Chinchilla', '规模公式', 'chinchilla scaling']) expect(labs(q), q).toContain('labChin');
+    for (const q of ['BPE', '分词', 'merge by merge']) expect(labs(q), q).toContain('labBpe');
+    expect(searchFind('Chinchilla', null)).toContain('xchin'); expect(searchFind('BPE', null)).toContain('xbpe');
+  });
+});

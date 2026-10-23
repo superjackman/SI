@@ -10,6 +10,8 @@ export interface Ext {
   cards: Record<string, (P: Page) => void>;
   /** extra labs, inserted after the station's own labs (before the quiz) */
   labs?: Record<string, (P: Page) => void>;
+  /** labs/cards placed right after a named card on the station (a legacy card or an extension card) */
+  near?: Record<string, { after: string; f: (P: Page) => void }[]>;
   quiz: (t: T) => Record<string, Q[]>;
 }
 /** a source line: verified links only (checked when the content was written) */

@@ -171,3 +171,11 @@ svg.x-fig{display:block;width:100%;height:auto;max-width:420px;margin:8px auto}
 .arrow.sup{stroke:#d97706;stroke-width:1.6}.arrow.mmx{stroke:#db2777;stroke-width:1.6}
 .elab{font-weight:600}
 .legend i.ln{width:18px;height:0;border:0;border-top:2.5px solid var(--c);border-radius:0;background:none}
+.bp-t{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;padding:0 4px;margin:1px 2px;border:1px solid #cbd5e1;border-radius:4px;background:#f8fafc;line-height:1.5}
+.bp-t.new{border-color:#2563eb;background:#eff6ff}
+.bp-t.unk{border-style:dashed;border-color:#dc2626;background:#fff}
+.bp-v{display:flex;flex-wrap:wrap;gap:2px;margin:4px 0}
+.bp-h{margin:10px 0 2px;font-weight:600}
+.bp-nx{color:#1d4ed8;font-size:.9em}
+.bp-nav{display:flex;gap:8px;flex-wrap:wrap}
+#bpW{font:inherit;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;min-width:0;flex:1 1 140px}

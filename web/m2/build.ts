@@ -30,6 +30,7 @@ import { M6 } from './content/ext/m6';
 import { M7 } from './content/ext/m7';
 import { M8 } from './content/ext/m8';
 import { M9 } from './content/ext/m9';
+import { M10 } from './content/ext/m10';
 import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
@@ -43,14 +44,16 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
+const XNEAR: Record<string, { after: string; f: (P: Page) => void }[]> = {};
 for (const e of EXTS) {
+  for (const [S, a] of Object.entries(e.near ?? {})) (XNEAR[S] ??= []).push(...a);
   for (const [S, f] of Object.entries(e.cards)) (XCARDS[S] ??= []).push(f);
   for (const [S, f] of Object.entries(e.labs ?? {})) (XLABS[S] ??= []).push(f);
 }
-const XSIDS = [...new Set([...Object.keys(XCARDS), ...Object.keys(XLABS), ...Object.values(XPARTS).map((p) => p.t)])];
+const XSIDS = [...new Set([...Object.keys(XCARDS), ...Object.keys(XLABS), ...Object.keys(XNEAR), ...Object.values(XPARTS).map((p) => p.t)])];
 const ALLP: Record<string, AnyPart> = { ...PARTS, ...Object.fromEntries(Object.entries(KPARTS).map(([k, p]) => [k, { ...p, cat: 'math' }])), ...XPARTS };
 const LANGS: Lang[] = ['zh', 'en'];
 const MC = '#15803d';
@@ -129,11 +132,30 @@ for (const L of LANGS) {
     at = at > 0 && at < pmEnd ? h.lastIndexOf('<button', at) : pmEnd;
     h = h.slice(0, pmEnd) + Pl.rows.map(btn).join('') + h.slice(pmEnd);
     h = h.slice(0, at) + Pc.rows.map(btn).join('') + h.slice(at);
-    put(p, { ...st, html: h });
     const rows = keep.filter((r) => r[2] !== 'quiz'), quiz = keep.filter((r) => r[2] === 'quiz');
     const li = rows.findIndex((r) => r[2] === 'lab');
     rows.splice(li < 0 ? rows.length : li, 0, ...Pc.rows.map((r) => cutRow(r, L)));
-    outline[L][S] = [...rows, ...Pl.rows.map((r) => cutRow(r, L)), ...quiz];
+    const orow = [...rows, ...Pl.rows.map((r) => cutRow(r, L))];
+    /* "near" items: right after their anchor card; inside an m2x block they join it, otherwise they get their own markers */
+    for (const { after, f } of XNEAR[S] ?? []) {
+      const Pn = new Page(S, L, W); f(Pn);
+      const ai = h.indexOf(`id="${after}"`); if (ai < 0) throw new Error(`near: no card ${after} on ${S}`);
+      const a0 = h.lastIndexOf('<div', ai), re = /<div\b|<\/div>/g; re.lastIndex = a0;
+      let d = 0, end = -1;
+      for (let m = re.exec(h); m; m = re.exec(h)) { d += m[0] === '</div>' ? -1 : 1; if (!d) { end = m.index + 6; break; } }
+      if (end < 0) throw new Error('near: unbalanced card ' + after);
+      const inX = h.lastIndexOf('<!--m2x-->', a0) > h.lastIndexOf('<!--/m2x-->', a0);
+      const body = Pn.out.join('\n');
+      h = h.slice(0, end) + (inX ? '\n' + body : `<!--m2x-->\n${body}<!--/m2x-->\n`) + h.slice(end);
+      const pm2 = h.indexOf(`<div class="ph-map" id="pm${S}">`), pe2 = h.indexOf('</div>', pm2);
+      const bi = h.indexOf(`data-sj="${after}"`, pm2); if (bi < 0 || bi > pe2) throw new Error(`near: ${after} not in the page map of ${S}`);
+      const be = h.indexOf('</button>', bi) + 9;
+      h = h.slice(0, be) + Pn.rows.map(btn).join('') + h.slice(be);
+      const ri = orow.findIndex((r) => r[0] === after); if (ri < 0) throw new Error(`near: ${after} not in the outline of ${S}`);
+      orow.splice(ri + 1, 0, ...Pn.rows.map((r) => cutRow(r, L)));
+    }
+    put(p, { ...st, html: h });
+    outline[L][S] = [...orow, ...quiz];
     const np = `nodes/${S}.${L}.json`, nodes = readJ<Record<string, { title: string; mc: string; body: string }>>(np);
     for (const id of Object.keys(XPARTS)) delete nodes[id];
     for (const [id, x] of Object.entries(XPARTS)) if (x.t === S) nodes[id] = { title: x.n[L], mc: MC, body: popBody(id, S, x.pop(t), W, L) };
@@ -239,6 +261,7 @@ for (const L of LANGS) for (const S of kb.TABORDER) {
   o += H.dn.length ? H.dn.map(hop('dn', 'hand.dn')).join('') : `<p class="mh-end">${CODES['hand.end'][L]}</p>`;
   o += H.up.map(hop('up', 'hand.up')).join('');
   if (labs.length) o += `<p class="mh-c"><span>${CODES['hand.labs'][L]}</span>${labs.map((r) => `<button type="button" class="mh-x" data-sj="${r[0]}" data-sp="${S}">${esc(r[1].replace(/^🧪\s*/, ''))}</button>`).join('')}</p>`;
+  if (H.xlabs?.length) o += `<p class="mh-c"><span>${CODES['hand.xlabs'][L]}</span>${H.xlabs.map(([s, id]) => { const r = (outline[L][s] ?? []).find((x) => x[0] === id && x[2] === 'lab'); if (!r) throw new Error(`hand-off ${S}: no lab ${id} on ${s}`); return `<button type="button" class="mh-x" data-sj="${id}" data-sp="${s}">${esc(r[1].replace(/^🧪\s*/, ''))} · ${name(s)}</button>`; }).join('')}</p>`;
   if (use.length) o += `<p class="mh-c"><span>${CODES['hand.use'][L]}</span>${use.map((id) => `<button type="button" class="mh-x" data-open="${id}">${esc((kb.C[id] as KPart).n[L])}</button>`).join('')}</p>`;
   o += '</nav>';
   let h = st.html.replace(/<!--m2h-->[\s\S]*?<!--\/m2h-->\n?/g, '');

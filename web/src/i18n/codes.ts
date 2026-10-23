@@ -28,6 +28,7 @@ export const CODES = {
   'hand.up': { zh: '⬆ 回到上一层', en: '⬆ One level up' },
   'hand.use': { zh: '本页用到、在别处讲透的概念：', en: 'Concepts used here, explained elsewhere:' },
   'hand.labs': { zh: '🧪 本页实验室：', en: '🧪 Labs on this page:' },
+  'hand.xlabs': { zh: '🧪 别处的动手实验：', en: '🧪 Hands-on labs elsewhere:' },
   'hand.end': { zh: '这是最深的一层了 🎉', en: 'This is the deepest level 🎉' },
   'search.parts': { zh: '搜索零件、站点、卡片、实验室', en: 'Search parts, stops, cards, labs' },
   'search.placeholder': { zh: '🔎 搜零件、站点、实验室：如 注意力、RAG、困惑度', en: '🔎 Search parts, stops, labs: e.g. attention, RAG, perplexity' },

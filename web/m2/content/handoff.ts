@@ -4,11 +4,12 @@
 import type { Bi } from '../lib';
 
 type Hop = [string, Bi];
-export interface Hand { dn: Hop[]; up: Hop[]; use?: string[] }
+/** xlabs: labs on other stations worth a direct jump from here ([station, lab id]) */
+export interface Hand { dn: Hop[]; up: Hop[]; use?: string[]; xlabs?: [string, string][] }
 const b = (zh: string, en: string): Bi => ({ zh, en });
 
 export const HAND: Record<string, Hand> = {
-  T1: { dn: [['U', b('先学会怎么用 Agent，再拆开看', 'Learn to use an agent first, then take it apart')], ['T2', b('直接拆：一句话背后的 Agent 层', 'Straight in: the agent layer behind one request')]], up: [], use: ['attn'] },
+  T1: { dn: [['U', b('先学会怎么用 Agent，再拆开看', 'Learn to use an agent first, then take it apart')], ['T2', b('直接拆：一句话背后的 Agent 层', 'Straight in: the agent layer behind one request')]], up: [], use: ['attn'], xlabs: [['T7', 'labChin'], ['T3', 'labBpe']] },
   U: { dn: [['Ua', b('第一种用法：你和它一起干', 'Mode one: you work alongside it')], ['Up', b('按用法找具体产品', 'Find real products by mode')]], up: [['T1', b('回到应用全景', 'Back to the big picture')]], use: ['sample', 'kProb'] },
   Ua: { dn: [['Ub', b('第二种用法：放手让它自己干', 'Mode two: let it work on its own')], ['T2', b('它为什么能读文件、跑命令：Agent 循环', 'Why it can read files and run commands: the agent loop')]], up: [['U', b('四种用法总览', 'All four modes')]] },
   Ub: { dn: [['Uc', b('给它装上工具和技能', 'Give it tools and skills')], ['T2', b('自动跑的背后：规划与工具调用', 'Behind autonomy: planning and tool calls')]], up: [['U', b('四种用法总览', 'All four modes')]] },

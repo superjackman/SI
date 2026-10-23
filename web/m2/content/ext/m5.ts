@@ -3,6 +3,7 @@
    contamination, scaling laws. Every number below is from the cited paper's abstract unless tagged 示意. */
 import { esc, type Page, type T } from '../../lib';
 import { dd, demo, src, ST_SYS, ST_TRAIN, ul, type Ext } from './kit';
+import { chinGo } from './m10';
 
 type L2 = [string, string];
 const A = {
@@ -171,6 +172,7 @@ ${src(P, [A.gsm1k, A.swe])}`, { closed: true });
 ${ul([t('<b>幂律</b>：损失随模型大小 N、数据量 D、算力 C 都按幂律下降，大致是 损失 ∝ N<sup>−α</sup>；在对数坐标上就是一条直线，有的趋势跨越七个数量级以上。', '<b>Power law</b>: the loss falls as a power law in model size N, data D and compute C, roughly loss ∝ N<sup>−α</sup>; on log–log axes that is a straight line, with some trends spanning more than seven orders of magnitude.'),
     t('<b>算力怎么分</b>：Chinchilla 训练了 400 多个模型，结论是参数量和数据量应同比例增长。用和 Gopher（2800 亿参数）相同的算力，Chinchilla 只有 700 亿参数、数据是 4 倍，却在大量任务上全面更好。', '<b>How to spend compute</b>: Chinchilla trained over 400 models and found parameters and data should grow in proportion. With the same compute as Gopher (280 billion parameters), Chinchilla used 70 billion parameters and 4× the data, and did better across a wide range of tasks.'),
     t('<b>限制</b>：规律预测的是损失，不直接告诉你哪项能力何时出现；推理成本也不在其中。', '<b>Limits</b>: the laws predict loss; they don’t say when a particular skill appears, and they leave out inference cost.')])}
+${chinGo(P)}
 ${src(P, [A.kaplan, A.chin])}`, { closed: true });
     },
   },

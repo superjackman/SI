@@ -7,10 +7,11 @@ import { readFileSync } from 'node:fs';
 type Lang = 'zh' | 'en';
 type SI = { __si: { state(): { station: string; popup: { id: string } | null } } };
 const KEY = (JSON.parse(readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')) as { key: Record<string, number[]> }).key;
-const X: Record<string, { cards: string[]; parts: string[]; labs: string[]; dd?: [string, string] }> = {
+/* near: R14 labs placed right after an anchor card (checked in r14.spec); left out of the order checks here */
+const X: Record<string, { cards: string[]; parts: string[]; labs: string[]; dd?: [string, string]; near?: string[] }> = {
   T2: { cards: ['xStruct', 'xRerank', 'xA2a'], parts: ['xstruct', 'xrerank', 'xa2a'], labs: [] },
-  T3: { cards: ['xReason', 'xHalluc', 'xIcl', 'xDecode'], parts: ['xreason', 'xhalluc', 'xicl', 'xbeam', 'xppl'], labs: ['labVote', 'labBeam', 'labPpl'], dd: ['xReason', 'T7'] },
-  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg', 'xPool', 'xTrainKit'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg', 'xpool', 'xpassk', 'xsched'], labs: ['labPool', 'labDpo', 'labSched', 'labPassK'], dd: ['xAgentRl', 'T2'] },
+  T3: { cards: ['xReason', 'xHalluc', 'xIcl', 'xDecode'], parts: ['xreason', 'xhalluc', 'xicl', 'xbeam', 'xppl', 'xbpe'], labs: ['labVote', 'labBeam', 'labPpl'], dd: ['xReason', 'T7'], near: ['labBpe'] },
+  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg', 'xPool', 'xTrainKit'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg', 'xpool', 'xpassk', 'xsched', 'xchin'], labs: ['labPool', 'labDpo', 'labSched', 'labPassK'], dd: ['xAgentRl', 'T2'], near: ['labChin'] },
   T6: { cards: ['xVoice', 'xDoc', 'xEdit'], parts: ['xvoice', 'xdoc', 'xedit'], labs: [] },
   T1: { cards: ['xComply'], parts: ['xcomply'], labs: [] },
   N: { cards: ['xGen'], parts: ['xgen'], labs: [], dd: ['xGen', 'T6'] },
@@ -46,12 +47,12 @@ for (const [S, x] of Object.entries(X)) for (const lang of ['zh', 'en'] as Lang[
     await open(page, S, lang);
     const sec = page.locator(`section#${S}`);
     await expect(sec.locator('.st-fail')).toHaveCount(0);
-    for (const id of [...x.cards, ...x.labs]) {
+    for (const id of [...x.cards, ...x.labs, ...(x.near ?? [])]) {
       await expect(sec.locator(`#${id}`)).toHaveCount(1);
       await expect(sec.locator(`.ph-map button[data-sj="${id}"]`)).toHaveCount(1);
     }
     /* order: extension cards after the legacy cards and before the lab divider; extension labs right before the quiz */
-    const order = await page.evaluate((S) => [...document.querySelectorAll(`section#${S} .card[id], section#${S} .lab-divider`)].map((e) => e.id || 'DIV'), S);
+    const order = (await page.evaluate((S) => [...document.querySelectorAll(`section#${S} .card[id], section#${S} .lab-divider`)].map((e) => e.id || 'DIV'), S)).filter((id) => !(x.near ?? []).includes(id));
     const quiz = order.indexOf(`quiz${S}`), div = order.includes('DIV') ? order.indexOf('DIV') : quiz; /* T1 has no labs */
     for (const id of x.cards) expect(order.indexOf(id)).toBeLessThan(div);
     x.cards.forEach((id, i) => { if (i) expect(order.indexOf(id)).toBe(order.indexOf(x.cards[i - 1]!) + 1); });
@@ -88,7 +89,7 @@ for (const [S, x] of Object.entries(X)) for (const lang of ['zh', 'en'] as Lang[
           for (let n = tw.nextNode(); n; n = tw.nextNode()) if (re.test(n.nodeValue ?? '')) out.push(id + ': ' + (n.nodeValue ?? '').trim().slice(0, 40));
         }
         return out;
-      }, [...x.cards, ...x.labs]);
+      }, [...x.cards, ...x.labs, ...(x.near ?? [])]);
       expect(cjk).toEqual([]);
     }
     /* quiz: the whole key, including the extension question */
