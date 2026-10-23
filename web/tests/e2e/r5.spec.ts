@@ -75,11 +75,13 @@ test.describe('cutover (repo layout under /SI/)', () => {
     expect(served).toBe(2); // the stale copy once, then the cache-busting reload got the redirect page
   });
 
-  test('analytics: one GoatCounter pixel per stop and language, only after load, never from localhost (intercepted, not sent)', async ({ playwright, page }) => {
+  test('analytics: one GoatCounter pixel per stop and language + live lab/quiz events, only after load, never from localhost (intercepted, not sent)', async ({ playwright, page }) => {
     /* localhost: nothing */
     const local: string[] = [];
     page.on('request', (r) => { if (r.url().startsWith(GC)) local.push(r.url()); });
     await page.goto(BASE + '?lang=en#T3'); await ready(page, 'T3.en');
+    await page.locator('#labTok button').first().click();
+    await page.locator('#quizT3 .opt').first().click();
     await page.waitForTimeout(1500);
     expect(local).toEqual([]);
 
@@ -111,18 +113,53 @@ test.describe('cutover (repo layout under /SI/)', () => {
       const sets = await p.evaluate(() => (window as unknown as { __imgSets: { rs: string; load: boolean }[] }).__imgSets);
       expect(sets.length).toBe(1);
       expect(sets[0]).toMatchObject({ rs: 'complete', load: true });
+      /* lab / quiz events, live scheme: first use of each lab, first answer in each quiz, once per page load */
+      await p.locator('#labTok button').first().click();
+      await p.locator('#labTok button').first().click();
+      await p.locator('#labTok input').first().dispatchEvent('input');
+      await p.locator('#quizT3 .opt').first().click();
+      await p.locator('#quizT3 .opt').last().click();
+      await p.locator('#quizT3 [data-qreset]').click();
+      await expect.poll(() => hits.length).toBe(3);
+      await p.waitForTimeout(800);
+      expect(hits.length).toBe(3);
+      const evs = hits.slice(1).map((h) => new URL(h).searchParams);
+      expect(evs.map((q) => q.get('p'))).toEqual(['evt-lab-labTok', 'evt-quiz-T3']);
+      for (const q of evs) { expect([...q.keys()]).toEqual(['p', 't', 'e', 's', 'rnd']); expect(q.get('t')).toBe(q.get('p')); expect(q.get('e')).toBe('true'); expect(q.get('s')).toBe('390,844,3'); }
       /* stop change → one more; the same stop again (opening a sheet etc.) → none */
       await p.evaluate(() => (window as unknown as { __si: { go(s: string): void } }).__si.go('T1'));
       await ready(p, 'T1.en');
-      await expect.poll(() => hits.length).toBe(2);
-      expect(new URL(hits[1]!).searchParams.get('p')).toBe('/en/home');
+      await expect.poll(() => hits.length).toBe(4);
+      expect(new URL(hits[3]!).searchParams.get('p')).toBe('/en/home');
       await p.locator('#bnav [data-bn="more"]').click(); await expect(p.locator('#moreSheet')).toHaveClass(/open/);
       await p.waitForTimeout(800);
-      expect(hits.length).toBe(2);
-      /* legacy.html keeps its own counter (same virtual paths) */
+      expect(hits.length).toBe(4);
+      /* legacy.html keeps its own counter (same virtual paths, same event scheme) */
       await p.goto(`http://si.test:${PORT}${BASE}legacy.html?lang=zh#T5`);
-      await expect.poll(() => hits.length, { timeout: 10_000 }).toBe(3);
-      expect(new URL(hits[2]!).searchParams.get('p')).toBe('/zh/T5');
+      await expect.poll(() => hits.length, { timeout: 10_000 }).toBe(5);
+      expect(new URL(hits[4]!).searchParams.get('p')).toBe('/zh/T5');
+      await p.locator('section#T5 #labKv input').first().dispatchEvent('input');
+      await p.locator('#quizT5 .opt').first().dispatchEvent('click');
+      await expect.poll(() => hits.length).toBe(7);
+      const lev = hits.slice(5).map((h) => new URL(h).searchParams);
+      expect(lev.map((q) => q.get('p'))).toEqual(['evt-lab-labKv', 'evt-quiz-T5']);
+      for (const q of lev) { expect([...q.keys()]).toEqual(['p', 't', 'e', 's', 'rnd']); expect(q.get('t')).toBe(q.get('p')); expect(q.get('e')).toBe('true'); }
+
+      /* an interaction before 'load' is queued, sent only after load (after the page view) */
+      const p2 = await ctx.newPage();
+      let release!: () => void; const held = new Promise<void>((r) => { release = r; });
+      await p2.route('**/slow.gif', async (r) => { await held; await r.fulfill({ status: 200, contentType: 'image/gif', body: Buffer.from('R0lGODlhAQABAAAAACw=', 'base64') }); });
+      await p2.addInitScript(() => { document.addEventListener('DOMContentLoaded', () => { const i = document.createElement('img'); i.src = '/slow.gif'; i.alt = ''; document.body.appendChild(i); }); });
+      const n0 = hits.length;
+      await p2.goto(`http://si.test:${PORT}${BASE}?lang=en#T3`, { waitUntil: 'domcontentloaded' });
+      await ready(p2, 'T3.en');
+      expect(await p2.evaluate(() => document.readyState)).not.toBe('complete');
+      await p2.locator('#labNext button').first().dispatchEvent('click');
+      await p2.waitForTimeout(500);
+      expect(hits.length).toBe(n0);
+      release();
+      await expect.poll(() => hits.length).toBe(n0 + 2);
+      expect(hits.slice(n0).map((h) => new URL(h).searchParams.get('p'))).toEqual(['/en/T3', 'evt-lab-labNext']);
     } finally { await b.close(); }
   });
 });

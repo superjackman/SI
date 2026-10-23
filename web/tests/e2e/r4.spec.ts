@@ -78,8 +78,9 @@ test('tour: starts at mid-level when on overview, × and Escape end it; sheet �
   await sheet(page); await page.locator('#shPrev').click();
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
   await expect.poll(() => station(page)).toBe('T1');
+  /* the top-bar ▶ follows the stop order (T1 → U, the M2 overview) and leaves the tour step alone */
   await page.locator('#mNext').click();
-  await expect.poll(() => station(page)).toBe('T2');
+  await expect.poll(() => station(page)).toBe('U');
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
   await page.locator('#mMenu').click();
   await expect(page.locator('#mTour')).toHaveAttribute('aria-pressed', 'true');
@@ -150,15 +151,17 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
 test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress detail → T8, learning map navigates', async ({ page }) => {
   await open(page, 'zh', 'T1');
   await sheet(page);
-  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 11 站 · 测验答对 0 / 32（已答 0）');
+  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 16 站 · 测验答对 0 / 51（已答 0）');
   await expect(page.locator('#shPrev')).toBeDisabled();
   await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(13);
   await page.locator('#shNext').click();
+  await expect.poll(() => station(page)).toBe('U');
+  await page.locator('#bnav [data-bn="T2"]').click();
   await expect.poll(() => station(page)).toBe('T2');
   await page.locator('html[data-si-ready="T2.zh"]').waitFor({ state: 'attached' });
   await page.locator('section#T2 #quizT2 .opt[data-q]').first().evaluate((b) => (b as HTMLElement).click());
   await sheet(page);
-  await expect(page.locator('#shProgTxt')).toContainText('已看 2 / 11 站');
+  await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 16 站');
   await expect(page.locator('#shProgTxt')).toContainText('（已答 1）');
   await page.locator('#shMap > summary').click();
   await expect(page.locator('#tree .tn.cur')).toHaveCount(1);

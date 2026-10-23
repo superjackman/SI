@@ -19,6 +19,6 @@ describe('i18n completeness', () => {
   it('drawer groups: bilingual, cover every station once', () => {
     const seen: string[] = [];
     for (const [, name, ks] of GRP) { check('grp', name); expect(CJK.test(name.en)).toBe(false); seen.push(...ks); }
-    expect(seen).toEqual(['T1', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8']);
+    expect(seen).toEqual(['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8']);
   });
 });

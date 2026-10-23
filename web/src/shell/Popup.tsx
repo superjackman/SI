@@ -34,9 +34,14 @@ function DrillRow({ id, cur, lang }: { id: string; cur: string; lang: Lang }) {
   const it: JSX.Element[] = [];
   if (c.zoom && PATH[c.zoom] && c.zoom !== cur) it.push(<Chip key="z" cls="pri" attr={{ 'data-ddgo': c.zoom }} icon={IC.drill} label={tabn(c.zoom, lang)} aria={t('nav.drillTo') + tabn(c.zoom, lang)} />);
   kids(id).forEach((k) => { const n = part(k)?.n[lang] ?? k; it.push(<Chip key={'k' + k} attr={{ 'data-open': k }} icon={IC.down} label={n} aria={t('pop.down') + n} />); });
-  (c.links ?? []).forEach((l, i) => it.push(<Chip key={'l' + i} cls="lk" attr={{ 'data-jump': l[0], 'data-lv': 'T4b' }} icon="" label={l[1][lang]} />));
+  (c.dn ?? []).forEach((k) => { const n = part(k)?.n[lang]; if (n) it.push(<Chip key={'d' + k} cls="dn" attr={{ 'data-open': k }} icon={IC.down} label={n} aria={t('pop.principle') + n} />); });
+  (c.links ?? []).forEach((l, i) => it.push(<Chip key={'l' + i} cls="lk" attr={{ 'data-jump': l[0], 'data-lv': l[2] ?? 'T4b' }} icon="" label={l[1][lang]} />));
   const up = c.up ? part(c.up) : undefined;
   if (c.up && up) it.push(<Chip key="u" cls="upc" attr={{ 'data-open': c.up }} icon={IC.up} label={up.n[lang]} aria={t('pop.up') + up.n[lang]} />);
+  (c.use ?? []).forEach((k) => {
+    if (isStation(k)) { if (k !== cur) it.push(<Chip key={'s' + k} cls="upc use" attr={{ 'data-ddgo': k }} icon={IC.up} label={tabn(k, lang)} aria={t('pop.usage') + tabn(k, lang)} />); return; }
+    const n = part(k)?.n[lang]; if (n) it.push(<Chip key={'s' + k} cls="upc use" attr={{ 'data-open': k }} icon={IC.up} label={n} aria={t('pop.usage') + n} />);
+  });
   if (c.t !== cur) it.push(<Chip key="t" cls="upc" attr={{ 'data-ddgo': c.t }} icon={'<i aria-hidden="true">📌</i>'} label={tabn(c.t, lang)} aria={t('pop.here') + tabn(c.t, lang)} />);
   if (!it.length) return null;
   return <div className="m-dd" role="group" aria-label={t('pop.dd')}>{it}</div>;

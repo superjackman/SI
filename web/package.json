@@ -13,8 +13,9 @@
     "test:e2e": "playwright test",
     "size": "node scripts/size.mjs",
     "test": "npm run typecheck && npm run test:unit && npm run build && npm run test:e2e && npm run size",
-    "deploy": "node scripts/deploy.mjs --target next",
-    "deploy:cutover": "node scripts/deploy.mjs --target root --confirm-cutover"
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:cutover": "node scripts/deploy.mjs --target root --confirm-cutover",
+    "m2": "vite-node m2/build.ts"
   },
   "engines": {
     "node": ">=18.18"

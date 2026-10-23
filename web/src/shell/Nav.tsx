@@ -44,7 +44,7 @@ export function Crumb() {
 const BN: [string, string, { zh: string; en: string }][] = [
   ['T1', '🏠', { zh: '应用', en: 'App' }], ['T2', '🤖', { zh: 'Agent', en: 'Agent' }], ['T3', '🧠', { zh: '大模型', en: 'LLM' }], ['T4', '🧩', { zh: 'Transformer', en: 'Transformer' }],
 ];
-const MORE_LBL: Record<string, { zh: string; en: string }> = { N: { zh: '入门', en: 'Basics' }, T5: { zh: 'MoE', en: 'MoE' }, T6: { zh: '多模态', en: 'Multimodal' }, T7: { zh: '训练', en: 'Training' }, T8: { zh: '速查', en: 'Reference' } };
+const MORE_LBL: Record<string, { zh: string; en: string }> = { N: { zh: '入门', en: 'Basics' }, T5: { zh: 'MoE', en: 'MoE' }, T6: { zh: '多模态', en: 'Multimodal' }, T7: { zh: '训练', en: 'Training' }, T8: { zh: '速查', en: 'Reference' }, U: { zh: '用法', en: 'Usage' }, Ua: { zh: '一起干', en: 'Together' }, Ub: { zh: '自己干', en: 'Solo' }, Uc: { zh: '装本事', en: 'Extend' }, Ud: { zh: '用得好', en: 'Use well' } };
 export function BottomNav() {
   const t = useT(), tx = useTx();
   const S = useApp((s) => s.station), sh = useApp((s) => s.sheetOpen), set = useApp((s) => s.set);
@@ -70,10 +70,11 @@ export function BottomNav() {
 }
 
 const SUB: Record<string, { zh: string; en: string }> = {
+  U: { zh: '对话、编程、后台、例程、MCP、提示词', en: 'Chat, coding, background, routines, MCP, prompts' },
   N: { zh: '神经元、反向传播、梯度下降', en: 'Neurons, backprop, gradient descent' }, T5: { zh: 'MoE、KV 缓存、量化、LoRA', en: 'MoE, KV cache, quantization, LoRA' },
   T6: { zh: '看图、听声、画画、做视频', en: 'See, hear, draw, make video' }, T7: { zh: '预训练、微调、强化学习', en: 'Pretraining, fine-tuning, RL' }, T8: { zh: '关系总图、术语表、进度', en: 'Overall map, glossary, progress' },
 };
-/** live sheet progress text: "已看 n / 11 站 · 测验答对 c / 32（已答 d）" */
+/** live sheet progress text: "已看 n / N 站 · 测验答对 c / Q（已答 d）" (N, Q from TABORDER / the quiz key) */
 function useProgress(active: boolean) {
   const [v, setV] = useState(0);
   useEffect(() => { const f = () => setV((x) => x + 1); document.addEventListener('si-progress', f); return () => document.removeEventListener('si-progress', f); }, []);
@@ -115,7 +116,7 @@ export function MoreSheet() {
         <div className="sh-head"><b>⋯ {t('nav.more')}</b><button className="icon-btn sh-x" aria-label={t('ui.close')} onClick={close}>×</button></div>
         <div className="sh-sec"><div className="sh-lbl">{t('sh.stops')}</div>
           <div className="sh-st" id="shStations">
-            {['N', 'T5', 'T6', 'T7', 'T8'].map((k) => (
+            {['U', 'N', 'T5', 'T6', 'T7', 'T8'].map((k) => (
               <button key={k} type="button" className={'st-b' + (k === S ? ' on' : '')} data-st={k} onClick={() => pick(k)}><i aria-hidden="true">{ICON[k]}</i><b>{tabn(k, lang)}</b><small>{SUB[k] ? tx(SUB[k]) : ''}</small></button>
             ))}
             <div className="st-all">{TABORDER.map((k, j) => <button key={k} type="button" className={'chip' + (k === S ? ' on' : '')} data-st={k} onClick={() => pick(k)}>{j + 1}. {tabn(k, lang)}</button>)}</div>

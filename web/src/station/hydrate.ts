@@ -36,6 +36,12 @@ export function dotsHTML(L: string, tap: boolean, lang: Lang): string {
       : '<i class="' + c + '"></i>';
   }).join('');
 }
+/** stop numbers in the page head come from TABORDER (the snapshots were taken with 11 stops; M2 inserted U…Ud) */
+export function renumber(root: ParentNode, S: string, lang: Lang) {
+  const i = TABORDER.indexOf(S); if (i < 0) return;
+  root.querySelectorAll('.pagehead .pg-n').forEach((e) => { e.textContent = String(i + 1); });
+  root.querySelectorAll('.pagehead .ph-lv').forEach((e) => { e.textContent = lang === 'en' ? `Stop ${i + 1} of ${TABORDER.length} ` : `第 ${i + 1} 站 / 共 ${TABORDER.length} 站`; });
+}
 export function renderPN(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('.m-pn').forEach((nav) => {
     const L = nav.dataset.sec ?? '', i = TABORDER.indexOf(L), pv = TABORDER[i - 1], nx = TABORDER[i + 1];
@@ -82,6 +88,7 @@ export function setupViewers(sec: HTMLElement): Viewer[] {
 export interface Hydrated { islands: Islands | null; dispose(): void }
 export async function hydrate(sec: HTMLElement, S: string, lang: Lang, alive: () => boolean): Promise<Hydrated> {
   restoreTags(sec);
+  renumber(sec, S, lang);
   renderPN(sec, lang);
   fitAndMark(sec, S, lang);
   const vs = setupViewers(sec);

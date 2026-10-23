@@ -11,8 +11,29 @@ export function count(lang: Lang, station: string, title: string): void {
   const p = pathFor(lang, station);
   if (p === last) return;
   last = p;
-  const s = screen ? `${screen.width},${screen.height},${devicePixelRatio || 1}` : '';
+  const s = screenStr();
   const q = `p=${encodeURIComponent(p)}&t=${encodeURIComponent(title)}${ref ? '&r=' + encodeURIComponent(ref) : ''}&s=${encodeURIComponent(s)}&rnd=${Math.random().toString(36).slice(2, 9)}`;
   ref = '';
-  try { new Image().src = GC_COUNT + '?' + q; } catch { /* ignore */ }
+  pixel(q);
+}
+const screenStr = () => (typeof screen !== 'undefined' && screen ? `${screen.width},${screen.height},${devicePixelRatio || 1}` : '');
+/* keep a reference until the pixel settles so it is not garbage-collected mid-flight (as the live page does) */
+const inflight = new Set<HTMLImageElement>();
+function pixel(q: string): void {
+  try {
+    const img = new Image(); inflight.add(img);
+    img.onload = img.onerror = () => { inflight.delete(img); img.onload = img.onerror = null; };
+    img.src = GC_COUNT + '?' + q;
+  } catch { /* analytics is optional */ }
+}
+/** live __gcEvent naming: "evt-" + name with every run of non-[A-Za-z0-9_-] characters turned into "-" */
+export function eventPath(name: string): string { return 'evt-' + String(name).replace(/[^\w-]+/g, '-'); }
+const seen = new Set<string>();
+/** sparse event (first use of each lab, first answer in each quiz), once per page load like the live page:
+    p = t = evt-…, e=true, never a referrer */
+export function event(name: string): void {
+  const k = eventPath(name);
+  if (seen.has(k)) return;
+  seen.add(k);
+  pixel(`p=${encodeURIComponent(k)}&t=${encodeURIComponent(k)}&e=true&s=${encodeURIComponent(screenStr())}&rnd=${Math.random().toString(36).slice(2, 9)}`);
 }

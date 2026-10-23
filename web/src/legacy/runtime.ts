@@ -7,7 +7,7 @@ import type { Lang } from '../i18n/types';
 import { KB } from './kb';
 
 type Bi = { zh: string; en: string };
-interface IslandModule {
+export interface IslandModule {
   LABS: { ids: string[]; hooks: string[] }[];
   mount: (env: Env) => { labs: Array<() => void>; eager: () => void };
 }
@@ -19,7 +19,7 @@ export interface Shell {
   closeInfo: () => void;
   toast: (m: string) => void;
 }
-interface Env extends Shell {
+export interface Env extends Shell {
   window: Window; document: Document; lang: Lang; C: Record<string, unknown>;
   setTimeout: typeof setTimeout; clearTimeout: typeof clearTimeout; setInterval: typeof setInterval; clearInterval: typeof clearInterval;
   requestAnimationFrame: typeof requestAnimationFrame; cancelAnimationFrame: typeof cancelAnimationFrame;
@@ -27,10 +27,12 @@ interface Env extends Shell {
   updProg: () => void; noop: () => void;
   rt: Record<string, unknown>;
 }
-const loaders = import.meta.glob<IslandModule>('./gen/islands/*.js');
+/* one island per station: the live page's lifted labs (gen/islands/<S>.js) and the hand-written M2 labs (m2/labs/<S>.ts) */
+const loaders: Record<string, () => Promise<IslandModule>> = {};
+for (const [k, f] of Object.entries({ ...import.meta.glob<IslandModule>('./gen/islands/*.js'), ...import.meta.glob<IslandModule>('../m2/labs/*.ts') })) loaders[k.replace(/^.*\/|\.(js|ts)$/g, '')] = f;
 /* the labs' translation keys: one shared chunk for all stations (R4; was a copy inside every station chunk) */
 const labI18n = () => import('./gen/lab-i18n.json').then((m) => m.default as Record<string, Bi>);
-export const hasIsland = (s: string) => `./gen/islands/${s}.js` in loaders;
+export const hasIsland = (s: string) => Object.prototype.hasOwnProperty.call(loaders, s);
 
 /* live runtime.js helpers, per language (same code) */
 const ALT: Record<string, string> = {};
@@ -66,8 +68,8 @@ const REDRAW: Record<string, (w: Record<string, Hook | undefined>) => void> = {
 export interface Islands { dispose(): void; started(): number[]; start(idx: number[]): void; runAll(): void }
 
 export async function mountIslands(S: string, root: HTMLElement, lang: Lang, shell: Shell): Promise<Islands | null> {
-  const load = loaders[`./gen/islands/${S}.js`];
-  if (!load) return null;
+  if (!hasIsland(S)) return null;
+  const load = loaders[S] as () => Promise<IslandModule>;
   const [mod, I18N] = await Promise.all([load(), labI18n()]);
   const off: Array<() => void> = [];
   const timers = new Set<number>(), ivs = new Set<number>(), rafs = new Set<number>();

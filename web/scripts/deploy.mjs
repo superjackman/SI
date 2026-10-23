@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // Local build → test → copy into the repo working copy. GitHub Pages (branch deploy, settings unchanged) serves what is pushed.
 //
-//   npm run deploy                      target next: base /SI/next/, output <repo>/next/   (migration, R0–R4)
+//   npm run deploy                      default target: root (base /SI/, output <repo>/) once the root index.html is a
+//                                       React build (post-cutover); before that: next (base /SI/next/, output <repo>/next/)
 //   npm run deploy:cutover              target root: base /SI/,      output <repo>/        (R5; old index.html -> legacy.html)
+//   Post-cutover, --target next is refused: next/ is only the redirect page to /SI/.
 //   flags: --skip-e2e (only when no Chrome is available — prints a loud warning), --repo <path> (default: parent of web/)
 //
 // Steps: typecheck, unit tests, build (with the target's base), e2e smoke on the built files at 360/390/430, size budget,
@@ -21,12 +23,16 @@ const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const flag = (f) => args.includes(f);
 const opt = (f, d) => { const i = args.indexOf(f); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
-const targetName = opt('--target', 'next');
-const target = TARGETS[targetName];
-if (!target) die(`unknown --target ${targetName} (use next | root)`);
-if (targetName === 'root' && !flag('--confirm-cutover')) die('--target root is the R5 cutover; add --confirm-cutover (npm run deploy:cutover)');
 const repo = resolve(opt('--repo', join(web, '..')));
 if (!existsSync(join(repo, '.git'))) die(`${repo} is not a git working copy (use --repo)`);
+const REACT_MARK = 'name="si-build" content="react"';
+const isReactRoot = (p) => existsSync(p) && readFileSync(p, 'utf8').includes(REACT_MARK);
+const cutDone = isReactRoot(join(repo, 'index.html'));
+const targetName = opt('--target', cutDone ? 'root' : 'next');
+const target = TARGETS[targetName];
+if (!target) die(`unknown --target ${targetName} (use next | root)`);
+if (targetName === 'root' && !cutDone && !flag('--confirm-cutover')) die('--target root is the R5 cutover; add --confirm-cutover (npm run deploy:cutover)');
+if (targetName === 'next' && cutDone) die('post-cutover: /SI/next/ is only a redirect to /SI/ — deploy the root (npm run deploy)');
 const dest = resolve(repo, target.dir);
 const env = { ...process.env, SI_TARGET: targetName, SI_BASE: target.base };
 const MANIFEST = '.si-deploy.json';
@@ -72,7 +78,7 @@ if (existsSync(assetsDir)) for (const rel of P.orphans(walk(assetsDir).map((p) =
 console.log(`\n✓ removed ${removed} file(s) of older builds; keeping ${P.generations.length} generation(s): ${P.generations.map((g) => g.id).join(', ')}`);
 
 // 2) cutover only: keep the old single-file page as legacy.html
-if (targetName === 'root' && existsSync(rootIndex) && !readFileSync(rootIndex, 'utf8').includes('name="si-build" content="react"')) {
+if (targetName === 'root' && existsSync(rootIndex) && !isReactRoot(rootIndex)) {
   const legacy = join(repo, 'legacy.html');
   if (existsSync(legacy)) die('legacy.html already exists and index.html is not a React build — resolve by hand');
   renameSync(rootIndex, legacy);
