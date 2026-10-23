@@ -3,7 +3,7 @@
 import { esc, type Bi, type Page, type PopSpec, type T } from '../../lib';
 import type { Q } from '../quiz';
 
-export interface XPart { n: Bi; t: string; cat: string; train?: 'yes' | 'no' | 'part'; up?: string; dn?: string[]; use?: string[]; pop: (t: T) => PopSpec }
+export interface XPart { n: Bi; t: string; cat: string; train?: 'yes' | 'no' | 'part'; up?: string; zoom?: string; dn?: string[]; use?: string[]; pop: (t: T) => PopSpec }
 export interface Ext {
   parts: Record<string, XPart>;
   /** concept cards, inserted before the station's lab divider */

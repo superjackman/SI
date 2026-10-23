@@ -1,4 +1,4 @@
-/* R11 (+R12: max one tap per station from home): everything is reachable from T1 by tapping inside the content only — never the sidebar tree (More sheet), the
+/* R11 (+R12/R13: max one tap per station from home): everything is reachable from T1 by tapping inside the content only — never the sidebar tree (More sheet), the
    drawer, the top-bar arrows or search. BFS by real clicks on the rendered pages: a station counts once a content link on an
    already-reached station takes us there; every card / lab / quiz sits on a reached station and every lab has a jump link
    on it; every part is linked from a reached page or from the popup of a reached part. zh + en, 360/390/430. */
@@ -16,6 +16,8 @@ const links = (page: Page, S: string) => page.evaluate((S) => {
   const sec = document.querySelector(`section#${S}`)!, go = new Set<string>(), open = new Set<string>(), jump = new Set<string>(), cards: [string, string][] = [];
   sec.querySelectorAll<HTMLElement>('[data-go]').forEach((e) => go.add(e.dataset.go!));
   sec.querySelectorAll<HTMLElement>('[data-ddgo]').forEach((e) => go.add(e.dataset.ddgo!));
+  /* R13: the drill 🔍 badges on the full-stack T1 diagram */
+  sec.querySelectorAll<SVGElement>('.dd-b[data-dd]').forEach((e) => go.add(e.dataset.dd!));
   sec.querySelectorAll<HTMLElement>('[data-open]').forEach((e) => open.add(e.dataset.open!));
   sec.querySelectorAll<HTMLElement>('.comp[data-id],.mini[data-id]').forEach((e) => open.add(e.dataset.id!));
   sec.querySelectorAll<HTMLElement>('[data-sj]').forEach((e) => jump.add(e.dataset.sj!));
@@ -34,7 +36,7 @@ for (const lang of ['zh', 'en'] as Lang[]) test(`${lang}: every station, card, l
     const S = q.shift()!, P = via.get(S)!;
     if (P) { /* stand on the parent (already reached) and tap its content link to S */
       await page.goto(`./?lang=${lang}#${P}`); await ready(page, P, lang);
-      await tap(page, `section#${P} [data-go="${S}"], section#${P} [data-ddgo="${S}"]`);
+      await tap(page, `section#${P} [data-go="${S}"], section#${P} [data-ddgo="${S}"], section#${P} .dd-b[data-dd="${S}"]`);
       await ready(page, S, lang);
       expect(await station(page), `${P} → ${S}`).toBe(S);
     }
@@ -42,7 +44,7 @@ for (const lang of ['zh', 'en'] as Lang[]) test(`${lang}: every station, card, l
     for (const g of l.go) if (KB.TABORDER.includes(g) && !via.has(g)) { via.set(g, S); q.push(g); }
   }
   expect(KB.TABORDER.filter((S) => !via.has(S))).toEqual([]);
-  /* R12: the home page's knowledge map links every station directly, so every station is one tap from T1 */
+  /* R13: the home page's full-stack diagram (🔍 badges) links every station directly, so every station is one tap from T1 */
   expect(KB.TABORDER.filter((S) => S !== 'T1' && via.get(S) !== 'T1')).toEqual([]);
   /* cards / labs / quizzes: on a reached station; labs also have an explicit jump link on their station */
   let nCards = 0;

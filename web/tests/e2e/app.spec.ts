@@ -5,7 +5,9 @@ const LANGS: Lang[] = ['zh', 'en'];
 const STATIONS = ['T1', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8'] as const;
 /* drill badges on the live diagrams (T4a, T5, T8 have none on live either) */
 const BNAV: Record<string, string> = { T4a: 'T4', T4b: 'T4', N: 'more', T5: 'more', T6: 'more', T7: 'more', T8: 'more' };
-const BADGES: Record<string, number> = { T1: 12, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
+/* every station (R13: the T1 diagram drills into all of them, including U…, K1–K5) */
+const ALLST = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
+const BADGES: Record<string, number> = { T1: 31, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
 type SI = { __si: { state(): { station: string; popup: { id: string } | null }; openInfo(id: string): void } };
 
 /** console errors/warnings and every request that leaves localhost (must be none: no CDNs, fonts or analytics on /next/) */
@@ -371,7 +373,7 @@ test('every station with drill badges: a badge lands on its target station', asy
     await open(page, 'zh', S);
     const n = await page.locator(`section#${S} .dd-b`).count();
     const targets = await page.locator(`section#${S} .dd-b`).evaluateAll((bs) => bs.map((b) => b.getAttribute('data-dd')));
-    for (const t of targets) expect(STATIONS as readonly string[], `${S} badge target`).toContain(t);
+    for (const t of targets) expect(ALLST, `${S} badge target`).toContain(t);
     /* tap the last badge (often in a collapsed card further down) like a reader would */
     await page.locator(`section#${S} .dd-b`).nth(n - 1).evaluate((b) => { b.id = 'e2e-dd'; });
     await reveal(page, '#e2e-dd');

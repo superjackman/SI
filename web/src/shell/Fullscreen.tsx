@@ -46,7 +46,8 @@ export function Fullscreen() {
       const g = h.querySelector('svg'); if (!g) return;
       const vb = g.viewBox.baseVal, W = h.clientWidth, H = h.clientHeight, a = vb.width / vb.height;
       let bw: number, bh: number; if (W / H > a) { bh = H; bw = H * a; } else { bw = W; bh = W / a; }
-      if (!FS.current.orig && vb.height / vb.width > H / W) { bw = W; bh = W / a; }
+      /* tall pictures (the phone layout, the R13 full-stack T1) fit the width and pan vertically */
+      if (vb.height / vb.width > H / W && (!FS.current.orig || vb.height > vb.width * 1.5)) { bw = W; bh = W / a; }
       v.fw = bw; v.fh = bh; g.style.width = bw + 'px'; g.style.height = bh + 'px'; v.s = 1; v.tx = 0; v.ty = 0; v.apply();
     };
     const show = async () => {

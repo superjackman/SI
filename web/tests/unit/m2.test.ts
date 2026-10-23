@@ -108,9 +108,10 @@ describe('kb: M2 stops and parts', () => {
   });
   it('every M2 part has a stop, an up link, valid zoom / down links; the hub zooms into the 4 sub-stops', () => {
     const use = Object.entries(KB.C).filter(([, c]) => c.cat === 'use');
-    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith'].sort());
+    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uProd', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith'].sort());
     for (const [k, c] of use) {
-      expect(M2).toContain(c.t);
+      /* uProd (R13) is the T1 diagram's entry box to the Up station */
+      expect(k === 'uProd' ? ['T1'] : M2).toContain(c.t);
       expect(part(c.up!), k + ' up').toBeTruthy();
       if (c.zoom) expect(isStation(c.zoom)).toBe(true);
       expect((c.dn ?? []).length, k + ' needs a link down into the principles').toBeGreaterThan(0);
@@ -118,7 +119,8 @@ describe('kb: M2 stops and parts', () => {
       expect(c.n.en).not.toMatch(CJK);
     }
     expect(['uWith', 'uSolo', 'uKit', 'uWell'].map((k) => part(k)!.zoom)).toEqual(['Ua', 'Ub', 'Uc', 'Ud']);
-    expect(kids('uHub').sort()).toEqual(['uKit', 'uSolo', 'uWell', 'uWith']);
+    /* R13: the products box on the T1 diagram also hangs under the usage hub */
+    expect(kids('uHub').sort()).toEqual(['uKit', 'uProd', 'uSolo', 'uWell', 'uWith']);
   });
   it('back links: principle parts in T1/T2/T3 point up to the usage parts', () => {
     const back = Object.entries(KB.C).filter(([, c]) => c.use?.length);

@@ -9,7 +9,7 @@ import { HAND } from '../../m2/content/handoff';
 
 const GEN = join(__dirname, '../../src/legacy/gen');
 const J = <T>(p: string) => JSON.parse(readFileSync(join(GEN, p), 'utf8')) as T;
-const KB = J<{ C: Record<string, { t: string; up?: string; n: { zh: string; en: string } }>; TABORDER: string[]; TABN: Record<string, { zh: string; en: string }> }>('kb.json');
+const KB = J<{ C: Record<string, { t: string; up?: string; zoom?: string; n: { zh: string; en: string } }>; TABORDER: string[]; TABN: Record<string, { zh: string; en: string }> }>('kb.json');
 const XS = J<XRow[]>('search-x.json');
 const LANGS = ['zh', 'en'] as const;
 const st = (S: string, L: string) => J<{ html: string }>(`st/${S}.${L}.json`).html;
@@ -42,8 +42,10 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
   it('every lab and card is reachable: its station is, and every lab has an explicit jump link', () => {
     for (const S of KB.TABORDER) for (const [id, cls] of cardIds(st(S, L))) if (/\blab\b/.test(cls)) expect(seenE.has(id), `${S}#${id}`).toBe(true);
   });
-  it('R12: every station is one tap from home (the T1 page links all of them directly)', () => {
-    const one = new Set(['T1', ...attrs(st('T1', L), 'data-go'), ...attrs(st('T1', L), 'data-sp')]);
+  it('R13: every station is one tap from home (the 🔍 boxes of the T1 full-stack diagram drill into all of them)', () => {
+    const svg = /<svg id="svgT1"[\s\S]*?<\/svg>/.exec(st('T1', L))?.[0] ?? '';
+    const zoomed = [...svg.matchAll(/<g class="comp[^"]*" data-id="([^"]+)"[\s\S]*?<\/g>/g)].filter((m) => m[0].includes('zm-h')).map((m) => KB.C[m[1]!]?.zoom);
+    const one = new Set(['T1', ...zoomed.filter((z): z is string => !!z)]);
     expect(KB.TABORDER.filter((S) => !one.has(S))).toEqual([]);
   });
   it('the "go deeper" hand-off chain alone walks T1 → … → K5 through all 22 stations', () => {

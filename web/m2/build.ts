@@ -29,8 +29,10 @@ import { M5 } from './content/ext/m5';
 import { M6 } from './content/ext/m6';
 import { M7 } from './content/ext/m7';
 import { M8 } from './content/ext/m8';
+import { M9 } from './content/ext/m9';
 import { HAND } from './content/handoff';
-import { KMAP, KSIDE } from './content/kmap';
+import { render as dgRender, legend as dgLegend } from './content/t1dg';
+import { check as dgCheck } from './dgcheck';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
@@ -41,7 +43,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7, M8];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 for (const e of EXTS) {
@@ -267,32 +269,25 @@ for (const S of kb.TABORDER) {
 }
 put('search-x.json', xrows);
 
-/* ---------- R12: the knowledge map at the top of the home page (T1), between <!--m2k--> markers under the page head ---------- */
-/* one row per layer (macro → micro → maths), each row a link to its first station, sub-items for the others; the lab / card
-   counts come from the search rows above (the same card elements the search box lists), so they can never drift */
+/* ---------- R13: the home diagram (T1) is the whole stack, from you down to the maths (m2/content/t1dg.ts) ---------- */
+/* replaces svgT1 in the phone page and the landscape full-screen data, and the legend under it; the geometry checks in
+   m2/dgcheck.ts must come back clean or the build stops. Also removes the R12 knowledge-map card. */
 {
-  const cnt = (S: string, k: string) => xrows.filter((r) => r[2] === S && r[0] === k).length;
-  const inMap = KMAP.flatMap((l) => l.st).concat(KSIDE.st);
-  for (const S of kb.TABORDER) if (!inMap.includes(S)) throw new Error('knowledge map misses station ' + S);
+  const dkb = { C: kb.C as Record<string, { n: Bi; cat: string; train?: string; zoom?: string }>, PATH: kb.PATH as Record<string, unknown> };
   for (const L of LANGS) {
     const p = 'st/T1.' + L + '.json', st = stOf(p), nl = nlOfF(p);
-    const name = (s: string) => { const n = kb.TABN[s]; if (!n) throw new Error('knowledge map: unknown station ' + s); return n[L]; };
-    let o = `<nav class="km" id="kmap" aria-labelledby="kmT"><p class="km-t" id="kmT">${CODES['km.title'][L]}</p><p class="km-h">${CODES['km.hint'][L]}<span>${CODES['km.legend'][L]}</span></p><ol class="km-s">`;
-    KMAP.forEach((ly, i) => {
-      const S0 = ly.st[0] as string, labs = ly.st.reduce((a, s) => a + cnt(s, 'l'), 0), cards = ly.st.reduce((a, s) => a + cnt(s, 'c'), 0);
-      const tgt = S0 === 'T1' ? 'data-sj="c_T1_0" data-sp="T1"' : `data-go="${S0}"`;
-      const c = `<span class="km-c" data-labs="${labs}" data-cards="${cards}">${labs ? `🧪${labs} ` : ''}📄${cards}</span>`;
-      o += `<li class="km-l" style="--i:${i}" data-km="${ly.st.join(' ')}"><button type="button" class="km-b" ${tgt}><span class="km-n"><b>${ly.ic} ${esc(ly.n[L])}</b>${S0 === 'T1' ? `<i class="km-here">${CODES['km.here'][L]}</i>` : ''}${c}</span><span class="km-r">${esc(ly.learn[L])}</span></button>`;
-      const subs = ly.st.filter((s) => name(s) !== ly.n[L]);
-      if (ly.st.length > 1) o += `<span class="km-k">${subs.map((s) => `<button type="button" class="km-x" data-go="${s}">${esc(name(s).replace(/^(数学 · |Math · )/, ''))}</button>`).join('')}</span>`;
-      o += '</li>';
-    });
-    o += `</ol><p class="km-side"><span>${CODES['km.side'][L]}</span><button type="button" class="km-x" data-go="${KSIDE.st}">${KSIDE.ic} ${esc(name(KSIDE.st))}</button>${KSIDE.jumps.map(([id, t]) => `<button type="button" class="km-x" data-sj="${id}" data-sp="${KSIDE.st}">${esc(t[L])}</button>`).join('')}</p></nav>`;
-    for (const [id] of KSIDE.jumps) if (!stOf('st/T8.' + L + '.json').html.includes(`id="${id}"`)) throw new Error('knowledge map: T8 has no #' + id);
+    const m = dgRender(L, 'm', dkb), w = dgRender(L, 'w', dkb);
+    for (const [k, d] of [['phone', m], ['wide', w]] as const) {
+      const bad = dgCheck(d.svg, true);
+      if (bad.length) throw new Error(`T1 diagram (${k}, ${L}):\n  ` + bad.join('\n  '));
+    }
     let h = st.html.replace(/<!--m2k-->[\s\S]*?<!--\/m2k-->\n?/g, '');
-    const at = h.indexOf('<div class="m-stage">'); if (at < 0) throw new Error('knowledge map: no diagram stage on T1');
-    h = h.slice(0, at) + `<!--m2k-->${o}<!--/m2k-->\n` + h.slice(at);
+    const n0 = h.length;
+    h = h.replace(/<svg id="svgT1"[\s\S]*?<\/svg>/, () => m.svg).replace(/<div class="legend" id="legendT1">[\s\S]*?<\/div>/, () => dgLegend(L));
+    if (!h.includes(m.svg) || !h.includes('id="legendT1"') || n0 === 0) throw new Error('T1 diagram: no svgT1 / legend to replace');
     put(p, { ...st, html: h }, nl);
+    const wp = 'st/T1.' + L + '.wide.json';
+    put(wp, { ...(readJ(wp) as object), svgT1: { vb: w.vb, html: w.inner } }, nlOf(wp));
   }
 }
 

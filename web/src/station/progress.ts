@@ -2,7 +2,6 @@
 import type { Lang } from '../i18n/types';
 import { TABORDER, tabn } from '../legacy/kb';
 import { toast, visited } from '../nav';
-import { tx } from '../i18n/L';
 import { answers, QUIZ_KEY } from './quiz';
 
 const LSP = 'aiexp.v2.';
@@ -21,19 +20,7 @@ export function renderProg(sec: HTMLElement, lang: Lang) {
   }).join('') + '</div>';
 }
 
-/** R12: home-page knowledge map — mark visited stations and show "seen n/m" per layer (from the same visited list) */
-export function markKmap(sec: HTMLElement, lang: Lang) {
-  const v = visited();
-  sec.querySelectorAll<HTMLElement>('.km-l[data-km]').forEach((li) => {
-    const st = (li.dataset.km ?? '').split(' '), n = st.filter((k) => v.includes(k)).length;
-    li.querySelectorAll<HTMLElement>('.km-x[data-go]').forEach((b) => b.classList.toggle('v', v.includes(b.dataset.go ?? '')));
-    li.querySelector('.km-p')?.remove();
-    if (n && li.dataset.km !== 'T1') { const p = document.createElement('span'); p.className = 'km-p'; p.textContent = '✓ ' + tx('km.seen', lang) + ' ' + n + '/' + st.length; li.querySelector('.km-n')?.insertBefore(p, li.querySelector('.km-c')); }
-  });
-}
-
 export function mountProgress(sec: HTMLElement, S: string, lang: Lang): () => void {
-  if (S === 'T1') { markKmap(sec, lang); const on = () => markKmap(sec, lang); document.addEventListener('si-progress', on); return () => document.removeEventListener('si-progress', on); }
   if (S !== 'T8') return () => {};
   renderProg(sec, lang);
   const pr = sec.querySelector<HTMLElement>('#progReset');
