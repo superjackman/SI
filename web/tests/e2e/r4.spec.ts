@@ -153,7 +153,7 @@ test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress d
   await sheet(page);
   await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 22 站 · 测验答对 0 / 89（已答 0）');
   await expect(page.locator('#shPrev')).toBeDisabled();
-  await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(13);
+  await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(14);
   await page.locator('#shNext').click();
   await expect.poll(() => station(page)).toBe('U');
   await page.locator('#bnav [data-bn="T2"]').click();

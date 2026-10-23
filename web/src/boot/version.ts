@@ -10,6 +10,7 @@
 import { tx } from '../i18n/L';
 import { useApp } from '../store/app';
 import { BUST } from './stale';
+import { IC } from '../shell/common';
 
 export const VKEY = 'si.vreload';
 export const VQ = 'v';
@@ -67,15 +68,15 @@ export async function check(touched: () => boolean, o: { cur?: string; base?: st
 
 const CSS = '#siUpd{position:fixed;left:50%;width:max-content;top:calc(var(--tbh,52px) + 10px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:130;display:flex;align-items:center;gap:2px;max-width:calc(100vw - 24px);background:#1e1b4b;color:#fff;border-radius:999px;box-shadow:0 6px 20px rgba(30,27,75,.25);font:600 14px/1.4 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}'
   + '#siUpd button{border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;min-height:40px}'
-  + '#siUpd .upd-go{padding:8px 4px 8px 16px;text-align:left}#siUpd .upd-x{width:40px;font-size:18px;opacity:.8}';
+  + '#siUpd .upd-go{display:flex;align-items:center;gap:7px;padding:8px 4px 8px 14px;text-align:left}#siUpd .upd-x{width:40px;opacity:.8}#siUpd .ic{width:18px;height:18px}';
 /** the unobtrusive banner (once; its text follows the language) */
 export function banner(id: string) {
   if (document.getElementById('siUpd')) return;
   if (!document.getElementById('siUpdCss')) { const s = document.createElement('style'); s.id = 'siUpdCss'; s.textContent = CSS; document.head.appendChild(s); }
   const b = document.createElement('div'); b.id = 'siUpd'; b.setAttribute('role', 'status');
   const go = document.createElement('button'); go.type = 'button'; go.className = 'upd-go';
-  const x = document.createElement('button'); x.type = 'button'; x.className = 'upd-x'; x.textContent = '×';
-  const txt = () => { const l = useApp.getState().lang; go.textContent = tx('upd.banner', l); x.setAttribute('aria-label', tx('ui.close', l)); };
+  const x = document.createElement('button'); x.type = 'button'; x.className = 'upd-x'; x.innerHTML = IC.x;
+  const txt = () => { const l = useApp.getState().lang; go.innerHTML = IC.re + '<span></span>'; (go.lastChild as HTMLElement).textContent = tx('upd.banner', l); x.setAttribute('aria-label', tx('ui.close', l)); x.title = tx('ui.close', l); };
   txt();
   const un = useApp.subscribe((s, p) => { if (s.lang !== p.lang) txt(); });
   go.onclick = () => { location.replace(freshURL(location, id)); };

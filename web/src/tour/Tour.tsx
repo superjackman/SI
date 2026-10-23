@@ -99,7 +99,7 @@ export default function Tour() {
     <div id="tour" className={'open' + (more ? ' more' : '')} role="dialog" aria-label={d.ui.aria} aria-live="polite">
       <div className="tour-h"><span id="tourN">{s.n}</span>
         <button type="button" className="tour-tog" aria-expanded={more ? 'true' : 'false'} onClick={() => { moreOpen = !more; setMore(!more); }}>{more ? d.ui.collapse : d.ui.why}</button>
-        <button className="icon-btn" id="tourX" aria-label={d.ui.x} onClick={() => endTour(false)}>×</button>
+        <button className="icon-btn" id="tourX" aria-label={d.ui.x} title={d.ui.x} onClick={() => endTour(false)} dangerouslySetInnerHTML={{ __html: IC.x }} />
       </div>
       <div className="tour-dots" id="tourDots">
         {d.ui.dots.map((t, k) => <i key={k} data-ti={k} title={t} className={k < i ? 'd' : k === i ? 'c' : undefined} onClick={() => tourGo(k)} />)}
@@ -110,7 +110,7 @@ export default function Tour() {
       <div className="tour-f" id="tourF" dangerouslySetInnerHTML={{ __html: s.f }} />
       <div className="row tour-btns">
         <button className="btn ib" id="tourPrev" aria-label={d.ui.prev} title={d.ui.prev} disabled={i === 0} onClick={() => tourGo(i - 1)} dangerouslySetInnerHTML={{ __html: IC.prev }} />
-        <button className="btn primary" id="tourNext" onClick={() => tourGo(i + 1)}>{last ? d.ui.done : d.ui.next}</button>
+        <button className="btn primary" id="tourNext" onClick={() => tourGo(i + 1)}><span>{last ? d.ui.done : d.ui.next}</span>{last ? null : <span dangerouslySetInnerHTML={{ __html: IC.next }} />}</button>
       </div>
     </div>
   );

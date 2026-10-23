@@ -8,6 +8,7 @@ import { dotClasses } from '../station/hydrate';
 import { loadMath } from '../station/math';
 import { svgHtml } from './common';
 import { toggleDrawer } from './drawer';
+import { openShare } from './Nav';
 import type { Lang } from '../i18n/types';
 
 type Roles = Record<string, { zh: string; en: string }>;
@@ -91,6 +92,8 @@ export function TopBar() {
   const t = useT();
   const lang = useApp((s) => s.lang), S = useApp((s) => s.station), drawer = useApp((s) => s.drawerOpen), set = useApp((s) => s.set), setLang = useApp((s) => s.setLang);
   const i = TABORDER.indexOf(S), pv = TABORDER[i - 1], nx = TABORDER[i + 1];
+  /* phones show a 7-dot window around the current stop (+ the n/22 counter); wider headers show all 22 */
+  const w0 = Math.max(0, Math.min(i - 3, TABORDER.length - 7));
   const prog = useRef<HTMLElement>(null);
   useEffect(() => {
     let p = false;
@@ -110,10 +113,11 @@ export function TopBar() {
         <button className="icon-btn tb-ic tb-menu" id="mMenu" aria-label={t('nav.menu.open')} title={t('nav.allStops')} aria-controls="mDrawer" aria-expanded={drawer ? 'true' : 'false'}
           onClick={toggleDrawer} {...svgHtml('menu')} />
         <button className="icon-btn tb-ic tb-nv" id="mPrev" disabled={!pv} aria-label={pvL} title={pvL} onClick={() => pv && go(pv)} {...svgHtml('prev')} />
-        <div className="tb-where" id="tbWhere" aria-live="polite"><b>{tabn(S, lang)}</b><span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={c} />)}<small>{i + 1}/{TABORDER.length}</small></span></div>
+        <div className="tb-where" id="tbWhere" aria-live="polite"><b title={tabn(S, lang)}>{tabn(S, lang)}</b><span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span></div>
         <button className="icon-btn tb-ic tb-nv" id="mNext" disabled={!nx} aria-label={nxL} title={nxL} onClick={() => nx && go(nx)} {...svgHtml('next')} />
         <button className="icon-btn tb-ic" id="mSearch" aria-label={t('search.parts')} title={t('search.parts')} aria-controls="search"
-          onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }}>🔎</button>
+          onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }} {...svgHtml('search')} />
+        <button className="icon-btn tb-ic tb-sh" id="mShare" aria-label={t('share.title')} title={t('share.title')} aria-haspopup="dialog" onClick={openShare} {...svgHtml('share')} />
         <button className="icon-btn tb-ic tb-lang" id="mLang" aria-label={langL} title={langL} lang={lang === 'en' ? 'zh-CN' : 'en'} onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}>{lang === 'en' ? '中' : 'EN'}</button>
         <Search lang={lang} />
       </div>

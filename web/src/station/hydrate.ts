@@ -12,13 +12,13 @@ import { restoreTags } from '../legacy/restore';
 import { mountProgress } from './progress';
 import { mountQuiz } from './quiz';
 import { useApp } from '../store/app';
+import { IC } from '../shell/common';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
-const ICO = {
-  prev: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-};
+/* R17: the shared line-icon set */
+const ICO = { prev: IC.prev, next: IC.next };
 export { ICO };
+const lbl = (a: string) => ' aria-label="' + a + '" title="' + a + '"';
 /** live dotsHTML (English aria label fixed: live reads "Word  3 : …", here "Stop 3: …") */
 export function dotClasses(L: string): string[] {
   const v = visited();
@@ -31,9 +31,9 @@ export function dotsHTML(L: string, tap: boolean, lang: Lang): string {
   const cls = dotClasses(L);
   return TABORDER.map((k, i) => {
     const c = cls[i] ?? '';
-    return tap
-      ? '<button type="button" class="dt ' + c + '" data-go="' + k + (lang === 'en' ? '" aria-label="Stop' : '" aria-label="第') + ' ' + (i + 1) + (lang === 'en' ? ': ' : ' 站：') + esc(tabn(k, lang)) + (k === L ? tx('nav.current', lang) : '') + '"><i></i></button>'
-      : '<i class="' + c + '"></i>';
+    if (!tap) return '<i class="' + c + '"></i>';
+    const a = (lang === 'en' ? 'Stop ' : '第 ') + (i + 1) + (lang === 'en' ? ': ' : ' 站：') + esc(tabn(k, lang)) + (k === L ? tx('nav.current', lang) : '');
+    return '<button type="button" class="dt ' + c + '" data-go="' + k + '"' + lbl(a) + '><i></i></button>';
   }).join('');
 }
 /** stop numbers in the page head come from TABORDER (the snapshots were taken with 11 stops; M2 inserted U…Ud) */
@@ -45,7 +45,7 @@ export function renumber(root: ParentNode, S: string, lang: Lang) {
 export function renderPN(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('.m-pn').forEach((nav) => {
     const L = nav.dataset.sec ?? '', i = TABORDER.indexOf(L), pv = TABORDER[i - 1], nx = TABORDER[i + 1];
-    nav.innerHTML = '<div class="pn-row"><button type="button" class="pn-b"' + (pv ? ' data-go="' + pv + '" aria-label="' + tx('nav.prevStop', lang) + esc(tabn(pv, lang)) + '"' : ' disabled aria-label="' + tx('nav.firstStop', lang) + '"') + '>' + ICO.prev + '</button><div class="pn-dots">' + dotsHTML(L, true, lang) + '</div><button type="button" class="pn-b pri"' + (nx ? ' data-go="' + nx + '" aria-label="' + tx('nav.nextStop', lang) + esc(tabn(nx, lang)) + '"' : ' disabled aria-label="' + tx('nav.lastStopPn', lang) + '"') + '>' + ICO.next + '</button></div>' +
+    nav.innerHTML = '<div class="pn-row"><button type="button" class="pn-b"' + (pv ? ' data-go="' + pv + '"' + lbl(tx('nav.prevStop', lang) + esc(tabn(pv, lang))) : ' disabled' + lbl(tx('nav.firstStop', lang))) + '>' + ICO.prev + '</button><div class="pn-dots">' + dotsHTML(L, true, lang) + '</div><button type="button" class="pn-b pri"' + (nx ? ' data-go="' + nx + '"' + lbl(tx('nav.nextStop', lang) + esc(tabn(nx, lang))) : ' disabled' + lbl(tx('nav.lastStopPn', lang))) + '>' + ICO.next + '</button></div>' +
       '<p class="pn-cap">' + (i + 1) + ' / ' + TABORDER.length + ' · ' + (nx ? tx('nav.nextStop', lang).trim() + ' <button type="button" class="pn-l" data-go="' + nx + '">' + esc(tabn(nx, lang)) + ' ›</button>' : tx('nav.lastStopCap', lang)) + '</p>';
   });
 }

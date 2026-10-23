@@ -6,7 +6,7 @@ import { tabn } from '../legacy/kb';
 import { Viewer } from '../ui/diagram/Viewer';
 import { fitAndMark } from '../station/hydrate';
 import { drill, openInfo } from '../nav';
-import { layer } from './common';
+import { layer, svgHtml } from './common';
 import type { Lang } from '../i18n/types';
 
 type Wide = Record<string, { vb: string; html: string }>;
@@ -99,11 +99,11 @@ export function Fullscreen() {
         if (k === 'close') set({ full: null }); else if (k === 'reset') v?.reset(true); else v?.step(k === 'in' ? 1.5 : 1 / 1.5);
       }}>
         <b id="fsT">{info.title}</b>
-        <button className="vz" data-fz="out" aria-label={t('fs.out')}>−</button>
+        <button className="vz" data-fz="out" aria-label={t('fs.out')} title={t('fs.out')} {...svgHtml('minus')} />
         <span className="vp" id="fsP" ref={pRef}>100%</span>
-        <button className="vz" data-fz="in" aria-label={t('fs.in')}>{lang === 'en' ? '+' : '＋'}</button>
-        <button className="vz" data-fz="reset" aria-label={t('fs.reset')}>⟲</button>
-        <button className="vz fs-x" data-fz="close" aria-label={t('fs.exit')}>×</button>
+        <button className="vz" data-fz="in" aria-label={t('fs.in')} title={t('fs.in')} {...svgHtml('plus')} />
+        <button className="vz" data-fz="reset" aria-label={t('fs.reset')} title={t('fs.reset')} {...svgHtml('reset')} />
+        <button className="vz fs-x" data-fz="close" aria-label={t('fs.exit')} title={t('fs.exit')} {...svgHtml('x')} />
       </div>
       <div className="fs-host m-vw" id="fsHost" ref={host} />
       <div className="fs-hint" id="fsHint">{info.hint}</div>

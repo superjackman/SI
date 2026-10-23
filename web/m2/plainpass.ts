@@ -10,6 +10,7 @@ import { needsCtx, symKeys, unesc } from './sym';
 import { SYM } from './content/symbols';
 import type { PStation } from './plain/types';
 import { CODES } from '../src/i18n/codes';
+import { IC2 } from '../src/ui/ic2';
 
 const MARKS = [/<!--m2p-->[\s\S]*?<!--\/m2p-->/g, /<!--m2pm-->[\s\S]*?<!--\/m2pm-->/g, /<!--m2pi-->[\s\S]*?<!--\/m2pi-->/g, /<!--m2pe-->[\s\S]*?<!--\/m2pe-->/g, /<!--m2s-->[\s\S]*?<!--\/m2s-->/g];
 export const undoPlain = (h: string) => MARKS.reduce((s, r) => s.replace(r, ''), h);
@@ -170,7 +171,7 @@ export function plainPage(html: string, S: string, L: Lang, st: PStation, stat?:
         if (P.keep) c = c.slice(0, bi) + lead + `<!--m2p-->${plain}<!--/m2p-->` + inner + inList + c.slice(be);
         else {
           const more = P.more ? `<!--m2pm--><p class="pl-more"><b>${CODES['plain.more'][L]}</b>${esc(P.more[L])}</p><!--/m2pm-->` : '';
-          c = c.slice(0, bi) + lead + `<!--m2p-->${plain}<details class="deep"><summary>${CODES['plain.deep'][L]}</summary><!--/m2p-->` + more + inner + inList + '<!--m2pe--></details><!--/m2pe-->' + c.slice(be);
+          c = c.slice(0, bi) + lead + `<!--m2p-->${plain}<details class="deep"><summary>${IC2.chev}<span>${CODES['plain.deep'][L]}</span></summary><!--/m2p-->` + more + inner + inList + '<!--m2pe--></details><!--/m2pe-->' + c.slice(be);
         }
       }
     } else if (inList) {

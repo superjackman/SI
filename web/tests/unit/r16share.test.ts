@@ -57,6 +57,6 @@ describe('R16 share URL', () => {
     for (const h of ['superjackman.github.io', 'si.test', '172.32.0.1', '11.0.0.1']) expect(isLocalHost(h)).toBe(false);
   });
   it('shared strings are bilingual', () => {
-    for (const k of ['share.btn', 'share.title', 'share.copied', 'share.copyManual', 'upd.banner'] as const) { expect(CODES[k].zh).toBeTruthy(); expect(CODES[k].en).toBeTruthy(); }
+    for (const k of ['share.title', 'share.copied', 'share.copyManual', 'upd.banner'] as const) { expect(CODES[k].zh).toBeTruthy(); expect(CODES[k].en).toBeTruthy(); }
   });
 });

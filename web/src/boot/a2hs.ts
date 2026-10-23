@@ -2,6 +2,7 @@
 import { useApp } from '../store/app';
 import { tx } from '../i18n/L';
 import type { Bi } from '../i18n/types';
+import { IC } from '../shell/common';
 
 /* only this chunk shows it, so it lives here (codes.ts holds the strings shared across the app) */
 const TIP: Bi = { zh: '添加到主屏幕后可全屏打开', en: 'Add to Home Screen to open it full screen' };
@@ -18,8 +19,8 @@ export function showTip(ios: boolean, force = false) {
   try { if (!force && localStorage.getItem('si.a2hs')) return; localStorage.setItem('si.a2hs', '1'); } catch { /* fine */ }
   if (!document.getElementById('siA2hsCss')) { const s = document.createElement('style'); s.id = 'siA2hsCss'; s.textContent = CSS; document.head.appendChild(s); }
   const b = document.createElement('div'); b.id = 'siA2hs'; b.setAttribute('role', 'note');
-  const t = document.createElement('div'), x = document.createElement('button'); x.type = 'button'; x.textContent = '×';
-  const txt = () => { const l = useApp.getState().lang; t.innerHTML = ''; const h = document.createElement('b'), m = document.createElement('small'); h.textContent = '📲 ' + TIP[l]; m.textContent = HOW[ios ? 'ios' : 'other'][l]; t.append(h, m); x.setAttribute('aria-label', tx('ui.close', l)); };
+  const t = document.createElement('div'), x = document.createElement('button'); x.type = 'button'; x.innerHTML = IC.x;
+  const txt = () => { const l = useApp.getState().lang; t.innerHTML = ''; const h = document.createElement('b'), m = document.createElement('small'); h.textContent = '📲 ' + TIP[l]; m.textContent = HOW[ios ? 'ios' : 'other'][l]; t.append(h, m); x.setAttribute('aria-label', tx('ui.close', l)); x.title = tx('ui.close', l); };
   txt();
   const un = useApp.subscribe((s, p) => { if (s.lang !== p.lang) txt(); });
   const close = () => { un(); b.remove(); };

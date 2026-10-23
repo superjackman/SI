@@ -6,6 +6,7 @@ import { useT } from '../i18n/L';
 import type { Lang } from '../i18n/types';
 import { PATH, TABORDER, tabn } from '../legacy/kb';
 import { visited } from '../nav';
+import { svgHtml } from './common';
 
 type Row = [string, string, '' | 'lab' | 'quiz', number];
 const OUT = import.meta.glob<Record<string, Row[]>>('../legacy/gen/outline.*.json', { import: 'default' });
@@ -55,7 +56,7 @@ export function Tree({ active }: { active: boolean }) {
       <li key={id} className={o ? '' : 'closed'} data-node={id}>
         <div className={'tn' + (cur ? ' cur' : '') + (v ? ' vis' : '')}>
           <button className="car" aria-label={t('tree.toggle') + tabn(id, lang)} aria-expanded={o} data-tg={id}
-            onClick={(e) => { e.stopPropagation(); setOpen((x) => { const n = { ...x, [id]: x[id] ? 0 : 1 }; saveOpen(n); return n; }); }}>▶</button>
+            onClick={(e) => { e.stopPropagation(); setOpen((x) => { const n = { ...x, [id]: x[id] ? 0 : 1 }; saveOpen(n); return n; }); }} {...svgHtml('next')} />
           <a data-go={id} aria-current={cur ? 'page' : undefined}><span className="num">{num}</span>{tabn(id, lang)}</a>
           <span className="ck" title={v ? t('tree.vis') : t('tree.notVis')}>{v ? '✓' : '○'}</span>
         </div>

@@ -8,6 +8,7 @@ import { tx } from '../i18n/L';
 import { recover, newerBuild, userReload } from '../boot/stale';
 import { applyZoomDom } from '../shell/zoom';
 import { hasMath, loadMath } from './math';
+import { svgHtml } from '../shell/common';
 /** stations whose labs have started since the page loaded (live starts each lab once per page load; see Tour) */
 export const labsRan = new Set<string>();
 
@@ -123,7 +124,7 @@ export function StationView() {
       {!ready && fail === S ? (
         <div className="card st-fail" role="alert">
           <p>{tx('st.loadfail', lang)}</p>
-          <button type="button" className="btn primary" aria-label={tx('st.retry', lang)} title={tx('st.retry', lang)} onClick={() => setRetry((n) => n + 1)}>⟳</button>
+          <button type="button" className="btn primary" aria-label={tx('st.retry', lang)} title={tx('st.retry', lang)} onClick={() => setRetry((n) => n + 1)} {...svgHtml('re')} />
         </div>
       ) : !ready && !cur.current ? <Boot /> : null}
       {ready && labFail === `${S}.${lang}` ? (
@@ -131,7 +132,7 @@ export function StationView() {
           <p>{tx('st.labfail', lang)}</p>
           <button type="button" className="btn primary" aria-label={tx('st.retry', lang)} title={tx('st.retry', lang)} onClick={() => {
             void newerBuild().then((n) => { if (n !== null) userReload(); else { cur.current = null; setLabFail(null); setSnap((v) => (v ? { ...v } : v)); } });
-          }}>⟳</button>
+          }} {...svgHtml('re')} />
         </div>
       ) : null}
       <section ref={ref} id={S} className="level active" aria-busy={ready ? undefined : true} />

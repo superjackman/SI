@@ -193,10 +193,6 @@ details.deep[open]>summary{border-bottom:1px dashed var(--line,#ddd);margin-bott
 .sn-s{min-width:44px;min-height:32px;padding:2px 8px;font-family:KaTeX_Main,'Times New Roman',serif;font-size:1.08em}
 .sn-r{opacity:.75;font-size:.92em}.sn-m{flex:1 1 100%}
 .sn-seen{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}.sn-seen span{opacity:.75}.sn-c{padding:2px 8px;min-height:32px;font-family:KaTeX_Main,serif}
-/* R16 share button: right end of the breadcrumb row (the 360px header has no room for a 6th icon) */
-.crumb{display:flex;align-items:center;gap:6px}.crumb .chips{flex:1;min-width:0}
-.cb-share{flex:none;display:inline-flex;align-items:center;gap:3px;min-height:32px;padding:2px 10px 2px 8px;border:1px solid #c7d2fe;border-radius:999px;background:#eef2ff;color:#4338ca;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap}
-.cb-share span{display:inline-flex}.cb-share svg{width:16px;height:16px}
 /* R16 phone gestures: no pull-to-refresh, no horizontal overscroll / Chrome history swipe; the app's own left/right
    swipe (stops) is the only thing that answers a sideways swipe on the content. pinch-zoom stays allowed. */
 html,body{overscroll-behavior:none}
@@ -207,3 +203,20 @@ main{touch-action:pan-y pinch-zoom}
 input[type=range],.m-vw.zoomed,.fs-host{touch-action:none}
 /* full screen: ⛶ in the ☰ menu */
 .dw-fs svg{width:22px;height:22px;vertical-align:middle}.dw-fs[aria-pressed=true]{color:#4f46e5;background:#eef2ff}
+/* R17 one line-icon set (shell/common IC, ui/ic2): stroke = currentColor; icon-only buttons ≥ 40×40 */
+.ic{width:1.25em;height:1.25em;flex:none;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.25em}
+.tb-ic{display:inline-flex;align-items:center;justify-content:center}.tb-ic .ic{width:22px;height:22px}
+@media(max-width:370px){.tb-ic,.tb-ic.tb-lang{width:40px;min-width:40px;height:44px}}
+.has-ic{display:inline-flex;align-items:center;justify-content:center;gap:6px}.has-ic .ic{width:18px;height:18px}
+.btn.ib .ic{width:22px;height:22px}.btn.ib{display:inline-flex;align-items:center;justify-content:center;min-height:40px}
+.vz{display:inline-flex;align-items:center;justify-content:center;min-width:40px;min-height:40px}.vz .ic{width:20px;height:20px}
+.tn .car{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center}.tn .car .ic{width:14px;height:14px}
+.m-back,.tour-h .icon-btn{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+#modal .close{display:inline-flex;align-items:center;justify-content:center;padding:0}#modal .close .ic,.dw-x .ic,.tour-h .ic{width:20px;height:20px}
+details.deep>summary{list-style:none;display:flex;align-items:center;gap:6px;min-height:40px;padding:6px 4px}
+details.deep>summary::-webkit-details-marker{display:none}
+details.deep>summary .ic{width:18px;height:18px;transform:rotate(-90deg);transition:transform .15s}
+details.deep[open]>summary .ic{transform:none}
+.mh-k .ic{width:14px;height:14px;margin-right:3px}
+@media(max-width:640px){.tb-dots i.far{display:none}}
+@media(max-width:370px){.tb-in{padding-left:0;padding-right:0}.tb-where{padding:0}.tb-where b{font-size:14px}}

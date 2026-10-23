@@ -8,7 +8,6 @@ import { layer, svgHtml } from './common';
 import { closeDrawer } from './drawer';
 import { setZoom } from './zoom';
 import { Tree } from './Tree';
-import { BANNERS, LEGEND } from './sheetContent';
 import { quizScore } from '../station/quiz';
 import { toggleTour, tourStep } from '../tour/api';
 
@@ -37,7 +36,6 @@ export function Crumb() {
         {ks.length ? <i className="sep dn" aria-hidden="true">↓</i> : null}
         {ks.map((k) => <button key={k} type="button" className="chip down" data-go={k}>{tabn(k, lang)}</button>)}
       </div>
-      <ShareBtn />
     </div>
   );
 }
@@ -52,10 +50,6 @@ function FsBtn() {
 
 /** R16: share the current page — the panel (and its QR encoder) is a lazy chunk loaded on the first tap */
 export const openShare = () => { void import('../share/panel').then((m) => m.openShare()).catch(() => toast(tx('st.loadfail', useApp.getState().lang))); };
-function ShareBtn() {
-  const t = useT();
-  return <button type="button" id="mShare" className="cb-share" onClick={openShare}><span {...svgHtml('share')} />{t('share.btn')}</button>;
-}
 
 const BN: [string, string, { zh: string; en: string }][] = [
   ['T1', '🏠', { zh: '应用', en: 'App' }], ['T2', '🤖', { zh: 'Agent', en: 'Agent' }], ['T3', '🧠', { zh: '大模型', en: 'LLM' }], ['T4', '🧩', { zh: 'Transformer', en: 'Transformer' }],
@@ -112,6 +106,9 @@ export function MoreSheet() {
   useEffect(() => { document.body.classList.toggle('sheet-open', open); }, [open]);
   useProgress(open);
   const [mapOn, setMapOn] = useState(false);
+  /* banners + icon guide are lazy (R17 first-load budget): fetched when the sheet first opens */
+  const [sc, setSc] = useState<typeof import('./sheetContent') | null>(null);
+  useEffect(() => { if (open && !sc) void import('./sheetContent').then((m) => setSc(m), () => undefined); }, [open, sc]);
   const i = TABORDER.indexOf(S);
   const close = () => set({ sheetOpen: false });
   const pick = (k: string) => { close(); go(k); };
@@ -129,7 +126,7 @@ export function MoreSheet() {
       <div id="sheetMask" className={open ? 'open' : undefined} onClick={close} />
       <div id="moreSheet" className={'sheet' + (open ? ' open' : '')} role="dialog" aria-modal="true" aria-label={t('nav.more')} {...layer(open)}>
         <div className="sh-grip" aria-hidden="true"><i /></div>
-        <div className="sh-head"><b>⋯ {t('nav.more')}</b><button className="icon-btn sh-x" aria-label={t('ui.close')} onClick={close}>×</button></div>
+        <div className="sh-head"><b>⋯ {t('nav.more')}</b><button className="icon-btn sh-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
         <div className="sh-sec"><div className="sh-lbl">{t('sh.stops')}</div>
           <div className="sh-st" id="shStations">
             {['U', 'N', 'T5', 'T6', 'T7', 'T8'].map((k) => (
@@ -143,11 +140,11 @@ export function MoreSheet() {
             {(['zh', 'en'] as const).map((l) => <button key={l} type="button" className={'btn' + (lang === l ? ' on' : '')} data-setlang={l} lang={l === 'zh' ? 'zh-CN' : 'en'} aria-pressed={lang === l} onClick={() => setLang(l)}>{l === 'zh' ? '中文' : 'English'}</button>)}
           </div>
         </div>
-        <div className="sh-sec"><button type="button" className="btn wide" id="shShare" onClick={() => { close(); openShare(); }}>📤 {t('share.title')}</button></div>
+        <div className="sh-sec"><button type="button" className="btn wide" id="shShare" onClick={() => { close(); openShare(); }}><span {...svgHtml('share')} />{t('share.title')}</button></div>
         <div className="sh-sec"><div className="sh-lbl">{t('mode.which')}</div>
           <div id="slotMode"><ModeBtns /></div>
           <p className="sh-small">{t('mode.small')}</p>
-          <div id="slotBanner">{BANNERS.map((b) => <div key={b.id} className={'banner ' + b.cls} id={b.id} role="note" dangerouslySetInnerHTML={{ __html: b[lang] }} />)}</div>
+          <div id="slotBanner">{sc?.BANNERS.map((b) => <div key={b.id} className={'banner ' + b.cls} id={b.id} role="note" dangerouslySetInnerHTML={{ __html: b[lang] }} />)}</div>
         </div>
         <div className="sh-sec"><div className="sh-lbl">{t('zoom.level')}</div>
           <div id="slotZoom"><div className="zoom" id="zoom" role="group" aria-label={t('zoom.level')}>
@@ -156,10 +153,10 @@ export function MoreSheet() {
           <p className="sh-small">{t('zoom.small')}</p>
         </div>
         <div className="sh-sec"><div className="sh-lbl">{t('sh.prog')}</div><div className="sh-prog"><div className="prog-bar"><i id="shProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div><div id="shProgTxt" className="sh-small">{ptxt}</div></div></div>
-        <div className="sh-sec"><div className="sh-lbl">{t('sh.legend')}</div><p className="ic-leg" dangerouslySetInnerHTML={{ __html: LEGEND[lang] }} /></div>
+        <div className="sh-sec"><div className="sh-lbl">{t('sh.legend')}</div><p className="ic-leg" dangerouslySetInnerHTML={{ __html: sc ? sc.LEGEND[lang] : '' }} /></div>
         <div className="sh-sec sh-pn">
-          <button className="btn" id="shPrev" disabled={i <= 0} onClick={() => step(-1)}>{t('sh.prev')}</button>
-          <button className="btn primary" id="shNext" disabled={i >= TABORDER.length - 1} onClick={() => step(1)}>{t('sh.next')}</button>
+          <button className="btn" id="shPrev" disabled={i <= 0} onClick={() => step(-1)}><span {...svgHtml('prev')} />{t('sh.prev')}</button>
+          <button className="btn primary" id="shNext" disabled={i >= TABORDER.length - 1} onClick={() => step(1)}>{t('sh.next')}<span {...svgHtml('next')} /></button>
         </div>
         <div className="sh-sec"><button className="btn wide" id="shProgDetail" onClick={() => { close(); jumpTo('progCard', 'T8'); }}>{t('sh.detail')}</button></div>
         <div className="sh-sec"><details className="sh-map" id="shMap" onToggle={(e) => setMapOn((e.target as HTMLDetailsElement).open)}><summary>{t('sh.map')}</summary>
@@ -205,7 +202,7 @@ export function Drawer() {
         onTouchStart={(e) => { const s = sw.current; const p = e.touches[0]; if (e.touches.length !== 1 || !p) return; s.x0 = p.clientX; s.y0 = p.clientY; s.dx = 0; s.t0 = Date.now(); s.hz = null; }}
         onTouchMove={(e) => { const s = sw.current; const p = e.touches[0]; if (s.x0 == null || !p || !ref.current) return; const mx = p.clientX - s.x0, my = p.clientY - s.y0; if (s.hz == null && Math.abs(mx) + Math.abs(my) > 8) s.hz = Math.abs(mx) > Math.abs(my); if (!s.hz) return; s.dx = Math.min(0, mx); ref.current.style.transition = 'none'; ref.current.style.transform = `translateX(${s.dx}px)`; }}
         onTouchEnd={() => { const s = sw.current; if (s.x0 == null || !ref.current) return; s.x0 = null; ref.current.style.transition = ''; const vv = -s.dx / Math.max(1, Date.now() - s.t0); ref.current.style.transform = ''; if (s.hz && (s.dx < -70 || (s.dx < -30 && vv > 0.5))) close(); }}>
-        <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} onClick={close}>×</button></div>
+        <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
         <div className="dw-prog" aria-hidden="true"><i id="dwProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div>
         <nav id="dwList" aria-label={tx({ zh: '站点：宏观 → 微观', en: 'Stops: macro → micro' })}>
           {GRP.map(([ic, name, ks]) => {
@@ -235,7 +232,7 @@ export function Drawer() {
             {(['zh', 'en'] as const).map((l) => <button key={l} type="button" data-setlang={l} lang={l === 'zh' ? 'zh-CN' : 'en'} className={lang === l ? 'on' : undefined} aria-pressed={lang === l} onClick={() => { if (l !== lang) closeDrawer(() => setLang(l)); }}>{l === 'zh' ? '中文' : 'English'}</button>)}
           </div></div>
           <div className="dw-row">
-            <button type="button" className="dw-act" id="dwSearch" onClick={() => closeDrawer(() => set({ searchOpen: true }))}><i aria-hidden="true">🔎</i><span>{t('search.parts')}</span></button>
+            <button type="button" className="dw-act" id="dwSearch" onClick={() => closeDrawer(() => set({ searchOpen: true }))}><i {...svgHtml('search')} /><span>{t('search.parts')}</span></button>
             <button type="button" className={'dw-act' + (touring ? ' on' : '')} id="mTour" aria-pressed={touring} aria-label={t(touring ? 'tour.exit' : 'tour.start')} onClick={() => closeDrawer(mTourClick)}><i aria-hidden="true">🎬</i><span>{t(touring ? 'tour.exit' : 'tour.tour')}</span></button>
           </div>
         </div>

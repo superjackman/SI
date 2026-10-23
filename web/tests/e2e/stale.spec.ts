@@ -75,7 +75,7 @@ test('station chunk 404, same build (e.g. offline blip) → no reload, ⟳ card,
   await expect(card).toBeVisible();
   await expect(card.locator('p')).toHaveText('This stop could not be loaded. Check your connection.');
   const btn = card.getByRole('button', { name: 'Try again' });
-  await expect(btn).toHaveText('⟳');
+  await expect(btn.locator('svg.ic')).toHaveCount(1); await expect(btn).toHaveAttribute('title', 'Try again'); // R17: icon-only
   await page.waitForTimeout(800);
   expect(d.length).toBe(0);
   await page.unroute(gone);

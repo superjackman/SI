@@ -2,6 +2,7 @@
    Opened by any [data-sym] button (the lists under formulas) and by the search box; data-sym="*" opens it at the top.
    Its own CSS lives here so the first load does not carry it. */
 import type { Lang } from '../i18n/types';
+import { IC } from '../shell/common';
 
 type Bi = { zh: string; en: string };
 type G = { title: Bi; intro: Bi; read: Bi; close: Bi; groups: { g: string; n: Bi; k: string[] }[]; sym: Record<string, { s: string; g: string; r: Bi; m: Bi }> };
@@ -36,7 +37,7 @@ export async function openSym(key: string, lang: Lang): Promise<void> {
   close();
   lastFocus = document.activeElement as HTMLElement | null;
   const root = document.createElement('div'); root.id = 'symSheet';
-  let h = `<div class="sy-p" role="dialog" aria-modal="true" aria-labelledby="symT"><div class="sy-t"><h2 id="symT">${esc(d.title[lang])}</h2><button type="button" class="sy-x" aria-label="${esc(d.close[lang])}">✕</button></div><p class="sy-i">${esc(d.intro[lang])}</p>`;
+  let h = `<div class="sy-p" role="dialog" aria-modal="true" aria-labelledby="symT"><div class="sy-t"><h2 id="symT">${esc(d.title[lang])}</h2><button type="button" class="sy-x" aria-label="${esc(d.close[lang])}" title="${esc(d.close[lang])}">${IC.x}</button></div><p class="sy-i">${esc(d.intro[lang])}</p>`;
   for (const g of d.groups) {
     h += `<h3>${esc(g.n[lang])}</h3>`;
     for (const k of g.k) { const s = d.sym[k]!; h += `<div class="sy-e" id="sy-${k}" data-k="${k}"><b>${esc(s.s)}</b><span>${esc(d.read[lang])}${esc(s.r[lang])}</span><p>${esc(s.m[lang])}</p></div>`; }

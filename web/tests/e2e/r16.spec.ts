@@ -1,6 +1,6 @@
 /* R16: (1) stale cache — version.json checked at idle after content shows: a fresh, untouched page reloads ONCE to the
    new build (hash + lang kept), a later mismatch only shows the banner; the real (matching) version.json does nothing.
-   (2) share the current page — crumb button, lazy panel with system share / channels / WeChat / QR / copy, links carry
+   (2) share the current page — header share icon (R17; was a crumb button), lazy panel with system share / channels / WeChat / QR / copy, links carry
    the station (and the card in view) and ?lang, WeChat UA gets the ··· hint, layouts fit at 360/390/430 in zh and en. */
 import { test, expect, type Page, type Route } from '@playwright/test';
 import { resolveBase } from '../../base.config.mjs';
@@ -83,18 +83,17 @@ test.describe('stale cache: version.json', () => {
 });
 
 test.describe('share the current page', () => {
-  test('first load does not fetch the share panel / QR encoder; the crumb button does, and fits', async ({ page }) => {
+  test('first load does not fetch the share panel / QR encoder; the header share icon does, and fits', async ({ page }) => {
     const js: string[] = []; page.on('request', (r) => { if (/\.(js|css)$/.test(r.url())) js.push(r.url()); });
     for (const lang of ['zh', 'en'] as Lang[]) {
       await page.goto(`./?lang=${lang}#K3`); await ready(page, 'K3', lang);
-      const btn = page.locator('#mShare');
+      const btn = page.getByRole('button', { name: lang === 'zh' ? '分享本页' : 'Share this page', exact: true }).first();
       await expect(btn).toBeVisible();
-      await expect(btn).toHaveText(lang === 'zh' ? '分享' : 'Share');
+      await expect(btn).toHaveId('mShare');
       const b = (await btn.boundingBox())!, vw = page.viewportSize()!.width;
-      expect(b.x + b.width).toBeLessThanOrEqual(vw); expect(b.height).toBeGreaterThanOrEqual(32);
-      const chips = (await page.locator('#crumb .chips').boundingBox())!;
-      expect(chips.x + chips.width).toBeLessThanOrEqual(b.x + 0.5); // side by side, no overlap
-      expect(await overflow(page, '#topbar .tb-t, #topbar h1, #crumb .cb-share')).toEqual([]);
+      expect(b.x + b.width).toBeLessThanOrEqual(vw); expect(b.height).toBeGreaterThanOrEqual(40); expect(b.width).toBeGreaterThanOrEqual(40);
+      expect(await page.locator('#crumb .cb-share').count()).toBe(0); // R17: the crumb text button is gone
+      expect(await overflow(page, '#topbar .tb-t, #topbar h1')).toEqual([]);
     }
     expect(js.filter((u) => /\/panel-/.test(u))).toEqual([]);
     await page.locator('#mShare').tap();

@@ -11,8 +11,10 @@ import { toast } from '../nav';
 import type { Bi, Lang } from '../i18n/types';
 import { CHANNELS, channelURL, inWeChat, shareURL, type Ch } from './url';
 import { qrPNG } from './qr';
+import { IC } from '../shell/common';
+import { IC2 } from '../ui/ic2';
 
-/* panel-only strings (codes.ts holds the ones the shell shares: share.btn, share.copied …) */
+/* panel-only strings (codes.ts holds the ones the shell shares: share.title, share.copied …) */
 const S = {
   sys: { zh: '用手机系统分享…', en: 'Share via your phone…' },
   to: { zh: '分享到', en: 'Share to' },
@@ -32,10 +34,11 @@ const NAME: Record<Ch, Bi> = {
   facebook: { zh: 'Facebook', en: 'Facebook' }, telegram: { zh: 'Telegram', en: 'Telegram' }, linkedin: { zh: 'LinkedIn', en: 'LinkedIn' },
   whatsapp: { zh: 'WhatsApp', en: 'WhatsApp' }, email: { zh: '邮件', en: 'Email' },
 };
-/* glyph + brand colour of each round icon (plain text, no external images) */
+/* R17: mark + brand colour of each round icon: a simple monochrome line icon (shared set) or a plain-text letter mark;
+   no logos, images or icon fonts */
 const ICON: Record<Ch, [string, string]> = {
   weibo: ['微', '#e6162d'], qq: ['QQ', '#12b7f5'], qzone: ['Q', '#f5b400'], x: ['𝕏', '#111'], facebook: ['f', '#1877f2'],
-  telegram: ['➤', '#229ed9'], linkedin: ['in', '#0a66c2'], whatsapp: ['✆', '#25d366'], email: ['✉', '#475569'],
+  telegram: [IC2.plane, '#229ed9'], linkedin: ['in', '#0a66c2'], whatsapp: [IC2.phone, '#25d366'], email: [IC2.mail, '#475569'],
 };
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -95,11 +98,11 @@ function render(ua: string) {
   const qr = png ? `<img class="sp-qr" src="${png}" alt="${t(S.qr)}" width="240" height="240">` : '';
   const file = 'SI-' + c.station + '-qr.png';
   root.innerHTML =
-    `<div class="sp-head"><b>${esc(tx('share.title', L))}</b><button type="button" class="sp-x" aria-label="${esc(tx('ui.close', L))}">×</button></div>`
+    `<div class="sp-head"><b>${esc(tx('share.title', L))}</b><button type="button" class="sp-x" aria-label="${esc(tx('ui.close', L))}" title="${esc(tx('ui.close', L))}">${IC.x}</button></div>`
     + `<div class="sp-what"><b>${esc(c.title)}</b></div>`
-    + (sys ? `<button type="button" class="sp-sys" data-share-ch="system" data-act="sys">📤 ${t(S.sys)}</button>` : '')
+    + (sys ? `<button type="button" class="sp-sys" data-share-ch="system" data-act="sys">${IC.share}<span>${t(S.sys)}</span></button>` : '')
     + `<div class="sp-lbl">${t(S.to)}</div><div class="sp-grid">`
-    + `<button type="button" class="sp-ch" data-act="wx"><i style="background:#07c160">微</i><span>${t(S.wx)}</span></button>`
+    + `<button type="button" class="sp-ch" data-act="wx"><i style="background:#07c160">${IC2.chat}</i><span>${t(S.wx)}</span></button>`
     + CHANNELS.map((ch) => {
       const [g, col] = ICON[ch], u = channelURL(ch, c.url, c.title, c.desc);
       return `<a class="sp-ch" data-share-ch="${ch}" href="${esc(u)}"${ch === 'email' ? '' : ' target="_blank" rel="noopener noreferrer"'}><i style="background:${col}">${g}</i><span>${t(NAME[ch])}</span></a>`;
@@ -107,9 +110,9 @@ function render(ua: string) {
     + `</div><div class="sp-wx" id="spWx">`
     + (wx ? `<p class="sp-hint" id="spWxHint">👆 ${t(S.wxIn)}</p>` : '')
     + qr + `<p class="sp-cap">${wx ? t(S.wxQrIn) : t(S.wxQr)}</p>`
-    + (png ? `<a class="sp-save" data-share-ch="qr-save" data-act="save" href="${png}" download="${file}">⬇ ${t(S.save)}</a>` : '')
+    + (png ? `<a class="sp-save" data-share-ch="qr-save" data-act="save" href="${png}" download="${file}">${IC2.dl}<span>${t(S.save)}</span></a>` : '')
     + `</div><div class="sp-lbl">${t(S.link)}</div>`
-    + `<div class="sp-copy"><input type="text" readonly value="${esc(c.url)}" aria-label="${t(S.link)}"><button type="button" class="sp-cp" data-share-ch="copy" data-act="copy">${t(S.copy)}</button></div>`;
+    + `<div class="sp-copy"><input type="text" readonly value="${esc(c.url)}" aria-label="${t(S.link)}"><button type="button" class="sp-cp" data-share-ch="copy" data-act="copy" aria-label="${t(S.copy)}" title="${t(S.copy)}">${IC2.copy}</button></div>`;
 }
 
 function onClick(e: MouseEvent) {

@@ -23,6 +23,7 @@ import K4 from './content/math/K4';
 import K5 from './content/math/K5';
 import { katexCss } from './tex';
 import { CODES } from '../src/i18n/codes';
+import { IC } from '../src/shell/common';
 import type { Ext } from './content/ext/kit';
 import { M4 } from './content/ext/m4';
 import { M5 } from './content/ext/m5';
@@ -257,7 +258,7 @@ for (const S of kb.TABORDER) if (!HAND[S]) throw new Error('no hand-off for ' + 
 for (const L of LANGS) for (const S of kb.TABORDER) {
   const H = HAND[S]!, p = `st/${S}.${L}.json`, st = stOf(p), nl = nlOfF(p);
   const name = (s: string) => { const n = kb.TABN[s]; if (!n) throw new Error(`hand-off ${S}: unknown station ${s}`); return esc(n[L]); };
-  const hop = (cls: string, k: string) => ([s, why]: [string, Bi]) => `<button type="button" class="mh-b ${cls}" data-go="${s}"><span class="mh-k">${CODES[k as 'hand.dn'][L]}</span><b>${name(s)}</b><span class="mh-r">${esc(why[L])}</span></button>`;
+  const hop = (cls: string, k: string) => ([s, why]: [string, Bi]) => `<button type="button" class="mh-b ${cls}" data-go="${s}"><span class="mh-k">${k === 'hand.dn' ? IC.down : IC.up}${CODES[k as 'hand.dn'][L]}</span><b>${name(s)}</b><span class="mh-r">${esc(why[L])}</span></button>`;
   const use = (H.use ?? []).filter((id) => { const c = kb.C[id]; if (!c) throw new Error(`hand-off ${S}: unknown part ${id}`); return c.t !== S; });
   const labs = (outline[L][S] ?? []).filter((r) => r[2] === 'lab');
   let o = `<nav class="m-hand" aria-label="${esc(CODES['hand.title'][L].replace(/^\S+\s/, ''))}"><p class="mh-t">${CODES['hand.title'][L]}</p>`;

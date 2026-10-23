@@ -86,7 +86,8 @@ export interface Islands { dispose(): void; started(): number[]; start(idx: numb
 export async function mountIslands(S: string, root: HTMLElement, lang: Lang, shell: Shell): Promise<Islands | null> {
   if (!hasIsland(S)) return null;
   const load = loaders[S] as () => Promise<IslandModule>;
-  const [mod, I18N] = await Promise.all([load(), labI18n()]);
+  const [mod, I18N, ico] = await Promise.all([load(), labI18n(), import('../station/icons')]);
+  ico.iconize(root);
   const off: Array<() => void> = [];
   const timers = new Set<number>(), ivs = new Set<number>(), rafs = new Set<number>();
   const observers: IntersectionObserver[] = [];

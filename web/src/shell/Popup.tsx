@@ -117,7 +117,7 @@ export function Popup() {
           <>
             <div className="m-head" ref={head}>
               <div className="m-grip" aria-hidden="true"><i /></div>
-              <button className="close" aria-label={t('ui.close')}>×</button>
+              <button className="close" aria-label={t('ui.close')} title={t('ui.close')} dangerouslySetInnerHTML={{ __html: IC.x }} />
               <h3>{pv ? <button type="button" className="m-back" aria-label={backL} title={backL} dangerouslySetInnerHTML={{ __html: IC.prev }} /> : null}{unesc(c.title)}</h3>
               <DrillRow id={card.id} cur={cur} lang={lang} />
             </div>
