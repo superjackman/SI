@@ -34,6 +34,9 @@ import { M10 } from './content/ext/m10';
 import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
+import { PLAIN, PLAIN_STATIONS } from './plain';
+import { glossaryJson, plainNodes, plainPage } from './plainpass';
+import { SYM } from './content/symbols';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
@@ -329,6 +332,27 @@ for (const [p, s] of [...files]) {
     .replace(/<p class="k-src">([\s\S]*?)<\/p>/g, (m0, body: string) => (OVERSEAS_SRC.test(body) ? `<p class="k-src">${body}${note}</p>` : m0));
   if (h !== st.html) put(p, { ...st, html: h }, s.endsWith('\n'));
 }
+
+/* ---------- R15: plain-language layer (m2/plainpass.ts): plain openings, closed "Go deeper", symbol notes under every formula ---------- */
+const ISS: string[] = [];
+for (const S of PLAIN_STATIONS) for (const L of LANGS) {
+  const p = `st/${S}.${L}.json`, st = stOf(p), nl = nlOfF(p);
+  const h = plainPage(st.html, S, L, PLAIN[S]!, undefined, ISS);
+  if (h !== st.html) put(p, { ...st, html: h }, nl);
+  const np = `nodes/${S}.${L}.json`;
+  if (files.has(np) || existsSync(join(GEN, np))) {
+    const cur = files.get(np) ?? read(np), nodes = JSON.parse(cur) as Record<string, { body: string }>;
+    const nn = plainNodes(nodes, S, L, PLAIN[S]!, undefined, ISS);
+    if (JSON.stringify(nn) !== JSON.stringify(nodes)) put(np, nn, cur.endsWith('\n'));
+  }
+}
+/* a symbol note may only talk about symbols that are in its own formula, and every entry says how to read it */
+if (ISS.length) throw new Error(`plain: ${ISS.length} symbol-note problem(s):\n  ` + ISS.join('\n  '));
+put('symbols.json', glossaryJson());
+/* the glossary is searchable: one row for the whole sheet, one per symbol (kind y, no station) */
+xrows.push(['y', '*', '', CODES['sym.title'].zh, CODES['sym.title'].en]);
+for (const [k, g] of Object.entries(SYM)) xrows.push(['y', k, '', `${g.s} ${g.r.zh}`, `${g.s} ${g.r.en}`]);
+put('search-x.json', xrows);
 
 /* ---------- guard: KaTeX markup must never be escaped into visible text (it would print as raw HTML on the page) ---------- */
 const KX = /&lt;(?:span class=(?:&quot;|\\")katex|\/?(?:math|semantics|annotation)\b)|&amp;lt;/;

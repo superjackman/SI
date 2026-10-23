@@ -43,6 +43,12 @@ async function reveal(page: Page, sel: string) {
     if (!cardId) break;
     await page.locator(`#${cardId} > h2 > .cc-h, #${cardId} > h3 > .cc-h`).first().click();
   }
+  /* R15: the full text sits in a closed "Go deeper" under the plain opening; open it like a reader would */
+  const deep = await page.evaluate((sel) => {
+    const d = document.querySelector(sel)?.closest('details.deep:not([open])'); if (!d) return null;
+    if (!d.id) d.id = 'tmp-dp-' + Math.random().toString(36).slice(2); return d.id;
+  }, sel);
+  if (deep) await page.locator(`#${deep} > summary`).click();
   await page.locator(sel).scrollIntoViewIfNeeded();
 }
 async function noHorizontalOverflow(page: Page) {

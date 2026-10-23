@@ -179,3 +179,17 @@ svg.x-fig{display:block;width:100%;height:auto;max-width:420px;margin:8px auto}
 .bp-nx{color:#1d4ed8;font-size:.9em}
 .bp-nav{display:flex;gap:8px;flex-wrap:wrap}
 #bpW{font:inherit;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;min-width:0;flex:1 1 140px}
+/* R15 plain layer: kid-plain opening, closed "Go deeper", symbol notes under formulas (sheet CSS is in src/sym/sheet.ts) */
+.plain{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:8px 12px;margin:.4em 0 .7em;line-height:1.75;overflow-wrap:anywhere}
+.plain p,.plain ul{margin:.35em 0}.plain .pl-tag{margin:0;font-size:.85em;font-weight:700;color:#b45309}
+details.deep{margin:.4em 0}details.deep>summary{cursor:pointer;font-weight:700;padding:10px 4px;min-height:24px;color:#1d4ed8;list-style-position:inside}
+details.deep[open]>summary{border-bottom:1px dashed var(--line,#ddd);margin-bottom:.5em}
+.pl-more{background:#eff6ff;border-left:3px solid #60a5fa;padding:6px 10px;border-radius:6px;font-size:.92em;line-height:1.7}.pl-more b{display:block}
+.sn{border:1px solid var(--line,#e5e7eb);border-radius:10px;padding:4px 10px 6px;margin:.2em 0 .9em;font-size:.9em;line-height:1.6;overflow-wrap:anywhere}
+.sn-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px;margin:2px 0;font-weight:700}
+.sn-all,.sn-s,.sn-c{font:inherit;color:inherit;cursor:pointer;border:1px solid var(--line,#d1d5db);background:rgba(127,127,127,.08);border-radius:8px}
+.sn-all{font-weight:400;font-size:.92em;padding:4px 8px;min-height:32px}
+.sn-l{list-style:none;padding:0;margin:0}.sn-l li{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline;padding:5px 0;border-top:1px dotted var(--line,#e5e7eb)}
+.sn-s{min-width:44px;min-height:32px;padding:2px 8px;font-family:KaTeX_Main,'Times New Roman',serif;font-size:1.08em}
+.sn-r{opacity:.75;font-size:.92em}.sn-m{flex:1 1 100%}
+.sn-seen{margin:4px 0 0;display:flex;flex-wrap:wrap;gap:4px;align-items:center}.sn-seen span{opacity:.75}.sn-c{padding:2px 8px;min-height:32px;font-family:KaTeX_Main,serif}

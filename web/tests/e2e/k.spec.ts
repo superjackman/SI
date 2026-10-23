@@ -20,6 +20,12 @@ async function revealAll(page: Page, S: string) {
     if (!(await h.count())) break;
     await h.click();
   }
+  /* R15: the full explanation (with the formulas) sits in a closed "Go deeper" under each plain opening; open them all, as a reader would */
+  for (let i = 0; i < 20; i++) {
+    const d = page.locator(`section#${S} details.deep:not([open]) > summary`).first();
+    if (!(await d.count())) break;
+    await d.click();
+  }
 }
 const val = (page: Page, k: string) => page.locator(`[data-k="${k}"]`).first().innerText().then((s) => Number(s.replace('−', '-').replace(/[^\d.eE+-]/g, '')));
 /* labs mount when they scroll into view (IntersectionObserver), so each block scrolls to its output first */

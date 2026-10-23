@@ -3,6 +3,7 @@ import { perm, quizScore, renderQuiz, QUIZ_KEY, type QZ } from '../../src/statio
 import { applyZoomDom, setZoom } from '../../src/shell/zoom';
 import { startTour, tourGo, tourStep, endTour, TOUR_LEN, clearHl } from '../../src/tour/api';
 import { useApp } from '../../src/store/app';
+import { CODES } from '../../src/i18n/codes';
 
 /* verbatim from the live page (app.js) */
 function v2rng(seed: number) { let s = (seed >>> 0) || 1; return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; }; }
@@ -38,6 +39,16 @@ describe('native quiz (live parity)', () => {
     expect(el.querySelector('.qsum')?.textContent).toContain('answered 1');
     expect([...el.querySelectorAll<HTMLElement>('.qz:first-of-type .opt')].map((b) => +b.dataset.o!)).toEqual(perm(3, 0 * 7 + 2 * 3));
     expect(el.querySelector('[data-qreset="T9"]')).not.toBeNull();
+  });
+  it('R15: every quiz opens with a one-line plain lead-in (zh + en), right under the title', () => {
+    for (const L of ['zh', 'en'] as const) {
+      document.body.innerHTML = '<div id="quizT9"></div>';
+      renderQuiz(document, 'T9', L, { T9: [['q0', ['a', 'b'], 0, 'why0']] });
+      const p = document.querySelector('#quizT9 h3 + p.plain.pl-q');
+      expect(p?.textContent).toBe(CODES['quiz.lead'][L]);
+      expect(p?.nextElementSibling?.className).toBe('qsum');
+    }
+    expect(CODES['quiz.lead'].en).not.toMatch(/[\u3400-\u9fff]/);
   });
 });
 

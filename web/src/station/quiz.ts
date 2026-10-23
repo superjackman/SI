@@ -5,6 +5,7 @@ import type { Lang } from '../i18n/types';
 import { tabn } from '../legacy/kb';
 import { toast } from '../nav';
 import QKEY from '../legacy/gen/qkey.json';
+import { CODES } from '../i18n/codes';
 
 export type Q = [string, string[], number, string];
 export type QZ = Record<string, Q[]>;
@@ -39,7 +40,7 @@ export function renderQuiz(root: ParentNode, sec: string, lang: Lang, QZ: QZ) {
       return '<button class="opt' + cls + '" data-q="' + k + '" data-o="' + o + '"' + (done ? ' aria-disabled="true"' : '') + '>' + (done && o === q[2] ? '✅ ' : done && o === a ? '❌ ' : '') + q[1][o] + '</button>';
     }).join('') + '</div><div class="exp">💡 <b>' + (done ? (a === q[2] ? t2(lang, '答对了！', 'Correct!') : t2(lang, '正确答案是“', 'The correct answer is “') + q[1][q[2]] + t2(lang, '”。', '”.')) : '') + t2(lang, '</b>设计动机：', '</b>Design rationale: ') + q[3] + '</div></div>';
   }).join('');
-  el.innerHTML = t2(lang, '<h3>❓ 小测验：', '<h3>❓ Quiz: ') + tabn(sec, lang) + t2(lang, '</h3><p class="qsum">本页 ', '</h3><p class="qsum">This page: ') + qs.length + t2(lang, ' 题，已答 ', ' questions, answered ') + d + t2(lang, ' 题，答对 ', ' , correct ') + c
+  el.innerHTML = t2(lang, '<h3>❓ 小测验：', '<h3>❓ Quiz: ') + tabn(sec, lang) + '</h3><p class="plain pl-q">' + CODES['quiz.lead'][lang] + '</p>' + t2(lang, '<p class="qsum">本页 ', '<p class="qsum">This page: ') + qs.length + t2(lang, ' 题，已答 ', ' questions, answered ') + d + t2(lang, ' 题，答对 ', ' , correct ') + c
     + t2(lang, ' 题。每题答完会解释“当初为什么这样设计”。</p>', ' . Each answer explains “why it was designed this way”.</p>') + h + '<div class="row"><button class="btn" data-qreset="' + sec + t2(lang, '">重做本页测验</button></div>', '">Redo this quiz</button></div>');
   const t = document.createElement('span'); t.className = 'zl zq'; t.textContent = t2(lang, '❓ 小测验', '❓ Quiz'); el.insertBefore(t, el.firstChild);
 }

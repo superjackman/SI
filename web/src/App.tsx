@@ -36,10 +36,13 @@ function onDocClickCapture(e: MouseEvent) {
 }
 function onDocClick(e: MouseEvent) {
   const t = e.target as Element | null; if (!t || !t.closest) return;
-  if (t.closest('#modalBox,#mDrawer,#moreSheet,#bnav,#topbar,#dgFull')) {
+  if (t.closest('#modalBox,#mDrawer,#moreSheet,#bnav,#topbar,#dgFull,#symSheet')) {
     /* shell layers handle their own clicks; crumb + content are below */
     if (!t.closest('#modalBox')) return;
   }
+  /* R15: a symbol in a "What the symbols mean" list opens the glossary sheet at that symbol (lazy chunk) */
+  const sy = t.closest<HTMLElement>('[data-sym]');
+  if (sy) { e.preventDefault(); const L = useApp.getState().lang; void import('./sym/sheet').then((m) => m.openSym(sy.dataset.sym ?? '*', L)).catch(() => { /* chunk failure is handled by the recovery hook */ }); return; }
   const sj = t.closest<HTMLElement>('[data-sj]');
   if (sj) { e.preventDefault(); const sec = sj.dataset.sp ?? ''; jumpTo(sj.dataset.sj ?? '', sec); return; } /* R12: jumpTo switches station first and scrolls once it has rendered */
   const jb = t.closest<HTMLElement>('[data-jump]'); if (jb) { jumpTo(jb.dataset.jump ?? '', jb.dataset.lv); return; }
