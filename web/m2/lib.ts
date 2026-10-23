@@ -9,7 +9,22 @@ export type T = (zh: string, en: string) => string;
 export type OutlineRow = [string, string, '' | 'lab' | 'quiz', number];
 
 export const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
-export const strip = (s: string) => s.replace(/<[^>]*>/g, '').replace(/&(amp|lt|gt|quot);/g, (_m, k: string) => ({ amp: '&', lt: '<', gt: '>', quot: '"' })[k] as string);
+/** every KaTeX block (inline span.katex or display span.katex-display) in an HTML string, replaced by its TeX source: the
+    plain-text form of a formula for places that cannot carry HTML (outline buttons, aria-labels, titles). Removing tags alone
+    would leave the MathML and the HTML rendering side by side ("y=Wxy=Wx"). */
+export function mathText(html: string): string {
+  const open = /<span class="katex(?:-display)?">/g; let out = '', at = 0, mm: RegExpExecArray | null;
+  while ((mm = open.exec(html))) {
+    let depth = 0, i = mm.index; const tag = /<\/?span\b[^>]*>/g; tag.lastIndex = i; let t: RegExpExecArray | null;
+    while ((t = tag.exec(html))) { depth += t[0][1] === '/' ? -1 : 1; if (!depth) break; }
+    if (!t) throw new Error('mathText: unbalanced KaTeX markup');
+    const block = html.slice(i, tag.lastIndex), tex = /<annotation encoding="application\/x-tex">([\s\S]*?)<\/annotation>/.exec(block);
+    if (!tex) throw new Error('mathText: KaTeX block without a TeX annotation');
+    out += html.slice(at, i) + tex[1]; at = open.lastIndex = tag.lastIndex;
+  }
+  return out + html.slice(at);
+}
+export const strip = (s: string) => mathText(s).replace(/<[^>]*>/g, '').replace(/&(?:(amp|lt|gt|quot)|#x([0-9a-f]+)|#(\d+));/gi, (_m, k?: string, hx?: string, dc?: string) => (k ? ({ amp: '&', lt: '<', gt: '>', quot: '"' })[k.toLowerCase()] as string : String.fromCodePoint(hx ? parseInt(hx, 16) : Number(dc))));
 export const code = (k: keyof typeof CODES, L: Lang): string => CODES[k][L];
 
 /** a station or part name resolver handed in by the build (kb.json + the M2 parts) */

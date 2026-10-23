@@ -1,5 +1,5 @@
 /* shared building blocks for the K (math) stations: the stacked diagram, proofs, worked examples */
-import { arrow, comp, esc, Page, svgOpen, type T } from '../../lib';
+import { arrow, comp, Page, svgOpen, type T } from '../../lib';
 
 type Col = 'c' | 'l' | 'r' | 'w' | 'a' | 'b' | 'e';
 export interface KBox { id: string; col: Col; t: string; s?: string[] }
@@ -38,4 +38,5 @@ export function proof(P: Page, title: string, steps: [string, string][], end = t
   return `<div class="pf"><p class="pf-h">📝 ${title}</p><ol class="pf-s">${steps.map(([s, why]) => `<li><div class="pf-st">${s}</div>${why ? `<div class="pf-why">${t('理由：', 'Why: ')}${why}</div>` : ''}</li>`).join('')}</ol>${end ? `<p class="pf-end">${t('证毕', 'Q.E.D.')} ∎</p>` : ''}</div>`;
 }
 /** a worked example; demo=true marks illustrative numbers with the 示意 tag */
-export const ex = (P: Page, title: string, body: string, demo = false) => `<div class="kex"><p class="kex-h">✏️ ${esc(title)}${demo ? ' ' + P.tag() : ''}</p>${body}</div>`;
+/** a worked example; `title` is HTML (it may hold inline math from m()), so it is not escaped */
+export const ex = (P: Page, title: string, body: string, demo = false) => `<div class="kex"><p class="kex-h">✏️ ${title}${demo ? ' ' + P.tag() : ''}</p>${body}</div>`;

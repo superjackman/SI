@@ -173,13 +173,15 @@ put('qkey.json', { src: qkey.src, key: keyOrd }, nlOf('qkey.json'));
 
 /* ---------- search roles ---------- */
 const search = readJ<Record<string, Bi>>('search.json');
-for (const [id, p] of Object.entries(ALLP)) search[id] = { zh: strip(p.pop((zh) => zh).role), en: strip(p.pop((_z, en) => en).role) };
+/* the role line as HTML (it may hold inline math) for the T8 index table, and as plain text (math as TeX) for the search index */
+const roleHtml: Record<string, Bi> = {};
+for (const [id, p] of Object.entries(ALLP)) { roleHtml[id] = { zh: p.pop((zh) => zh).role, en: p.pop((_z, en) => en).role }; search[id] = { zh: strip(roleHtml[id].zh), en: strip(roleHtml[id].en) }; }
 put('search.json', search, nlOf('search.json'));
 
 /* ---------- T8 glossary rows (marked data-m2 so a re-run replaces them) ---------- */
 for (const L of LANGS) {
   const p = `st/T8.${L}.json`, st = readJ<{ cls: string; html: string }>(p);
-  let h = st.html.replace(/<tr class="grp" data-m2="1">.*?<\/tr>|<tr data-m2="1">.*?<\/tr>/g, '');
+  let h = st.html.replace(/<tr class="grp" data-m2="1">[\s\S]*?<\/tr>|<tr data-m2="1">[\s\S]*?<\/tr>/g, '');
   const lbl = L === 'en' ? { role: 'In one sentence', stop: 'Stop', up: 'Belongs to' } : { role: '一句话', stop: '所在页', up: '往上属于' };
   let rows = '';
   for (const S of [...SIDS, ...XSIDS]) {
@@ -188,7 +190,7 @@ for (const L of LANGS) {
     rows += `<tr class="grp" data-m2="1"><td colspan="4">${esc((kb.PATH[S] as string[]).map((s) => (kb.TABN[s] as Bi)[L]).join(' › ') + more)}</td></tr>`;
     for (const [id, part] of Object.entries(ALLP)) if (part.t === S) {
       const up = part.up ? `<a data-open="${part.up}">${esc((kb.C[part.up] as KPart).n[L])}</a>` : '—';
-      rows += `<tr data-m2="1"><td><a data-open="${id}">${esc(part.n[L])}</a></td><td data-label="${lbl.role}">${esc((search[id] as Bi)[L])}</td><td data-label="${lbl.stop}"><a data-go="${S}">${esc((kb.TABN[S] as Bi)[L])}</a></td><td data-label="${lbl.up}">${up}</td></tr>`;
+      rows += `<tr data-m2="1"><td><a data-open="${id}">${esc(part.n[L])}</a></td><td data-label="${lbl.role}">${roleHtml[id] ? (roleHtml[id] as Bi)[L] : esc((search[id] as Bi)[L])}</td><td data-label="${lbl.stop}"><a data-go="${S}">${esc((kb.TABN[S] as Bi)[L])}</a></td><td data-label="${lbl.up}">${up}</td></tr>`;
     }
   }
   const anchor = `<tr class="grp"><td colspan="4">${esc((kb.TABN.T1 as Bi)[L])} › ${esc((kb.TABN.T2 as Bi)[L])}</td></tr>`;
@@ -213,6 +215,10 @@ for (const L of LANGS) {
 
 /* ---------- the KaTeX stylesheet (woff2 fonts only), loaded lazily by the shell when math is on screen ---------- */
 files.set('../../styles/katex.css', katexCss(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../node_modules/katex/dist/katex.min.css'), 'utf8')));
+
+/* ---------- guard: KaTeX markup must never be escaped into visible text (it would print as raw HTML on the page) ---------- */
+const KX = /&lt;(?:span class=(?:&quot;|\\")katex|\/?(?:math|semantics|annotation)\b)|&amp;lt;/;
+for (const [p, s] of files) { const i = s.search(KX); if (i >= 0) throw new Error(`m2: escaped KaTeX/HTML markup in ${p}: …${s.slice(Math.max(0, i - 120), i + 80)}…`); }
 
 /* ---------- write or check ---------- */
 let stale = 0;
