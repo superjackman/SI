@@ -110,18 +110,19 @@ test.describe('share the current page', () => {
       await expect(p).toBeVisible();
       await expect(p.locator('.sp-head b')).toHaveText(lang === 'zh' ? '分享本页' : 'Share this page');
       const origin = new URL(page.url()).origin;
-      const want = `${origin}${BASE}?lang=${lang}#T4`;
-      await expect(p.locator('.sp-copy input')).toHaveValue(want);
+      /* R19: every link carries its source tag: ?lang=…&from=<channel>#T4 (the incoming ?v= is dropped) */
+      const want = (ch: string) => `${origin}${BASE}?lang=${lang}&from=${ch}#T4`;
+      await expect(p.locator('.sp-copy input')).toHaveValue(want('copy'));
       const href = async (ch: string) => (await p.locator(`[data-share-ch="${ch}"]`).getAttribute('href'))!;
-      const e = encodeURIComponent(want);
-      expect(await href('weibo')).toContain(`service.weibo.com/share/share.php?url=${e}&title=`);
-      expect(await href('qq')).toContain(`connect.qq.com/widget/shareqq/index.html?url=${e}`);
-      expect(await href('qzone')).toContain(`sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${e}`);
-      expect(await href('x')).toMatch(new RegExp(`^https://x\\.com/intent/tweet\\?text=.+&url=${e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
-      expect(new URL(await href('facebook')).searchParams.get('u')).toBe(want);
-      expect(new URL(await href('telegram')).searchParams.get('url')).toBe(want);
-      expect(new URL(await href('linkedin')).searchParams.get('url')).toBe(want);
-      expect(new URL(await href('whatsapp')).searchParams.get('text')).toContain(want);
+      const e = (ch: string) => encodeURIComponent(want(ch));
+      expect(await href('weibo')).toContain(`service.weibo.com/share/share.php?url=${e('weibo')}&title=`);
+      expect(await href('qq')).toContain(`connect.qq.com/widget/shareqq/index.html?url=${e('qq')}`);
+      expect(await href('qzone')).toContain(`sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=${e('qzone')}`);
+      expect(await href('x')).toMatch(new RegExp(`^https://x\\.com/intent/tweet\\?text=.+&url=${e('x').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+      expect(new URL(await href('facebook')).searchParams.get('u')).toBe(want('facebook'));
+      expect(new URL(await href('telegram')).searchParams.get('url')).toBe(want('telegram'));
+      expect(new URL(await href('linkedin')).searchParams.get('url')).toBe(want('linkedin'));
+      expect(new URL(await href('whatsapp')).searchParams.get('text')).toContain(want('whatsapp'));
       expect(await href('email')).toMatch(/^mailto:\?subject=/);
       expect(await p.locator('a[data-share-ch][target="_blank"]').evaluateAll((a) => a.every((x) => (x as HTMLAnchorElement).rel.includes('noopener')))).toBe(true);
       /* QR: a local data: PNG with the caption; "save image" downloads it */
@@ -136,7 +137,7 @@ test.describe('share the current page', () => {
       /* fits: nothing outside the panel or clipped */
       const pb = (await p.boundingBox())!, vw = page.viewportSize()!.width;
       expect(pb.x).toBeGreaterThanOrEqual(0); expect(pb.x + pb.width).toBeLessThanOrEqual(vw);
-      expect(await overflow(page, '#sharePanel .sp-ch span, #sharePanel .sp-cp, #sharePanel .sp-sys, #sharePanel .sp-head b, #sharePanel .sp-what, #sharePanel .sp-cap, #sharePanel .sp-save')).toEqual([]);
+      expect(await overflow(page, '#sharePanel .sp-ch span, #sharePanel .sp-cp, #sharePanel .sp-sys, #sharePanel .sp-card, #sharePanel .sp-head b, #sharePanel .sp-what, #sharePanel .sp-cap, #sharePanel .sp-save')).toEqual([]);
       expect(await p.evaluate((el) => el.scrollWidth <= el.clientWidth + 1)).toBe(true);
       const spans = await p.locator('.sp-ch span').evaluateAll((s) => s.map((x) => x.getBoundingClientRect().height));
       expect(Math.max(...spans)).toBeLessThan(34); // at most two short lines
@@ -144,7 +145,7 @@ test.describe('share the current page', () => {
       await p.locator('.sp-cp').tap();
       await expect(page.locator('#toast')).toHaveText(lang === 'zh' ? '✅ 链接已复制' : '✅ Link copied');
       const clip = await page.evaluate(() => navigator.clipboard.readText().catch(() => ''));
-      if (clip) expect(clip).toBe(want);
+      if (clip) expect(clip).toBe(want('copy'));
       /* close */
       await page.keyboard.press('Escape');
       await expect(p).toHaveCount(0);
@@ -163,7 +164,7 @@ test.describe('share the current page', () => {
     await page.waitForTimeout(300);
     await page.evaluate(() => (document.getElementById('mShare') as HTMLButtonElement).click()); // crumb may be scrolled off; MoreSheet has the same entry
     const v = await page.locator('#sharePanel .sp-copy input').inputValue();
-    expect(v).toMatch(new RegExp(`\\?lang=zh#T1/${id}$`));
+    expect(v).toMatch(new RegExp(`\\?lang=zh&from=copy#T1/${id}$`));
     const p2 = await browser.newPage({ viewport: page.viewportSize()! });
     try {
       await p2.goto(v); await ready(p2, 'T1', 'zh');

@@ -1,0 +1,19 @@
+/* R19 share-image sheet (lazy, with share/card.ts) — same layer as the share panel */
+#cardMask{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:112;animation:spF .2s ease}
+#cardPanel{position:fixed;left:0;right:0;bottom:0;z-index:113;margin:0 auto;max-width:560px;max-height:94vh;max-height:94dvh;overflow:auto;overscroll-behavior:contain;
+  background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -12px 40px rgba(15,23,42,.25);box-sizing:border-box;
+  padding:0 calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px));
+  color:#1e293b;font-size:15px;line-height:1.5;text-align:center}
+@keyframes spF{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){#cardMask{animation:none}}
+body.card-open{overflow:hidden}
+#cardPanel .cp-head{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;z-index:1;text-align:left}
+#cardPanel .cp-head b{font-size:17px}
+#cardPanel .cp-x{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#f1f5f9;color:#334155;cursor:pointer;margin-right:-4px}
+#cardPanel .cp-x .ic{width:22px;height:22px}
+#cardPanel .cp-img{display:block;width:auto;height:auto;max-width:100%;max-height:calc(94dvh - 200px);margin:0 auto;border-radius:12px;box-shadow:0 4px 18px rgba(15,23,42,.18);-webkit-touch-callout:default;user-select:auto}
+#cardPanel .cp-hint{margin:10px 0 8px;font-size:13px;color:#475569}
+#cardPanel .cp-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#cardPanel .cp-b{flex:1 1 140px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:0 16px;border-radius:12px;border:1px solid #c7d2fe;background:#eef2ff;color:#3730a3;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+#cardPanel .cp-b.pri{background:#4f46e5;border-color:#4f46e5;color:#fff}
+#cardPanel .cp-b .ic{width:22px;height:22px}

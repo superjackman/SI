@@ -15,9 +15,9 @@ export type Ch = 'weibo' | 'qq' | 'qzone' | 'x' | 'facebook' | 'telegram' | 'lin
 export const CHANNELS: Ch[] = ['weibo', 'qq', 'qzone', 'x', 'facebook', 'telegram', 'linkedin', 'whatsapp', 'email'];
 
 type Loc = { origin: string; pathname: string; search: string; hash: string };
-const OURS = /^(_r|v|lang)=/i;
+const OURS = /^(_r|v|lang|from)=/i;
 /** the current page to share: same path and hash route (#station or #station/card-or-part), query without our cache
-    tokens (_r, v), and ?lang=<current language> so the receiver sees the same language */
+    tokens (_r, v) and without a source tag the page was opened with (from=, R19), and ?lang=<current language> so the receiver sees the same language */
 export function shareURL(loc: Loc, lang: string, route?: { station: string; node?: string | null }): string {
   const q = loc.search.replace(/^\?/, '').split('&').filter((p) => p && !OURS.test(p));
   q.push('lang=' + lang);
@@ -25,6 +25,18 @@ export function shareURL(loc: Loc, lang: string, route?: { station: string; node
   if (route) h = '#' + route.station + (route.node ? '/' + route.node : '');
   else h = h.replace(/([&?;])lang=[^&?;#]*/gi, '').replace(/^#lang=[^&?;#]*[&?;]?/i, '#');
   return loc.origin + loc.pathname + '?' + q.join('&') + (h === '#' ? '' : h);
+}
+/* R19 source tags: every link the site hands out says where it was shared — from=<channel> (wechat, weibo, copy, card …).
+   Manual tags for posts work the same way: ?from=zhihu / xhs / v2ex / bilibili. The tag sits in the query, before the
+   hash, so the hash router, ?lang= and ?v= are untouched; analytics.ts records it on landing. */
+export const FROM_OK = /^[a-z0-9][a-z0-9_-]{0,23}$/i;
+/** url with from=<tag> (replacing any earlier from=) in the query, right before the hash */
+export function withFrom(url: string, tag: string): string {
+  if (!FROM_OK.test(tag)) return url;
+  const i = url.indexOf('#'), h = i < 0 ? '' : url.slice(i), a = i < 0 ? url : url.slice(0, i), j = a.indexOf('?');
+  const q = (j < 0 ? '' : a.slice(j + 1)).split('&').filter((p) => p && !/^from=/i.test(p));
+  q.push('from=' + tag.toLowerCase());
+  return (j < 0 ? a : a.slice(0, j)) + '?' + q.join('&') + h;
 }
 const e = encodeURIComponent;
 /** one-tap share link for a channel */

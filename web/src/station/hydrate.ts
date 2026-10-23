@@ -46,6 +46,7 @@ export function renderPN(root: ParentNode, lang: Lang) {
   root.querySelectorAll<HTMLElement>('.m-pn').forEach((nav) => {
     const L = nav.dataset.sec ?? '', i = TABORDER.indexOf(L), pv = TABORDER[i - 1], nx = TABORDER[i + 1];
     nav.innerHTML = '<div class="pn-row"><button type="button" class="pn-b"' + (pv ? ' data-go="' + pv + '"' + lbl(tx('nav.prevStop', lang) + esc(tabn(pv, lang))) : ' disabled' + lbl(tx('nav.firstStop', lang))) + '>' + ICO.prev + '</button><div class="pn-dots" role="group" aria-label="' + esc(tx('nav.dots', lang)) + '">' + dotsHTML(L, true, lang) + '</div><button type="button" class="pn-b pri"' + (nx ? ' data-go="' + nx + '"' + lbl(tx('nav.nextStop', lang) + esc(tabn(nx, lang))) : ' disabled' + lbl(tx('nav.lastStopPn', lang))) + '>' + ICO.next + '</button></div>' +
+      '<button type="button" class="pn-card" data-card="' + L + '" data-share-ch="card">' + IC.img + '<span>' + tx('share.card', lang) + '</span></button>' +
       '<p class="pn-cap">' + (i + 1) + ' / ' + TABORDER.length + ' · ' + (nx ? tx('nav.nextStop', lang).trim() + ' <button type="button" class="pn-l" data-go="' + nx + '">' + esc(tabn(nx, lang)) + ' ›</button>' : tx('nav.lastStopCap', lang)) + '</p>';
   });
 }
@@ -108,5 +109,8 @@ export async function hydrate(sec: HTMLElement, S: string, lang: Lang, alive: ()
   /* R18: the dot-strip scrubber + its css load after the station is up (not first load); the dots work as plain buttons until then */
   let scrub: (() => void) | null = null, gone = false;
   void import('./scrub').then((m) => { if (!gone && alive()) scrub = m.mountScrub(sec); }, () => undefined);
-  return { islands, dispose() { gone = true; scrub?.(); quiz(); prog(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
+  /* R19: 生成分享图 at the end of the stop → the lazy share-card chunk */
+  const card = (e: MouseEvent) => { const b = (e.target as Element).closest<HTMLElement>('[data-card]'); if (b) void import('../share/card').then((m) => m.openCard(b.dataset.card), () => toast(tx('st.loadfail', lang))); };
+  sec.addEventListener('click', card);
+  return { islands, dispose() { gone = true; scrub?.(); sec.removeEventListener('click', card); quiz(); prog(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
 }

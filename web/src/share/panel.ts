@@ -9,7 +9,7 @@ import { tx } from '../i18n/L';
 import { tabn } from '../legacy/kb';
 import { toast } from '../nav';
 import type { Bi, Lang } from '../i18n/types';
-import { CHANNELS, channelURL, inWeChat, shareURL, type Ch } from './url';
+import { CHANNELS, channelURL, inWeChat, shareURL, withFrom, type Ch } from './url';
 import { qrPNG } from './qr';
 import { IC } from '../shell/common';
 import { IC2 } from '../ui/ic2';
@@ -94,17 +94,19 @@ function render(ua: string) {
   const sys = typeof navigator.share === 'function';
   root.setAttribute('aria-label', tx('share.title', L));
   root.dataset.wx = wx ? '1' : '0';
-  const png = qrPNG(c.url, c.title, location.host + location.pathname);
+  /* R19: every link handed out says where it went: from=<channel> (the QR block is the WeChat one: from=wechat) */
+  const png = qrPNG(withFrom(c.url, 'wechat'), c.title, location.host + location.pathname);
   const qr = png ? `<img class="sp-qr" src="${png}" alt="${t(S.qr)}" width="240" height="240">` : '';
   const file = 'SI-' + c.station + '-qr.png';
   root.innerHTML =
     `<div class="sp-head"><b>${esc(tx('share.title', L))}</b><button type="button" class="sp-x" aria-label="${esc(tx('ui.close', L))}" title="${esc(tx('ui.close', L))}">${IC.x}</button></div>`
     + `<div class="sp-what"><b>${esc(c.title)}</b></div>`
     + (sys ? `<button type="button" class="sp-sys" data-share-ch="system" data-act="sys">${IC.share}<span>${t(S.sys)}</span></button>` : '')
+    + `<button type="button" class="sp-card" data-share-ch="card" data-act="card">${IC.img}<span>${esc(tx('share.card', L))}</span></button>`
     + `<div class="sp-lbl">${t(S.to)}</div><div class="sp-grid">`
     + `<button type="button" class="sp-ch" data-act="wx"><i style="background:#07c160">${IC2.chat}</i><span>${t(S.wx)}</span></button>`
     + CHANNELS.map((ch) => {
-      const [g, col] = ICON[ch], u = channelURL(ch, c.url, c.title, c.desc);
+      const [g, col] = ICON[ch], u = channelURL(ch, withFrom(c.url, ch), c.title, c.desc);
       return `<a class="sp-ch" data-share-ch="${ch}" href="${esc(u)}"${ch === 'email' ? '' : ' target="_blank" rel="noopener noreferrer"'}><i style="background:${col}">${g}</i><span>${t(NAME[ch])}</span></a>`;
     }).join('')
     + `</div><div class="sp-wx" id="spWx">`
@@ -112,14 +114,16 @@ function render(ua: string) {
     + qr + `<p class="sp-cap">${wx ? t(S.wxQrIn) : t(S.wxQr)}</p>`
     + (png ? `<a class="sp-save" data-share-ch="qr-save" data-act="save" href="${png}" download="${file}">${IC2.dl}<span>${t(S.save)}</span></a>` : '')
     + `</div><div class="sp-lbl">${t(S.link)}</div>`
-    + `<div class="sp-copy"><input type="text" readonly value="${esc(c.url)}" aria-label="${t(S.link)}"><button type="button" class="sp-cp" data-share-ch="copy" data-act="copy" aria-label="${t(S.copy)}" title="${t(S.copy)}">${IC2.copy}</button></div>`;
+    + `<div class="sp-copy"><input type="text" readonly value="${esc(withFrom(c.url, 'copy'))}" aria-label="${t(S.link)}"><button type="button" class="sp-cp" data-share-ch="copy" data-act="copy" aria-label="${t(S.copy)}" title="${t(S.copy)}">${IC2.copy}</button></div>`;
 }
 
+const c0 = () => useApp.getState().station;
 function onClick(e: MouseEvent) {
   const el = (e.target as Element).closest<HTMLElement>('.sp-x,[data-act]'); if (!el || !root) return;
   if (el.classList.contains('sp-x')) { closeShare(); return; }
   const L = useApp.getState().lang, act = el.dataset.act;
-  if (act === 'sys') { const c = current(); navigator.share({ title: c.title, text: c.desc, url: c.url }).then(closeShare, () => { /* cancelled */ }); return; }
+  if (act === 'sys') { const c = current(); navigator.share({ title: c.title, text: c.desc, url: withFrom(c.url, 'system') }).then(closeShare, () => { /* cancelled */ }); return; }
+  if (act === 'card') { const st = c0(); closeShare(); void import('./card').then((m) => m.openCard(st)).catch(() => toast(tx('st.loadfail', L))); return; }
   if (act === 'copy') { e.preventDefault(); void copy(root.querySelector('input'), L); return; }
   if (act === 'wx') { const w = root.querySelector('#spWx'); w?.scrollIntoView({ block: 'center', behavior: 'smooth' }); w?.classList.remove('flash'); void (w as HTMLElement | null)?.offsetWidth; w?.classList.add('flash'); return; }
   if (act === 'save') { if (inWeChat(navigator.userAgent)) { e.preventDefault(); } toast(S.saveHint[L]); }

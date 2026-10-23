@@ -3,7 +3,7 @@
 import { useApp } from './store/app';
 import { isStation, KB, part, tabn } from './legacy/kb';
 import { tx } from './i18n/L';
-import { hashFor } from './router/hash';
+import { navURL } from './router/hash';
 
 const st = () => useApp.getState();
 const LSK = 'aiexp.v2.visited';
@@ -30,7 +30,7 @@ export function go(L: string, scroll: boolean | 'top' = true) {
   if (!inDrill && s.drill.length) { const t = s.drill[s.drill.length - 1]; if (t && L !== t.to && L !== s.station) s.set({ drill: [] }); }
   markVisited(L);
   pendingScroll.v = scroll === 'top' ? 'top' : scroll ? 'main' : null;
-  try { history.replaceState(history.state, '', hashFor(L, s.lang, location.hash)); } catch { /* ignore */ }
+  try { history.replaceState(history.state, '', navURL(location, L, s.lang)); } catch { /* ignore */ }
   st().set({ station: L, navSeq: s.navSeq + 1, full: null });
 }
 export function drill(to: string, o: { open?: string | null; src?: string } = {}) {

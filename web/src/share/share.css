@@ -32,3 +32,6 @@ body.share-open{overflow:hidden}
 #sharePanel .sp-ch i .ic{width:24px;height:24px;stroke-width:2.2}
 #sharePanel .sp-cp .ic{width:22px;height:22px}
 @media (max-width:370px){#sharePanel .sp-ch i{width:40px;height:40px}}
+/* R19: make a share image (opens the lazy share-card sheet) */
+#sharePanel .sp-card{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;border:1px solid #c7d2fe;border-radius:12px;background:#eef2ff;color:#3730a3;font:inherit;font-weight:700;cursor:pointer;margin-bottom:6px}
+#sharePanel .sp-card .ic{width:22px;height:22px}

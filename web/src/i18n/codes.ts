@@ -61,6 +61,7 @@ export const CODES = {
   'lang.switchTo': { zh: 'Switch to English', en: 'Switch to Chinese (中文)' },
   'lang.toast': { zh: '🌐 已切换到中文', en: '🌐 English' },
   'share.title': { zh: '分享本页', en: 'Share this page' },
+  'share.card': { zh: '生成分享图', en: 'Make share image' },
   'share.copied': { zh: '✅ 链接已复制', en: '✅ Link copied' },
   'share.copyManual': { zh: '链接已选中，请长按或按 Ctrl+C 复制', en: 'Link selected: long-press or press Ctrl+C to copy' },
   'pfs.enter': { zh: '全屏', en: 'Full screen' },
