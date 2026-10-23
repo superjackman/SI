@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
+import { NO } from './boot/noswipe';
 import { TopBar } from './shell/TopBar';
 import { BackFab, BottomNav, Crumb, Drawer, MoreSheet, Toast } from './shell/Nav';
 import { Popup } from './shell/Popup';
@@ -7,13 +8,15 @@ import { StationView, preload } from './station/StationView';
 import { useApp, initialNode } from './store/app';
 import { fromURL, htmlLang } from './i18n/lang';
 import { tx } from './i18n/L';
-import { footer, back, closeInfo, drill, go, jumpTo, openAnywhere, openInfo, setCard, toast } from './nav';
+import { footer, back, closeInfo, drill, go, jumpTo, openAnywhere, openInfo, pendingScroll, scrollToEl, setCard, toast } from './nav';
 import { isStation, part, tabn, TABORDER } from './legacy/kb';
 import { parseHash } from './router/hash';
 import { updHints } from './station/hydrate';
 import { setZoom } from './shell/zoom';
 import { startTour, tourStep, endTour } from './tour/api';
 
+/** a card element id from a shared link (#S/<id>); scrollToEl ignores ids that are not on the page */
+const cardId = (n: string) => /^[A-Za-z][\w-]{0,79}$/.test(n);
 const Tour = lazy(() => import('./tour/Tour'));
 /** 🔥 training mode on a Transformer stop: mount the lazy training panel after the diagram */
 function syncTrain() {
@@ -101,13 +104,17 @@ export function App() {
       /* a lang token in the new hash switches language (not saved), like the live lang.js */
       const l = fromURL(location);
       if (l && l !== useApp.getState().lang) { document.documentElement.lang = htmlLang(l); useApp.getState().set({ lang: l, langSource: 'url' }); }
-      const r = parseHash(location.hash); if (isStation(r.station) && r.station !== useApp.getState().station) go(r.station, false); if (r.node && part(r.node)) openInfo(r.node); };
+      const r = parseHash(location.hash), moved = isStation(r.station) && r.station !== useApp.getState().station;
+      if (moved) go(r.station as string, false);
+      if (r.node && part(r.node)) openInfo(r.node);
+      else if (r.node && cardId(r.node)) { if (moved) pendingScroll.v = r.node; else scrollToEl(r.node); } };
     addEventListener('hashchange', onHash);
     /* deep link to a part: #T3/llm */
     go(useApp.getState().station, false);
     if (initialNode && part(initialNode)) setTimeout(() => openInfo(initialNode as string), 300);
+    /* R16: deep link to a card (what the share button links when scrolled down): #T5/labGradCheck */
+    else if (initialNode && cardId(initialNode)) pendingScroll.v = initialNode;
     /* swipe left / right between stations (outside diagrams and controls), like live */
-    const NO = '.m-dg,.m-stage,input,textarea,select,canvas,.tscroll,.hm-wrap,.scroll,pre,table,.chips,.m-tabs,.sheet,#tour,#modal,.toks,.experts,.frames,[data-noswipe]';
     let x0: number | null = null, y0 = 0, t0 = 0, ok = false;
     const m = document.querySelector('main');
     const ts = (e: TouchEvent) => { const p = e.touches[0]; if (e.touches.length !== 1 || !p) { x0 = null; return; } ok = !(e.target as Element).closest(NO); x0 = p.clientX; y0 = p.clientY; t0 = Date.now(); };

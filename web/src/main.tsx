@@ -6,16 +6,29 @@ import { installStaleGuard } from './boot/stale';
 import './legacy/gen/legacy.css';
 import './styles/shell.css';
 
-import { eventFor } from './analyticsEvents';
+import { eventFor, isLocalHost } from './analyticsEvents';
 
 declare const __SI_ANALYTICS__: boolean;
 
 installStaleGuard();
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
 
+/* R16 stale-cache check (src/boot/version.ts, own chunk): at idle after load, and again when the tab comes back
+   (the chunk throttles that to once per 5 min). "touched" = any tap / key / wheel since the page opened. */
+let touched = false;
+for (const t of ['pointerdown', 'touchstart', 'keydown', 'wheel']) addEventListener(t, () => { touched = true; }, { capture: true, passive: true, once: true });
+/* R16 full screen (src/boot/fs.ts, own chunk, loaded at idle): auto full screen on the first tap where the API
+   exists, or the one-time add-to-home-screen tip where it does not */
+/* (it also loads the iOS edge swipe-back guard, src/boot/edge.ts) */
+const fsInit = () => { void import('./boot/fs').then((m) => m.installFS()).catch(() => { /* optional */ }); };
+const vchk = () => { if (location.protocol !== 'file:') import('./boot/version').then((m) => m.check(() => touched)).catch(() => { /* optional */ }); };
+const idle = () => { const w = window as unknown as { requestIdleCallback?: (f: () => void, o: object) => void }; const f = () => { vchk(); fsInit(); }; if (w.requestIdleCallback) w.requestIdleCallback(f, { timeout: 2500 }); else setTimeout(f, 300); };
+if (document.readyState === 'complete') idle(); else addEventListener('load', idle, { once: true });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') vchk(); });
+
 /* analytics: own chunk, only on the /SI/ build, only after 'load' — content never waits for it */
 const h = location.hostname;
-if (__SI_ANALYTICS__ && location.protocol !== 'file:' && h !== 'localhost' && h !== '127.0.0.1') {
+if (__SI_ANALYTICS__ && location.protocol !== 'file:' && !isLocalHost(h)) {
   /* lab / quiz events: capture-phase listeners from the start (passive, never prevent anything); names are queued
      until the chunk has loaded after 'load', then forwarded directly */
   const q: string[] = [];

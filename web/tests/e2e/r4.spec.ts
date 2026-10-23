@@ -86,7 +86,7 @@ test('tour: starts at mid-level when on overview, × and Escape end it; sheet �
   await expect(page.locator('#mTour')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#mTour')).toHaveClass(/on/);
   await expect(page.locator('#mTour span')).toHaveText('退出导览');
-  await page.locator('#mDrawer .dw-x').click();
+  await page.locator('#mDrawer .dw-x:not(#fsBtn)').click();
   await page.keyboard.press('Escape');
   await expect(page.locator('#tour.open')).toHaveCount(0);
   await page.locator('#mMenu').click(); await page.locator('#mTour').click();

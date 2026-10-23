@@ -1,0 +1,19 @@
+{
+  "name": "大白话拆解 AI",
+  "short_name": "大白话 AI",
+  "description": "大白话、可交互地拆解：一句话让 AI 干活的软件，从 Agent 应用到 Transformer 内部，再到训练与算力。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "id": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "any",
+  "theme_color": "#4f46e5",
+  "background_color": "#f6f7fb",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

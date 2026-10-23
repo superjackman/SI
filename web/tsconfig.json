@@ -18,5 +18,5 @@
     "noEmit": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["base.config.d.mts", "src", "tests", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "m2"]
+  "include": ["base.config.d.mts", "scripts/build-id.d.mts", "src", "tests", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "m2"]
 }

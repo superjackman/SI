@@ -1,9 +1,9 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { useApp } from '../store/app';
 import { useShallow } from 'zustand/react/shallow';
-import { useT, useTx } from '../i18n/L';
+import { tx, useT, useTx } from '../i18n/L';
 import { GRP, GROUP, ICON, PATH, TABORDER, tabn } from '../legacy/kb';
-import { canBack, go, jumpTo, visited } from '../nav';
+import { canBack, go, jumpTo, toast, visited } from '../nav';
 import { layer, svgHtml } from './common';
 import { closeDrawer } from './drawer';
 import { setZoom } from './zoom';
@@ -37,8 +37,24 @@ export function Crumb() {
         {ks.length ? <i className="sep dn" aria-hidden="true">↓</i> : null}
         {ks.map((k) => <button key={k} type="button" className="chip down" data-go={k}>{tabn(k, lang)}</button>)}
       </div>
+      <ShareBtn />
     </div>
   );
+}
+
+/** R16: ⛶ full screen toggle in the ☰ menu (where the API is missing it shows the add-to-home-screen tip) */
+const fsOn = () => !!(document.fullscreenElement ?? (document as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement);
+/* no state: the drawer re-renders whenever it opens, which is the only time this button is seen */
+function FsBtn() {
+  const t = useT(), on = fsOn(), l = t(on ? 'pfs.exit' : 'pfs.enter');
+  return <button type="button" id="fsBtn" className="icon-btn dw-x dw-fs" aria-label={l} title={l} aria-pressed={on} onClick={() => { void import('../boot/fs').then((m) => m.toggleFS()).catch(() => toast(t('st.loadfail'))); closeDrawer(); }} {...svgHtml('fs')} />;
+}
+
+/** R16: share the current page — the panel (and its QR encoder) is a lazy chunk loaded on the first tap */
+export const openShare = () => { void import('../share/panel').then((m) => m.openShare()).catch(() => toast(tx('st.loadfail', useApp.getState().lang))); };
+function ShareBtn() {
+  const t = useT();
+  return <button type="button" id="mShare" className="cb-share" onClick={openShare}><span {...svgHtml('share')} />{t('share.btn')}</button>;
 }
 
 const BN: [string, string, { zh: string; en: string }][] = [
@@ -127,6 +143,7 @@ export function MoreSheet() {
             {(['zh', 'en'] as const).map((l) => <button key={l} type="button" className={'btn' + (lang === l ? ' on' : '')} data-setlang={l} lang={l === 'zh' ? 'zh-CN' : 'en'} aria-pressed={lang === l} onClick={() => setLang(l)}>{l === 'zh' ? '中文' : 'English'}</button>)}
           </div>
         </div>
+        <div className="sh-sec"><button type="button" className="btn wide" id="shShare" onClick={() => { close(); openShare(); }}>📤 {t('share.title')}</button></div>
         <div className="sh-sec"><div className="sh-lbl">{t('mode.which')}</div>
           <div id="slotMode"><ModeBtns /></div>
           <p className="sh-small">{t('mode.small')}</p>
@@ -188,7 +205,7 @@ export function Drawer() {
         onTouchStart={(e) => { const s = sw.current; const p = e.touches[0]; if (e.touches.length !== 1 || !p) return; s.x0 = p.clientX; s.y0 = p.clientY; s.dx = 0; s.t0 = Date.now(); s.hz = null; }}
         onTouchMove={(e) => { const s = sw.current; const p = e.touches[0]; if (s.x0 == null || !p || !ref.current) return; const mx = p.clientX - s.x0, my = p.clientY - s.y0; if (s.hz == null && Math.abs(mx) + Math.abs(my) > 8) s.hz = Math.abs(mx) > Math.abs(my); if (!s.hz) return; s.dx = Math.min(0, mx); ref.current.style.transition = 'none'; ref.current.style.transform = `translateX(${s.dx}px)`; }}
         onTouchEnd={() => { const s = sw.current; if (s.x0 == null || !ref.current) return; s.x0 = null; ref.current.style.transition = ''; const vv = -s.dx / Math.max(1, Date.now() - s.t0); ref.current.style.transform = ''; if (s.hz && (s.dx < -70 || (s.dx < -30 && vv > 0.5))) close(); }}>
-        <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} onClick={close}>×</button></div>
+        <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} onClick={close}>×</button></div>
         <div className="dw-prog" aria-hidden="true"><i id="dwProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div>
         <nav id="dwList" aria-label={tx({ zh: '站点：宏观 → 微观', en: 'Stops: macro → micro' })}>
           {GRP.map(([ic, name, ks]) => {

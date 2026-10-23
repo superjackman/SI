@@ -4,12 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-180.png">
 <meta name="si-build" content="react">
 <meta name="description" content="大白话、可交互地拆解：一句话让 AI 干活的软件，从 Agent 应用到 Transformer 内部，再到训练与算力。">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="大白话拆解 AI">
+<meta property="og:title" content="大白话拆解 AI · AI, explained plainly">
+<meta property="og:description" content="大白话、可交互地拆解：一句话让 AI 干活的软件，从 Agent 应用到 Transformer 内部，再到训练与算力。">
+<meta property="og:url" content="https://superjackman.github.io/SI/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
 <title>大白话拆解 AI</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%234f46e5'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='white' font-family='sans-serif'%3EAI%3C/text%3E%3C/svg%3E">
 <style>
-/* first paint before any JS: the live page's loading skeleton (#mBoot) */
 body{margin:0;background:#f6f7fb}
 #mBoot{padding:12px 14px 0}
 #mBoot>div{border-radius:10px;background:linear-gradient(90deg,#e9ecf5 25%,#f4f5fa,#e9ecf5 75%);background-size:200% 100%;animation:btSh 1.3s linear infinite}
@@ -25,15 +43,12 @@ body{margin:0;background:#f6f7fb}
 @media (prefers-reduced-motion:reduce){#mBoot>div,#mBoot .bt-d:after{animation:none}}
 </style>
 <script>
-/* pre-paint: <html lang> + title from ?lang= / #lang= > saved aiexp.lang > browser (full rules in src/i18n/lang.ts) */
 (function(){try{var m=/(^|[?&#;\/!])lang=([^&#;?\/]*)/i.exec(location.search)||/(^|[?&#;\/!])lang=([^&#;?\/]*)/i.exec(location.hash),v=m?decodeURIComponent(m[2]).toLowerCase():'',l=/^(en|eng|english)(?![a-z])/.test(v)?'en':/^(zh|zho|chi|cn|chs|cht|chinese)(?![a-z])/.test(v)?'zh':null;
 if(!l){try{l=localStorage.getItem('aiexp.lang');}catch(e){}if(l!=='zh'&&l!=='en')l=null;}
 if(!l)l=/^zh/i.test((navigator.languages&&navigator.languages[0])||navigator.language||'zh')?'zh':'en';
 document.documentElement.lang=l==='en'?'en':'zh-CN';document.title=l==='en'?'AI, explained plainly':'大白话拆解 AI';}catch(e){}})();
 </script>
 <script>
-/* stale-deploy guard (see src/boot/stale.ts): if the entry script or stylesheet of this (possibly cached, old) index.html
-   is gone, reload ONCE with a cache-busting query; a second failure for the same build shows a retry button instead. */
 (function(){var K='si.reload',done=0;
 function id(){var s=document.querySelector('script[type="module"][src*="/assets/"]');return s?s.getAttribute('src').split('/').pop():'?';}
 function url(){var q=location.search.replace(/^\?/,'').split('&').filter(function(p){return p&&p.indexOf('_r=')!==0;});q.push('_r='+Date.now());return location.pathname+'?'+q.join('&')+location.hash;}
@@ -45,8 +60,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 addEventListener('error',function(e){var t=e.target;if(!t||(t.tagName!=='SCRIPT'&&t.tagName!=='LINK'))return;var u=t.src||t.href||'';if(u.indexOf('/assets/index-')<0)return;if(!bust())fail();},true);
 window.__siBootFail=fail;})();
 </script>
-  <script type="module" crossorigin src="/SI/assets/index-DHXgSAqY.js"></script>
-  <link rel="stylesheet" crossorigin href="/SI/assets/index-CDZn4ndZ.css">
+  <script type="module" crossorigin src="/SI/assets/index-BP2y6ZSX.js"></script>
+  <link rel="stylesheet" crossorigin href="/SI/assets/index-_MgJckj1.css">
 </head>
 <body class="mode-use">
 <div id="root"><div id="mBoot" aria-hidden="true"><div class="bt-t"></div><div class="bt-s"></div><div class="bt-d"></div><div class="bt-c"></div><div class="bt-c"></div></div></div>
