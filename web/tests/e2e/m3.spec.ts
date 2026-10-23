@@ -70,7 +70,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect.poll(() => count(page)).toBe(0);
     await expect(page.locator('#upCount')).toHaveText(lang === 'zh' ? '没有符合条件的产品' : 'No products match');
     await page.locator('#upF button[data-f="all"]').click();
-    await expect.poll(() => count(page)).toBe(14);
+    await expect.poll(() => count(page)).toBe(17);
     for (const n of await visibleNames(page)) expect(await page.locator(`#upList .up-i[data-n="${n}"]`).first().getAttribute('data-cn')).toBe('1');
     await page.locator('#upCn').uncheck();
     await page.locator('#upOs').check();

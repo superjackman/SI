@@ -1,5 +1,6 @@
 /* Station Ud · Use it well */
 import { arrow, comp, LEG, Page, svgOpen, type StationOut } from '../lib';
+import { src } from './ext/kit';
 
 export default function Ud(P: Page): StationOut {
   const { t, L } = P;
@@ -58,6 +59,22 @@ export default function Ud(P: Page): StationOut {
 <li>${t(`它读进来的网页、邮件、文件都可能藏着 ${P.open('inject')}；读外部内容的 Agent，不要同时给它发送和删除的权限。`, `Web pages, emails and files it reads may hide a ${P.open('inject')}; an agent that reads outside content should not also hold send and delete rights.`)}</li>
 <li>${t('不要把密码、密钥直接贴进对话。', 'Never paste passwords or keys into the chat.')}</li>
 </ul>`);
+
+  P.card('c_Ud_5', 2, t('📋 验收清单：交回来的东西怎么验', '📋 An acceptance checklist for what comes back'), `
+<p>${t('验收标准最好在<b>交任务时</b>就写好，而不是看到结果再想。按产出类型，常用的检查项：', 'Write the acceptance criteria <b>when you hand the task off</b>, not after you see the result. Common checks by type of output:')}</p>
+<table class="gl stack"><thead><tr><th>${t('产出', 'Output')}</th><th>${t('至少检查', 'Check at least')}</th></tr></thead><tbody>
+<tr><td>${t('代码 / PR', 'Code / PR')}</td><td data-label="${t('至少检查', 'Check at least')}">${t('测试真的跑过并通过（看日志，不只看它说）；看 diff，有没有改了任务以外的文件；有没有删测试、跳过检查来“过关”。', 'Tests really ran and passed (read the log, not just its word); read the diff for files outside the task; check it didn’t delete tests or skip checks to “pass”.')}</td></tr>
+<tr><td>${t('报告 / 研究', 'Report / research')}</td><td data-label="${t('至少检查', 'Check at least')}">${t('抽几条引用点开原文核对；来源是不是一手、权威的；有没有漏掉你要求的问题；日期和数字对不对。', 'Open a few citations and compare with the source; are sources primary and authoritative; did it skip any question you asked; are dates and numbers right.')}</td></tr>
+<tr><td>${t('数据 / 表格', 'Data / tables')}</td><td data-label="${t('至少检查', 'Check at least')}">${t('总行数、合计和原始数据对得上；随机抽几行回到原始数据核对；空值和异常值怎么处理的。', 'Row counts and totals match the source; pick a few random rows and trace them back; how blanks and outliers were handled.')}</td></tr>
+<tr><td>${t('要发出去的内容', 'Anything going out')}</td><td data-label="${t('至少检查', 'Check at least')}">${t('收件人、称呼、附件对不对；有没有不该外传的信息；由你本人按“发送”。', 'Right recipients, names and attachments; nothing that shouldn’t leave; you press “send” yourself.')}</td></tr>
+</tbody></table>
+<ul class="u-chk">
+<li>${t('它说“没把握”的地方，你都看过了。', 'You looked at every place it said it was unsure about.')}</li>
+<li>${t('结果能复现：换个时间再跑，或你自己照着做一遍，结论一致。', 'The result reproduces: a rerun, or you following the steps, gives the same conclusion.')}</li>
+<li>${t('不合格就退回，写清楚哪一条没过，而不是自己悄悄改掉。', 'If it fails, send it back saying which item failed, rather than quietly fixing it yourself.')}</li>
+</ul>
+<p>${t('参考：一家模型公司评估自家研究 Agent 时，用的评分维度是事实准确、引用准确、完整性、来源质量和工具使用效率。', 'For reference: one AI lab, evaluating its research agents, scored factual accuracy, citation accuracy, completeness, source quality and tool efficiency.')}</p>
+${src(P, [['https://www.anthropic.com/research/multi-agent-research-system', 'How we built our multi-agent research system']])}`);
 
   P.labDivider();
   P.lab('labPrompt', t('四件事开关：同一个请求，交代得越清楚越好', 'The four switches: the clearer the brief, the better'), t(`“预计效果分”是${t('示意', 'illustrative')}的教学打分，不是真实模型的测量。`, `The “expected quality” score is an illustrative teaching score, not a measurement of a real model.`),

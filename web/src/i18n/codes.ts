@@ -3,6 +3,7 @@ import type { Bi } from './types';
     Shell strings are copied 1:1 from the live page (its I18N map / inline pairs). */
 export const CODES = {
   'site.title': { zh: '大白话拆解 AI', en: 'AI, explained plainly' },
+  'src.reach': { zh: '境外学术 / 法规站点：在中国大陆能否打开未实测，也没找到核实过的国内镜像', en: 'Overseas academic / legal site: access from mainland China not tested, and no verified mainland mirror found' },
   'doc.prefix': { zh: '（手机版）', en: '(Mobile) ' },
   'doc.suffix': { zh: ' · 大白话拆解 AI', en: ' · AI, explained plainly' },
   'nav.menu.open': { zh: '打开侧栏：全部站点', en: 'Open side menu: all stops' },

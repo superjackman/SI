@@ -70,3 +70,36 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(found).toEqual([]);
   });
 }
+
+/* R10: a math-bearing role line in the search results is shown as rendered KaTeX (lazy css), not as raw TeX */
+for (const lang of ['zh', 'en'] as Lang[]) {
+  test(`${lang}: search results render math with KaTeX`, async ({ page }) => {
+    const errs: string[] = []; page.on('pageerror', (e) => errs.push(e.message));
+    await open(page, 'T1', lang);
+    await page.locator('#mSearch').click();
+    await page.locator('#search').fill(lang === 'zh' ? '链式法则' : 'Chain rule');
+    const row = page.locator('#searchRes [data-open="kChain"]');
+    await expect(row.locator('.sr-math .katex').first()).toBeVisible();
+    await expect(page.locator('html[data-si-math="1"]')).toBeAttached();
+    expect(await row.evaluate((e) => { const c = e.cloneNode(true) as HTMLElement; c.querySelectorAll('annotation').forEach((a) => a.remove()); return c.textContent ?? ''; })).not.toMatch(/\\circ|\\,/);
+    expect(await leaks(page, '#searchRes')).toEqual([]);
+    const box = await page.locator('#searchRes').boundingBox(); const vw = page.viewportSize()!.width;
+    expect(box && box.x >= -1 && box.x + box.width <= vw + 1).toBe(true);
+    expect(await row.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
+    expect(errs).toEqual([]);
+  });
+}
+
+/* R10: the overseas-source note shows inside its source line without widening the page */
+test('T7: overseas source note visible, no page overflow', async ({ page }) => {
+  await open(page, 'T7', 'en');
+  await page.evaluate(() => {
+    document.querySelectorAll<HTMLDetailsElement>('section.level.active details').forEach((d) => { d.open = true; });
+    document.querySelectorAll('section.level.active .cc-closed').forEach((c) => c.classList.remove('cc-closed'));
+  });
+  const n = page.locator('section.level.active .k-src .k-reach').first();
+  await n.scrollIntoViewIfNeeded();
+  await expect(n).toBeVisible();
+  await expect(n).toContainText('not tested');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+});

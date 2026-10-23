@@ -66,3 +66,54 @@ export interface ProdItem { g: readonly string[]; cn: boolean; os?: boolean }
 export const prodVisible = (p: ProdItem, f: ProdFilter) => (f.g === 'all' || p.g.includes(f.g)) && (!f.cn || p.cn) && (!f.os || !!p.os);
 /** unique products shown under a filter (a product listed under several ways counts once) */
 export const prodCount = (ps: readonly (ProdItem & { n: string })[], f: ProdFilter) => new Set(ps.filter((p) => prodVisible(p, f)).map((p) => p.n)).size;
+
+/* ---------- labClick: screenshot → action, with an instruction hidden in the page ---------- */
+/** a target on the mock page (percent coordinates of the click point) */
+export const CLICK_AT = { mail: [50, 30], pdf: [30, 62], save: [78, 88], fwd: [52, 88], to: [50, 18], send: [84, 18] } as const;
+export type ClickKey = keyof typeof CLICK_AT;
+export interface ClickStep { key: string; at?: ClickKey; kind: 'act' | 'read' | 'ask' | 'ok' | 'bad' }
+/** inject: the email holds hidden text telling the agent to forward the mail; guard: page text is data, and sending needs your OK */
+export function clickSteps(inject: boolean, guard: boolean): ClickStep[] {
+  const s: ClickStep[] = [{ key: 'shot', kind: 'read' }, { key: 'openMail', at: 'mail', kind: 'act' }, { key: 'shot2', kind: 'read' }];
+  if (inject && !guard) return [...s, { key: 'obey', kind: 'read' }, { key: 'fwd', at: 'fwd', kind: 'act' }, { key: 'typeTo', at: 'to', kind: 'act' }, { key: 'send', at: 'send', kind: 'act' }, { key: 'leaked', kind: 'bad' }];
+  if (inject) s.push({ key: 'ignore', kind: 'read' });
+  return [...s, { key: 'pdf', at: 'pdf', kind: 'act' }, { key: 'save', at: 'save', kind: 'act' }, { key: inject ? 'doneFlag' : 'done', kind: 'ok' }];
+}
+
+/* ---------- labFan: one agent or a team (illustrative minutes and tokens) ---------- */
+export const FAN = { parts: 4, min: 4, tok: 20000, brief: 5000, merge: 1, handoff: 1, ctx: 10000 } as const;
+export interface FanPlan { lanes: number[][]; minutes: number; tokens: number; conflicts: number }
+/** split FAN.parts research parts over n agents; dep: each part needs the previous one's result, so they run one after another */
+export function fanPlan(n: number, dep: boolean): FanPlan {
+  const lanes: number[][] = Array.from({ length: n }, () => []);
+  for (let p = 0; p < FAN.parts; p++) (lanes[p % n] as number[]).push(p);
+  const team = n > 1;
+  const work = dep ? FAN.parts * FAN.min : Math.ceil(FAN.parts / n) * FAN.min;
+  const handoffs = dep && team ? FAN.parts - 1 : 0;
+  const minutes = work + handoffs * FAN.handoff + (team ? FAN.merge : 0);
+  const tokens = FAN.parts * FAN.tok + (team ? n * FAN.brief : 0) + (dep && team ? handoffs * FAN.ctx : 0);
+  return { lanes, minutes, tokens, conflicts: dep && team ? n - 1 : 0 };
+}
+
+/* ---------- labCron: a routine's week ---------- */
+export type CronTrig = 'daily' | 'mail' | 'issue';
+export type CronAct = 'digest' | 'reply' | 'close';
+export interface CronRun { day: number; ev: string; status: 'done' | 'wait' | 'bad' }
+/** day 0 = Monday. Events are fixed; each trigger has one trap: Wednesday's daily batch holds a phishing email or a look-alike issue, one email is phishing, one issue is not really a duplicate. */
+export const CRON_TRAPS = new Set(['dTrap', 'mPhish', 'iNotDup']);
+export const CRON_EVENTS: Record<CronTrig, [number, string][]> = {
+  daily: [[0, 'd'], [1, 'd'], [2, 'dTrap'], [3, 'd'], [4, 'd']],
+  mail: [[0, 'm1'], [1, 'm2'], [2, 'mPhish'], [2, 'm3'], [4, 'm4'], [5, 'm5']],
+  issue: [[0, 'i1'], [1, 'i2'], [3, 'iNotDup'], [4, 'i3']],
+};
+/** digest only tells you, so it always runs; reply / close reach other people: "draft" waits for you, "auto" acts, and acting on a trap event is a mistake */
+export const cronIrreversible = (a: CronAct) => a !== 'digest';
+export function cronWeek(trig: CronTrig, act: CronAct, mode: 'auto' | 'draft'): { runs: CronRun[]; done: number; wait: number; bad: number } {
+  const runs = CRON_EVENTS[trig].map(([day, ev]): CronRun => {
+    if (!cronIrreversible(act)) return { day, ev, status: 'done' };
+    if (mode === 'draft') return { day, ev, status: 'wait' };
+    return { day, ev, status: CRON_TRAPS.has(ev) ? 'bad' : 'done' };
+  });
+  const c = (s: CronRun['status']) => runs.filter((r) => r.status === s).length;
+  return { runs, done: c('done'), wait: c('wait'), bad: c('bad') };
+}

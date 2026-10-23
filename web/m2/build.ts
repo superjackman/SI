@@ -22,10 +22,12 @@ import K3 from './content/math/K3';
 import K4 from './content/math/K4';
 import K5 from './content/math/K5';
 import { katexCss } from './tex';
+import { CODES } from '../src/i18n/codes';
 import type { Ext } from './content/ext/kit';
 import { M4 } from './content/ext/m4';
 import { M5 } from './content/ext/m5';
 import { M6 } from './content/ext/m6';
+import { M7 } from './content/ext/m7';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
@@ -36,7 +38,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6];
+const EXTS: Ext[] = [M4, M5, M6, M7];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 for (const e of EXTS) {
@@ -177,6 +179,11 @@ const search = readJ<Record<string, Bi>>('search.json');
 const roleHtml: Record<string, Bi> = {};
 for (const [id, p] of Object.entries(ALLP)) { roleHtml[id] = { zh: p.pop((zh) => zh).role, en: p.pop((_z, en) => en).role }; search[id] = { zh: strip(roleHtml[id].zh), en: strip(roleHtml[id].en) }; }
 put('search.json', search, nlOf('search.json'));
+/* R10: the same role lines as pre-rendered KaTeX HTML, only for the few that hold math; the search box loads this (and the
+   KaTeX stylesheet) lazily, the first time such a part is in its results. Matching still uses the plain-text search.json. */
+const searchMath: Record<string, Bi> = {};
+for (const [id, h] of Object.entries(roleHtml)) if (h.zh.includes('class="katex"') || h.en.includes('class="katex"')) searchMath[id] = h;
+put('search-math.json', searchMath);
 
 /* ---------- T8 glossary rows (marked data-m2 so a re-run replaces them) ---------- */
 for (const L of LANGS) {
@@ -215,6 +222,19 @@ for (const L of LANGS) {
 
 /* ---------- the KaTeX stylesheet (woff2 fonts only), loaded lazily by the shell when math is on screen ---------- */
 files.set('../../styles/katex.css', katexCss(readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../node_modules/katex/dist/katex.min.css'), 'utf8')));
+
+/* ---------- R10: overseas academic / legal sources get a reachability note (one per source line) ---------- */
+/* hosts checked on 2026-10-23 from an overseas box: no official mainland mirror was found (cn.arxiv.org only redirects to
+   arxiv.org; xxx.itp.ac.cn did not answer from here), so the note says so instead of claiming any route works */
+const OVERSEAS_SRC = /href="https:\/\/(?:www\.)?(?:arxiv\.org|jmlr\.org|copyright\.gov|artificialintelligenceact\.eu|[a-z.-]*europa\.eu|nature\.com|doi\.org)\//;
+for (const [p, s] of [...files]) {
+  const mm = /^st\/[\w-]+\.(zh|en)\.json$/.exec(p); if (!mm) continue;
+  const st = JSON.parse(s) as { html: string }, Lx = mm[1] as 'zh' | 'en';
+  const note = `<span class="k-reach" data-m2="reach"> · ${esc(CODES['src.reach'][Lx])}</span>`;
+  const h = st.html.replace(/<span class="k-reach" data-m2="reach">[^<]*<\/span>/g, '')
+    .replace(/<p class="k-src">([\s\S]*?)<\/p>/g, (m0, body: string) => (OVERSEAS_SRC.test(body) ? `<p class="k-src">${body}${note}</p>` : m0));
+  if (h !== st.html) put(p, { ...st, html: h }, s.endsWith('\n'));
+}
 
 /* ---------- guard: KaTeX markup must never be escaped into visible text (it would print as raw HTML on the page) ---------- */
 const KX = /&lt;(?:span class=(?:&quot;|\\")katex|\/?(?:math|semantics|annotation)\b)|&amp;lt;/;

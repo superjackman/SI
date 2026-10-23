@@ -8,11 +8,14 @@ type Lang = 'zh' | 'en';
 type SI = { __si: { state(): { station: string; popup: { id: string } | null } } };
 const KEY = (JSON.parse(readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')) as { key: Record<string, number[]> }).key;
 const X: Record<string, { cards: string[]; parts: string[]; labs: string[]; dd?: [string, string] }> = {
-  T2: { cards: ['xStruct', 'xRerank'], parts: ['xstruct', 'xrerank'], labs: [] },
+  T2: { cards: ['xStruct', 'xRerank', 'xA2a'], parts: ['xstruct', 'xrerank', 'xa2a'], labs: [] },
   T3: { cards: ['xReason', 'xHalluc', 'xIcl'], parts: ['xreason', 'xhalluc', 'xicl'], labs: ['labVote'], dd: ['xReason', 'T7'] },
-  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg'], labs: [], dd: ['xAgentRl', 'T2'] },
+  T7: { cards: ['xPar', 'xData', 'xAgentRl', 'xSafety', 'xEval', 'xScale', 'xReg', 'xPool'], parts: ['xpar', 'xdata', 'xagentrl', 'xsafety', 'xeval', 'xscale', 'xreg', 'xpool'], labs: ['labPool'], dd: ['xAgentRl', 'T2'] },
   T6: { cards: ['xVoice', 'xDoc', 'xEdit'], parts: ['xvoice', 'xdoc', 'xedit'], labs: [] },
   T1: { cards: ['xComply'], parts: ['xcomply'], labs: [] },
+  N: { cards: ['xGen'], parts: ['xgen'], labs: [], dd: ['xGen', 'T6'] },
+  T4b: { cards: ['xInterp'], parts: ['xinterp'], labs: [] },
+  T5: { cards: ['xSsm', 'xPrec'], parts: ['xssm', 'xprec'], labs: [] },
 };
 
 async function open(page: Page, S: string, lang: Lang) {

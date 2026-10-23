@@ -1,9 +1,10 @@
-/* Station Ua lab: labSession — a scripted coding session; the permission level decides which steps wait for you. */
+/* Station Ua labs: labSession — a scripted coding session; the permission level decides which steps wait for you. labClick — see ../labClick. */
 import type { Env } from '../../legacy/runtime';
 import { byId, tr } from '../kit';
+import { CLICK_IDS, clickLab } from '../labClick';
 import { needsAsk, sessionSteps, type Perm, type Step } from '../logic';
 
-export const LABS = [{ ids: ['labSession', 'ssPerm', 'ssTest', 'ssNext', 'ssAuto', 'ssReset', 'ssLog'], hooks: [] as string[] }];
+export const LABS = [{ ids: ['labSession', 'ssPerm', 'ssTest', 'ssNext', 'ssAuto', 'ssReset', 'ssLog'], hooks: [] as string[] }, { ids: CLICK_IDS, hooks: [] as string[] }];
 
 export function mount(env: Env) {
   const t = tr(env);
@@ -75,5 +76,5 @@ export function mount(env: Env) {
     on('ssPerm', 'change', reset);
     on('ssTest', 'change', reset);
   };
-  return { labs: [session], eager: () => {} };
+  return { labs: [session, clickLab(env)], eager: () => {} };
 }

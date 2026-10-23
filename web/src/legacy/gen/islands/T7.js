@@ -178,18 +178,20 @@ function(){var A=_t2('明天杭州小雨，降水概率约 80%（来自天气工
  window.__pref={vote:vote};
 },
 function(){if(!v2el('labFit'))return;
- var tr,va,w,step=0,hist=[],timer=null,div=false,dseed=21,best=null;
+ /* r10 (gap audit A6, hand-edited after the lift): dropout toggle + early stopping with a stop line; the controls are added here, not in the snapshot */
+ var tr,va,w,step=0,hist=[],timer=null,div=false,dseed=21,best=null,bestW=null,stopped=false,drng=null,PAT=1500;
+ function dpOn(){var e=v2el('ftDO');return !!(e&&e.checked);}function esOn(){var e=v2el('ftES');return !!(e&&e.checked);}
  function f(x){return Math.sin(2.6*x)+0.3*x;}
  function data(){var r=v2rng(dseed);tr=[];va=[];for(var i=0;i<10;i++){var x=-1+2*(i+0.15+0.7*r())/10;tr.push([x,f(x)+v2gauss(r)*0.18]);}for(i=0;i<40;i++){x=-1+2*r();va.push([x,f(x)+v2gauss(r)*0.18]);}}
  function feats(x,D){var T=[1,x];for(var k=2;k<=D;k++)T.push(2*x*T[k-1]-T[k-2]);return T.slice(0,D+1);}
  function pred(x){var F=feats(x,w.length-1),s=0;for(var k=0;k<w.length;k++)s+=w[k]*F[k];return s;}
  function mse(S){var e=0;S.forEach(function(p){var d=pred(p[0])-p[1];e+=d*d;});return e/S.length;}
  function lr(){return Math.pow(10,-3+3.6*(+v2el('ftLR').value)/100);}
- function reset(){var D=+v2el('ftD').value;w=new Array(D+1).fill(0);step=0;div=false;best=null;hist=[[0,mse(tr),mse(va)]];stopT();render();}
- function train(n){if(div)return;var a=lr(),wd=+v2el('ftWD').value,D=w.length-1;
-  for(var s=0;s<n;s++){var g=new Array(D+1).fill(0);tr.forEach(function(p){var F=feats(p[0],D),e=0;for(var k=0;k<=D;k++)e+=w[k]*F[k];e-=p[1];for(k=0;k<=D;k++)g[k]+=2*e*F[k]/tr.length;});
+ function reset(){var D=+v2el('ftD').value;w=new Array(D+1).fill(0);step=0;div=false;best=null;bestW=null;stopped=false;drng=v2rng(7);hist=[[0,mse(tr),mse(va)]];stopT();render();}
+ function train(n){if(div||stopped)return;var a=lr(),wd=+v2el('ftWD').value,D=w.length-1,dp=dpOn()?0.1:0;
+  for(var s=0;s<n;s++){var g=new Array(D+1).fill(0);tr.forEach(function(p){var F=feats(p[0],D),e=0;if(dp)for(var j=1;j<=D;j++)F[j]=drng()<dp?0:F[j]/(1-dp);for(var k=0;k<=D;k++)e+=w[k]*F[k];e-=p[1];for(k=0;k<=D;k++)g[k]+=2*e*F[k]/tr.length;});
    for(var k=0;k<=D;k++){w[k]-=a*(g[k]+(k>0?2*wd*w[k]:0));}step++;
-   if(step%10===0){var lt=mse(tr),lv=mse(va);if(!isFinite(lt)||lt>1e6){div=true;hist.push([step,1e6,1e6]);break;}hist.push([step,lt,lv]);if(!best||lv<best[1])best=[step,lv];}}
+   if(step%10===0){var lt=mse(tr),lv=mse(va);if(!isFinite(lt)||lt>1e6){div=true;hist.push([step,1e6,1e6]);break;}hist.push([step,lt,lv]);if(!best||lv<best[1]){best=[step,lv];bestW=w.slice();}if(esOn()&&best&&step-best[0]>=PAT){w=bestW.slice();stopped=true;break;}}}
   if(hist.length>600){hist=hist.filter(function(_,i){return i%2===0||i===hist.length-1;});}render();}
  function verdict(){if(div)return [_t('diverging'),'#dc2626',_t2('学习率太大：每一步都迈过了谷底，越跳越高，误差冲向无穷大。把学习率调小再重置。','Learning rate too high: each step overshoots the valley floor, bouncing higher and higher until the error heads to infinity. Lower the learning rate and reset.')];
   var lt=mse(tr),lv=mse(va);if(step<150)return [_t2('刚开始','Just started'),'#64748b',_t2('还没怎么训练，先点“训练”。','Hardly trained yet — tap “Train” first.')];
@@ -200,15 +202,20 @@ function(){if(!v2el('labFit'))return;
   var c1=v2el('ftC1');var o=v2chart(c1,{series:[{d:div?[]:Array.from({length:101},function(_,i){var x=-1+i/50;return [x,pred(x)];}),c:'#4f46e5',label:_t2('模型的曲线','Model’s curve')},{d:Array.from({length:101},function(_,i){var x=-1+i/50;return [x,f(x)];}),c:'rgba(100,116,139,.35)',w:1.5,label:_t2('真实规律','True pattern')}],xmin:-1,xmax:1,ymin:-2.2,ymax:2.2,xlab:'x'});
   var x=o.x;tr.forEach(function(p){x.fillStyle='#2563eb';x.beginPath();x.arc(o.X(p[0]),o.Y(Math.max(-2.2,Math.min(2.2,p[1]))),4.5,0,7);x.fill();});
   va.forEach(function(p){x.strokeStyle='#ea580c';x.lineWidth=1.3;x.beginPath();x.arc(o.X(p[0]),o.Y(p[1]),3,0,7);x.stroke();});
-  v2chart(v2el('ftC2'),{log:true,series:[{d:hist.map(function(h){return [h[0],h[1]];}),c:'#2563eb',label:_t2('训练误差','Training error')},{d:hist.map(function(h){return [h[0],h[2]];}),c:'#ea580c',label:_t2('验证误差','Validation error')}],xlab:_t2('训练步数','Training steps'),xmin:0,xmax:Math.max(100,step),ymin:-2.5,ymax:1.5,marks:best&&step>300?[{x:best[0],label:_t2('验证最好','Best validation'),c:'#16a34a'}]:[]});
+  v2chart(v2el('ftC2'),{log:true,series:[{d:hist.map(function(h){return [h[0],h[1]];}),c:'#2563eb',label:_t2('训练误差','Training error')},{d:hist.map(function(h){return [h[0],h[2]];}),c:'#ea580c',label:_t2('验证误差','Validation error')}],xlab:_t2('训练步数','Training steps'),xmin:0,xmax:Math.max(100,step),ymin:-2.5,ymax:1.5,marks:best&&stopped?[{x:best[0],label:_t2('早停：取回这一步','Early stop: weights from here'),c:'#16a34a'}]:best&&step>300?[{x:best[0],label:_t2('验证最好','Best validation'),c:'#16a34a'}]:[]});
   var vd=verdict();v2el('ftStat').textContent=(_t('trained')+' ')+step+(' '+_t('steps'));
   v2el('ftInfo').innerHTML=_t2('判断：<b style="color:','Verdict: <b style="color:')+vd[1]+'">'+vd[0]+'</b>——'+vd[2]+_t2('<br>训练误差 ','<br>Training error ')+(div?'∞':mse(tr).toFixed(4))+_t2(' · 验证误差 ',' · validation error ')+(div?'∞':mse(va).toFixed(4))+_t2('（噪声本身的误差约 0.03，再低就是在背噪声）<br><span class="hint">蓝点 = 训练数据（模型能看到），橙圈 = 验证数据（只用来检查）。模型是多项式，用最朴素的梯度下降训练。</span>',' (the noise itself gives an error of about 0.03; any lower means memorizing noise)<br><span class="hint">Blue dots = training data (the model sees it), orange circles = validation data (only used for checking). The model is a polynomial trained with plain gradient descent.</span>');
+  var ex=[];if(dpOn())ex.push(_t2('Dropout：每个训练点上随机关掉约 10% 的特征（留下的除以 0.9 补回来），模型没法靠某几个特征死记噪声；检查时用全部特征。','Dropout: for every training point about 10% of the features are switched off at random (the rest are divided by 0.9 to compensate), so the model can’t lean on a few of them to memorize noise; checking uses all features.'));
+  if(stopped)ex.push(_t2('早停：验证误差 '+PAT+' 步没再变好，停在第 '+step+' 步，取回第 '+best[0]+' 步（绿线）的参数。','Early stop: validation error had not improved for '+PAT+' steps, so training stopped at step '+step+' and restored the weights from step '+best[0]+' (green line).'));
+  if(ex.length)v2el('ftInfo').insertAdjacentHTML('beforeend','<br><span class="hint" id="ftEx">'+ex.join('<br>')+'</span>');
   return vd[0];}
  function stopT(){if(timer){clearInterval(timer);timer=null;}v2el('ftRun').textContent=_t('train');}
- v2el('ftRun').onclick=function(){if(timer){stopT();return;}v2el('ftRun').textContent=_t('pause_2');timer=setInterval(function(){train(40);if(div||step>=30000)stopT();},30);};
+ v2el('ftRun').onclick=function(){if(timer){stopT();return;}v2el('ftRun').textContent=_t('pause_2');timer=setInterval(function(){train(40);if(div||stopped||step>=30000)stopT();},30);};
  v2el('ftStep').onclick=function(){train(100);};v2el('ftReset').onclick=reset;v2el('ftData').onclick=function(){dseed=(dseed*13+5)%9973;data();reset();};
+ (function(){var cc=v2el('labFit').querySelector('.ctrls');if(cc&&!v2el('ftDO'))cc.insertAdjacentHTML('beforeend','<label><input type="checkbox" id="ftDO"> '+_t2('Dropout：训练时每个特征有 10% 的机会被关掉','Dropout: while training, each feature is switched off 10% of the time')+'</label><label><input type="checkbox" id="ftES"> '+_t2('早停：验证误差 1500 步不再变好就停','Early stopping: stop once validation error stops improving for 1,500 steps')+'</label>');})();
+ v2el('ftDO').addEventListener('change',reset);v2el('ftES').addEventListener('change',reset);
  v2el('ftD').addEventListener('input',reset);v2el('ftLR').addEventListener('input',function(){render();});v2el('ftWD').addEventListener('change',function(){render();});
- data();reset();window.__labFit={train:train,reset:reset,verdict:function(){return verdict()[0];},lr:lr};},
+ data();reset();window.__labFit={train:train,reset:reset,verdict:function(){return verdict()[0];},lr:lr,state:function(){return {step:step,best:best&&best[0],stopped:stopped,tr:mse(tr),va:mse(va)};}};},
 function(){if(!v2el('labGw'))return;
  var N=7,map,start,Q,eps=0,lastR=null,timer=null,tool='wall';
  var PAL=[['wall',_t2('🧱 墙','🧱 Wall')],['trap',_t2('🔥 陷阱 −10','🔥 Trap −10')],['gold',_t2('💎 宝藏 +10','💎 Treasure +10')],['cookie',_t2('🍪 饼干 +1（不结束）','🍪 Cookie +1 (doesn’t end)')],['start',_t2('🚩 起点','🚩 Start')],['erase',_t2('🧽 擦除','🧽 Erase')]];

@@ -1,5 +1,6 @@
 /* Station Uc · Extend it */
 import { arrow, comp, LEG, Page, svgOpen, type StationOut } from '../lib';
+import { dd, src, ul } from './ext/kit';
 
 export default function Uc(P: Page): StationOut {
   const { t, L } = P;
@@ -60,6 +61,35 @@ export default function Uc(P: Page): StationOut {
 <tr><td>${t('平时占上下文', 'Context when idle')}</td><td data-label="${t('工具', 'Tool')}">${t('完整说明书', 'The full manual')}</td><td data-label="Skill">${t('只有名字 + 简介', 'Name + description only')}</td></tr>
 <tr><td>${t('谁执行', 'Who runs it')}</td><td data-label="${t('工具', 'Tool')}">${t('应用程序', 'The app')}</td><td data-label="Skill">${t('Agent 照着做，可调用已有工具', 'The agent follows it, using existing tools')}</td></tr>
 </tbody></table>`);
+
+  P.card('c_Uc_4', 2, t('✅ 装一个 MCP 服务器前，先过这张清单', '✅ Before installing an MCP server, run this checklist'), `
+${dd(P, ['T2'])}
+<p>${t(`MCP 规范在“安全与信任”一节写了三条关键原则：<b>用户同意与控制</b>、<b>数据隐私</b>、<b>工具安全</b>。规范同时说明：MCP 协议本身<b>无法强制</b>这些原则，要靠 ${P.open('mcphost')} 做好确认界面和访问控制。所以“装不装、给多少权限”最终是你的决定。`, `The MCP specification's Security and Trust section lists three key principles: <b>user consent and control</b>, <b>data privacy</b> and <b>tool safety</b>. It also says the protocol itself <b>cannot enforce</b> them; the ${P.open('mcphost')} has to build the consent screens and access controls. So whether to install, and with how much access, is finally your call.`)}</p>
+<ul class="u-chk">
+<li>${t(`<b>来源可信吗？</b>规范要求：工具的描述和注解默认当作<b>不可信</b>，除非来自可信的服务器。先看是谁发布的、代码是否公开。`, `<b>Is the source trusted?</b> The spec says tool descriptions and annotations should be treated as <b>untrusted</b> unless they come from a trusted server. Check who publishes it and whether the code is public.`)}</li>
+<li>${t(`<b>它要做什么？</b>工具等于“执行任意代码”。装之前读一遍它提供的每个工具，弄懂再授权。`, `<b>What will it do?</b> Tools amount to arbitrary code execution. Read each tool it offers before you authorise it, and understand it.`)}</li>
+<li>${t(`<b>它能看到什么数据？</b>宿主把你的数据交给服务器前，规范要求先得到你的明确同意；资源数据未经同意不得再传给别处。`, `<b>What data can it see?</b> The spec says a host must get your explicit consent before exposing your data to a server, and must not pass resource data elsewhere without consent.`)}</li>
+<li>${t(`<b>每次调用都会问你吗？</b>规范要求调用任何工具前都要得到用户明确同意。留着确认步骤，别图省事全部“总是允许”。`, `<b>Will each call ask you?</b> The spec says a host must get explicit consent before invoking any tool. Keep the confirmation step; don't switch everything to “always allow”.`)}</li>
+<li>${t(`<b>权限是不是最小的？</b>只给它完成这件事需要的目录、账号和网络（见 ${P.open('perm')}）。`, `<b>Is access minimal?</b> Give it only the folders, accounts and network this job needs (see ${P.open('perm')}).`)}</li>
+<li>${t(`<b>它读的内容会不会“下指令”？</b>网页、邮件、文档里的文字可能夹带 ${P.open('inject')}。读外部内容的服务器，别同时给它发送或删除的权限。`, `<b>Could what it reads give orders?</b> Text in web pages, emails and documents can carry ${P.open('inject')}. A server that reads outside content shouldn't also be able to send or delete.`)}</li>
+</ul>
+<p>${t(`回顾一下：服务器能提供三类东西，资源（数据）、提示词模板和工具，${P.open('mcpserver')} 里有详细说明。装之前三类都看一眼。`, `As a reminder, a server can offer three kinds of thing: resources (data), prompt templates and tools; see ${P.open('mcpserver')}. Look at all three before installing.`)}</p>
+${src(P, [['https://modelcontextprotocol.io/specification/2025-11-25', 'MCP Specification (2025-11-25) · Security and Trust & Safety']])}`);
+
+  P.card('c_Uc_5', 2, t('💻 本地模型与开放模型：在自己电脑上跑', '💻 Local and open models: run it on your own machine'), `
+${dd(P, ['T5'])}
+<p>${t('开放权重的模型可以下载下来，在自己的电脑或服务器上运行。以两个常用的开源工具为例（出处见下方来源）：', 'Open-weight models can be downloaded and run on your own computer or server. Take two widely used open-source tools (see the sources below):')}</p>
+${ul([
+    t('<b>一键式运行器</b>：官网写明可以在本地或云端运行开放模型；本地会起一个服务（文档示例地址 localhost:11434），兼容业界常用聊天接口的一部分，很多现成工具改个地址就能接上。', '<b>A one-command runner</b>: its site says it runs open models locally or in the cloud. Locally it starts a server (the docs use localhost:11434) that supports a subset of a widely used chat API, so many existing tools connect by changing one address.'),
+    t('<b>一个 C/C++ 推理库</b>：纯 C/C++ 实现，设置很少；使用 GGUF 文件格式；支持 1.5 到 8 位的整数量化来提速、省内存；支持 CPU+GPU 混合推理，模型比显存还大时也能部分用上 GPU 加速。', '<b>A C/C++ inference library</b>: plain C/C++ with minimal setup; uses the GGUF file format; supports 1.5- to 8-bit integer quantisation for speed and lower memory; CPU+GPU hybrid inference partially accelerates models larger than total VRAM.'),
+  ])}
+<div class="u-dec">
+<div class="u-good"><b>${t('适合本地的情况', 'Good reasons to go local')}</b>${t('数据不想离开这台机器；需要离线可用；想自己控制版本，不被服务商改动。', 'Data must not leave the machine; it must work offline; you want to control the version yourself.')}</div>
+<div class="u-bad"><b>${t('要付出的代价', 'What it costs')}</b>${t('能跑多大的模型受内存/显存限制；速度通常不如云端大集群；更新、安全补丁要自己管。', 'Model size is limited by RAM/VRAM; speed is usually below big cloud clusters; you handle updates and patches yourself.')}</div>
+</div>
+<p>${t(`能不能跑得动，主要看两笔账：模型权重本身（${P.open('quant')} 能把它压小）和长对话时增长的 ${P.open('kvcache')}。到“${P.st('T5')}”可以用 <b>KV 缓存显存计算器</b>和<b>量化实验</b>自己算一算。`, `Whether it fits comes down to two sums: the weights themselves (${P.open('quant')} shrinks them) and the ${P.open('kvcache')}, which grows with long chats. In “${P.st('T5')}”, the <b>KV-cache memory calculator</b> and the <b>quantisation lab</b> let you work it out.`)}</p>
+<p>${t('注意：“本地一定更安全”并不成立。模型文件和工具也要从可信来源获取，权限照样要管。', 'Note: “local is always safer” is not true. Model files and tools must still come from trusted sources, and access still needs limits.')}</p>
+${src(P, [['https://ollama.com/', t('运行器官网', 'Runner home page')], ['https://docs.ollama.com/api/openai-compatibility', t('运行器文档 · 接口兼容', 'Runner docs · API compatibility')], ['https://github.com/ggml-org/llama.cpp', t('ggml-org 推理库 README', 'ggml-org inference library README')]])}`);
 
   P.labDivider();
   P.lab('labCtxLoad', t('说明书占了多少上下文？', 'How much context do the manuals take?'), t(`词元数都是${t('示意', 'illustrative')}的整数，真实数字取决于模型和说明的写法。`, `All token counts are illustrative round numbers; real ones depend on the model and how descriptions are written.`),

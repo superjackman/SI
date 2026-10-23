@@ -7,9 +7,9 @@ import { resolveBase } from '../../base.config.mjs';
 type Lang = 'zh' | 'en';
 type SI = { __si: { state(): { station: string; popup: { id: string } | null }; openInfo(id: string): void; go(s: string): void } };
 const M2 = ['U', 'Ua', 'Ub', 'Uc', 'Ud'] as const;
-const LABS: Record<string, string | null> = { U: 'labPick', Ua: 'labSession', Ub: null, Uc: 'labCtxLoad', Ud: 'labPrompt' };
+const LABS: Record<string, string[]> = { U: ['labPick'], Ua: ['labSession', 'labClick'], Ub: ['labFan', 'labCron'], Uc: ['labCtxLoad'], Ud: ['labPrompt'] };
 const KEY = (JSON.parse(readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')) as { key: Record<string, number[]> }).key;
-const QN: Record<string, number> = { U: 3, Ua: 4, Ub: 4, Uc: 4, Ud: 4 };
+const QN: Record<string, number> = { U: 3, Ua: 4, Ub: 7, Uc: 6, Ud: 5 }; // R10: +3 Ub, +2 Uc, +1 Ud
 
 function watch(page: Page) {
   const errors: string[] = [], external: string[] = [];
@@ -81,9 +81,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await expect(page.locator('#bnav [data-bn="more"]')).toHaveClass(/on/);
       await expect(page.locator(`section#${S} .st-fail`)).toHaveCount(0);
       await expect(page.locator(`section#${S} .tag.demo`).first()).toHaveText(lang === 'zh' ? '示意' : 'Illustrative');
-      const lab = LABS[S];
-      await expect(page.locator(`section#${S} .card.lab`)).toHaveCount(lab ? 1 : 0);
-      if (lab) await expect(page.locator(`#${lab}`)).toBeAttached();
+      const lab = LABS[S] ?? [];
+      await expect(page.locator(`section#${S} .card.lab`)).toHaveCount(lab.length);
+      for (const id of lab) await expect(page.locator(`#${id}`)).toBeAttached();
       await reveal(page, `#quiz${S}`);
       await expect(page.locator(`#quiz${S} .qz`)).toHaveCount(QN[S]!);
       await expect(page.locator(`section#${S} .card.m3ph`)).toHaveCount(0);
@@ -302,7 +302,7 @@ test('quiz scoring on the M2 stops: right / wrong answers count per stop and in 
   await expect(page.locator('#quizU .opt.right')).toHaveCount(3);
   await expect(page.locator('#quizU .opt.wrong')).toHaveCount(1);
   await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 76（已答 3）');
+  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 86（已答 3）');
   await page.keyboard.press('Escape');
   /* every M2 stop's key matches its rendered options (all right → full marks), in English too */
   for (const S of ['Ua', 'Ub', 'Uc', 'Ud']) {
@@ -358,3 +358,71 @@ test('each M2 stop is its own lazy chunk: T1 fetches only its neighbour U (prefe
   expect(js.filter((f) => /^(Uc|Ud)[.-]/.test(f))).toEqual([]);
   expect(js.filter((f) => /\.en-/.test(f))).toEqual([]);
 });
+
+/* r10 labs: labClick (Ua), labFan and labCron (Ub) */
+for (const lang of ['zh', 'en'] as Lang[]) {
+  test(`${lang} labClick: clicks drawn on the page; a hidden instruction leaks without defences, is ignored with them`, async ({ page }) => {
+    const w = watch(page);
+    await open(page, lang, 'Ua');
+    await reveal(page, '#labClick');
+    const log = page.locator('#ckLog li');
+    const run = async () => { for (let i = 0; i < 12 && (await page.locator('#ckNext').isEnabled()); i++) await page.locator('#ckNext').click(); };
+    await expect(log).toHaveCount(1);
+    await page.locator('#ckNext').click();
+    await expect(page.locator('#ckScr .ck-dot')).toHaveText('1');
+    await run();
+    await expect(log.last()).toHaveAttribute('data-k', 'done');
+    await expect(page.locator('#ckScr .ck-hid')).toHaveCount(0);
+    await page.locator('#ckInj').check();
+    await expect(log).toHaveCount(1);
+    await run();
+    await expect(log.last()).toHaveAttribute('data-k', 'leaked');
+    await expect(log.last()).toHaveClass(/bad/);
+    await expect(page.locator('#ckScr .ck-to')).toContainText('pay@evil.example');
+    await page.locator('#ckGuard').check();
+    await run();
+    await expect(page.locator('#ckLog li[data-k="ignore"]')).toHaveCount(1);
+    await expect(log.last()).toHaveAttribute('data-k', 'doneFlag');
+    await expect(page.locator('#ckScr .ck-hid')).toBeVisible();
+    const box = await page.locator('#ckScr').boundingBox(), dot = await page.locator('#ckScr .ck-dot').boundingBox();
+    expect(dot!.x >= box!.x && dot!.x + dot!.width <= box!.x + box!.width + 1).toBe(true);
+    await page.locator('#ckReset').click();
+    await expect(log).toHaveCount(1);
+    expect(w.errors).toEqual([]);
+  });
+
+  test(`${lang} labFan + labCron: parallel gain vanishes with dependencies; draft-first waits, auto gets the trap wrong`, async ({ page }) => {
+    const w = watch(page);
+    await open(page, lang, 'Ub');
+    await reveal(page, '#labFan');
+    const st = page.locator('#fnStat');
+    await expect(st).toHaveAttribute('data-min', '5');
+    await expect(page.locator('#fnLanes .fn-lane')).toHaveCount(4);
+    await page.locator('#fnN').selectOption('1');
+    await expect(st).toHaveAttribute('data-min', '16');
+    await expect(page.locator('#fnLanes .fn-lane')).toHaveCount(1);
+    await page.locator('#fnDep').check();
+    await page.locator('#fnN').selectOption('4');
+    await expect(st).toHaveAttribute('data-min', '20');
+    await expect(st).toHaveAttribute('data-conf', '3');
+    await expect(page.locator('#fnLanes .wait')).toHaveCount(3);
+    for (const sp of await page.locator('#fnLanes .fn-track').all()) {
+      const t = (await sp.boundingBox())!;
+      for (const b of await sp.locator('span').all()) { const r = (await b.boundingBox())!; expect(r.x + r.width).toBeLessThanOrEqual(t.x + t.width + 1); }
+    }
+    await reveal(page, '#labCron');
+    const cs = page.locator('#crStat');
+    await page.locator('#crAct').selectOption('reply');
+    await expect(cs).toHaveAttribute('data-wait', '5');
+    await expect(cs).toHaveAttribute('data-bad', '0');
+    await page.locator('#crMode').selectOption('auto');
+    await expect(cs).toHaveAttribute('data-bad', '1');
+    await expect(page.locator('#crLog li.bad')).toHaveCount(1);
+    await page.locator('#crTrig').selectOption('mail');
+    await expect(page.locator('#crLog li')).toHaveCount(6);
+    await page.locator('#crAct').selectOption('digest');
+    await expect(cs).toHaveAttribute('data-done', '6');
+    await expect(cs).toHaveAttribute('data-bad', '0');
+    expect(w.errors).toEqual([]);
+  });
+}

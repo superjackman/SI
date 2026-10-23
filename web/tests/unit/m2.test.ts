@@ -160,13 +160,12 @@ describe('generated content (both languages)', () => {
       for (const q of qz[s]!) { expect(q[1].length).toBe(4); expect(q[3].length).toBeGreaterThan(10); }
     });
   }
-  it('labs: U/Ua/Uc/Ud carry labPick/labSession/labCtxLoad/labPrompt; Ub none; deferred labs are cards, not labs', () => {
-    const L: Record<string, string | null> = { U: 'labPick', Ua: 'labSession', Ub: null, Uc: 'labCtxLoad', Ud: 'labPrompt' };
+  it('labs: U/Ua/Ub/Uc/Ud carry their labs in order', () => {
+    const L: Record<string, string[]> = { U: ['labPick'], Ua: ['labSession', 'labClick'], Ub: ['labFan', 'labCron'], Uc: ['labCtxLoad'], Ud: ['labPrompt'] };
     for (const l of LANGS) for (const s of M2) {
       const h = (gen(`st/${s}.${l}.json`) as { html: string }).html;
       const labs = [...h.matchAll(/class="card lab[^"]*" id="(\w+)"/g)].map((m) => m[1]);
-      expect(labs).toEqual(L[s] ? [L[s]] : []);
-      expect(h).not.toMatch(/id="lab(Click|Fan|Cron)"/);
+      expect(labs).toEqual(L[s]);
     }
   });
   it('the grey M3 placeholder is gone; U links to the products stop instead', () => {
@@ -213,6 +212,17 @@ describe('M3 products (Up)', () => {
       expect(p.d.zh + p.d.en, p.n).not.toMatch(/[$¥€]|\d+\s*(元|美元|USD|\/月|per month)|\bv\d+\.\d/i);
     }
     for (const g of GROUPS) expect(PRODUCTS.some((p) => p.g.includes(g)), g).toBe(true);
+  });
+  it('R10: office agents and deep-research flags are present', () => {
+    const by = (n: string) => PRODUCTS.find((p) => p.n === n);
+    for (const n of ['千问办公', 'WorkBuddy', '百度搭子', '扣子', '豆包', 'Kimi']) expect(by(n)?.office, n).toBe(true);
+    for (const n of ['ChatGPT', 'Gemini', 'Kimi', 'Perplexity', '秘塔AI搜索']) expect(by(n)?.research, n).toBe(true);
+    expect(by('Replit')?.u).toBe('https://replit.com');
+    expect(PRODUCTS.some((p) => p.u.includes('space.coze.cn'))).toBe(false);
+    for (const L of LANGS) {
+      const h = (gen(`st/Up.${L}.json`) as { html: string }).html;
+      expect(h.match(/class="up-b of"/g)?.length).toBe(PRODUCTS.filter((p) => p.office).reduce((a, p) => a + p.g.length, 0));
+    }
   });
   it('every way part exists in kb, and the stop sits under U after Ud', () => {
     for (const g of GROUPS) expect(part(g), g).toBeTruthy();

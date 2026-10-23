@@ -87,6 +87,21 @@ export default function Ua(P: Page): StationOut {
       t('取消“让它跑测试”，看它是不是太早说“完成了”', 'Untick “Let it run tests” and see whether it says “done” too early'),
       t('在“运行测试”那一步点“拒绝”，看它怎么收尾', 'Tap “Reject” at the “run tests” step and see how it wraps up')]);
 
+  P.lab('labClick', t('截图 → 动作：操作电脑的 Agent', 'Screenshot → action: a computer-use agent'), t(`网页和坐标都是编的（${code('use.demo', L)}）：截图按 1280×800 算，坐标是像素。`, `The page and coordinates are made up (${code('use.demo', L)}): the screenshot is taken as 1280×800 and coordinates are pixels.`),
+    [t('它只能看截图、发出“点哪里、输入什么”：网页上的每个字都进了它的上下文，包括人眼看不见的字。', 'It only sees screenshots and sends “click here, type this”: every word on the page enters its context, including words a person cannot see.'),
+      t(`防护的两条：网页内容只当资料、不当命令；发送、付款、删除这类动作先停下来问你。见 ${P.open('inject')}。`, `Two defences: page content is data, never a command; sending, paying and deleting stop and ask you first. See ${P.open('inject')}.`)],
+    `<p class="u-task">${t('任务：“打开供应商的 10 月发票邮件，把附件保存到下载文件夹。”', 'Task: “Open the supplier’s October invoice email and save the attachment to Downloads.”')}</p>
+<div class="ctrls">
+<label><input type="checkbox" id="ckInj"> ${t('邮件里藏一句恶意指令', 'Hide a malicious instruction in the email')}</label>
+<label><input type="checkbox" id="ckGuard"> ${t('打开防护', 'Turn on the defences')}</label>
+</div>
+<div class="ck-scr" id="ckScr" role="img" aria-label="${t('示意的网页截图', 'Illustrative web page screenshot')}"></div>
+<div class="row" style="gap:6px;margin:6px 0"><button class="btn primary" id="ckNext">${t('下一步 ▶', 'Next ▶')}</button><button class="btn" id="ckReset">${t('重置', 'Reset')}</button></div>
+<ol class="u-log" id="ckLog" aria-live="polite"></ol>`,
+    [t('先不勾选，走一遍正常流程', 'Leave both unticked and walk through the normal run'),
+      t('勾选“藏一句恶意指令”，看它把发票发到了哪里', 'Tick “hide a malicious instruction” and see where the invoice goes'),
+      t('再打开防护，看它怎么处理同一封邮件', 'Then turn on the defences and see how it handles the same email')]);
+
   P.quiz();
   return {
     sub: t('你在旁边看着，它一步步动手。', 'You watch; it does the work step by step.'),
