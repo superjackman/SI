@@ -108,8 +108,8 @@ test('navigation: U stops in the all-stops list, not the bottom bar; 下一站 a
   for (const s of M2) await expect(page.locator(`#mDrawer [data-dw="${s}"], #mDrawer [data-go="${s}"]`).first()).toBeAttached();
   await page.locator('#mDrawer [data-dw="T1"], #mDrawer [data-go="T1"]').first().click();
   await expect.poll(() => station(page)).toBe('T1');
-  for (const s of [...M2, 'Up', 'Api', 'Loc', 'T2']) { await page.locator('#mNext').click(); await expect.poll(() => station(page)).toBe(s); }
-  for (const s of ['Loc', 'Api', 'Up', 'Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await page.locator('#mPrev').click(); await expect.poll(() => station(page)).toBe(s); }
+  for (const s of [...M2, 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']) { await page.locator('#mNext').click(); await expect.poll(() => station(page)).toBe(s); }
+  for (const s of ['Bld', 'Skl', 'Job', 'Loc', 'Api', 'Up', 'Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await page.locator('#mPrev').click(); await expect.poll(() => station(page)).toBe(s); }
 });
 
 test('the U diagram: tap a group box → its popup → ⤵ chip zooms into the sub-stop; ↩ returns', async ({ page }) => {
@@ -298,7 +298,7 @@ test('quiz scoring on the M2 stops: right / wrong answers count per stop and in 
   await expect(page.locator('#quizU .opt.right')).toHaveCount(3);
   await expect(page.locator('#quizU .opt.wrong')).toHaveCount(1);
   await page.locator('#bnav [data-bn="prog"]').click();
-  await expect(page.locator('#dkSheet #shProgTxt')).toContainText('测验答对 2 / 97（已答 3）');
+  await expect(page.locator('#dkSheet #shProgTxt')).toContainText('测验答对 2 / 109（已答 3）');
   await page.keyboard.press('Escape');
   /* every M2 stop's key matches its rendered options (all right → full marks), in English too */
   for (const S of ['Ua', 'Ub', 'Uc', 'Ud']) {

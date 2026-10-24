@@ -147,7 +147,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(page.locator('#labAgent')).toBeInViewport({ ratio: 0.05 });
     // quiz → "lit" count goes up, the after-quiz line points at T3 on the route
     await answer(page, 'T2');
-    await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/24');
+    await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/27');
     const qn = page.locator(`${act} .ob-qn [data-ob="qnext"]`);
     await expect(qn).toBeVisible();
     await qn.click();

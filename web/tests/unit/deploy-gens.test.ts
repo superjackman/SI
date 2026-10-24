@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 // @ts-expect-error plain .mjs build script without types
-import { readGens, plan, entryOf, safeRel, KEEP } from '../../scripts/deploy-gens.mjs';
+import { readGens, plan, entryOf, safeRel, KEEP, PUSHED } from '../../scripts/deploy-gens.mjs';
 
 type G = { id: string; at: string | null; files: string[] };
 const g = (id: string, ...f: string[]): G => ({ id, at: null, files: ['index.html', ...f] });
@@ -34,6 +34,21 @@ describe('deploy generations', () => {
   it('keep=2 keeps two back', () => {
     const prev = [g('c', 'assets/c.js'), g('b', 'assets/b.js'), g('a', 'assets/a.js')];
     expect(plan(prev, ['index.html', 'assets/d.js'], 'd', null, 2).remove).toEqual(['assets/a.js']);
+  });
+  it('R26: pushed generations (last committed manifest) survive local re-deploys until 3 newer pushed ones exist', () => {
+    expect(PUSHED).toBe(3);
+    const pushed = [g('p4', 'assets/p4.js'), g('p3', 'assets/p3.js'), g('p2', 'assets/p2.js'), g('p1', 'assets/p1.js')];
+    /* two local deploys since the push: l1 then l2; the working manifest is [l1, p4, p3, p2, p1] */
+    const prev = [g('l1', 'assets/l1.js'), ...pushed];
+    const P = plan(prev, ['index.html', 'assets/l2.js'], 'l2', null, KEEP, pushed);
+    expect(P.generations.map((x: G) => x.id)).toEqual(['l2', 'l1', 'p4', 'p3', 'p2']);
+    expect(P.remove).toEqual(['assets/p1.js']);
+    /* the working manifest lost a pushed generation: it comes back, its files are not orphans */
+    const Q = plan([g('l1', 'assets/l1.js')], ['index.html', 'assets/l2.js'], 'l2', null, KEEP, pushed);
+    expect(Q.generations.map((x: G) => x.id)).toEqual(['l2', 'l1', 'p4', 'p3', 'p2']);
+    expect(Q.orphans(['assets/p4.js', 'assets/p2.js', 'assets/p1.js', 'assets/l1.js'])).toEqual(['assets/p1.js']);
+    /* no committed manifest: the old behaviour */
+    expect(plan(prev, ['index.html', 'assets/l2.js'], 'l2').generations.map((x: G) => x.id)).toEqual(['l2', 'l1']);
   });
   it('reads the build id from index.html and rejects unsafe paths', () => {
     expect(entryOf('<script type="module" crossorigin src="/SI/next/assets/index-Do0ajEEB.js"></script>')).toBe('index-Do0ajEEB.js');

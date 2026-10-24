@@ -92,7 +92,7 @@ describe('R15 glossary data', () => {
 describe('R15 plain layer covers the whole site', () => {
   it('every station in the tab order has a plain layer, and nothing else does', () => {
     const order = (J<{ TABORDER: string[] }>('kb.json')).TABORDER;
-    expect(order.length).toBe(24);
+    expect(order.length).toBe(27);
     expect([...PLAIN_STATIONS].sort()).toEqual([...order].sort());
   });
   it('every non-quiz card of every station got a plain opening in both languages', () => {

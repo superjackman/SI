@@ -80,7 +80,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     for (const [i, r] of KEY.K2!.entries()) { const o = page.locator(`#quizK2 .opt[data-q="K2.${i}"][data-o="${r}"]`); await o.scrollIntoViewIfNeeded(); await o.click(); }
     await expect(bn(page, 'quiz')).toHaveAttribute('data-st', 'ok');
     await expect(bn(page, 'quiz')).toHaveAttribute('data-n', '✓');
-    await expect(bn(page, 'prog')).toHaveAttribute('data-n', '1/24');
+    await expect(bn(page, 'prog')).toHaveAttribute('data-n', '1/27');
     await at(page, 'T3', lang);
     await expect(bn(page, 'lab')).toHaveAttribute('data-n', /^[2-9]$/);
     const n = Number(await bn(page, 'lab').getAttribute('data-n'));
@@ -103,7 +103,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await bn(page, 'prog').click();
     const sh = page.locator('#dkSheet[data-k="prog"]'); await expect(sh).toHaveClass(/open/);
     await expect(sh.locator('#shProgBar')).toBeAttached();
-    await expect(sh.locator('#shProgTxt')).toContainText(lang === 'zh' ? '/ 24 站' : '/ 24');
+    await expect(sh.locator('#shProgTxt')).toContainText(lang === 'zh' ? '/ 27 站' : '/ 27');
     await expect(sh.locator('#dkLeft')).toBeVisible();
     await expect(sh.locator('#shProgCard')).toBeVisible();
     await sh.locator('.sh-x').click(); await expect(page.locator('#dkSheet')).toHaveCount(0);

@@ -5,7 +5,7 @@
 //                                       React build (post-cutover); before that: next (base /SI/next/, output <repo>/next/)
 //   npm run deploy:cutover              target root: base /SI/,      output <repo>/        (R5; old index.html -> legacy.html)
 //   Post-cutover, --target next is refused: next/ is only the redirect page to /SI/.
-//   flags: --skip-e2e (only when no Chrome is available — prints a loud warning), --repo <path> (default: parent of web/)
+//   flags: --pushed <commit> (the live commit, when local deploy commits are not pushed yet; default HEAD), --skip-e2e (only when no Chrome is available — prints a loud warning), --repo <path> (default: parent of web/)
 //
 // Steps: typecheck, unit tests, build (with the target's base), e2e smoke on the built files at 360/390/430, size budget,
 // copy dist (minus .vite/) in, keep the previous deploy's files too (generations in <target>/.si-deploy.json, see
@@ -17,7 +17,7 @@ import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, r
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { TARGETS } from '../base.config.mjs';
-import { readGens, plan, entryOf, safeRel } from './deploy-gens.mjs';
+import { readGens, plan, entryOf, safeRel, KEEP, PUSHED } from './deploy-gens.mjs';
 
 const web = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -69,7 +69,18 @@ const buildId = entryOf(readFileSync(join(dist, 'index.html'), 'utf8'));
 if (!buildId) die('dist/index.html has no /assets/ entry script');
 let prev = [];
 if (existsSync(manPath)) { try { prev = readGens(JSON.parse(readFileSync(manPath, 'utf8'))); } catch { die(`${MANIFEST} is not valid JSON — fix or delete it by hand`); } }
-const P = plan(prev, files, buildId, new Date().toISOString());
+// the last committed manifest = what was pushed (or --pushed <commit>: the commit that is live, when local deploy
+// commits are not pushed yet); its newest PUSHED generations are never deleted (see deploy-gens.mjs)
+let pushed = [];
+const pushedRev = opt('--pushed', 'HEAD');
+{
+  const relMan = (relative(repo, manPath) || MANIFEST).split(sep).join('/');
+  const r = spawnSync('git', ['-C', repo, 'show', `${pushedRev}:${relMan}`], { encoding: 'utf8' });
+  if (r.status === 0) { try { pushed = readGens(JSON.parse(r.stdout)); } catch { die(`${pushedRev}:${relMan} is not valid JSON`); } }
+  else if (pushedRev !== 'HEAD') die(`--pushed ${pushedRev}: no ${relMan} in that commit`);
+}
+const P = plan(prev, files, buildId, new Date().toISOString(), KEEP, pushed, PUSHED);
+console.log(`pinned (${pushedRev === 'HEAD' ? 'last committed manifest' : `manifest at ${pushedRev}`}, newest ${PUSHED}): ${pushed.slice(0, PUSHED).map((g) => g.id).join(', ') || 'none'}`);
 const inside = (rel) => { const p = resolve(dest, rel); return safeRel(rel) && p.startsWith(dest + sep) ? p : null; };
 let removed = 0;
 for (const rel of P.remove) { const p = inside(rel); if (p && existsSync(p)) { rmSync(p, { force: true }); removed++; } }

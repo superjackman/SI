@@ -20,13 +20,13 @@ export function kids(id: string): string[] {
   return kidsIdx[id] ?? [];
 }
 /** station icons (live: drawer / bottom bar) and drawer groups */
-export const ICON: Record<string, string> = { T1: '🏠', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', U: '🛠️', Ua: '🤝', Ub: '🚀', Uc: '🧰', Ud: '🎯', Up: '🗂️', Api: '🔌', Loc: '💻', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
+export const ICON: Record<string, string> = { T1: '🏠', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', U: '🛠️', Ua: '🤝', Ub: '🚀', Uc: '🧰', Ud: '🎯', Up: '🗂️', Api: '🔌', Loc: '💻', Job: '🙋', Skl: '🔧', Bld: '🏗️', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
 export const GRP: [string, Bi, string[]][] = [
-  ['🔭', { zh: '远看：应用与 Agent', en: 'Big picture: apps & agents' }, ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'T2']],
+  ['🔭', { zh: '远看：应用与 Agent', en: 'Big picture: apps & agents' }, ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']],
   ['🗺️', { zh: '近看：大模型', en: 'Closer: the LLM' }, ['T3']],
   ['🔬', { zh: '细看：模型内部', en: 'Inside the model' }, ['N', 'T4', 'T4a', 'T4b', 'T5']],
   ['🧭', { zh: '专题与速查', en: 'Topics & reference' }, ['T6', 'T7', 'T8']],
   ['∑', { zh: '数学层：推导与证明', en: 'Math layer: derivations & proofs' }, ['K1', 'K2', 'K3', 'K4', 'K5']],
 ];
 /** bottom-bar group of each station (live GROUP) */
-export const GROUP: Record<string, string> = { T1: 'T1', T2: 'T2', T3: 'T3', N: 'more', T4: 'T4', T4a: 'T4', T4b: 'T4', T5: 'more', T6: 'more', T7: 'more', T8: 'more', U: 'more', Ua: 'more', Ub: 'more', Uc: 'more', Ud: 'more', Up: 'more', Api: 'more', Loc: 'more', K1: 'more', K2: 'more', K3: 'more', K4: 'more', K5: 'more' };
+export const GROUP: Record<string, string> = { T1: 'T1', T2: 'T2', T3: 'T3', N: 'more', T4: 'T4', T4a: 'T4', T4b: 'T4', T5: 'more', T6: 'more', T7: 'more', T8: 'more', U: 'more', Ua: 'more', Ub: 'more', Uc: 'more', Ud: 'more', Up: 'more', Api: 'more', Loc: 'more', Job: 'more', Skl: 'more', Bld: 'more', K1: 'more', K2: 'more', K3: 'more', K4: 'more', K5: 'more' };

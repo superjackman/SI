@@ -33,7 +33,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(await overflow(page)).toBeLessThanOrEqual(0);
     await expect(page.locator(`${act} .m-stage svg`).first()).toBeAttached(); /* the T1 diagram stays */
     if (lang === 'en') expect(CJK.test(await d.innerText())).toBe(false);
-    for (const [S, sel] of [['Api', '[data-go="Api"]'], ['Loc', '[data-go="Loc"]'], ['Uc', '.dr-m[data-go="Uc"]'], ['Up', '.dr-c [data-go="Up"]']] as const) {
+    for (const [S, sel] of [['Api', '[data-go="Api"]'], ['Loc', '[data-go="Loc"]'], ['Job', '.dr-m[data-go="Job"]'], ['Skl', '.dr-m[data-go="Skl"]'], ['Bld', '.dr-m[data-go="Bld"]'], ['Uc', '.dr-c [data-go="Uc"]'], ['Up', '.dr-c [data-go="Up"]']] as const) {
       await open(page, lang, 'T1');
       await page.locator(`${act} .m-door ${sel}`).first().click();
       await ready(page, S, lang);
@@ -54,9 +54,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(bd).toContainText(tr('这里不讲', 'Not covered'));
     expect(await overflow(page)).toBeLessThanOrEqual(0);
     if (lang === 'en') expect(CJK.test(await page.locator(`${act}`).innerText())).toBe(false);
-    await expect(page.locator(`${act} .ph-lv`)).toContainText(S === 'Api' ? tr('第 8 站 / 共 24 站', 'Stop 8 of 24') : tr('第 9 站 / 共 24 站', 'Stop 9 of 24'));
+    await expect(page.locator(`${act} .ph-lv`)).toContainText(S === 'Api' ? tr('第 8 站 / 共 27 站', 'Stop 8 of 27') : tr('第 9 站 / 共 27 站', 'Stop 9 of 27'));
     await page.locator('#mNext').click();
-    await ready(page, S === 'Api' ? 'Loc' : 'T2', lang);
+    await ready(page, S === 'Api' ? 'Loc' : 'Job', lang);
     await page.locator('#mPrev').click();
     await ready(page, S, lang);
   });

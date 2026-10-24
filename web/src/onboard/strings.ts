@@ -73,5 +73,5 @@ export const LABN: Record<string, Bi> = {
   labDiff: { zh: 'AI 画画游乐场', en: 'AI drawing playground' },
   labGw: { zh: '强化学习迷宫', en: 'Reward maze' },
 };
-/* R25: the station count follows TABORDER (24 with 🔌 Api and 💻 Loc) */
+/* R25/R26: the station count follows TABORDER (27 with 🔌 Api, 💻 Loc, 🤖 Job, 🧰 Skl and 🛠 Bld) */
 for (const v of Object.values(O) as Bi[]) { if (v && typeof v.zh === 'string') { v.zh = v.zh.split('{NS}').join(String(TABORDER.length)); v.en = v.en.split('{NS}').join(String(TABORDER.length)); } }

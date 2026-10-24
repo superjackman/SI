@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>自己搭 Agent · 大白话拆解 AI</title>
+<meta name="description" content="零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。">
+<link rel="canonical" href="https://superjackman.github.io/SI/s/Bld/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/Bld/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/Bld/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/Bld/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="大白话拆解 AI">
+<meta property="og:title" content="自己搭 Agent · 大白话拆解 AI">
+<meta property="og:description" content="零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。">
+<meta property="og:url" content="https://superjackman.github.io/SI/s/Bld/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="大白话拆解 AI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="自己搭 Agent · 大白话拆解 AI">
+<meta name="twitter:description" content="零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/Bld/#lesson","name":"自己搭 Agent","headline":"自己搭 Agent · 大白话拆解 AI","description":"零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。","url":"https://superjackman.github.io/SI/s/Bld/","inLanguage":"zh-CN","learningResourceType":"图解课程","educationalLevel":"入门","isAccessibleForFree":true,"image":"https://superjackman.github.io/SI/og.png","dateModified":"2026-10-25","position":12,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从用 AI 到看懂大模型","description":"小学生也能看懂的 AI 入门：一站一站拆解 AI 应用、Agent、大模型、Transformer 和训练算力，配可交互的图和实验。","url":"https://superjackman.github.io/SI/s/","inLanguage":"zh-CN","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"大白话拆解 AI","url":"https://superjackman.github.io/SI/"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"自己搭 Agent","item":"https://superjackman.github.io/SI/s/Bld/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/Bld/" hreflang="en" lang="en">English</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/">首页</a></li><li><a href="/SI/s/">全部站点目录</a></li><li aria-current="page">自己搭 Agent</li></ol></nav>
+<main>
+<p class="lv">第 12 站 / 共 27 站</p>
+<h1>自己搭 Agent</h1>
+<p class="lead">零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。</p>
+<p>不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。</p>
+<p>为什么这样设计：懂了这个循环，看任何 Agent 产品都知道它在干什么。</p>
+<p class="open"><a href="/SI/#Bld">▶ 打开互动版（能点图、做实验、做小测）</a></p>
+<section><h2>🧒 先用大白话说</h2><p>📏 这里讲：搭 Agent 的两条路（零代码平台、写代码），每条路有哪些真实的平台和框架，最小的 Agent 循环长什么样，上线前怎么测。这里不讲：怎么训练模型、各平台的价格、海外服务怎么开通。</p><p>搭 Agent 像做一个会自己查资料的小助理：它想一想，需要就去查（用工具），查到再想，直到能回答你。</p></section>
+<section><h2>📑 这一站讲了什么</h2><ul><li><b>🛠 自己搭一个 Agent：两条路</b><br>每个 Agent 里面都是同一个小循环：模型想 → 要工具就跑工具 → 结果交回模型 → 再想，直到能回答。你可以用平台“拖”出这个循环，也可以自己写代码。</li><li><b>🧩 路线一：零代码 / 低代码平台</b><br>零代码平台像搭积木：选模型、写说明、加工具和资料，拼好就能发布，不用写一行代码。</li><li><b>⌨️ 路线二：25 行代码的 Agent 循环</b><br>写代码时，模型只会说“请帮我用这个工具”，真正去跑工具的是你的程序；跑完把结果交回去，它再想下一步。</li><li><b>✅ 上线前：先给它“考试”</b><br>上线前像考驾照：准备 10 道题反复考，限制最多走几步、最多花多少钱，并把每一步记下来。</li><li><b>⚠️ 容易混淆：工作流 vs Agent</b><br>工作流像公交车：路线固定、准时、便宜；Agent 像出租车：司机自己挑路，灵活，但可能绕路、更贵。</li><li><b>🧪 我该走哪条路？点最像你的一句</b> <small>(动手实验)</small></li></ul></section>
+<nav class="pn"><a href="/SI/s/Skl/" rel="prev">← 上一站：给 AI 装技能</a><a href="/SI/s/T2/" rel="next">下一站：Agent →</a></nav>
+<section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/T1/">应用全景</a></li><li><a href="/SI/s/U/">怎么用 Agent</a></li><li><a href="/SI/s/Ua/">跟它一起干</a></li><li><a href="/SI/s/Ub/">让它自己干</a></li><li><a href="/SI/s/Uc/">给它装本事</a></li><li><a href="/SI/s/Ud/">用得好</a></li><li><a href="/SI/s/Up/">具体产品</a></li><li><a href="/SI/s/Api/">API 调模型</a></li><li><a href="/SI/s/Loc/">本地跑模型</a></li><li><a href="/SI/s/Job/">让 AI 替我干活</a></li><li><a href="/SI/s/Skl/">给 AI 装技能</a></li><li><b>自己搭 Agent</b></li><li><a href="/SI/s/T2/">Agent</a></li><li><a href="/SI/s/T3/">大模型</a></li><li><a href="/SI/s/N/">神经网络入门</a></li><li><a href="/SI/s/T4/">Transformer 块</a></li><li><a href="/SI/s/T4a/">注意力</a></li><li><a href="/SI/s/T4b/">前馈与输出</a></li><li><a href="/SI/s/T5/">MoE 与高效架构</a></li><li><a href="/SI/s/T6/">多模态</a></li><li><a href="/SI/s/T7/">训练与强化学习</a></li><li><a href="/SI/s/T8/">速查与全景图</a></li><li><a href="/SI/s/K1/">数学 · 微积分</a></li><li><a href="/SI/s/K2/">数学 · 线性代数</a></li><li><a href="/SI/s/K3/">数学 · 概率与信息</a></li><li><a href="/SI/s/K4/">数学 · 优化</a></li><li><a href="/SI/s/K5/">数学 · 推导与证明</a></li></ol></section>
+</main>
+<footer><p>说明：本页所有数字均为教学用的示例数据，规模描述（如“几十层、几千维、几万到十几万个词”）只是常见量级，不对应任何具体模型或产品。 ⚠️ 很多“为什么有效”是设计动机 + 实验验证，不是严格证明；真实系统各不相同，而且变化很快。凡是标了“局限/说明”的地方，都是经验结论而非定理。</p></footer>
+</body>
+</html>

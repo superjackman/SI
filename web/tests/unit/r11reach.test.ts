@@ -37,7 +37,7 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
   it('every station and every part is reachable from T1', () => {
     expect(KB.TABORDER.filter((S) => !seenS.has(S))).toEqual([]);
     expect(Object.keys(KB.C).filter((p) => !seenP.has(p))).toEqual([]);
-    expect(seenS.size).toBe(24);
+    expect(seenS.size).toBe(27);
   });
   it('every lab and card is reachable: its station is, and every lab has an explicit jump link', () => {
     for (const S of KB.TABORDER) for (const [id, cls] of cardIds(st(S, L))) if (/\blab\b/.test(cls)) expect(seenE.has(id), `${S}#${id}`).toBe(true);
@@ -48,7 +48,7 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
     const one = new Set(['T1', ...zoomed.filter((z): z is string => !!z)]);
     expect(KB.TABORDER.filter((S) => !one.has(S))).toEqual([]);
   });
-  it('the "go deeper" hand-off chain alone walks T1 → … → K5 through all 24 stations', () => {
+  it('the "go deeper" hand-off chain alone walks T1 → … → K5 through all 27 stations', () => {
     const seen = new Set<string>(), qq = ['T1'];
     while (qq.length) { const S = qq.shift()!; if (seen.has(S)) continue; seen.add(S); qq.push(...attrs(handOf(st(S, L)).split('mh-b up')[0]!, 'data-go')); }
     expect(KB.TABORDER.filter((S) => !seen.has(S))).toEqual([]);

@@ -16,6 +16,9 @@ import Ud from './content/Ud';
 import Up from './content/Up';
 import Api from './content/Api';
 import Loc from './content/Loc';
+import Job from './content/Job';
+import Skl from './content/Skl';
+import Bld from './content/Bld';
 import { KPARTS, KPATHS, KSTATIONS, MATH_LINKS } from './content/math/parts';
 import { KQUIZ } from './content/math/quiz';
 import K1 from './content/math/K1';
@@ -45,7 +48,7 @@ import { SYM } from './content/symbols';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
-const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud, Up, Api, Loc, K1, K2, K3, K4, K5 };
+const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud, Up, Api, Loc, Job, Skl, Bld, K1, K2, K3, K4, K5 };
 /* the usage stations go right after T1; the math layer (K1–K5) goes after T8 as its own appendix group */
 const USIDS = Object.keys(STATIONS), KSIDS = Object.keys(KSTATIONS);
 const SIDS = [...USIDS, ...KSIDS];
@@ -390,9 +393,9 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) {
   const D: { i: string; t: Bi; s: Bi; go?: string; ch?: [string, Bi?][]; rt?: true }[] = [
     { i: '🔌', t: { zh: '我想用代码调模型', en: 'Call a model from my code' }, s: { zh: '密钥 · 第一次调用 · 算钱', en: 'keys · first call · cost' }, go: 'Api' },
     { i: '💻', t: { zh: '我想在自己电脑上跑', en: 'Run a model on my computer' }, s: { zh: '内存够不够 · 用什么工具', en: 'enough memory? · which tool' }, go: 'Loc' },
-    { i: '🤖', t: { zh: '我想让 AI 替我干活', en: 'Let an AI do tasks for me' }, s: { zh: 'Agent 是什么、怎么用', en: 'what agents are, how to use them' }, go: 'U', ch: [['Ua'], ['Ub']] },
-    { i: '🧰', t: { zh: '我想给 AI 装技能', en: 'Add skills to an AI' }, s: { zh: '工具 · MCP · 技能包', en: 'tools · MCP · skill packs' }, go: 'Uc' },
-    { i: '🛠', t: { zh: '我想自己搭一套', en: 'Build my own setup' }, s: { zh: '按顺序走这几站：', en: 'take these stops in order:' }, go: 'U', ch: [['Up'], ['Ua'], ['Ub'], ['Uc']] },
+    { i: '🤖', t: { zh: '我想让 AI 替我干活', en: 'Let an AI do tasks for me' }, s: { zh: '按事情挑 Agent · 国内产品', en: 'pick an agent by task · products' }, go: 'Job', ch: [['Ua'], ['Ub']] },
+    { i: '🧰', t: { zh: '我想给 AI 装技能', en: 'Add skills to an AI' }, s: { zh: '工具 · MCP · 技能包 · 真实目录', en: 'tools · MCP · skills · real catalogue' }, go: 'Skl', ch: [['Uc']] },
+    { i: '🛠', t: { zh: '我想自己搭一个 Agent', en: 'Build my own agent' }, s: { zh: '平台或代码 · 再看这几站：', en: 'platform or code · then these stops:' }, go: 'Bld', ch: [['Up'], ['Ua'], ['Ub'], ['Uc']] },
     { i: '🧠', t: { zh: '我想弄懂原理', en: 'Understand how it works' }, s: { zh: '选一条路线：', en: 'pick a route:' }, rt: true },
   ];
   const N = kb.TABORDER.length;

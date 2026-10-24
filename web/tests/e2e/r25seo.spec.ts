@@ -11,7 +11,7 @@ test('every sitemap URL is served and is the page it claims to be; robots.txt na
   const sm = await request.get('sitemap.xml');
   expect(sm.status()).toBe(200);
   const locs = [...(await sm.text()).matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]!);
-  expect(locs.length).toBe(1 + 2 + 48);
+  expect(locs.length).toBe(1 + 2 + 54);
   for (const u of locs) {
     expect(u.startsWith(ORIGIN + base), u).toBe(true);
     const r = await request.get(u.slice(ORIGIN.length).replace(base, './'));
@@ -47,5 +47,5 @@ test('a stop page links to its neighbours and back to the catalogue', async ({ p
   await page.locator('a[rel=prev]').click();
   await expect(page).toHaveURL(/\/s\/Api\/$/);
   await page.locator('a[href$="/s/"]').first().click();
-  await expect(page.locator('ol li a')).toHaveCount(24);
+  await expect(page.locator('ol li a')).toHaveCount(27);
 });

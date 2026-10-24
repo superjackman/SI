@@ -7,8 +7,8 @@ const STATIONS = ['T1', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', '
 /* R22: the bottom bar is the same 5 page buttons on every stop */
 const DOCK = ['toc', 'lab', 'quiz', 'prog', 'next'];
 /* every station (R13: the T1 diagram drills into all of them, including U…, K1–K5) */
-const ALLST = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
-const BADGES: Record<string, number> = { T1: 33, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
+const ALLST = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
+const BADGES: Record<string, number> = { T1: 36, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
 type SI = { __si: { state(): { station: string; popup: { id: string } | null }; openInfo(id: string): void } };
 
 /** console errors/warnings and every request that leaves localhost (must be none: no CDNs, fonts or analytics on /next/) */

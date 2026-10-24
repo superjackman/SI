@@ -8,7 +8,7 @@ import fs from 'node:fs';
 type Lang = 'zh' | 'en';
 const KEY: Record<string, number[]> = JSON.parse(fs.readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')).key;
 /* challenge links number stops in a frozen order (pre-R25 22, then the new ones), so old links keep working */
-const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5', 'Api', 'Loc'];
+const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5', 'Api', 'Loc', 'Job', 'Skl', 'Bld'];
 const b64 = (s: string) => Buffer.from(s, 'utf8').toString('base64url');
 async function at(page: Page, url: string, S: string, lang: Lang) {
   await page.goto(url);

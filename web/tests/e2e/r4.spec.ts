@@ -156,7 +156,7 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
 test('✨ progress counts quiz answers, 下一站 changes stops, progress detail → T8; ☰ → 🗺️ icons + learning map navigate', async ({ page }) => {
   await open(page, 'zh', 'T1');
   await progSheet(page);
-  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 24 站 · 测验答对 0 / 97（已答 0）');
+  await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 27 站 · 测验答对 0 / 109（已答 0）');
   await page.keyboard.press('Escape');
   await sheet(page);
   await expect(page.locator('#dkSheet .ic-leg span')).toHaveCount(18);
@@ -168,7 +168,7 @@ test('✨ progress counts quiz answers, 下一站 changes stops, progress detail
   await page.locator('html[data-si-ready="T2.zh"]').waitFor({ state: 'attached' });
   await page.locator('section#T2 #quizT2 .opt[data-q]').first().evaluate((b) => (b as HTMLElement).click());
   await progSheet(page);
-  await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 24 站');
+  await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 27 站');
   await expect(page.locator('#shProgTxt')).toContainText('（已答 1）');
   await page.keyboard.press('Escape');
   await sheet(page);

@@ -6,7 +6,7 @@ import { test, expect, type Page } from '@playwright/test';
 
 type Lang = 'zh' | 'en';
 const ready = (page: Page, S: string, lang: Lang) => page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
-const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
+const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
 const station = (page: Page) => page.evaluate(() => (window as unknown as { __si: { state(): { station: string } } }).__si.state().station);
 const strip = (page: Page) => page.locator('section.level.active .m-pn .pn-dots').first();
 async function toStrip(page: Page) {

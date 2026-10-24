@@ -7,7 +7,7 @@ import { TABORDER, tabn } from '../legacy/kb';
 import { copyText as copy } from './copy';
 import type { Bi, Lang } from '../i18n/types';
 import { inWeChat, shareURL, withFrom } from '../share/url';
-import { esc, frame, openSheet, qrBlock, refresh, rr, wrap, type Frame } from '../share/card';
+import { esc, frame, openSheet, qrBlock, refresh, rr, tokens, wrap, type Frame } from '../share/card';
 import { cleanText, encodeCh, withParam, NAME_MAX, NICK_MAX } from './codec';
 import { progress, doneDate, fmtDate, LS, LSset, type Prog } from './prog';
 import { T, fill } from './strings';
@@ -88,8 +88,8 @@ export function drawProgress(cv: HTMLCanvasElement, p: Prog, L: Lang, url: strin
   for (const l of title) { g.fillText(l, X + PAD, y); y += 84; }
   g.fillStyle = '#64748b'; g.font = `500 32px ${F}`;
   for (const l of wrap(g, T.pRule[L], TW)) { g.fillText(l, X + PAD, y - 20); y += 44; }
-  /* the map: 4 columns, rows run left → right, then right → left */
-  const cols = 4, cw = TW / cols, R = 34, top = y + 10, rows = Math.ceil(p.stops.length / cols);
+  /* the map: 4 columns (5 once there are more than 24 stops, R26), rows run left → right, then right → left */
+  const cols = p.stops.length > 24 ? 5 : 4, cw = TW / cols, R = cols > 4 ? 32 : 34, top = y + 10, rows = Math.ceil(p.stops.length / cols);
   g.font = `500 26px ${F}`;
   let legRows = 1, lw = 0;
   for (const t of [T.pLeg1, T.pLeg2, T.pLeg3]) { const w = g.measureText(t[L]).width + 40; if (lw && lw + w > TW) { legRows++; lw = 0; } lw += w + 30; }
@@ -111,7 +111,9 @@ export function drawProgress(cv: HTMLCanvasElement, p: Prog, L: Lang, url: strin
     g.fillStyle = s.lit ? '#fff' : s.opened ? '#4f46e5' : '#94a3b8'; g.font = `800 30px ${F}`; g.textAlign = 'center';
     g.fillText(String(i + 1), cx, cy + 11);
     let fs = 24, nm: string[] = [];
-    for (; fs >= 20; fs -= 2) { g.font = `600 ${fs}px ${F}`; nm = wrap(g, tabn(s.S, L), cw - 12); if (nm.length <= 2) break; }
+    /* R26: the narrower 5-column cells may shrink the name to 16 px; a size only counts if no word is split */
+    const nmT = tabn(s.S, L), fit = () => nm.length <= 2 && tokens(nmT).every((t) => g.measureText(t.trimEnd()).width <= cw - 12);
+    for (; fs >= (cols > 4 ? 16 : 20); fs -= 2) { g.font = `600 ${fs}px ${F}`; nm = wrap(g, nmT, cw - 12); if (fit()) break; }
     if (nm.length > 2) { cut = true; nm = [nm[0] as string, (nm[1] as string) + '…']; }
     names.push(nm);
     g.fillStyle = '#fff';

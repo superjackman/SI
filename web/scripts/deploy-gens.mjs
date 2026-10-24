@@ -5,6 +5,10 @@
 // the last KEEP+1 deploys (newest first), and a deploy only deletes files that no kept generation lists any more.
 // Files at fixed paths (index.html, icons…) are simply overwritten by the newest build.
 export const KEEP = 1; // previous generations kept besides the current one
+// R26: the generations listed in the last COMMITTED manifest (what was pushed, i.e. live on Pages) are pinned too, so
+// several local deploys between two pushes can never delete files the live site still needs. A pushed generation goes
+// only once it is older than PUSHED newer pushed generations (the newest PUSHED of the committed list stay).
+export const PUSHED = 3;
 
 /** generations from a manifest; the R0–R3 format {files} becomes one generation */
 export function readGens(man) {
@@ -14,14 +18,17 @@ export function readGens(man) {
   return [];
 }
 
-/** plan a deploy: the new generation first, KEEP previous ones (a re-deploy of the same build id replaces it),
- *  `remove` = files only older generations listed, `orphans(list)` = asset files no kept generation lists */
-export function plan(prev, files, id, at = null, keep = KEEP) {
+/** plan a deploy: the new generation first, KEEP previous ones (a re-deploy of the same build id replaces it), plus the
+ *  newest `pushedN` generations of the last committed manifest (`pushed`, newest first — kept even when the working
+ *  manifest lost them); `remove` = files only dropped generations listed, `orphans(list)` = asset files no kept one lists */
+export function plan(prev, files, id, at = null, keep = KEEP, pushed = [], pushedN = PUSHED) {
   const cur = { id, at, files: [...files].sort() };
   const older = prev.filter((g) => g.id !== id);
+  const pin = pushed.filter((g) => g.id !== id).slice(0, pushedN);
   const kept = [cur, ...older.slice(0, keep)];
+  for (const g of [...older.slice(keep), ...pin]) if (pin.some((p) => p.id === g.id) && !kept.some((k) => k.id === g.id)) kept.push(g);
   const live = new Set(kept.flatMap((g) => g.files));
-  const remove = [...new Set(older.slice(keep).flatMap((g) => g.files))].filter((f) => !live.has(f)).sort();
+  const remove = [...new Set(older.flatMap((g) => g.files))].filter((f) => !live.has(f)).sort();
   return { generations: kept, remove, live, orphans: (present) => present.filter((f) => /^assets\//.test(f) && !live.has(f)).sort() };
 }
 

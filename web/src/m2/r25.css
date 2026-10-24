@@ -2,7 +2,7 @@
 .lc-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 12px;align-items:end}
 .lc-g label{display:flex;flex-direction:column;gap:3px;font-size:13.5px;min-width:0}
 .lc-g select,.lc-g input[type=number]{width:100%;max-width:100%;box-sizing:border-box;min-height:36px;font-size:15px}
-.lc-g input[type=range]{width:100%}
+.lc-g input[type=range],.ctrls.lc-g>label input[type=range]{flex:none;align-self:stretch;width:100%;height:36px;min-height:0;margin:0;padding:0}
 .lc-big{font-size:1.25em;color:#0f766e}
 .lc-note{font-size:12.5px;color:#475569}
 .u-out.warn{background:#fffbeb;border-color:#fde68a}
@@ -13,3 +13,16 @@
 .u-bar .kv,.u-legend i.kv{background:#db2777}
 .u-bar .ov,.u-legend i.ov{background:#94a3b8}
 .pl-bd{padding:6px 10px;border-left:4px solid #0ea5e9;background:#f0f9ff;border-radius:6px;font-size:14px}
+/* R26 fix (a): on phones a dropdown gets the whole row, so long option labels are never cut off */
+@media (max-width:480px){.lc-g label:has(select),.lc-g label:has(input[type=range]){grid-column:1/-1}}
+/* R26: one-tap pickers (Job / Skl / Bld) */
+.pk{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 10px}
+.pk-b{min-height:40px;padding:6px 12px;border:1.5px solid #86efac;border-radius:999px;background:#fff;color:inherit;font:inherit;font-size:14.5px;cursor:pointer;max-width:100%;text-align:left;overflow-wrap:anywhere}
+.pk-b[aria-pressed=true]{background:#15803d;border-color:#15803d;color:#fff}
+.pk-b:focus-visible{outline:3px solid #0ea5e9;outline-offset:2px}
+.pk-out{border:1px solid #bbf7d0;background:#f0fdf4;border-radius:10px;padding:8px 12px;min-width:0;overflow-wrap:anywhere}
+.pk-h{margin:4px 0}
+.pk-p,.pk-c{margin:4px 0 8px;padding-left:1.2em}
+.pk-p li,.pk-c li{margin:3px 0}
+.sk-cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 14px}
+.sk-cat{min-width:0;overflow-wrap:anywhere}

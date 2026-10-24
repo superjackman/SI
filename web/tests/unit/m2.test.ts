@@ -103,15 +103,15 @@ describe('labPrompt: the four things of a brief', () => {
 describe('kb: M2 stops and parts', () => {
   it('U..Ud sit between T1 and T2, in the "more" group only (not the bottom bar)', () => {
     const i = TABORDER.indexOf('T1');
-    expect(TABORDER.slice(i, i + 10)).toEqual(['T1', ...M2, 'Up', 'Api', 'Loc', 'T2']);
+    expect(TABORDER.slice(i, i + 13)).toEqual(['T1', ...M2, 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']);
     for (const s of M2) { expect(isStation(s)).toBe(true); expect(GROUP[s]).toBe('more'); expect(KB.TABN[s]?.zh).toBeTruthy(); expect(KB.TABN[s]?.en).toBeTruthy(); }
   });
   it('every M2 part has a stop, an up link, valid zoom / down links; the hub zooms into the 4 sub-stops', () => {
     const use = Object.entries(KB.C).filter(([, c]) => c.cat === 'use');
-    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uProd', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith', 'aApi', 'aKey', 'aCompat', 'aPrice', 'lHub', 'lMem', 'lTool', 'lGguf'].sort());
+    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uProd', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith', 'aApi', 'aKey', 'aCompat', 'aPrice', 'lHub', 'lMem', 'lTool', 'lGguf', 'jHub', 'jPick', 'jCheck', 'sHub', 'sCat', 'sPerm', 'bHub', 'bFlow', 'bCode'].sort());
     for (const [k, c] of use) {
       /* uProd (R13) is the T1 diagram's entry box to the Up station */
-      expect(k === 'uProd' ? ['T1'] : /^[al][A-Z]/.test(k) ? ['Api', 'Loc'] : M2).toContain(c.t); // R25: the a…/l… parts own the Api / Loc stops
+      expect(k === 'uProd' ? ['T1'] : /^[al][A-Z]/.test(k) ? ['Api', 'Loc'] : /^[jsb][A-Z]/.test(k) ? ['Job', 'Skl', 'Bld'] : M2).toContain(c.t); // R25: the a…/l… parts own the Api / Loc stops; R26: j…/s…/b… own Job / Skl / Bld
       expect(part(c.up!), k + ' up').toBeTruthy();
       if (c.zoom) expect(isStation(c.zoom)).toBe(true);
       expect((c.dn ?? []).length, k + ' needs a link down into the principles').toBeGreaterThan(0);
@@ -120,7 +120,7 @@ describe('kb: M2 stops and parts', () => {
     }
     expect(['uWith', 'uSolo', 'uKit', 'uWell'].map((k) => part(k)!.zoom)).toEqual(['Ua', 'Ub', 'Uc', 'Ud']);
     /* R13: the products box on the T1 diagram also hangs under the usage hub */
-    expect(kids('uHub').sort()).toEqual(['uKit', 'uProd', 'uSolo', 'uWell', 'uWith']);
+    expect(kids('uHub').sort()).toEqual(['jHub', 'uKit', 'uProd', 'uSolo', 'uWell', 'uWith']); // R26: 🤖 Job hangs under the usage hub too
   });
   it('back links: principle parts in T1/T2/T3 point up to the usage parts', () => {
     const back = Object.entries(KB.C).filter(([, c]) => c.use?.length);

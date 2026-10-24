@@ -72,5 +72,5 @@ export const T = {
   close: { zh: '关闭', en: 'Close' },
 } satisfies Record<string, Bi>;
 export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(v[k] ?? ''));
-/* R25: the station count follows TABORDER (24 with 🔌 Api and 💻 Loc) */
+/* R25/R26: the station count follows TABORDER (27 with 🔌 Api, 💻 Loc, 🤖 Job, 🧰 Skl and 🛠 Bld) */
 for (const v of Object.values(T) as Bi[]) { if (v && typeof v.zh === 'string') { v.zh = v.zh.split('{NS}').join(String(TABORDER.length)); v.en = v.en.split('{NS}').join(String(TABORDER.length)); } }

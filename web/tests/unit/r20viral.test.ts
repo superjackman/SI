@@ -36,7 +36,7 @@ describe('challenge link (?ch=)', () => {
     expect([...CH_ORDER].sort()).toEqual([...TABORDER].sort());
     const n = QUIZ_KEY.T3!.length;
     expect(decodeCh(`8-2-${n}`)?.S).toBe('T3');
-    for (const S of ['Api', 'Loc']) if (QUIZ_KEY[S]) expect(decodeCh(encodeCh({ S, c: 1, n: QUIZ_KEY[S]!.length, nick: '' }))?.S).toBe(S);
+    for (const S of ['Api', 'Loc', 'Job', 'Skl', 'Bld']) if (QUIZ_KEY[S]) expect(decodeCh(encodeCh({ S, c: 1, n: QUIZ_KEY[S]!.length, nick: '' }))?.S).toBe(S);
   });
   it('rejects tampering: unknown stop, stop without a quiz, wrong question count, score > questions, junk, too long', () => {
     const n = QUIZ_KEY.T3!.length, i = CH_ORDER.indexOf('T3');
@@ -107,17 +107,17 @@ describe('lab setup on real controls', () => {
 describe('progress rule (stated on the card)', () => {
   it('a stop is lit when opened and its quiz finished; a stop without a quiz when opened', () => {
     const p = progress(['T3', 'T8'], { 'T3.0': 0 });
-    expect(p.total).toBe(24); expect(p.questions).toBe(97);
+    expect(p.total).toBe(27); expect(p.questions).toBe(109);
     expect(p.stops.find((s) => s.S === 'T8')?.lit).toBe(true);
     expect(p.stops.find((s) => s.S === 'T3')).toMatchObject({ opened: true, lit: false });
     const a = allRight();
     expect(progress(['T3'], a).lit).toBe(1);
     expect(progress([], a).lit).toBe(0); /* answers alone do not light a stop */
   });
-  it('certificate: all 24 lit AND ≥ 60 % right overall', () => {
+  it('certificate: all 27 lit AND ≥ 60 % right overall', () => {
     const a = allRight(); expect(progress(TABORDER, a).cert).toBe(true);
     expect(progress(TABORDER.slice(1), a).cert).toBe(false);
-    const need = Math.ceil(PASS * 97), wrong = { ...a }; let k = 97 - need;
+    const need = Math.ceil(PASS * 109), wrong = { ...a }; let k = 109 - need;
     for (const key of Object.keys(wrong)) { if (k-- <= 0) break; wrong[key] = (wrong[key]! + 1) % 2 + 5; }
     expect(progress(TABORDER, wrong)).toMatchObject({ correct: need, cert: true });
     const key0 = Object.keys(a).find((x) => wrong[x] === a[x])!; wrong[key0] = 9;

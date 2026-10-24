@@ -27,7 +27,9 @@ export interface Challenge { S: string; c: number; n: number; nick: string }
 /* the stop index in a link is frozen: links shared before R25 (22 stops) must still open the same stop, so new stops
    are numbered after the old ones instead of by their place in the route */
 const CH_OLD = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
-export const CH_ORDER = [...CH_OLD, ...TABORDER.filter((S) => !CH_OLD.includes(S))];
+/* R26: frozen — every stop added since keeps its number for good; later stops can only be appended */
+const CH_FROZEN = [...CH_OLD, 'Api', 'Loc', 'Job', 'Skl', 'Bld'];
+export const CH_ORDER = [...CH_FROZEN, ...TABORDER.filter((S) => !CH_FROZEN.includes(S))];
 export function encodeCh(ch: Challenge): string {
   const i = CH_ORDER.indexOf(ch.S), nick = cleanText(ch.nick, NICK_MAX);
   return i + '-' + ch.c + '-' + ch.n + (nick ? '-' + b64u(utf8(nick)) : '');

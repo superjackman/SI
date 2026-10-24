@@ -10,7 +10,7 @@ export const PRICES: Price[] = [
   { id: 'dsp', zh: 'DeepSeek · deepseek-v4-pro', en: 'DeepSeek · deepseek-v4-pro', inP: 9, hitP: 0.3, outP: 27, url: 'https://api-docs.deepseek.com/zh-cn/quick_start/pricing' },
   { id: 'glm', zh: '智谱 · GLM-5.3', en: 'Zhipu · GLM-5.3', inP: 8, hitP: 2, outP: 28, url: 'https://docs.bigmodel.cn/cn/guide/start/pricing' },
   { id: 'glmf', zh: '智谱 · GLM-5.3-Flash', en: 'Zhipu · GLM-5.3-Flash', inP: 0.8, hitP: 0.23, outP: 2.8, url: 'https://docs.bigmodel.cn/cn/guide/start/pricing' },
-  { id: 'qwen', zh: '阿里百炼 · qwen3.7-plus（≤256K，不思考）', en: 'Alibaba Model Studio · qwen3.7-plus (≤256K, non-thinking)', inP: 2, hitP: null, outP: 8, url: 'https://help.aliyun.com/zh/model-studio/model-pricing' },
+  { id: 'qwen', zh: '百炼 · qwen3.7-plus（≤256K 不思考）', en: 'Alibaba · qwen3.7-plus (≤256K, thinking off)', inP: 2, hitP: null, outP: 8, url: 'https://help.aliyun.com/zh/model-studio/model-pricing' },
   { id: 'db', zh: '火山方舟 · doubao-seed-2.1-lite', en: 'Volcano Ark · doubao-seed-2.1-lite', inP: 0.8, hitP: 0.16, outP: 2.7, url: 'https://www.volcengine.com/docs/82379/1544106' },
   { id: 'ernie', zh: '百度千帆 · ERNIE-5.1（≤32k）', en: 'Baidu Qianfan · ERNIE-5.1 (≤32k)', inP: 4, hitP: null, outP: 18, url: 'https://cloud.baidu.com/doc/qianfan/s/wmh4sv6ya' },
   { id: 'hy', zh: '腾讯混元 · Hunyuan-a13b', en: 'Tencent Hunyuan · Hunyuan-a13b', inP: 0.5, hitP: null, outP: 2, url: 'https://cloud.tencent.com/document/product/1729/97731' },
