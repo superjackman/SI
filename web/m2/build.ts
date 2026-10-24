@@ -33,6 +33,7 @@ import { M8 } from './content/ext/m8';
 import { M9 } from './content/ext/m9';
 import { M10 } from './content/ext/m10';
 import { M11 } from './content/ext/m11';
+import { M12 } from './content/ext/m12';
 import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
@@ -49,7 +50,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10, M11];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10, M11, M12];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 const XNEAR: Record<string, { after: string; f: (P: Page) => void }[]> = {};
@@ -58,6 +59,18 @@ for (const e of EXTS) {
   for (const [S, f] of Object.entries(e.cards)) (XCARDS[S] ??= []).push(f);
   for (const [S, f] of Object.entries(e.labs ?? {})) (XLABS[S] ??= []).push(f);
 }
+/* R24: "near" items on a generated station (K*, U*) are emitted by the station's own Page right after the anchor card,
+   so its page map and outline pick them up like any other card; only legacy stations go through the re-insert pass */
+const GNEAR: Record<string, { after: string; f: (P: Page) => void }[]> = {};
+for (const S of Object.keys(XNEAR)) if (SIDS.includes(S)) { GNEAR[S] = XNEAR[S]!; delete XNEAR[S]; }
+const hookNear = (P: Page) => {
+  const a = GNEAR[P.S]; if (!a) return () => undefined;
+  const seen = new Set<string>(), card = P.card.bind(P), lab = P.lab.bind(P);
+  const after = (id: string) => { for (const n of a) if (n.after === id && !seen.has(n.after + '|' + a.indexOf(n))) { seen.add(n.after + '|' + a.indexOf(n)); n.f(P); } };
+  P.card = (id, ...r) => { card(id, ...r); after(id); };
+  P.lab = (id, ...r) => { lab(id, ...r); after(id); };
+  return () => { const miss = a.filter((n) => !seen.has(n.after + '|' + a.indexOf(n))); if (miss.length) throw new Error(`near: no card ${miss.map((n) => n.after).join(', ')} on ${P.S}`); };
+};
 const XSIDS = [...new Set([...Object.keys(XCARDS), ...Object.keys(XLABS), ...Object.keys(XNEAR), ...Object.values(XPARTS).map((p) => p.t)])];
 const ALLP: Record<string, AnyPart> = { ...PARTS, ...Object.fromEntries(Object.entries(KPARTS).map(([k, p]) => [k, { ...p, cat: 'math' }])), ...XPARTS };
 const LANGS: Lang[] = ['zh', 'en'];
@@ -100,18 +113,27 @@ const W: World = { order: kb.TABORDER, path: kb.PATH, tabn: kb.TABN, part: (id) 
 const outline: Record<Lang, Record<string, OutlineRow[]>> = { zh: readJ('outline.zh.json'), en: readJ('outline.en.json') };
 /* R23: "⚠️ 容易混淆：A vs B" titles keep the ⚠️ and drop the long prefix in the outline and the page map */
 const cfShort = (s: string) => s.replace(/^⚠️\s*(容易混淆：|Easy to mix up: )/u, '⚠️ ');
+/* zh rows: half-width Latin/digits/spaces count ½, so "batch vs epoch vs step" is not chopped mid-word; a cut row ends in … */
+const fit = (s: string, max: number, L: Lang) => {
+  const cs = [...s]; let w = 0, i = 0;
+  for (; i < cs.length; i++) { w += L === 'zh' && /[\x20-\x7e]/.test(cs[i]!) ? 0.5 : 1; if (w > max) break; }
+  if (i >= cs.length) return s;
+  let out = cs.slice(0, i - 1).join(''); const sp = out.lastIndexOf(' ');
+  if (sp > out.length * 0.6 && /[A-Za-z]$/.test(out)) out = out.slice(0, sp);
+  return out.replace(/[\s/·,，、vs]+$/u, '') + '…';
+};
 const cutRow = (r: OutlineRow, L: Lang): OutlineRow => {
   const n = 20;
-  if (r[1].startsWith('⚠️')) return [r[0], [...cfShort(r[1])].slice(0, L === 'en' ? 44 : 24).join(''), r[2], r[3]];
-  if (r[2] === 'lab') return [r[0], '🧪 ' + [...r[1].replace(/^🧪\s*/, '')].slice(0, L === 'en' ? 20 : 18).join(''), 'lab', r[3]];
+  if (r[1].startsWith('⚠️')) return [r[0], fit(cfShort(r[1]), L === 'en' ? 44 : 24, L), r[2], r[3]];
+  if (r[2] === 'lab') { const b = r[1].replace(/^🧪\s*/, ''); return [r[0], '🧪 ' + (L === 'en' ? [...b].slice(0, 20).join('') : fit(b, 18, L)), 'lab', r[3]]; }
   if (r[2] === 'quiz') return r;
   return [r[0], [...r[1].replace(/^[^\p{L}\p{N}]+/u, '')].slice(0, n).join(''), '', r[3]];
 };
 for (const L of LANGS) {
   const t: T = (zh, en) => (L === 'en' ? en : zh);
   for (const S of SIDS) {
-    const P = new Page(S, L, W);
-    const o = (MODS[S] as (P: Page) => StationOut)(P);
+    const P = new Page(S, L, W), done = hookNear(P);
+    const o = (MODS[S] as (P: Page) => StationOut)(P); done();
     put(`st/${S}.${L}.json`, { cls: 'level', html: P.html(o.sub, o.one, o.why, P.stage(o.svg, o.legend)) });
     const nodes: Record<string, { title: string; mc: string; body: string }> = {};
     for (const [id, p] of Object.entries(ALLP)) if (p.t === S) nodes[id] = { title: p.n[L], mc: MC, body: popBody(id, S, p.pop(t), W, L) };
@@ -131,7 +153,7 @@ for (const L of LANGS) {
     const ca = la >= 0 ? la : qa;
     if (Pl.out.length) h = h.slice(0, qa) + `<!--m2x-->${Pl.out.join('\n')}<!--/m2x-->\n` + h.slice(qa);
     if (Pc.out.length) h = h.slice(0, ca) + `<!--m2x-->${Pc.out.join('\n')}<!--/m2x-->\n` + h.slice(ca);
-    const cut = (s: string) => [...cfShort(s)].slice(0, L === 'en' ? 18 : 16).join('');
+    const cut = (s: string) => (L === 'en' ? [...cfShort(s)].slice(0, 18).join('') : fit(cfShort(s), 16, L));
     const btn = (r: OutlineRow) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-m2x="1" data-sj="${r[0]}" data-sp="${S}">${esc(cut(r[1]))}</button>`;
     const pm = h.indexOf(`<div class="ph-map" id="pm${S}">`); if (pm < 0) throw new Error('no page map on ' + S);
     const pmEnd = h.indexOf('</div>', pm);

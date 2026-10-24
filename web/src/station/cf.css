@@ -24,3 +24,12 @@
 .eo-sent{font-size:1.3em;text-align:center;margin:8px 0}
 .eo-sent b{color:#4338ca;border-bottom:2px solid #4338ca;padding:0 4px}
 .zl.zcf{background:#fef3c7;color:#92400e}
+/* R24 labBatch (K4) */
+.bc-ck{gap:6px}
+.bc-bar{display:flex;gap:2px;height:22px;margin:8px 0;align-items:stretch;min-width:0}
+.bc-b{background:#4338ca;border-radius:2px;min-width:2px}
+.bc-b.short{background:#f59e0b}
+.bc-b.gone{background:repeating-linear-gradient(45deg,#cbd5e1 0 4px,#fff 4px 8px);border:1px dashed #94a3b8}
+.bc-more{flex:0 0 auto;font-size:.8em;align-self:center;padding-left:4px;color:#64748b}
+#bcOut table{table-layout:fixed;width:100%}
+#bcOut td:nth-child(3){font-size:.88em;color:#64748b;overflow-wrap:anywhere}

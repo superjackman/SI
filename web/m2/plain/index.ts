@@ -23,9 +23,10 @@ import Uc from './Uc';
 import Ud from './Ud';
 import Up from './Up';
 import { CF_PLAIN } from './m11';
+import { CF2_PLAIN } from './m12';
 
 export const PLAIN: Record<string, PStation> = { T1, T2, T3, N, T4, T4a, T4b, T5, T6, T7, T8, U, Ua, Ub, Uc, Ud, Up, K1, K2, K3, K4, K5 };
 /* R23: the ⚠️ mix-up cards' plain openings join their stations */
-for (const [S, c] of Object.entries(CF_PLAIN)) PLAIN[S] = { ...PLAIN[S]!, cards: { ...PLAIN[S]!.cards, ...c } };
+for (const [S, c] of [...Object.entries(CF_PLAIN), ...Object.entries(CF2_PLAIN)]) PLAIN[S] = { ...PLAIN[S]!, cards: { ...PLAIN[S]!.cards, ...c } };
 /** stations whose cards get plain openings + closed "Go deeper", and whose formulas all get symbol notes */
 export const PLAIN_STATIONS = Object.keys(PLAIN);

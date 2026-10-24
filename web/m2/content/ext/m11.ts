@@ -6,20 +6,20 @@
 import type { Page } from '../../lib';
 import { src, type Ext } from './kit';
 
-const PRE = { zh: '⚠️ 容易混淆：', en: '⚠️ Easy to mix up: ' };
+export const PRE = { zh: '⚠️ 容易混淆：', en: '⚠️ Easy to mix up: ' };
 /** the card title: prefix + the pair */
-const ti = (P: Page, zh: string, en: string) => P.t(PRE.zh + zh, PRE.en + en);
+export const ti = (P: Page, zh: string, en: string) => P.t(PRE.zh + zh, PRE.en + en);
 /** a comparison table; row[0] is the row label */
-const tb = (head: string[], rows: string[][]) => `<div class="cf-tw"><table class="cmp cf-t"><thead><tr>${head.map((h) => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+export const tb = (head: string[], rows: string[][]) => `<div class="cf-tw"><table class="cmp cf-t"><thead><tr>${head.map((h) => `<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map((c) => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 /** three-way comparisons stack as blocks (a 4-column table does not fit a phone) */
-const tri = (cols: { h: string; li: [string, string][] }[]) => `<div class="cf-g">${cols.map((c) => `<div class="cf-c"><p class="cf-ch">${c.h}</p><ul class="pts">${c.li.map(([k, v]) => `<li><b>${k}</b>${v}</li>`).join('')}</ul></div>`).join('')}</div>`;
-const one = (P: Page, s: string) => `<p class="cf-one"><b>${P.t('一句话分清：', 'In one line: ')}</b>${s}</p>`;
-const mem = (P: Page, s: string) => `<p class="cf-mem">🧠 <b>${P.t('记住：', 'Remember: ')}</b>${s}</p>`;
-const ul = (a: string[]) => `<ul class="pts">${a.map((x) => `<li>${x}</li>`).join('')}</ul>`;
-const ol = (a: string[]) => `<ol class="pts cf-ol">${a.map((x) => `<li>${x}</li>`).join('')}</ol>`;
-const jump = (_P: Page, id: string, S: string, label: string, pri = false) => `<button type="button" class="btn${pri ? ' primary' : ''}" data-sj="${id}" data-sp="${S}">${label}</button>`;
-const tryit = (P: Page, ...b: string[]) => `<p class="tryit cf-go"><b>${P.t('👉 接着看：', '👉 See also: ')}</b>${b.join(' ')}</p>`;
-const C = { cls: 'cf', zl: ['zcf', { zh: '⚠️ 容易混淆', en: '⚠️ Mix-up' }] as [string, { zh: string; en: string }] };
+export const tri = (cols: { h: string; li: [string, string][] }[]) => `<div class="cf-g">${cols.map((c) => `<div class="cf-c"><p class="cf-ch">${c.h}</p><ul class="pts">${c.li.map(([k, v]) => `<li><b>${k}</b>${v}</li>`).join('')}</ul></div>`).join('')}</div>`;
+export const one = (P: Page, s: string) => `<p class="cf-one"><b>${P.t('一句话分清：', 'In one line: ')}</b>${s}</p>`;
+export const mem = (P: Page, s: string) => `<p class="cf-mem">🧠 <b>${P.t('记住：', 'Remember: ')}</b>${s}</p>`;
+export const ul = (a: string[]) => `<ul class="pts">${a.map((x) => `<li>${x}</li>`).join('')}</ul>`;
+export const ol = (a: string[]) => `<ol class="pts cf-ol">${a.map((x) => `<li>${x}</li>`).join('')}</ol>`;
+export const jump = (_P: Page, id: string, S: string, label: string, pri = false) => `<button type="button" class="btn${pri ? ' primary' : ''}" data-sj="${id}" data-sp="${S}">${label}</button>`;
+export const tryit = (P: Page, ...b: string[]) => `<p class="tryit cf-go"><b>${P.t('👉 接着看：', '👉 See also: ')}</b>${b.join(' ')}</p>`;
+export const C = { cls: 'cf', zl: ['zcf', { zh: '⚠️ 容易混淆', en: '⚠️ Mix-up' }] as [string, { zh: string; en: string }] };
 
 /* ================= T4b: the front dictionary vs the back scoring table ================= */
 function t4b(P: Page) {
