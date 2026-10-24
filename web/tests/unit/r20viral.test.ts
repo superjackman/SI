@@ -2,7 +2,7 @@
    the progress + certificate rule, the lab setup round trip on real controls, the landing read + strip, the prompt
    limits and the named analytics events. */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { cleanText, encodeCh, decodeCh, encodeLab, decodeLab, clampVal, withParam, NICK_MAX, LAB_MAX } from '../../src/viral/codec';
+import { cleanText, encodeCh, decodeCh, CH_ORDER, encodeLab, decodeLab, clampVal, withParam, NICK_MAX, LAB_MAX } from '../../src/viral/codec';
 import { progress, stopQuiz, doneDate, fmtDate, PASS } from '../../src/viral/prog';
 import { labVals, applyLab, land, challenge, canNudge } from '../../src/viral/late';
 import { challengeURL } from '../../src/viral/cards';
@@ -27,25 +27,32 @@ describe('cleanText', () => {
 describe('challenge link (?ch=)', () => {
   it('round-trips stop, score, questions and a nickname', () => {
     const n = QUIZ_KEY.T3!.length, raw = encodeCh({ S: 'T3', c: 4, n, nick: '小明' });
-    expect(raw).toBe(`${TABORDER.indexOf('T3')}-4-${n}-${b64('小明')}`);
+    expect(raw).toBe(`${CH_ORDER.indexOf('T3')}-4-${n}-${b64('小明')}`);
     expect(decodeCh(raw)).toEqual({ S: 'T3', c: 4, n, nick: '小明' });
     expect(decodeCh(encodeCh({ S: 'K5', c: 0, n: QUIZ_KEY.K5!.length, nick: '' }))).toEqual({ S: 'K5', c: 0, n: QUIZ_KEY.K5!.length, nick: '' });
   });
+  it('stop numbers in links are frozen: pre-R25 links (22 stops) still open the same stop; new stops come after', () => {
+    expect(CH_ORDER.slice(0, 22)).toEqual(['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5']);
+    expect([...CH_ORDER].sort()).toEqual([...TABORDER].sort());
+    const n = QUIZ_KEY.T3!.length;
+    expect(decodeCh(`8-2-${n}`)?.S).toBe('T3');
+    for (const S of ['Api', 'Loc']) if (QUIZ_KEY[S]) expect(decodeCh(encodeCh({ S, c: 1, n: QUIZ_KEY[S]!.length, nick: '' }))?.S).toBe(S);
+  });
   it('rejects tampering: unknown stop, stop without a quiz, wrong question count, score > questions, junk, too long', () => {
-    const n = QUIZ_KEY.T3!.length, i = TABORDER.indexOf('T3');
-    for (const bad of [`99-1-${n}`, `${TABORDER.indexOf('T8')}-1-1`, `${i}-1-${n + 1}`, `${i}-${n + 1}-${n}`, `${i}-1`, `${i}-1-${n}-%%%`, `${i}-1-${n}-` + 'A'.repeat(70), `x${i}-1-${n}`, '', null, 5, `${i}-1-${n}-${'A'.repeat(80)}`])
+    const n = QUIZ_KEY.T3!.length, i = CH_ORDER.indexOf('T3');
+    for (const bad of [`99-1-${n}`, `${CH_ORDER.indexOf('T8')}-1-1`, `${i}-1-${n + 1}`, `${i}-${n + 1}-${n}`, `${i}-1`, `${i}-1-${n}-%%%`, `${i}-1-${n}-` + 'A'.repeat(70), `x${i}-1-${n}`, '', null, 5, `${i}-1-${n}-${'A'.repeat(80)}`])
       expect(decodeCh(bad), String(bad)).toBeNull();
     expect(decodeCh(`${i}-1-${n}-__4`)?.nick).toBe(''); /* bytes FF FE: not UTF-8 → no nickname */
   });
   it('a hostile nickname comes back cleaned and capped', () => {
-    const n = QUIZ_KEY.T3!.length, i = TABORDER.indexOf('T3');
+    const n = QUIZ_KEY.T3!.length, i = CH_ORDER.indexOf('T3');
     const d = decodeCh(`${i}-2-${n}-${b64('<b>"x"</b>' + '长'.repeat(10))}`);
     expect(d?.nick).toBe('bx/b' + '长'.repeat(8));
     expect(d!.nick).not.toMatch(/[<>"]/);
   });
   it('the link: ?lang, ch=, from= in the query before the #stop route', () => {
     const u = challengeURL('T3', 3, QUIZ_KEY.T3!.length, '', 'zh', 'challenge', loc('?from=weibo&ch=1-1-1', '#T5'));
-    expect(u).toBe(`https://superjackman.github.io/SI/?lang=zh&ch=${TABORDER.indexOf('T3')}-3-${QUIZ_KEY.T3!.length}&from=challenge#T3`);
+    expect(u).toBe(`https://superjackman.github.io/SI/?lang=zh&ch=${CH_ORDER.indexOf('T3')}-3-${QUIZ_KEY.T3!.length}&from=challenge#T3`);
   });
   it('re-sharing a page opened from a challenge / setup link drops ch= and lab=', () => {
     expect(shareURL(loc('?ch=8-1-5&lab=labGD.e30&from=lab&lang=en', '#T3'), 'zh')).toBe('https://superjackman.github.io/SI/?lang=zh#T3');
@@ -100,17 +107,17 @@ describe('lab setup on real controls', () => {
 describe('progress rule (stated on the card)', () => {
   it('a stop is lit when opened and its quiz finished; a stop without a quiz when opened', () => {
     const p = progress(['T3', 'T8'], { 'T3.0': 0 });
-    expect(p.total).toBe(22); expect(p.questions).toBe(89);
+    expect(p.total).toBe(24); expect(p.questions).toBe(97);
     expect(p.stops.find((s) => s.S === 'T8')?.lit).toBe(true);
     expect(p.stops.find((s) => s.S === 'T3')).toMatchObject({ opened: true, lit: false });
     const a = allRight();
     expect(progress(['T3'], a).lit).toBe(1);
     expect(progress([], a).lit).toBe(0); /* answers alone do not light a stop */
   });
-  it('certificate: all 22 lit AND ≥ 60 % right overall', () => {
+  it('certificate: all 24 lit AND ≥ 60 % right overall', () => {
     const a = allRight(); expect(progress(TABORDER, a).cert).toBe(true);
     expect(progress(TABORDER.slice(1), a).cert).toBe(false);
-    const need = Math.ceil(PASS * 89), wrong = { ...a }; let k = 89 - need;
+    const need = Math.ceil(PASS * 97), wrong = { ...a }; let k = 97 - need;
     for (const key of Object.keys(wrong)) { if (k-- <= 0) break; wrong[key] = (wrong[key]! + 1) % 2 + 5; }
     expect(progress(TABORDER, wrong)).toMatchObject({ correct: need, cert: true });
     const key0 = Object.keys(a).find((x) => wrong[x] === a[x])!; wrong[key0] = 9;

@@ -103,15 +103,15 @@ describe('labPrompt: the four things of a brief', () => {
 describe('kb: M2 stops and parts', () => {
   it('U..Ud sit between T1 and T2, in the "more" group only (not the bottom bar)', () => {
     const i = TABORDER.indexOf('T1');
-    expect(TABORDER.slice(i, i + 8)).toEqual(['T1', ...M2, 'Up', 'T2']);
+    expect(TABORDER.slice(i, i + 10)).toEqual(['T1', ...M2, 'Up', 'Api', 'Loc', 'T2']);
     for (const s of M2) { expect(isStation(s)).toBe(true); expect(GROUP[s]).toBe('more'); expect(KB.TABN[s]?.zh).toBeTruthy(); expect(KB.TABN[s]?.en).toBeTruthy(); }
   });
   it('every M2 part has a stop, an up link, valid zoom / down links; the hub zooms into the 4 sub-stops', () => {
     const use = Object.entries(KB.C).filter(([, c]) => c.cat === 'use');
-    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uProd', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith'].sort());
+    expect(use.map(([k]) => k).sort()).toEqual(['uBg', 'uChat', 'uCli', 'uCtx', 'uCua', 'uHub', 'uIde', 'uKit', 'uMcp', 'uMulti', 'uProd', 'uPrompt', 'uRoutine', 'uSkill', 'uSolo', 'uTool', 'uWell', 'uWith', 'aApi', 'aKey', 'aCompat', 'aPrice', 'lHub', 'lMem', 'lTool', 'lGguf'].sort());
     for (const [k, c] of use) {
       /* uProd (R13) is the T1 diagram's entry box to the Up station */
-      expect(k === 'uProd' ? ['T1'] : M2).toContain(c.t);
+      expect(k === 'uProd' ? ['T1'] : /^[al][A-Z]/.test(k) ? ['Api', 'Loc'] : M2).toContain(c.t); // R25: the a…/l… parts own the Api / Loc stops
       expect(part(c.up!), k + ' up').toBeTruthy();
       if (c.zoom) expect(isStation(c.zoom)).toBe(true);
       expect((c.dn ?? []).length, k + ' needs a link down into the principles').toBeGreaterThan(0);

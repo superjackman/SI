@@ -1,7 +1,7 @@
 /* R21 onboarding (lazy chunk, loaded by viral/late.ts after a stop is up; nothing here is in the first load):
    - first visit: a welcome card above the page head (what this is, 3 steps, start the tour, pick a route); never a pop-up,
      × or any button dismisses it for good; ☰ menu → 「👋 新手入门」 shows it again
-   - the kids' route (6 stops, each "read 🧒 → 1 lab → quiz") or the full 22-stop route
+   - the kids' route (6 stops, each "read 🧒 → 1 lab → quiz") or the full route (all stops)
    - a row under the 🧒 opening: route k/6 · 🧪 labs on this page · ✨ lit n/22 · next stop; and a next-stop line after the quiz
    - one-time coach marks for the header (skippable, no mask: the page stays usable), then one-time tips next to a ⤵ button,
      a 🔒 只读 badge and the dot strip when they first come into view
@@ -192,8 +192,9 @@ function hdrLabels(L: Lang) {
 }
 
 /* ---- welcome card ---- */
+let doorBack = () => {};
 function welcome(sec: HTMLElement, S: string, L: Lang, again = false) {
-  sec.querySelector('.ob-wel')?.remove();
+  doorBack(); sec.querySelector('.ob-wel')?.remove();
   const c = el('section', 'ob-wel'); c.setAttribute('aria-labelledby', 'obWelT');
   const h = el('h2', '', O.wTitle[L]); h.id = 'obWelT';
   const x = btn('vr-x ob-x', '', () => done('x'), 'onb-x'); x.innerHTML = IC.x; x.setAttribute('aria-label', O.wClose[L]); x.title = O.wClose[L];
@@ -205,11 +206,17 @@ function welcome(sec: HTMLElement, S: string, L: Lang, again = false) {
   rr.append(btn('ob-b', O.wKid[L], () => { setRoute('kid'); done('kid'); }, 'onb-kid'), btn('ob-b', O.wAll[L], () => { setRoute('all'); done('all'); }, 'onb-all'));
   const why = el('p', 'ob-why', O.rWhy[L]);
   const bt = btn('ob-lnk', O.wBtns[L], () => done('btns'), 'onb-btns');
-  c.append(x, h, lead, ol, tour, pk, rr, why, bt);
+  /* R25: on T1 the "I want to…" doorways stand in for the route picker (their 🧠 door picks a route), so the first
+     screen has one block, not two; they go back to their place under the page head when the card closes */
+  const door = sec.querySelector<HTMLElement>('.m-door'), mark = door?.previousSibling ?? null;
+  if (door) { c.append(x, h, lead, ol, tour, door, bt); door.addEventListener('click', onDoor); } else c.append(x, h, lead, ol, tour, pk, rr, why, bt);
+  function onDoor(e: Event) { if ((e.target as Element).closest?.('button')) done('door'); }
+  doorBack = () => { if (!door || !c.contains(door)) return; door.removeEventListener('click', onDoor); if (mark?.parentNode) mark.parentNode.insertBefore(door, mark.nextSibling); else sec.querySelector('.pl-top')?.before(door); doorBack = () => {}; };
   const ph = sec.querySelector('.pagehead'); if (ph) ph.before(c); else sec.prepend(c);
   ev(again ? 'onb-reopen' : 'onb-show');
   function done(how: string) {
-    LSset(K.onb, '1'); ev('onb-' + how); c.remove();
+    LSset(K.onb, '1'); ev('onb-' + how); doorBack(); c.remove();
+    if (how === 'door') { setTimeout(() => coachOnce(L), 600); return; } /* the door's own click (App.tsx) goes on to its stop or route */
     if (how === 'kid') { const r = ROUTE_S.includes(S) ? null : nextStop(S, 'kid', litNow()); if (r) { go(r); setTimeout(() => coachOnce(L), 600); return; } }
     cur?.draw();
     if (how === 'tour') return; /* coach marks follow when the tour ends */
@@ -310,6 +317,6 @@ export function mountOnboard(sec: HTMLElement, S: string, L: Lang): () => void {
   if (fresh && S === first) { if (!LS(K.onb) && st().tour == null && !sec.querySelector('.vr-ban')) welcome(sec, S, L); hdrLabels(L); } else hlOff?.();
   const offT = tips(sec, L);
   /* coach marks after the tour (started from the welcome card or the menu) ends */
-  const unsub = useApp.subscribe((s, p) => { if (p.tour != null && s.tour == null && fresh) setTimeout(() => coachOnce(cur?.L ?? L), 400); if (s.tour != null) { const w = sec.querySelector('.ob-wel'); if (w) { LSset(K.onb, '1'); w.remove(); } killBub(); } });
-  return () => { unsub(); offT(); R.off(); sec.querySelector('.ob-wel')?.remove(); if (bub?.el.classList.contains('tip')) killBub(); if (bub && !document.body.contains(bub.el)) bub = null; if (cur?.sec === sec) cur = null; };
+  const unsub = useApp.subscribe((s, p) => { if (p.tour != null && s.tour == null && fresh) setTimeout(() => coachOnce(cur?.L ?? L), 400); if (s.tour != null) { const w = sec.querySelector('.ob-wel'); if (w) { LSset(K.onb, '1'); doorBack(); w.remove(); } killBub(); } });
+  return () => { unsub(); offT(); R.off(); doorBack(); sec.querySelector('.ob-wel')?.remove(); if (bub?.el.classList.contains('tip')) killBub(); if (bub && !document.body.contains(bub.el)) bub = null; if (cur?.sec === sec) cur = null; };
 }

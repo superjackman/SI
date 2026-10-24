@@ -7,7 +7,8 @@ import fs from 'node:fs';
 
 type Lang = 'zh' | 'en';
 const KEY: Record<string, number[]> = JSON.parse(fs.readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')).key;
-const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
+/* challenge links number stops in a frozen order (pre-R25 22, then the new ones), so old links keep working */
+const ORDER = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5', 'Api', 'Loc'];
 const b64 = (s: string) => Buffer.from(s, 'utf8').toString('base64url');
 async function at(page: Page, url: string, S: string, lang: Lang) {
   await page.goto(url);
@@ -106,7 +107,7 @@ test('challenge: tampered or hostile links show no banner and run nothing', asyn
   await expect(page.locator('.vr-ban.ch')).toHaveCount(0);
 });
 
-test('progress card + certificate: the rule is stated, the map fits, the certificate needs all 22 + 60 %, name stays local', async ({ page }) => {
+test('progress card + certificate: the rule is stated, the map fits, the certificate needs every stop + 60 %, name stays local', async ({ page }) => {
   test.setTimeout(60_000);
   const ans: Record<string, number> = {}; for (const [S, k] of Object.entries(KEY)) k.forEach((r, i) => { ans[S + '.' + i] = r; });
   await at(page, './?lang=zh#T1', 'T1', 'zh');
@@ -124,7 +125,7 @@ test('progress card + certificate: the rule is stated, the map fits, the certifi
     await expect(page.locator('#cardPanel img.cp-img[data-kind=progress]')).toHaveAttribute('data-fit', '1');
     await page.keyboard.press('Escape');
   }
-  /* all 22 opened: certificate offered; from the menu too */
+  /* all stops opened: certificate offered; from the menu too */
   await page.evaluate((o) => localStorage.setItem('aiexp.v2.visited', JSON.stringify(o)), ORDER);
   await page.locator('#bnav [data-bn="prog"]').click();
   await expect(page.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);

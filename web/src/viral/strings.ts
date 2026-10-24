@@ -1,6 +1,7 @@
 /* R20 share mechanics: their own words (lazy chunk; nothing here is in the first load). Plain words a primary-school
    pupil can read. {x} placeholders are filled by fill(). */
 import type { Bi } from '../i18n/types';
+import { TABORDER } from '../legacy/kb';
 export const T = {
   /* quiz challenge */
   chBtn: { zh: '考考朋友', en: 'Challenge a friend' },
@@ -42,7 +43,7 @@ export const T = {
   pScore: { zh: '小测一共答对 {c} / {q} 题', en: 'Quiz answers right: {c} of {q}' },
   pScan: { zh: '扫码一起来学', en: 'Scan to learn with me' },
   pAlt: { zh: '点亮图：{x}/{t} 站', en: 'Progress card: {x} of {t} stops' },
-  pHint: { zh: '点亮规则：打开过这一站，并做完它的小测（没有小测的站，打开就算）。22 站全部点亮，而且小测一共答对六成以上，就能领结业证书。', en: 'How a stop lights up: open it and finish its quiz (a stop without a quiz lights up when you open it). Light up all 22 stops and get at least 6 in 10 quiz answers right to earn the certificate.' },
+  pHint: { zh: '点亮规则：打开过这一站，并做完它的小测（没有小测的站，打开就算）。{NS} 站全部点亮，而且小测一共答对六成以上，就能领结业证书。', en: 'How a stop lights up: open it and finish its quiz (a stop without a quiz lights up when you open it). Light up all {NS} stops and get at least 6 in 10 quiz answers right to earn the certificate.' },
   pToCert: { zh: '领结业证书', en: 'Get my certificate' },
   pToMap: { zh: '看点亮图', en: 'See progress card' },
   cHead: { zh: '结业证书', en: 'Certificate' },
@@ -71,3 +72,5 @@ export const T = {
   close: { zh: '关闭', en: 'Close' },
 } satisfies Record<string, Bi>;
 export const fill = (s: string, v: Record<string, string | number>) => s.replace(/\{(\w+)\}/g, (_, k: string) => String(v[k] ?? ''));
+/* R25: the station count follows TABORDER (24 with 🔌 Api and 💻 Loc) */
+for (const v of Object.values(T) as Bi[]) { if (v && typeof v.zh === 'string') { v.zh = v.zh.split('{NS}').join(String(TABORDER.length)); v.en = v.en.split('{NS}').join(String(TABORDER.length)); } }

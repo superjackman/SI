@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>训练与强化学习 · 大白话拆解 AI</title>
+<meta name="description" content="本事不是写出来的，是练出来的。本事不是写出来的，是练出来的：先用海量文本自学“猜下一个词”，再看示范学格式，最后用奖励和偏好打磨。">
+<link rel="canonical" href="https://superjackman.github.io/SI/s/T7/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/T7/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/T7/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/T7/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="大白话拆解 AI">
+<meta property="og:title" content="训练与强化学习 · 大白话拆解 AI">
+<meta property="og:description" content="本事不是写出来的，是练出来的。本事不是写出来的，是练出来的：先用海量文本自学“猜下一个词”，再看示范学格式，最后用奖励和偏好打磨。">
+<meta property="og:url" content="https://superjackman.github.io/SI/s/T7/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="大白话拆解 AI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="训练与强化学习 · 大白话拆解 AI">
+<meta name="twitter:description" content="本事不是写出来的，是练出来的。本事不是写出来的，是练出来的：先用海量文本自学“猜下一个词”，再看示范学格式，最后用奖励和偏好打磨。">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/T7/#lesson","name":"训练与强化学习","headline":"训练与强化学习 · 大白话拆解 AI","description":"本事不是写出来的，是练出来的。本事不是写出来的，是练出来的：先用海量文本自学“猜下一个词”，再看示范学格式，最后用奖励和偏好打磨。","url":"https://superjackman.github.io/SI/s/T7/","inLanguage":"zh-CN","learningResourceType":"图解课程","educationalLevel":"入门","isAccessibleForFree":true,"image":"https://superjackman.github.io/SI/og.png","dateModified":"2026-10-25","position":18,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从用 AI 到看懂大模型","description":"小学生也能看懂的 AI 入门：一站一站拆解 AI 应用、Agent、大模型、Transformer 和训练算力，配可交互的图和实验。","url":"https://superjackman.github.io/SI/s/","inLanguage":"zh-CN","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"大白话拆解 AI","url":"https://superjackman.github.io/SI/"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"训练与强化学习","item":"https://superjackman.github.io/SI/s/T7/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/T7/" hreflang="en" lang="en">English</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/">首页</a></li><li><a href="/SI/s/">全部站点目录</a></li><li aria-current="page">训练与强化学习</li></ol></nav>
+<main>
+<p class="lv">第 18 站 / 共 24 站</p>
+<h1>训练与强化学习</h1>
+<p class="lead">本事不是写出来的，是练出来的。</p>
+<p>本事不是写出来的，是练出来的：先用海量文本自学“猜下一个词”，再看示范学格式，最后用奖励和偏好打磨。</p>
+<p>为什么这样设计：规则写不完，但例子和反馈可以无限多；让模型从数据里自己总结规律。</p>
+<p class="open"><a href="/SI/#T7">▶ 打开互动版（能点图、做实验、做小测）</a></p>
+<section><h2>🧒 先用大白话说</h2><p>模型的本事不是一条条写进去的，是练出来的，就像学说话：先听大量的话自己琢磨（自学），再照着老师的示范练（模仿），最后做对了有表扬、做错了要改（奖励）。点图里的方块看每一段。</p></section>
+<section><h2>📑 这一站讲了什么</h2><ul><li><b>训练与强化学习：本事是怎么练出来的</b><br>从一个神经元讲起，到大模型的四段训练。点方块看详情；在左上角 ☰ 菜单里切到“🔥 训练时”可以看到哪些阶段在改参数。</li><li><b>① 人工神经网络基础</b><br>神经网络像一台有很多旋钮的机器：放进数字，吐出数字。一开始旋钮是乱拧的，每做错一道题，就算出每个旋钮该往哪边拧一点点，练很多遍就准了。下面可以调一个“小格子”（神经元）的旋钮…</li><li><b>② 自监督：从数据本身造题</b><br>自学的窍门是自己给自己出题：把一句话的后半截遮住，猜被遮住的词，答案就在原文里，不用老师批改。一篇文章能出成百上千道这样的题。</li><li><b>③ 监督微调：照着示范学</b><br>照着示范学，就像抄写范文：人写好“问题 → 好回答”，模型照着学回答的格式和习惯，比如什么时候该去查天气。</li><li><b>④ 强化学习：试错 + 奖励</b><br>强化学习像训练小狗：做对了给零食，做错了没有，它慢慢就知道怎么做最划算。下面的小机器人在迷宫里乱走，到终点加分、掉坑扣分，每走一步也扣一点。ε 是“多爱乱试”，γ…</li><li><b>⑤ 大模型里的强化学习：偏好对齐 &amp; 可验证奖励</b><br>“好回答”很难写成规则，但人很容易比较两个回答哪个更好。把很多这样的比较教给一个“评委模型”，再让大模型去讨评委喜欢，同时拉着它别跑偏太远。你来当一次标注员，点你更喜欢的回答。</li><li><b>⚠️ 容易混淆：预训练 vs 微调 vs 偏好对齐</b><br>大模型像学生上三段学：先自己读遍图书馆（预训练），再跟老师做例题（微调），最后按老师打分改进（偏好对齐）。三段都在改脑子里的数。</li><li><b>⑥ 数据与算力</b><br>练出大模型要两样“燃料”：很多很多好的练习材料，和很多很多台算得快的机器。一般来说越多越好，但好处会越来越小，这是试出来的规律，不是定律。</li><li><b>🧩 分布式并行：为什么要上万张卡，卡之间怎么分工</b><br>一台机器装不下、也算不完，就分给很多台机器：可以每台都做同样的事、分不同的题（像全班同时做不同的卷子）；也可以把一个大活切开，每台做一部分（像流水线）。</li><li><b>🧹 数据漏斗：从网页到训练语料，再加合成数据</b><br>练习材料像淘米：从网上抓来的文字很多但很杂，要去掉广告和重复的、挑出写得好的，再按比例混好。也可以让已有的模型帮忙编一些练习题。</li><li><b>🛠️ Agent 的强化学习：在真环境里练“把事做成”</b><br>让 AI 学“把事办成”：给它一个真实的任务（比如修好一段程序），它自己查、改、试，测试通过就有奖励。和迷宫里的小机器人是一个道理，只是迷宫换成了真任务。</li><li><b>🛡️ 模型侧的安全：红队、越狱、宪法式规则</b><br>除了在应用外面加护栏，训练时也要教模型守规矩：请人专门扮坏人来找漏洞，把找到的问题拿去再练；或者写一份原则清单，让模型照着原则检查、改正自己的回答。坏人的招数会不断翻新…</li><li><b>📏 怎么看排行榜：评测、刷榜与数据污染</b><br>排行榜分数像考试成绩：如果考题提前泄露进了练习材料，分数就会虚高；考法不同，分数也不同。最靠谱的办法是用你自己的一小套真实任务考一考。</li><li><b>📈 规模规律：模型、数据、算力怎么一起长</b><br>人们发现一个规律：模型越大、材料越多、机器越多，错误就按一个很稳的比例往下降，所以能先用小模型试，再估计大模型会怎样。花同样的钱，模型大小和材料多少最好一起长。</li><li><b>🧪 Chinchilla 规模公式：给定算力，模型该多大、数据该多少</b> <small>(动手实验)</small></li><li><b>🧯 正则化：别让模型把训练题背下来</b><br>只会背题的学生，换一套题就不会了。防止模型死记硬背的办法有：练的时候随机让一部分“格子”休息、让旋钮别拧得太大，以及在“没见过的题”上成绩开始变差时就停。</li><li><b>🔲 池化与特征层级：从边缘到物体</b><br>看图时，先找小图案（边、角），再把图缩小一点、每一小块只留最明显的，一层层往上，就能从边和角认出纹理、部件，最后认出整个物体。东西挪一点点位置，也不太影响结果。</li><li><b>🧰 训练与评测的三个常用算式：DPO、学习率曲线、pass@k</b><br>三个训练和打分时常用的小算式，下面各有一个实验室：怎么按“A 比 B 好”来调模型；练习时步子先慢慢放大、再慢慢收小；以及“多试几次，至少做对一次”的概率怎么算。</li><li><b>🧪 学习率与过拟合：拟合一条曲线</b> <small>(动手实验)</small></li><li><b>🧪 强化学习迷宫：你来摆墙、陷阱和奖励</b> <small>(动手实验)</small></li><li><b>🧪 池化：挪一格，结果变不变？</b> <small>(动手实验)</small></li><li><b>🧪 DPO：一对回答的损失怎么算</b> <small>(动手实验)</small></li><li><b>🧪 学习率曲线与梯度裁剪</b> <small>(动手实验)</small></li><li><b>🧪 pass@k：多试几次，做对的概率</b> <small>(动手实验)</small></li></ul></section>
+<nav class="pn"><a href="/SI/s/T6/" rel="prev">← 上一站：多模态</a><a href="/SI/s/T8/" rel="next">下一站：速查与全景图 →</a></nav>
+<section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/T1/">应用全景</a></li><li><a href="/SI/s/U/">怎么用 Agent</a></li><li><a href="/SI/s/Ua/">跟它一起干</a></li><li><a href="/SI/s/Ub/">让它自己干</a></li><li><a href="/SI/s/Uc/">给它装本事</a></li><li><a href="/SI/s/Ud/">用得好</a></li><li><a href="/SI/s/Up/">具体产品</a></li><li><a href="/SI/s/Api/">API 调模型</a></li><li><a href="/SI/s/Loc/">本地跑模型</a></li><li><a href="/SI/s/T2/">Agent</a></li><li><a href="/SI/s/T3/">大模型</a></li><li><a href="/SI/s/N/">神经网络入门</a></li><li><a href="/SI/s/T4/">Transformer 块</a></li><li><a href="/SI/s/T4a/">注意力</a></li><li><a href="/SI/s/T4b/">前馈与输出</a></li><li><a href="/SI/s/T5/">MoE 与高效架构</a></li><li><a href="/SI/s/T6/">多模态</a></li><li><b>训练与强化学习</b></li><li><a href="/SI/s/T8/">速查与全景图</a></li><li><a href="/SI/s/K1/">数学 · 微积分</a></li><li><a href="/SI/s/K2/">数学 · 线性代数</a></li><li><a href="/SI/s/K3/">数学 · 概率与信息</a></li><li><a href="/SI/s/K4/">数学 · 优化</a></li><li><a href="/SI/s/K5/">数学 · 推导与证明</a></li></ol></section>
+</main>
+<footer><p>说明：本页所有数字均为教学用的示例数据，规模描述（如“几十层、几千维、几万到十几万个词”）只是常见量级，不对应任何具体模型或产品。 ⚠️ 很多“为什么有效”是设计动机 + 实验验证，不是严格证明；真实系统各不相同，而且变化很快。凡是标了“局限/说明”的地方，都是经验结论而非定理。</p></footer>
+</body>
+</html>

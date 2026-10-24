@@ -52,6 +52,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   });
 
   test(`${lang}: following "go deeper" from T1 walks the guided path to K5, and "one level up" goes back`, async ({ page }) => {
+    test.setTimeout(90_000); /* R25: the path now runs through Api and Loc too */
     await open(page, 'T1', lang);
     const seen: string[] = ['T1'];
     for (let i = 0; i < 40; i++) {

@@ -15,6 +15,8 @@ export const TXT: Record<string, BT> = {
   user: b(['🙋 用户的一句话', '“帮我查明天杭州天气', '并加个带伞提醒”'], ['🙋 The user’s request', '“Check tomorrow’s weather in', 'Hangzhou, add an umbrella reminder”']),
   uHub: b(['怎么用 Agent', '四种用法总览'], ['Using agents', 'the four ways']),
   uProd: b(['具体产品', '按用法找产品'], ['Products', 'by way of use']),
+  aApi: b(['🔌 用代码调模型', 'API · 密钥 · 算钱'], ['🔌 Call from code', 'API · keys · cost']),
+  lHub: b(['💻 自己电脑上跑', '内存 · 工具 · 下载'], ['💻 Run it locally', 'memory · runners · files']),
   uWith: b(['跟它一起干', '你看着、随时改'], ['Work with it', 'you watch and steer']),
   uSolo: b(['让它自己干', '交代完就放手'], ['Let it run', 'hand off, check later']),
   uKit: b(['给它装本事', '工具 · 技能 · MCP'], ['Extend it', 'tools · skills · MCP']),
@@ -77,7 +79,7 @@ const R = (...ids: string[]): Row => ({ ids });
 const K = (id: string): Row => ({ ids: [id], w: 132 });
 export const BANDS: Band[] = [
   { k: 'you', t: { zh: '① 你 · 怎么用它', en: '① You · how you use it' }, fill: '#f0fdf4',
-    m: [R('user'), R('uHub', 'uProd'), R('uWith', 'uSolo'), R('uKit', 'uWell')], wd: [R('user'), R('uHub', 'uWith', 'uSolo', 'uKit', 'uWell', 'uProd')] },
+    m: [R('user'), R('uHub', 'uProd'), R('uWith', 'uSolo'), R('uKit', 'uWell'), R('aApi', 'lHub')], wd: [R('user'), R('uHub', 'uWith', 'uSolo', 'uKit', 'uWell', 'uProd'), R('aApi', 'lHub')] },
   { k: 'app', t: { zh: '② 应用层（普通代码，不训练）', en: '② App layer (plain code)' }, fill: '#fdf4ff',
     m: [R('app'), R('plan', 'tools', 'memory'), R('loop', 'guard')], wd: [R('app'), R('plan', 'tools', 'memory', 'loop', 'guard')] },
   { k: 'llm', t: { zh: '③ 大模型（负责“想”和“写”）', en: '③ The model (thinks and writes)' }, fill: '#eef2ff',

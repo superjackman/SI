@@ -50,6 +50,13 @@ function onDocClick(e: MouseEvent) {
   if (sj) { e.preventDefault(); const sec = sj.dataset.sp ?? ''; jumpTo(sj.dataset.sj ?? '', sec); return; } /* R12: jumpTo switches station first and scrolls once it has rendered */
   const jb = t.closest<HTMLElement>('[data-jump]'); if (jb) { jumpTo(jb.dataset.jump ?? '', jb.dataset.lv); return; }
   const z = t.closest<HTMLElement>('[data-zoom]'); if (z) { closeInfo(); go(z.dataset.zoom ?? ''); return; }
+  /* R25: the 🧠 doorway on T1 picks a route (same key and event as the onboarding picker); the kids' route starts on T1 */
+  const rt = t.closest<HTMLElement>('[data-route]');
+  if (rt) {
+    const r = rt.dataset.route; if (r === 'kid' || r === 'all') { try { localStorage.setItem('aiexp.v2.route', r); } catch { /* private mode */ } document.dispatchEvent(new Event('si-route')); }
+    if (rt.dataset.go) { closeInfo(); go(rt.dataset.go); } else rt.closest('.level')?.querySelector('.ob-row,.pl-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    return;
+  }
   const g = t.closest<HTMLElement>('[data-go]'); if (g) { closeInfo(); go(g.dataset.go ?? ''); return; }
   const o = t.closest<HTMLElement>('[data-open]'); if (o) { openAnywhere(o.dataset.open ?? ''); return; }
   const cc = t.closest<HTMLElement>('.cc-h'); if (cc) { const c = cc.closest<HTMLElement>('.card'); if (c) setCard(c, c.classList.contains('cc-closed')); return; }

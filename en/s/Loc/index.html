@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Run models locally · AI, explained plainly</title>
+<meta name="description" content="Will it fit, which runner, which file. Running locally: download an open-weights model and run it on your own computer; data stays home and there is no…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/Loc/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/Loc/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/Loc/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/Loc/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Run models locally · AI, explained plainly">
+<meta property="og:description" content="Will it fit, which runner, which file. Running locally: download an open-weights model and run it on your own computer; data stays home and there is no…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/Loc/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Run models locally · AI, explained plainly">
+<meta name="twitter:description" content="Will it fit, which runner, which file. Running locally: download an open-weights model and run it on your own computer; data stays home and there is no…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/Loc/#lesson","name":"Run models locally","headline":"Run models locally · AI, explained plainly","description":"Will it fit, which runner, which file. Running locally: download an open-weights model and run it on your own computer; data stays home and there is no…","url":"https://superjackman.github.io/SI/en/s/Loc/","inLanguage":"en","learningResourceType":"illustrated lesson","educationalLevel":"beginner","isAccessibleForFree":true,"image":"https://superjackman.github.io/SI/og.png","dateModified":"2026-10-25","position":9,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from using AI to understanding LLMs","description":"A plain-language AI primer: stop by stop through AI apps, agents, LLMs, the Transformer and training, with interactive diagrams and labs.","url":"https://superjackman.github.io/SI/en/s/","inLanguage":"en","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"AI, explained plainly","url":"https://superjackman.github.io/SI/"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Run models locally","item":"https://superjackman.github.io/SI/en/s/Loc/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/Loc/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li aria-current="page">Run models locally</li></ol></nav>
+<main>
+<p class="lv">Stop 9 of 24</p>
+<h1>Run models locally</h1>
+<p class="lead">Will it fit, which runner, which file.</p>
+<p>Running locally: download an open-weights model and run it on your own computer; data stays home and there is no per-token bill, but it must fit in memory.</p>
+<p>Why it’s designed this way: Privacy, working offline, or wanting to tinker all lead here.</p>
+<p class="open"><a href="/SI/?lang=en#Loc">▶ Open the interactive version (tap the diagram, try labs, take the quiz)</a></p>
+<section><h2>🧒 In plain words</h2><p>📏 Covered here: how big a model your computer can run, which tools to use, where to download, how to read file names. Not covered: training models, or reaching overseas sites.</p><p>Running locally is like inviting a chef to your home: the ingredients (your data) never leave, and there is no per-dish bill; but the kitchen (memory) must be big enough, and the chef is usually not as good as a top restaurant (the largest cloud models).</p></section>
+<section><h2>📑 What this stop covers</h2><ul><li><b>💻 Running locally: the model computes on your own computer</b><br>Models with “open weights” can be downloaded and run on your own computer or server, without calling someone else’s API.</li><li><b>🧮 Will it fit: estimating memory</b><br>The model has to be loaded into memory to run. Size ≈ number of parameters × bits each ÷ 8, plus the “scratch paper” the chat uses (the KV cache). 8 billion parameters at a…</li><li><b>🧰 Four common runners</b><br>A runner is like a video player and the model file like a film. Beginners start with Ollama (command line) or LM Studio (a desktop app); both can open a local API in the same…</li><li><b>📦 Where to download, and what</b><br>Where to download? In China, use ModelScope or the hf-mirror mirror. Pick the “Instruct” (chat) version, and check the licence before use to see whether commercial use is allowed.</li><li><b>🏷️ Reading file names: GGUF and Q4_K_M</b><br>A model file name is like a product label: 8B is “how big”, Instruct is “chats well”, Q4_K_M is “how many bits, which method, medium size”, and .gguf is “which format”.</li><li><b>⚠️ Easy to mix up: file size vs memory while running</b><br>The downloaded file is only the “recipe”; actually cooking needs plates and scratch space (the KV cache). So memory while running is bigger than the file, and grows with the chat.</li><li><b>⚠️ Easy to mix up: open source vs open weights</b><br>Open weights means “you can take the dish home”; open source (by the OSI definition) also publishes “the recipe and where ingredients came from” (data information and code).…</li><li><b>🧪 Memory calculator: will this model fit on my computer?</b> <small>(hands-on lab)</small></li></ul></section>
+<nav class="pn"><a href="/SI/en/s/Api/" rel="prev">← Previous stop: Model APIs</a><a href="/SI/en/s/T2/" rel="next">Next stop: Agent →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/T1/">App overview</a></li><li><a href="/SI/en/s/U/">Using agents</a></li><li><a href="/SI/en/s/Ua/">Work alongside it</a></li><li><a href="/SI/en/s/Ub/">Let it run alone</a></li><li><a href="/SI/en/s/Uc/">Extend it</a></li><li><a href="/SI/en/s/Ud/">Use it well</a></li><li><a href="/SI/en/s/Up/">Products</a></li><li><a href="/SI/en/s/Api/">Model APIs</a></li><li><b>Run models locally</b></li><li><a href="/SI/en/s/T2/">Agent</a></li><li><a href="/SI/en/s/T3/">LLM</a></li><li><a href="/SI/en/s/N/">Neural Network Basics</a></li><li><a href="/SI/en/s/T4/">Transformer block</a></li><li><a href="/SI/en/s/T4a/">Attention</a></li><li><a href="/SI/en/s/T4b/">FFN &amp; output</a></li><li><a href="/SI/en/s/T5/">MoE &amp; efficiency</a></li><li><a href="/SI/en/s/T6/">Multimodal</a></li><li><a href="/SI/en/s/T7/">Training &amp; RL</a></li><li><a href="/SI/en/s/T8/">Reference &amp; map</a></li><li><a href="/SI/en/s/K1/">Math · Calculus</a></li><li><a href="/SI/en/s/K2/">Math · Linear algebra</a></li><li><a href="/SI/en/s/K3/">Math · Probability &amp; information</a></li><li><a href="/SI/en/s/K4/">Math · Optimization</a></li><li><a href="/SI/en/s/K5/">Math · Derivations &amp; proofs</a></li></ol></section>
+</main>
+<footer><p>Note: every number on this page is sample data for teaching; scale descriptions (such as “dozens of layers, thousands of dimensions, tens of thousands to over a hundred thousand words”) are just common orders of magnitude and don’t correspond to any specific model or product. ⚠️ Many “why it works” explanations are design motivation + experimental evidence, not rigorous proofs; real systems differ and change fast. Anything marked “Limits / notes” is an empirical conclusion, not a theorem.</p></footer>
+</body>
+</html>

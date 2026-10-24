@@ -10,8 +10,8 @@ const CJK = /[\u3400-\u9fff]/;
 const attrs = (html: string, a: string) => [...html.matchAll(new RegExp(`\\s${a}="([^"]*)"`, 'g'))].map((m) => m[1] as string);
 
 describe('knowledge base', () => {
-  it('22 stations in order (M2 U–Ud and the M3 products stop Up after T1, the math stops K1–K5 last), every part bilingual and owned by a station', () => {
-    expect(TABORDER).toEqual(['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5']);
+  it('24 stations in order (M2 U–Ud, the M3 products stop Up, then R25 Api and Loc after T1, the math stops K1–K5 last), every part bilingual and owned by a station', () => {
+    expect(TABORDER).toEqual(['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5']);
     for (const [id, c] of Object.entries(KB.C)) {
       expect(c.n.zh && c.n.en, id).toBeTruthy();
       expect(PATH[c.t], id + ' owner').toBeTruthy();
@@ -35,7 +35,7 @@ for (const S of TABORDER) for (const lang of ['zh', 'en'] as const) {
       }
     });
     it('lab islands find their elements in the snapshot', async () => {
-      const m2 = /^[UK]/.test(S), file = m2 ? join(GEN, `../../m2/labs/${S}.ts`) : join(GEN, `islands/${S}.js`);
+      const m2 = /^([UK]|Api$|Loc$)/.test(S), file = m2 ? join(GEN, `../../m2/labs/${S}.ts`) : join(GEN, `islands/${S}.js`);
       if (m2 && !existsSync(file)) { expect(st.html).not.toContain('class="card lab'); return; }
       const labs = m2 ? ((await import(/* @vite-ignore */ file)) as { LABS: { ids: string[] }[] }).LABS
         : JSON.parse(/export const LABS = (\[.*\]);/.exec(readFileSync(file, 'utf8'))![1]!) as { ids: string[] }[];

@@ -1,6 +1,6 @@
 /* r9 hotfix regression: pre-rendered KaTeX HTML must never appear as text. Visits every station in both languages (all
    collapsed cards opened, the page head notes expanded), opens every part popup, runs searches that hit math-bearing
-   entries, and checks the visible text, the text-bearing attributes and the document title for KaTeX or tag markup. */
+   entries, and checks the visible text (<noscript> is raw text when JS runs, never shown — skipped), the text-bearing attributes and the document title for KaTeX or tag markup. */
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 
@@ -14,7 +14,7 @@ const leaks = (page: Page, root: string) => page.evaluate((root) => {
   const BAD = /katex|<\/?(span|math|annotation|semantics|b|i|p|div|sup|sub)\b|&lt;|&gt;|&amp;|&quot;|&#x?[0-9a-f]+;/i;
   const out: string[] = [];
   const el = document.querySelector(root); if (!el) return out;
-  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.parentElement?.closest('script,style,template,annotation') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
+  const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => (n.parentElement?.closest('script,style,template,annotation,noscript') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT) });
   for (let n = w.nextNode(); n; n = w.nextNode()) { const s = n.textContent ?? ''; const i = s.search(BAD); if (i >= 0) out.push(`${n.parentElement?.className || n.parentElement?.tagName}: …${s.slice(Math.max(0, i - 40), i + 60)}…`); }
   el.querySelectorAll('[title],[aria-label],[alt],[placeholder]').forEach((e) => { for (const a of ['title', 'aria-label', 'alt', 'placeholder']) { const v = e.getAttribute(a); if (v && BAD.test(v)) out.push(`@${a}: ${v.slice(0, 100)}`); } });
   if (BAD.test(document.title)) out.push('document.title: ' + document.title);

@@ -70,7 +70,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     test.setTimeout(150_000);
     await home(page, lang);
     const dd = await page.locator(`${SVG} .dd-b[data-dd]`).evaluateAll((bs) => bs.map((b) => (b as SVGElement).dataset.dd!));
-    expect(dd.length).toBe(31);
+    expect(dd.length).toBe(33);
     expect(KB.TABORDER.filter((S) => S !== 'T1' && !dd.includes(S))).toEqual([]);
     for (const S of [...new Set(dd)]) {
       if ((await state(page)).station !== 'T1') await home(page, lang);

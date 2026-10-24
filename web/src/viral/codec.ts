@@ -24,15 +24,19 @@ const deutf8 = (b: Uint8Array) => { try { return new TextDecoder('utf-8', { fata
 
 /* ---- quiz challenge: ch=<stop index>-<correct>-<questions>[-<nickname, base64url UTF-8>] ---- */
 export interface Challenge { S: string; c: number; n: number; nick: string }
+/* the stop index in a link is frozen: links shared before R25 (22 stops) must still open the same stop, so new stops
+   are numbered after the old ones instead of by their place in the route */
+const CH_OLD = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
+export const CH_ORDER = [...CH_OLD, ...TABORDER.filter((S) => !CH_OLD.includes(S))];
 export function encodeCh(ch: Challenge): string {
-  const i = TABORDER.indexOf(ch.S), nick = cleanText(ch.nick, NICK_MAX);
+  const i = CH_ORDER.indexOf(ch.S), nick = cleanText(ch.nick, NICK_MAX);
   return i + '-' + ch.c + '-' + ch.n + (nick ? '-' + b64u(utf8(nick)) : '');
 }
 /** null unless the stop exists, has a quiz with exactly n questions, and 0 ≤ c ≤ n */
 export function decodeCh(raw: unknown): Challenge | null {
   if (typeof raw !== 'string' || raw.length > 80) return null;
   const m = /^(\d{1,2})-(\d{1,2})-(\d{1,2})(?:-([A-Za-z0-9_-]{1,64}))?$/.exec(raw); if (!m) return null;
-  const S = TABORDER[+(m[1] as string)], c = +(m[2] as string), n = +(m[3] as string);
+  const S = CH_ORDER[+(m[1] as string)], c = +(m[2] as string), n = +(m[3] as string);
   if (!S || !QUIZ_KEY[S] || QUIZ_KEY[S].length !== n || c > n) return null;
   let nick = '';
   if (m[4]) { const b = unb64u(m[4]); const t = b && deutf8(b); nick = t ? cleanText(t, NICK_MAX) : ''; }

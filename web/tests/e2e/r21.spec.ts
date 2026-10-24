@@ -58,7 +58,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(await clean(page, `${act} .ob-wel .ob-b, ${act} .ob-wel .ob-x`)).toEqual([]);
     if (lang === 'en') expect(CJK.test((await w.innerText()) + (await page.locator('.ob-tl').innerText()))).toBe(false);
     // full route → coach marks: menu, prev/next, find/share/lang, signpost, the bottom bar (R22); each bubble inside the screen
-    await page.locator('[data-ob="onb-all"]').click();
+    // R25: on T1 the "I want to…" doorways stand in for the route picker; the 🧠 door's full-route chip picks the route
+    await expect(w.locator('.ob-rr')).toHaveCount(0);
+    await expect(w.locator('.m-door .dr')).toHaveCount(6);
+    await w.locator('[data-route="all"]').click();
     await expect(w).toHaveCount(0);
     for (let i = 0; i < 5; i++) {
       const b = page.locator('.ob-bub.coach');
@@ -71,8 +74,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await page.locator('[data-ob="coach-next"]').click();
     }
     await expect(page.locator('.ob-bub.coach')).toHaveCount(0);
-    await expect(page.locator('.ob-hl')).toHaveCount(0);
-    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-all', 'coach-done']));
+    // R25: the door took us to T2, where a one-time tip may follow the coach marks; only a tip may still mark a target
+    await expect.poll(() => page.evaluate(() => document.querySelectorAll('.ob-hl').length - (document.querySelector('.ob-bub.tip') ? 1 : 0))).toBeLessThanOrEqual(0);
+    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-door', 'coach-done']));
     expect(await page.evaluate(() => [localStorage.getItem('aiexp.v2.onb'), localStorage.getItem('aiexp.v2.coach'), localStorage.getItem('aiexp.v2.route')])).toEqual(['1', '1', 'all']);
     // never again, not even on reload; labels gone too once you are not on a first visit
     await at(page, q, 'T1', lang);
@@ -117,10 +121,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
 
   test(`${lang} kids' route: 6 stops, route chip k/6, its lab, next stop on the route, after-quiz line`, async ({ page }) => {
     await at(page, q, 'T1', lang);
-    // the two route buttons: name on line 1, stop count on line 2, same height (no dangling '·' or split count)
-    const hs = await page.locator('.ob-rr .ob-b').evaluateAll((bs) => bs.map((b) => Math.round(b.getBoundingClientRect().height)));
-    expect(hs.length).toBe(2); expect(Math.abs((hs[0] ?? 0) - (hs[1] ?? 0))).toBeLessThanOrEqual(1);
-    await page.locator('[data-ob="onb-kid"]').click();
+    // R25: the 🧠 door in the welcome card picks the kids' route (it starts on T1, so we stay here)
+    await page.locator(`${act} .ob-wel [data-route="kid"]`).click();
+    await expect(page.locator(`${act} .ob-wel`)).toHaveCount(0);
+    await expect(page.locator(`${act} .m-door`)).toHaveCount(1);
     await page.locator('[data-ob="coach-skip"]').click();
     const row = page.locator(`${act} .ob-row`);
     await expect(row.locator('[data-ob="route"]')).toContainText(lang === 'zh' ? '路线 1/6' : '1/6');
@@ -143,7 +147,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(page.locator('#labAgent')).toBeInViewport({ ratio: 0.05 });
     // quiz → "lit" count goes up, the after-quiz line points at T3 on the route
     await answer(page, 'T2');
-    await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/22');
+    await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/24');
     const qn = page.locator(`${act} .ob-qn [data-ob="qnext"]`);
     await expect(qn).toBeVisible();
     await qn.click();

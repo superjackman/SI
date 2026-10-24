@@ -21,6 +21,8 @@ export const TAKEAWAY: Record<string, Bi> = {
   Uc: { zh: '模型会什么，练好时就定了；装上工具和技能，它就能学会新本事。', en: 'What a model knows is fixed once it is trained; give it tools and skills, and it can do new things.' },
   Ud: { zh: '助手只看得到你给它的东西：把要求说清楚、材料给全，交回来的活要对着清单检查。', en: 'The helper only sees what you give it: say clearly what you want, give it everything it needs, and check the result against a list.' },
   Up: { zh: '一本按用途分好类的 AI 产品目录，每个都附官网链接和一句话介绍。', en: 'A catalogue of AI products sorted by use, each with its official website and a one-line description.' },
+  Api: { zh: 'API 让程序替你问模型：密钥像钱包要藏好，按输入、输出的词元数付钱。', en: 'An API lets your program ask the model for you: guard the key like a wallet, and pay by input and output tokens.' },
+  Loc: { zh: '模型能下载到自己电脑上跑：先算内存装不装得下，再挑工具和文件。', en: 'Models can run on your own computer: first check that it fits in memory, then pick a runner and a file.' },
   K1: { zh: '训练 AI 就像拧成千上万个小旋钮；导数告诉我们每个旋钮往哪边拧，错误会变小。', en: 'Training an AI is like turning thousands of little knobs; derivatives tell us which way to turn each one so the mistakes get smaller.' },
   K2: { zh: '电脑不认识字，只认识数：一个词就是一串数，矩阵就是一次把很多数一起变一变。', en: 'Computers only understand numbers: a word becomes a list of numbers, and a matrix changes many numbers at once.' },
   K3: { zh: 'AI 说话是在一遍遍“猜下一个词”，概率就是给每个可能的词打分：机会有多大。', en: 'When an AI talks it is guessing the next word again and again; probability scores how likely each word is.' },

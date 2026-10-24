@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>让它自己干 · 大白话拆解 AI</title>
+<meta name="description" content="交出去，它独立跑完，你事后验收。后台 / 云端 Agent、例程与自动化、多 Agent 协作：没人在旁边看着，靠隔离、可检查的产出和人来按最后一步保证安全。">
+<link rel="canonical" href="https://superjackman.github.io/SI/s/Ub/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/Ub/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/Ub/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/Ub/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="大白话拆解 AI">
+<meta property="og:title" content="让它自己干 · 大白话拆解 AI">
+<meta property="og:description" content="交出去，它独立跑完，你事后验收。后台 / 云端 Agent、例程与自动化、多 Agent 协作：没人在旁边看着，靠隔离、可检查的产出和人来按最后一步保证安全。">
+<meta property="og:url" content="https://superjackman.github.io/SI/s/Ub/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="大白话拆解 AI">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="让它自己干 · 大白话拆解 AI">
+<meta name="twitter:description" content="交出去，它独立跑完，你事后验收。后台 / 云端 Agent、例程与自动化、多 Agent 协作：没人在旁边看着，靠隔离、可检查的产出和人来按最后一步保证安全。">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/Ub/#lesson","name":"让它自己干","headline":"让它自己干 · 大白话拆解 AI","description":"交出去，它独立跑完，你事后验收。后台 / 云端 Agent、例程与自动化、多 Agent 协作：没人在旁边看着，靠隔离、可检查的产出和人来按最后一步保证安全。","url":"https://superjackman.github.io/SI/s/Ub/","inLanguage":"zh-CN","learningResourceType":"图解课程","educationalLevel":"入门","isAccessibleForFree":true,"image":"https://superjackman.github.io/SI/og.png","dateModified":"2026-10-25","position":4,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从用 AI 到看懂大模型","description":"小学生也能看懂的 AI 入门：一站一站拆解 AI 应用、Agent、大模型、Transformer 和训练算力，配可交互的图和实验。","url":"https://superjackman.github.io/SI/s/","inLanguage":"zh-CN","isAccessibleForFree":true,"provider":{"@type":"Organization","name":"大白话拆解 AI","url":"https://superjackman.github.io/SI/"}}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"怎么用 Agent","item":"https://superjackman.github.io/SI/s/U/"},{"@type":"ListItem","position":4,"name":"让它自己干","item":"https://superjackman.github.io/SI/s/Ub/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/Ub/" hreflang="en" lang="en">English</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/">首页</a></li><li><a href="/SI/s/">全部站点目录</a></li><li><a href="/SI/s/U/">怎么用 Agent</a></li><li aria-current="page">让它自己干</li></ol></nav>
+<main>
+<p class="lv">第 4 站 / 共 24 站</p>
+<h1>让它自己干</h1>
+<p class="lead">交出去，它独立跑完，你事后验收。</p>
+<p>后台 / 云端 Agent、例程与自动化、多 Agent 协作：没人在旁边看着，靠隔离、可检查的产出和人来按最后一步保证安全。</p>
+<p>为什么这样设计：说得清、能验收的活不需要你一直在场；把你的时间留给审查和拍板。</p>
+<p class="open"><a href="/SI/#Ub">▶ 打开互动版（能点图、做实验、做小测）</a></p>
+<section><h2>🧒 先用大白话说</h2><p>“让它自己干”就像把作业交给别人做、你回头再检查。没人在旁边看着，所以要靠三样东西保平安：让它在不会弄坏东西的地方干活；交回来的东西能检查；撤不回的那一步（合并、发送、付钱）由你来按。</p></section>
+<section><h2>📑 这一站讲了什么</h2><ul><li><b>让它自己干：交出去，事后验收</b><br>这一类用法里，Agent 没有人在旁边看着。所以安全不能靠“你随时喊停”，要靠三样东西：</li><li><b>☁️ 后台 / 云端 Agent</b><br>后台助手像请人在另一间屋子里干活：你写好任务交出去，它在网上的一台单独机器里改代码、跑测试，最后交回一份“改动清单”（PR）等你看。适合说得清、能检查、不着急的活。</li><li><b>⏰ 例程与自动化</b><br>例程就像定好的闹钟：到点了或者来了新邮件，助手就按写好的说明自动做一遍。会“发出去”的事先只写草稿，人看过再发；同一件事做两遍也只算一次；每次做了什么都记下来。</li><li><b>👥 多 Agent 协作</b><br>多个助手合作像小组作业：组长把大题拆开，分给几个组员各做一块，最后有人检查、汇总。几个人同时做，时间省了，但花费更多；给组员的任务要写清楚，因为他们听不到组长和你说过的话。</li><li><b>🧠 为什么交回的是“PR”，而不是直接改好？</b><br>为什么交回“改动清单”而不是直接改好？就像作文先给老师看，不直接贴到墙上：最坏的情况只是“不用”，什么都没坏；改动和测试结果摆在一起，检查比自己重做快得多。</li><li><b>🤔 什么时候才值得上多 Agent？</b><br>人多不一定力量大。研究发现，好几个助手一起干活时常常配合不好，失败的不少，比一个助手强不了多少，花费却多很多。只有能拆成互不相干的几块、每块要读很多资料的活，才值得试。</li><li><b>🔎 “深度研究”是怎么做出来的</b><br>“深度研究”像派几个同学分头去图书馆查资料：一个人定计划，几个人各查一个方向，回来汇总，不够再查一轮，最后把每句话标上出处。拿到报告后要自己点开几个出处看看，原文是不是真这么说。</li><li><b>🛤️ 工作流还是 Agent？同一件事做两遍</b><br>“工作流”像照着菜谱做菜，每一步都写死了，每次都一样，出错也好找；“Agent”像请厨师自己看着办，更灵活，但每次花的时间和结果可能不同。能先写好步骤的事，用菜谱更稳。</li><li><b>🧪 一个 vs 一群：拆给几个子 Agent</b> <small>(动手实验)</small></li><li><b>🧪 做一个例程：模拟一周</b> <small>(动手实验)</small></li></ul></section>
+<nav class="pn"><a href="/SI/s/Ua/" rel="prev">← 上一站：跟它一起干</a><a href="/SI/s/Uc/" rel="next">下一站：给它装本事 →</a></nav>
+<section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/T1/">应用全景</a></li><li><a href="/SI/s/U/">怎么用 Agent</a></li><li><a href="/SI/s/Ua/">跟它一起干</a></li><li><b>让它自己干</b></li><li><a href="/SI/s/Uc/">给它装本事</a></li><li><a href="/SI/s/Ud/">用得好</a></li><li><a href="/SI/s/Up/">具体产品</a></li><li><a href="/SI/s/Api/">API 调模型</a></li><li><a href="/SI/s/Loc/">本地跑模型</a></li><li><a href="/SI/s/T2/">Agent</a></li><li><a href="/SI/s/T3/">大模型</a></li><li><a href="/SI/s/N/">神经网络入门</a></li><li><a href="/SI/s/T4/">Transformer 块</a></li><li><a href="/SI/s/T4a/">注意力</a></li><li><a href="/SI/s/T4b/">前馈与输出</a></li><li><a href="/SI/s/T5/">MoE 与高效架构</a></li><li><a href="/SI/s/T6/">多模态</a></li><li><a href="/SI/s/T7/">训练与强化学习</a></li><li><a href="/SI/s/T8/">速查与全景图</a></li><li><a href="/SI/s/K1/">数学 · 微积分</a></li><li><a href="/SI/s/K2/">数学 · 线性代数</a></li><li><a href="/SI/s/K3/">数学 · 概率与信息</a></li><li><a href="/SI/s/K4/">数学 · 优化</a></li><li><a href="/SI/s/K5/">数学 · 推导与证明</a></li></ol></section>
+</main>
+<footer><p>说明：本页所有数字均为教学用的示例数据，规模描述（如“几十层、几千维、几万到十几万个词”）只是常见量级，不对应任何具体模型或产品。 ⚠️ 很多“为什么有效”是设计动机 + 实验验证，不是严格证明；真实系统各不相同，而且变化很快。凡是标了“局限/说明”的地方，都是经验结论而非定理。</p></footer>
+</body>
+</html>

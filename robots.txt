@@ -1,0 +1,6 @@
+# Crawlers read robots.txt only at a host's root (https://superjackman.github.io/robots.txt); this copy documents the intent
+# for https://superjackman.github.io/SI/ and points to its sitemap.
+User-agent: *
+Allow: /
+
+Sitemap: https://superjackman.github.io/SI/sitemap.xml

@@ -27,7 +27,7 @@ describe('🧪 pickLab', () => {
 
 describe('✨ progBadge', () => {
   const lit = (xs: string[]) => (s: string) => xs.includes(s);
-  it('full route: lit X / 22', () => {
+  it('full route: lit X / TABORDER.length', () => {
     expect(progBadge(lit([]), 'all')).toMatchObject({ n: `0/${TABORDER.length}`, rt: false });
     expect(progBadge(lit(['T1', 'T2', 'K5']), 'all')).toMatchObject({ n: `3/${TABORDER.length}`, x: 3 });
   });

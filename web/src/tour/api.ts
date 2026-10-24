@@ -9,7 +9,7 @@ const st = () => useApp.getState();
 const t2 = (zh: string, en: string) => (st().lang === 'en' ? en : zh);
 export function clearHl() {
   document.querySelectorAll('.tour-hl').forEach((e) => e.classList.remove('tour-hl'));
-  document.querySelectorAll<SVGElement>('.level .comp.run').forEach((g) => { if (g.dataset.tourrun) { g.classList.remove('run'); delete g.dataset.tourrun; } });
+  document.querySelectorAll<SVGElement>('.level [data-tourrun]').forEach((g) => { g.classList.remove('run'); delete g.dataset.tourrun; });
 }
 export function startTour() {
   if (st().zoom < 2) setZoom(2);

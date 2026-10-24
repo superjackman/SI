@@ -17,13 +17,13 @@ describe('native quiz (live parity)', () => {
   });
   it('quizScore counts correct / answered / total over the shared answer key', () => {
     const total = Object.values(QUIZ_KEY).reduce((a, k) => a + k.length, 0);
-    expect(total).toBe(89); // 69 + M4 (T2, T3) + M5 (T7) + M6 (T7, T6, T1) + M7 (N, T4b, T5, T2) + R10 (Ub 3, Uc 2, Ud 1) + R11 (T3, T4a, T7)
-    expect(quizScore()).toEqual([0, 0, 89]);
+    expect(total).toBe(97); // R25 Api 4 + Loc 4; 69 + M4 (T2, T3) + M5 (T7) + M6 (T7, T6, T1) + M7 (N, T4b, T5, T2) + R10 (Ub 3, Uc 2, Ud 1) + R11 (T3, T4a, T7)
+    expect(quizScore()).toEqual([0, 0, 97]);
     const [S, key] = Object.entries(QUIZ_KEY)[0]!;
     localStorage.setItem('aiexp.v2.quiz', JSON.stringify({ [S + '.0']: key[0], [S + '.1']: (key[1]! + 1) % 3 }));
-    expect(quizScore()).toEqual([1, 2, 89]);
+    expect(quizScore()).toEqual([1, 2, 97]);
     localStorage.setItem('aiexp.v2.quiz', 'not json');
-    expect(quizScore()).toEqual([0, 0, 89]);
+    expect(quizScore()).toEqual([0, 0, 97]);
   });
   it('renderQuiz marks the answered question right/wrong and keeps the zl tag first', () => {
     document.body.innerHTML = '<div id="quizT9"></div>';

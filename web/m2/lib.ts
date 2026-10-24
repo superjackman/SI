@@ -24,6 +24,17 @@ export function mathText(html: string): string {
   }
   return out + html.slice(at);
 }
+/** R25: shorten a row / page-map label to max width (zh: half-width Latin, digits and spaces count ½) and end it in "…".
+    Never cuts inside a Latin word or number: a cut word is dropped whole (unless that would leave too little). */
+export const fit = (s: string, max: number, L: Lang) => {
+  const cs = [...s]; let w = 0, i = 0;
+  for (; i < cs.length; i++) { w += L === 'zh' && /[\x20-\x7e]/.test(cs[i]!) ? 0.5 : 1; if (w > max) break; }
+  if (i >= cs.length) return s;
+  let out = cs.slice(0, i - 1).join('');
+  if (/[A-Za-z0-9’']$/.test(out) && /[A-Za-z0-9’']/.test(cs[i - 1]!)) { const t = out.replace(/[A-Za-z0-9’']+$/, ''); if ([...t].length >= [...out].length * 0.4) out = t; }
+  out = out.replace(/(?:\s+(?:vs|and|or|the|a|an|of|to|in|on|for|with|&)\.?)+\s*$/i, '');
+  return out.replace(/[\s/·,，、:：;；(（“"‘—–-]+$/u, '') + '…';
+};
 export const strip = (s: string) => mathText(s).replace(/<[^>]*>/g, '').replace(/&(?:(amp|lt|gt|quot)|#x([0-9a-f]+)|#(\d+));/gi, (_m, k?: string, hx?: string, dc?: string) => (k ? ({ amp: '&', lt: '<', gt: '>', quot: '"' })[k.toLowerCase()] as string : String.fromCodePoint(hx ? parseInt(hx, 16) : Number(dc))));
 export const code = (k: keyof typeof CODES, L: Lang): string => CODES[k][L];
 
@@ -82,7 +93,7 @@ ${body}
   head(sub: string, one: string, why: string) {
     const i = this.W.order.indexOf(this.S), N = this.W.order.length, L = this.L;
     const crumb = (this.W.path[this.S] ?? []).map((s) => this.st(s)).join(' › ');
-    const cut = (s: string) => [...s].slice(0, L === 'en' ? 18 : 16).join('');
+    const cut = (s: string) => fit(s, L === 'en' ? 22 : 16, L);
     const map = this.rows.filter((r) => r[2] !== 'quiz').map((r) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-sj="${r[0]}" data-sp="${this.S}">${esc(cut(r[1]))}</button>`).join('');
     return `<div class="pagehead" id="ph${this.S}"><h1 class="pg-t"><span class="pg-n">${i + 1}</span>${esc(this.st(this.S))}</h1><p class="pg-s">${sub}</p><details class="pg-more"><summary aria-label="${this.t('展开本站说明', 'Expand notes for this stop')}" title="${this.t('本站说明', 'Notes for this stop')}"><span aria-hidden="true">ⓘ</span> ${this.t('说明', 'Notes')}</summary><div class="ph-one">${one}</div><p class="ph-why"><b>${this.t('为什么这样设计：', 'Why it’s designed this way: ')}</b>${why}</p></details><div class="ph-top"><span class="ph-lv">${L === 'en' ? `Stop ${i + 1} of ${N} ` : `第 ${i + 1} 站 / 共 ${N} 站`}</span><span>📍 ${esc(crumb)}</span></div><div class="ph-map" id="pm${this.S}"><span>${this.t('本页结构：', 'On this page: ')}</span>${map}</div><div class="zoomnote" id="zn${this.S}" style="display:none"></div></div>`;
   }

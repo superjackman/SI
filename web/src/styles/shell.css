@@ -234,3 +234,11 @@ details.deep[open]>summary .ic{transform:none}
 #bnav .ic{width:22px;height:22px;vertical-align:top}
 #bnav [data-bn=next]{color:#4338ca;font-weight:700}
 .dw-it b{white-space:normal;overflow-wrap:anywhere;line-height:1.25;padding:2px 0}.dw-act span{white-space:normal;text-overflow:clip;line-height:1.2;text-align:center}
+/* R25: T1 "I want to…" doorways (m2/build.ts); also shown inside the first-visit welcome card */
+.m-door{margin:.5em 0 .8em}.m-door .dr-h{margin:0 0 .4em;font-weight:700;font-size:.95em}
+.dr-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media(min-width:620px){.dr-g{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.dr{border:1px solid #c7d2fe;background:#eef2ff;border-radius:12px;padding:8px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.dr-m{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere;line-height:1.35}button.dr-m{cursor:pointer}button.dr-m:focus-visible{outline:2px solid #4f46e5;outline-offset:2px;border-radius:6px}
+.dr-i{font-size:1.35em;line-height:1}.dr-m b{font-size:.93em;color:#1e1b4b}.dr-s,.dr-to{font-size:.78em;color:#475569}.dr-to{color:#4338ca;font-weight:600}
+.dr-c{display:flex;flex-wrap:wrap;gap:4px;margin:0}.dr-c button{font:inherit;font-size:.76em;line-height:1.3;padding:4px 7px;border-radius:999px;border:1px solid #a5b4fc;background:#fff;color:#3730a3;cursor:pointer;min-height:28px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.ob-wel .m-door{margin:.6em 0 .4em}

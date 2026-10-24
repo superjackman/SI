@@ -1,0 +1,15 @@
+/* R25 lazy styles: 🔌 Api / 💻 Loc calculators and the 📏 boundary line (loaded with viral/late.ts, not in the first load) */
+.lc-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 12px;align-items:end}
+.lc-g label{display:flex;flex-direction:column;gap:3px;font-size:13.5px;min-width:0}
+.lc-g select,.lc-g input[type=number]{width:100%;max-width:100%;box-sizing:border-box;min-height:36px;font-size:15px}
+.lc-g input[type=range]{width:100%}
+.lc-big{font-size:1.25em;color:#0f766e}
+.lc-note{font-size:12.5px;color:#475569}
+.u-out.warn{background:#fffbeb;border-color:#fde68a}
+.u-bar .in,.u-legend i.in{background:#2563eb}
+.u-bar .hit,.u-legend i.hit{background:#93c5fd}
+.u-bar .outp,.u-legend i.outp{background:#f97316}
+.u-bar .w,.u-legend i.w{background:#7c3aed}
+.u-bar .kv,.u-legend i.kv{background:#db2777}
+.u-bar .ov,.u-legend i.ov{background:#94a3b8}
+.pl-bd{padding:6px 10px;border-left:4px solid #0ea5e9;background:#f0f9ff;border-radius:6px;font-size:14px}

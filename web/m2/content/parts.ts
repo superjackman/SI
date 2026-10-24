@@ -1,6 +1,7 @@
 /* M2 parts: names, ownership, drill links and their popup cards (both languages). */
 import type { Bi, PopSpec, T } from '../lib';
 import { CODES } from '../../src/i18n/codes';
+import { R25_PARTS } from './r25parts';
 
 export interface M2Part { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; pop: (t: T) => PopSpec }
 const C = (k: keyof typeof CODES): Bi => ({ zh: CODES[k].zh, en: CODES[k].en });
@@ -12,8 +13,10 @@ export const STATIONS: Record<string, Bi> = {
   Uc: { zh: '给它装本事', en: 'Extend it' },
   Ud: { zh: '用得好', en: 'Use it well' },
   Up: { zh: '具体产品', en: 'Products' },
+  Api: { zh: 'API 调模型', en: 'Model APIs' },
+  Loc: { zh: '本地跑模型', en: 'Run models locally' },
 };
-export const PATHS: Record<string, string[]> = { U: ['T1', 'U'], Ua: ['T1', 'U', 'Ua'], Ub: ['T1', 'U', 'Ub'], Uc: ['T1', 'U', 'Uc'], Ud: ['T1', 'U', 'Ud'], Up: ['T1', 'U', 'Up'] };
+export const PATHS: Record<string, string[]> = { U: ['T1', 'U'], Ua: ['T1', 'U', 'Ua'], Ub: ['T1', 'U', 'Ub'], Uc: ['T1', 'U', 'Uc'], Ud: ['T1', 'U', 'Ud'], Up: ['T1', 'U', 'Up'], Api: ['T1', 'Api'], Loc: ['T1', 'Loc'] };
 
 const tryPick = (t: T): [string, string, string] => ['labPick', 'U', t('🧪 帮我选用法（怎么用 Agent）', '🧪 Pick a way to use it (Using agents)')];
 const trySess = (t: T): [string, string, string] => ['labSession', 'Ua', t('🧪 一次编程会话（跟它一起干）', '🧪 A coding session (Work alongside it)')];
@@ -329,8 +332,11 @@ export const PARTS: Record<string, M2Part> = {
   },
 };
 
+Object.assign(PARTS, R25_PARTS);
+
 /** "up to how it is used" links added to existing T1/T2/T3 parts */
 export const USE_LINKS: Record<string, string[]> = {
   user: ['uHub'], loop: ['uHub'], tools: ['uTool'], mcp: ['uMcp'], multi: ['uMulti'], guard: ['uCli', 'uCua', 'uRoutine'],
   perm: ['uCli'], inject: ['uCua'], memory: ['uChat', 'uCtx'], ctxwin: ['uCtx'], evalag: ['uBg'],
+  llm: ['aApi', 'lHub'], quant: ['lGguf'], serve: ['lTool'],
 };

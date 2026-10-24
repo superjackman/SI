@@ -5,7 +5,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { esc, Page, popBody, strip, type Bi, type Lang, type OutlineRow, type PopSpec, type StationOut, type T, type World } from './lib';
+import { esc, fit, Page, popBody, strip, type Bi, type Lang, type OutlineRow, type PopSpec, type StationOut, type T, type World } from './lib';
 import { PARTS, PATHS, STATIONS, USE_LINKS } from './content/parts';
 import { QUIZ, type Q } from './content/quiz';
 import U from './content/U';
@@ -14,6 +14,8 @@ import Ub from './content/Ub';
 import Uc from './content/Uc';
 import Ud from './content/Ud';
 import Up from './content/Up';
+import Api from './content/Api';
+import Loc from './content/Loc';
 import { KPARTS, KPATHS, KSTATIONS, MATH_LINKS } from './content/math/parts';
 import { KQUIZ } from './content/math/quiz';
 import K1 from './content/math/K1';
@@ -43,7 +45,7 @@ import { SYM } from './content/symbols';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
 const CHECK = process.argv.includes('--check');
-const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud, Up, K1, K2, K3, K4, K5 };
+const MODS: Record<string, (P: Page) => StationOut> = { U, Ua, Ub, Uc, Ud, Up, Api, Loc, K1, K2, K3, K4, K5 };
 /* the usage stations go right after T1; the math layer (K1–K5) goes after T8 as its own appendix group */
 const USIDS = Object.keys(STATIONS), KSIDS = Object.keys(KSTATIONS);
 const SIDS = [...USIDS, ...KSIDS];
@@ -113,21 +115,12 @@ const W: World = { order: kb.TABORDER, path: kb.PATH, tabn: kb.TABN, part: (id) 
 const outline: Record<Lang, Record<string, OutlineRow[]>> = { zh: readJ('outline.zh.json'), en: readJ('outline.en.json') };
 /* R23: "⚠️ 容易混淆：A vs B" titles keep the ⚠️ and drop the long prefix in the outline and the page map */
 const cfShort = (s: string) => s.replace(/^⚠️\s*(容易混淆：|Easy to mix up: )/u, '⚠️ ');
-/* zh rows: half-width Latin/digits/spaces count ½, so "batch vs epoch vs step" is not chopped mid-word; a cut row ends in … */
-const fit = (s: string, max: number, L: Lang) => {
-  const cs = [...s]; let w = 0, i = 0;
-  for (; i < cs.length; i++) { w += L === 'zh' && /[\x20-\x7e]/.test(cs[i]!) ? 0.5 : 1; if (w > max) break; }
-  if (i >= cs.length) return s;
-  let out = cs.slice(0, i - 1).join(''); const sp = out.lastIndexOf(' ');
-  if (sp > out.length * 0.6 && /[A-Za-z]$/.test(out)) out = out.slice(0, sp);
-  return out.replace(/[\s/·,，、vs]+$/u, '') + '…';
-};
 const cutRow = (r: OutlineRow, L: Lang): OutlineRow => {
   const n = 20;
   if (r[1].startsWith('⚠️')) return [r[0], fit(cfShort(r[1]), L === 'en' ? 44 : 24, L), r[2], r[3]];
-  if (r[2] === 'lab') { const b = r[1].replace(/^🧪\s*/, ''); return [r[0], '🧪 ' + (L === 'en' ? [...b].slice(0, 20).join('') : fit(b, 18, L)), 'lab', r[3]]; }
+  if (r[2] === 'lab') { const b = r[1].replace(/^🧪\s*/, ''); return [r[0], '🧪 ' + fit(b, L === 'en' ? 22 : 18, L), 'lab', r[3]]; }
   if (r[2] === 'quiz') return r;
-  return [r[0], [...r[1].replace(/^[^\p{L}\p{N}]+/u, '')].slice(0, n).join(''), '', r[3]];
+  return [r[0], fit(r[1].replace(/^[^\p{L}\p{Nd}“"《（(]+/u, ''), L === 'en' ? 28 : n, L), '', r[3]];
 };
 for (const L of LANGS) {
   const t: T = (zh, en) => (L === 'en' ? en : zh);
@@ -153,7 +146,7 @@ for (const L of LANGS) {
     const ca = la >= 0 ? la : qa;
     if (Pl.out.length) h = h.slice(0, qa) + `<!--m2x-->${Pl.out.join('\n')}<!--/m2x-->\n` + h.slice(qa);
     if (Pc.out.length) h = h.slice(0, ca) + `<!--m2x-->${Pc.out.join('\n')}<!--/m2x-->\n` + h.slice(ca);
-    const cut = (s: string) => (L === 'en' ? [...cfShort(s)].slice(0, 18).join('') : fit(cfShort(s), 16, L));
+    const cut = (s: string) => fit(cfShort(s), L === 'en' ? 22 : 16, L);
     const btn = (r: OutlineRow) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-m2x="1" data-sj="${r[0]}" data-sp="${S}">${esc(cut(r[1]))}</button>`;
     const pm = h.indexOf(`<div class="ph-map" id="pm${S}">`); if (pm < 0) throw new Error('no page map on ' + S);
     const pmEnd = h.indexOf('</div>', pm);
@@ -387,6 +380,70 @@ put('search-x.json', xrows);
 for (const S of PLAIN_STATIONS) for (const L of LANGS) {
   const p = `st/${S}.${L}.json`, st = stOf(p), h = topPlain(st.html, S);
   if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+}
+
+/* ---------- R25: six "I want to…" doorways at the top of T1 (between the page head and the 🧒 opening) ----------
+   Each door: a main button to the stop that answers it, plus small chips for the next stops. 🧠 picks a route
+   (data-route: App.tsx stores it; the kids' route starts on T1 itself). On a first visit the onboarding welcome card
+   borrows this block in place of its route picker, so two big blocks never stack. Idempotent (<!--m2door--> markers). */
+{
+  const D: { i: string; t: Bi; s: Bi; go?: string; ch?: [string, Bi?][]; rt?: true }[] = [
+    { i: '🔌', t: { zh: '我想用代码调模型', en: 'Call a model from my code' }, s: { zh: '密钥 · 第一次调用 · 算钱', en: 'keys · first call · cost' }, go: 'Api' },
+    { i: '💻', t: { zh: '我想在自己电脑上跑', en: 'Run a model on my computer' }, s: { zh: '内存够不够 · 用什么工具', en: 'enough memory? · which tool' }, go: 'Loc' },
+    { i: '🤖', t: { zh: '我想让 AI 替我干活', en: 'Let an AI do tasks for me' }, s: { zh: 'Agent 是什么、怎么用', en: 'what agents are, how to use them' }, go: 'U', ch: [['Ua'], ['Ub']] },
+    { i: '🧰', t: { zh: '我想给 AI 装技能', en: 'Add skills to an AI' }, s: { zh: '工具 · MCP · 技能包', en: 'tools · MCP · skill packs' }, go: 'Uc' },
+    { i: '🛠', t: { zh: '我想自己搭一套', en: 'Build my own setup' }, s: { zh: '按顺序走这几站：', en: 'take these stops in order:' }, go: 'U', ch: [['Up'], ['Ua'], ['Ub'], ['Uc']] },
+    { i: '🧠', t: { zh: '我想弄懂原理', en: 'Understand how it works' }, s: { zh: '选一条路线：', en: 'pick a route:' }, rt: true },
+  ];
+  const N = kb.TABORDER.length;
+  for (const L of LANGS) {
+    const p = `st/T1.${L}.json`, st = stOf(p);
+    let h = st.html.replace(/<!--m2door-->[\s\S]*?<!--\/m2door-->\n?/g, '');
+    const nm = (s: string) => esc((kb.TABN[s] as Bi)[L]);
+    const chips = (d: (typeof D)[number]) => {
+      if (d.rt) return `<p class="dr-c"><button type="button" data-route="kid">${L === 'zh' ? '🧒 小学生路线 · 6 站（从本页开始）' : '🧒 Kids’ route · 6 stops (starts here)'}</button><button type="button" data-route="all" data-go="T2">${L === 'zh' ? `🗺 完整路线 · ${N} 站` : `🗺 Full route · ${N} stops`}</button></p>`;
+      if (!d.ch) return '';
+      return `<p class="dr-c">${d.ch.map(([s], k) => `<button type="button" data-go="${s}">${d.ch!.length > 2 ? `${k + 1}. ` : ''}${nm(s)}</button>`).join('')}</p>`;
+    };
+    const card = (d: (typeof D)[number]) => {
+      const head = `<span class="dr-i" aria-hidden="true">${d.i}</span><b>${esc(d.t[L])}</b><span class="dr-s">${esc(d.s[L])}${d.go && !d.ch ? ` → ${nm(d.go)}` : ''}</span>`;
+      return `<div class="dr">${d.go ? `<button type="button" class="dr-m" data-go="${d.go}">${head}${d.ch ? `<span class="dr-to">→ ${nm(d.go)}</span>` : ''}</button>` : `<div class="dr-m">${head}</div>`}${chips(d)}</div>`;
+    };
+    const block = `<!--m2door--><nav class="m-door" aria-label="${L === 'zh' ? '我想……' : 'I want to…'}"><p class="dr-h">${L === 'zh' ? '👋 你想做什么？点一个直接去' : '👋 What do you want to do? Tap one to go there'}</p><div class="dr-g">${D.map(card).join('')}</div></nav><!--/m2door-->\n`;
+    const at = h.indexOf('<!--m2top-->'); if (at < 0) throw new Error('doors: T1 has no top plain card');
+    h = h.slice(0, at) + block + h.slice(at);
+    if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+  }
+}
+
+/* ---------- R25: outline rows (目录 / Tree) and page-map buttons are cut at a word boundary and end in "…" ----------
+   Legacy rows were cut at a fixed length on extraction (mid-word in English); each row is re-cut from its card's full
+   heading in the station page (by id, or for id-less rows the heading it starts with). Idempotent. */
+const heads = (h: string) => {
+  const m = new Map<string, string>(), all: string[] = [];
+  const re = /<div class="card[^"]*" id="([^"]+)"/g; let k: RegExpExecArray | null;
+  while ((k = re.exec(h))) {
+    const nx = h.indexOf('<div class="card', k.index + 10), hs = h.slice(k.index, nx < 0 ? undefined : nx).match(/<h[23][^>]*>([\s\S]*?)<\/h[23]>/);
+    if (hs) { const t = strip(hs[1]!).replace(/\s+/g, ' ').trim(); m.set(k[1]!, t); all.push(t); }
+  }
+  const re2 = /<h[23][^>]*>([\s\S]*?)<\/h[23]>/g; while ((k = re2.exec(h))) all.push(strip(k[1]!).replace(/\s+/g, ' ').trim());
+  return { m, all };
+};
+const noLead = (s: string) => s.replace(/^[^\p{L}\p{N}]+/u, '');
+const recut = (t: string, L: Lang, n: number) => { if (L !== 'en' || t.endsWith('…') || [...t].length !== n) return t; const u = t.replace(/\s*\S+$/, ''); return fit(u + ' ' + 'x'.repeat(n), u.length, L); };
+for (const L of LANGS) {
+  const op = `outline.${L}.json`, out = JSON.parse(files.get(op) as string) as Record<string, OutlineRow[]>;
+  for (const S of Object.keys(out)) {
+    const p = `st/${S}.${L}.json`; if (!files.has(p) && !existsSync(join(GEN, p))) continue;
+    const st = stOf(p), H = heads(st.html);
+    const full = (r: OutlineRow) => H.m.get(r[0]) ?? H.all.find((x) => r[1].length > 6 && noLead(x).startsWith(noLead(r[1].replace(/…$/, ''))));
+    out[S] = out[S]!.map((r) => { if (r[2] === 'quiz') return r; const f = full(r); const c = f ? cutRow([r[0], f, r[2], r[3]], L) : r; return [c[0], recut(c[1], L, 20), c[2], c[3]]; });
+    const h = st.html.replace(/(<div class="ph-map" id="pm[^"]+">)([\s\S]*?)(<\/div>)/, (_m, a: string, b: string, c: string) => a + b.replace(/(<button[^>]*data-sj="([^"]*)"[^>]*>)([^<]*)(<\/button>)/g, (_x, o: string, id: string, txt: string, e: string) => {
+      const f = H.m.get(id); return o + esc(f ? fit(cfShort(f), L === 'en' ? 22 : 16, L) : recut(strip(txt), L, 18)) + e;
+    }) + c);
+    if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+  }
+  put(op, out, nlOf(op));
 }
 
 /* ---------- guard: KaTeX markup must never be escaped into visible text (it would print as raw HTML on the page) ---------- */
