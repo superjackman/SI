@@ -12,8 +12,22 @@ import type { PStation } from './plain/types';
 import { CODES } from '../src/i18n/codes';
 import { IC2 } from '../src/ui/ic2';
 
-const MARKS = [/<!--m2p-->[\s\S]*?<!--\/m2p-->/g, /<!--m2pm-->[\s\S]*?<!--\/m2pm-->/g, /<!--m2pi-->[\s\S]*?<!--\/m2pi-->/g, /<!--m2pe-->[\s\S]*?<!--\/m2pe-->/g, /<!--m2s-->[\s\S]*?<!--\/m2s-->/g];
+const MARKS = [/<!--m2top-->[\s\S]*?<!--\/m2top-->\n?/g, /<!--m2p-->[\s\S]*?<!--\/m2p-->/g, /<!--m2pm-->[\s\S]*?<!--\/m2pm-->/g, /<!--m2pi-->[\s\S]*?<!--\/m2pi-->/g, /<!--m2pe-->[\s\S]*?<!--\/m2pe-->/g, /<!--m2s-->[\s\S]*?<!--\/m2s-->/g];
 export const undoPlain = (h: string) => MARKS.reduce((s, r) => s.replace(r, ''), h);
+
+/** R21: lift the stop's first plain opening ("🧒 先用大白话说", in c_<S>_0) into a card of its own at the very top,
+    right under the page head and above the diagram. Run after plainPage; idempotent (undoPlain drops the top card). */
+export function topPlain(html: string, S: string): string {
+  let h = html.replace(MARKS[0]!, '');
+  const at = h.indexOf(`id="c_${S}_0"`); if (at < 0) throw new Error(`plain top: ${S} has no first card`);
+  const a = h.lastIndexOf('<div', at), b = divEnd(h, a);
+  const pi = h.indexOf('<div class="plain">', a); if (pi < 0 || pi > b) throw new Error(`plain top: ${S}#c_${S}_0 has no plain opening`);
+  const pe = divEnd(h, pi), plain = h.slice(pi, pe);
+  h = h.slice(0, pi) + h.slice(pe);
+  let ins = h.indexOf('<div class="m-stage');
+  if (ins < 0) { const ph = h.indexOf('<div class="pagehead'); ins = ph < 0 ? 0 : divEnd(h, ph); }
+  return h.slice(0, ins) + `<!--m2top--><div class="pl-top" data-pl="${S}"><!--m2p-->${plain}<!--/m2p--></div><!--/m2top-->\n` + h.slice(ins);
+}
 
 /** index just past the </div> that closes the <div at `at` */
 export function divEnd(h: string, at: number): number {

@@ -6,10 +6,10 @@ const T1: PStation = {
     c_T1_0: {
       zh: `<p>你对 AI 说一句话，它背后其实有<b>六层</b>在接力干活，就像一家餐厅：有人点菜、有人安排、有人掌勺、有人采购。</p>
 <ul class="pts"><li><b>你</b>：说出想要什么。</li><li><b>Agent 应用</b>：小管家，安排先做什么、后做什么，还会帮你去查、去点按钮。</li><li><b>大模型</b>：大脑，负责“想”和“写”。</li><li><b>多模态</b>：眼睛、耳朵和画笔，让它能看图、听声音、画画。</li><li><b>训练</b>：上学，大脑的本事是提前学出来的。</li><li><b>算力</b>：发电站和厨房，让这一切真的跑起来。</li></ul>
-<p>点上面图里的任意方块，就能看到它是干什么的。</p>`,
+<p>点下面图里的任意方块，就能看到它是干什么的。</p>`,
       en: `<p>When you say one sentence to an AI, <b>six layers</b> pass the job along behind it, like a restaurant where someone orders, someone plans, someone cooks and someone buys the food.</p>
 <ul class="pts"><li><b>You</b>: say what you want.</li><li><b>Agent app</b>: the helper that plans what to do first and next, and goes off to look things up or press buttons for you.</li><li><b>Large model</b>: the brain that does the “thinking” and “writing”.</li><li><b>Multimodal</b>: eyes, ears and a paintbrush, so it can see pictures, hear sounds and draw.</li><li><b>Training</b>: school; the brain learned its skills in advance.</li><li><b>Compute</b>: the power station and the kitchen that make it all actually run.</li></ul>
-<p>Tap any box in the picture above to see what it does.</p>`,
+<p>Tap any box in the picture below to see what it does.</p>`,
     },
     walkCard: {
       keep: true,

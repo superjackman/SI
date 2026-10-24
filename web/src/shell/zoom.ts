@@ -12,12 +12,12 @@ export function applyZoomDom(root: ParentNode, S: string, z: number, l: Lang) {
   const hid = sec.querySelectorAll('.card.zhide').length;
   if (!hid) { zn.style.display = 'none'; return; }
   zn.style.display = 'flex';
-  zn.innerHTML = t2(l, '🔭 当前是“', '🔭 Current view: “') + (z === 1 ? t2(l, '宏观', 'Overview') : t2(l, '中观', 'Mid-level')) + t2(l, '”视图：已收起 ', '”; collapsed ') + hid
+  zn.innerHTML = t2(l, '🔭 当前是“', '🔭 Current view: “') + (z === 1 ? t2(l, '远看', 'Overview') : t2(l, '近看', 'Mid-level')) + t2(l, '”视图：已收起 ', '”; collapsed ') + hid
     + t2(l, ' 张', ' ') + (z === 1 ? t2(l, '细节与演示', 'detail & demo') : t2(l, '动手演示与实验', 'hands-on demo & lab')) + t2(l, '卡片。', ' cards.')
-    + (z === 1 ? t2(l, '<button class="btn" data-zset="2">展开到中观</button>', '<button class="btn" data-zset="2">Expand to mid-level</button>') : '')
-    + t2(l, '<button class="btn primary" data-zset="3">展开到微观（全部）</button>', '<button class="btn primary" data-zset="3">Expand to detail (all)</button>');
+    + (z === 1 ? t2(l, '<button class="btn" data-zset="2">展开到近看</button>', '<button class="btn" data-zset="2">Expand to mid-level</button>') : '')
+    + t2(l, '<button class="btn primary" data-zset="3">展开到细看（全部）</button>', '<button class="btn primary" data-zset="3">Expand to detail (all)</button>');
 }
-const TOAST: [string, string][] = [['', ''], ['🔭 宏观：只看一句话概括和结构图', '🔭 Overview: just the one-line summary and diagram'], ['🗺️ 中观：加上原理与“为什么”', '🗺️ Mid-level: adds principles and the “why”'], ['🔬 微观：全部细节、演示和实验', '🔬 Detail: all details, demos and labs']];
+const TOAST: [string, string][] = [['', ''], ['🔭 远看：只看一句话概括和结构图', '🔭 Overview: just the one-line summary and diagram'], ['🗺️ 近看：加上原理与“为什么”', '🗺️ Mid-level: adds principles and the “why”'], ['🔬 细看：全部细节、演示和实验', '🔬 Detail: all details, demos and labs']];
 export function setZoom(z: 1 | 2 | 3, say = false) {
   const s = useApp.getState();
   try { localStorage.setItem('aiexp.v2.zoom', JSON.stringify(z)); } catch { /* private mode */ }

@@ -235,5 +235,9 @@ export function mountLate(sec: HTMLElement, S: string, L: Lang): () => void {
     });
     io.observe(last); offs.push(() => { clearTimeout(tm); io.disconnect(); });
   }
+  /* R21 onboarding: welcome card, route, next steps, coach marks (its own lazy chunk, after the rows above exist) */
+  let gone = false, ob: (() => void) | null = null;
+  void import('../onboard').then((m) => { if (!gone) ob = m.mountOnboard(sec, S, L); }, () => undefined);
+  offs.push(() => { gone = true; ob?.(); });
   return () => { offs.forEach((f) => f()); added.forEach((e) => e.remove()); delete sec.dataset.late; };
 }

@@ -6,8 +6,8 @@ import { B } from './types';
 const T3: PStation = {
   cards: {
     c_T3_0: {
-      zh: `<p>大模型其实在玩<b>词语接龙</b>：你给它一个开头，它猜“下一个词最可能是什么”，接上去，再猜下一个……一个词一个词地把整段话写出来。上面的图就是它肚子里的流水线：文字从左边进去，右边出来的是“每个词有多大可能是下一个”。</p>`,
-      en: `<p>A large model is really playing a <b>word-chain game</b>: you give it a beginning, it guesses “what is the most likely next word”, adds it, then guesses the next… writing a whole passage one word at a time. The picture above is the assembly line inside it: text goes in on the left, and out on the right comes “how likely each word is to be next”.</p>`,
+      zh: `<p>大模型其实在玩<b>词语接龙</b>：你给它一个开头，它猜“下一个词最可能是什么”，接上去，再猜下一个……一个词一个词地把整段话写出来。下面的图就是它肚子里的流水线：文字从左边进去，右边出来的是“每个词有多大可能是下一个”。</p>`,
+      en: `<p>A large model is really playing a <b>word-chain game</b>: you give it a beginning, it guesses “what is the most likely next word”, adds it, then guesses the next… writing a whole passage one word at a time. The picture below is the assembly line inside it: text goes in on the left, and out on the right comes “how likely each word is to be next”.</p>`,
     },
     c_T3_1: {
       keep: true,

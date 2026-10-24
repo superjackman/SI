@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { symKeys, needsCtx } from '../../m2/sym';
 import { SYM, GROUPS } from '../../m2/content/symbols';
 import { PLAIN, PLAIN_STATIONS } from '../../m2/plain';
-import { plainPage, plainNodes, undoPlain, resolve, mentions } from '../../m2/plainpass';
+import { plainPage, plainNodes, undoPlain, resolve, mentions, topPlain } from '../../m2/plainpass';
 import { CODES } from '../../src/i18n/codes';
 import type { XRow } from '../../src/shell/TopBar';
 import { searchAll } from '../../src/shell/TopBar';
@@ -18,6 +18,7 @@ const CJK = /[\u3400-\u9fff\uff00-\uffef\u3000-\u303f]/;
 const st = (S: string, L: string) => J<{ html: string }>(`st/${S}.${L}.json`).html;
 const text = (h: string) => h.replace(/<[^>]+>/g, ' ');
 const cards = (h: string) => [...h.matchAll(/<div class="card( [^"]*)?" id="([^"]+)"/g)].map((m) => ({ id: m[2]!, cls: m[1] ?? '', at: m.index! }));
+const topCard = (h: string) => /<!--m2top-->([\s\S]*?)<!--\/m2top-->/.exec(h)?.[1] ?? '';
 const cardHtml = (h: string, id: string) => { const all = cards(h), i = all.findIndex((c) => c.id === id); return h.slice(all[i]!.at, all[i + 1]?.at ?? h.length); };
 
 describe('R15 symbol extractor', () => {
@@ -98,7 +99,8 @@ describe('R15 plain layer covers the whole site', () => {
     const miss: string[] = [];
     for (const S of PLAIN_STATIONS) for (const L of LANGS) {
       const h = st(S, L);
-      for (const c of cards(h)) if (!/\bquiz\b/.test(c.cls) && !cardHtml(h, c.id).includes('class="plain')) miss.push(`${S}.${L}#${c.id}`);
+      /* R21: the first card's plain opening sits in its own top card (above the diagram) */
+      for (const c of cards(h)) if (!/\bquiz\b/.test(c.cls) && !(c.id === `c_${S}_0` ? topCard(h) : cardHtml(h, c.id)).includes('class="plain')) miss.push(`${S}.${L}#${c.id}`);
     }
     expect(miss).toEqual([]);
   });
@@ -145,8 +147,8 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) describe(`R15 plain layer
   const h = st(S, L), P = PLAIN[S]!;
   it('every PLAIN card exists, opens with a plain block, and keeps the full text in a closed "Go deeper"', () => {
     for (const [id, p] of Object.entries(P.cards)) {
-      const c = cardHtml(h, id);
-      expect(c, id).toMatch(/<div class="plain( pl-lab)?"><p class="pl-tag">/);
+      const c = cardHtml(h, id), first = id === `c_${S}_0`;
+      expect(first ? topCard(h) : c, id).toMatch(/<div class="plain( pl-lab)?"><p class="pl-tag">/);
       if (/^ lab\b/.test(cards(h).find((x) => x.id === id)!.cls) || p.keep) expect(c, id).not.toContain('<details class="deep"');
       else { expect(c, id).toContain('<details class="deep"><summary>'); expect(c, id).not.toMatch(/<details class="deep"[^>]*\bopen\b/); }
     }
@@ -191,9 +193,16 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) describe(`R15 plain layer
     } else expect(n.body, id).not.toContain('class="sn"');
   });
   it('the pass is idempotent and fully undoable', () => {
-    expect(plainPage(h, S, L, P)).toBe(h);
+    expect(topPlain(plainPage(h, S, L, P), S)).toBe(h);
     expect(undoPlain(h)).not.toContain('class="plain');
     expect(undoPlain(h)).not.toContain('class="sn"');
+  });
+  it('R21: the first plain opening is the top card, right under the page head and above the diagram', () => {
+    const t = h.indexOf('<!--m2top--><div class="pl-top" data-pl="' + S + '"><!--m2p--><div class="plain"><p class="pl-tag">'), m = h.indexOf('<div class="m-stage');
+    expect(t).toBeGreaterThan(h.indexOf('<div class="pagehead')); expect(t).toBeLessThan(m < 0 ? Infinity : m);
+    expect((h.match(/<!--m2top-->/g) ?? []).length).toBe(1);
+    expect(topCard(h)).toContain(L === 'zh' ? '🧒 先用大白话说' : '🧒');
+    expect(cardHtml(h, `c_${S}_0`)).not.toContain('<div class="plain">');
   });
   if (L === 'en') it('no Chinese in the English plain texts, notes or glossary links', () => {
     for (const p of Object.values(P.cards)) { expect(p.en).not.toMatch(CJK); if (p.more) expect(p.more.en).not.toMatch(CJK); }

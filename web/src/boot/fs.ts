@@ -1,9 +1,9 @@
 /* R16 full screen on phones (first-load, tiny). The Fullscreen API needs a user tap and does not exist for pages on
    iPhone Safari; there "Add to Home Screen" (manifest display:fullscreen → standalone, apple-mobile-web-app-capable)
    is the only way, so a one-time tip says so (lazy chunk ./a2hs; never inside WeChat).
-   - where requestFullscreen exists (Android Chrome, Samsung, Firefox, iPad Safari …) the first tap on the page enters
-     full screen once per load, on touch screens only, never inside WeChat / an installed app / an iframe, and never
-     again once the reader has left full screen (si.fs = 0);
+   - where requestFullscreen exists (Android Chrome, Samsung, Firefox, iPad Safari …) R21: a small card asks first
+     ("full screen?" yes / no thanks; lazy ./a2hs) — on touch screens only, never inside WeChat / an installed app /
+     an iframe, and never again after "no thanks" or once the reader has left full screen (si.fs = 0);
    - ⛶ in the ☰ menu toggles it (or shows the tip where it cannot work). */
 type El = HTMLElement & { webkitRequestFullscreen?: () => void };
 type Doc = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => void; webkitFullscreenEnabled?: boolean };
@@ -29,7 +29,6 @@ export function installFS() {
   if (inWx || installed() || !coarse() || self !== top) return;
   if (canFS()) {
     if (ls('si.fs') === '0') return;
-    const first = (e: Event) => { if ((e.target as Element).closest?.('#fsBtn')) return; removeEventListener('click', first, true); if (!fsEl()) enterFS(); };
-    addEventListener('click', first, true);
+    setTimeout(() => { if (!fsEl()) void import('./a2hs').then((m) => m.askFS(enterFS)).catch(() => { /* optional */ }); }, 4000);
   } else if (!ls('si.a2hs')) setTimeout(() => tip(), 4000);
 }

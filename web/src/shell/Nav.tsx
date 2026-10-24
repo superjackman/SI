@@ -205,7 +205,7 @@ export function Drawer() {
         onTouchEnd={() => { const s = sw.current; if (s.x0 == null || !ref.current) return; s.x0 = null; ref.current.style.transition = ''; const vv = -s.dx / Math.max(1, Date.now() - s.t0); ref.current.style.transform = ''; if (s.hz && (s.dx < -70 || (s.dx < -30 && vv > 0.5))) close(); }}>
         <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
         <div className="dw-prog" aria-hidden="true"><i id="dwProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div>
-        <nav id="dwList" aria-label={tx({ zh: '站点：宏观 → 微观', en: 'Stops: macro → micro' })}>
+        <nav id="dwList" aria-label={tx({ zh: '站点：远看 → 细看', en: 'Stops: macro → micro' })}>
           {GRP.map(([ic, name, ks]) => {
             const seen = ks.filter((k) => v.includes(k)).length, base = Math.min(...ks.map((k) => PATH[k]?.length ?? 0));
             return (

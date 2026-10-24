@@ -36,7 +36,7 @@ import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
 import { PLAIN, PLAIN_STATIONS } from './plain';
-import { glossaryJson, plainNodes, plainPage } from './plainpass';
+import { glossaryJson, plainNodes, plainPage, topPlain } from './plainpass';
 import { SYM } from './content/symbols';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
@@ -354,6 +354,14 @@ put('symbols.json', glossaryJson());
 xrows.push(['y', '*', '', CODES['sym.title'].zh, CODES['sym.title'].en]);
 for (const [k, g] of Object.entries(SYM)) xrows.push(['y', k, '', `${g.s} ${g.r.zh}`, `${g.s} ${g.r.en}`]);
 put('search-x.json', xrows);
+
+/* ---------- R21: the stop's first plain opening ("🧒 先用大白话说") goes to the very top, above the diagram ----------
+   It is cut out of the first card (c_<S>_0, which keeps its title and its closed "Go deeper") into a card of its own
+   right under the page head. Idempotent: the plain pass above strips its m2p part, this strips the rest. */
+for (const S of PLAIN_STATIONS) for (const L of LANGS) {
+  const p = `st/${S}.${L}.json`, st = stOf(p), h = topPlain(st.html, S);
+  if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+}
 
 /* ---------- guard: KaTeX markup must never be escaped into visible text (it would print as raw HTML on the page) ---------- */
 const KX = /&lt;(?:span class=(?:&quot;|\\")katex|\/?(?:math|semantics|annotation)\b)|&amp;lt;/;

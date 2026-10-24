@@ -22,9 +22,9 @@ export function kids(id: string): string[] {
 /** station icons (live: drawer / bottom bar) and drawer groups */
 export const ICON: Record<string, string> = { T1: '🏠', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', U: '🛠️', Ua: '🤝', Ub: '🚀', Uc: '🔌', Ud: '🎯', Up: '🗂️', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
 export const GRP: [string, Bi, string[]][] = [
-  ['🔭', { zh: '宏观：应用与 Agent', en: 'Macro: apps & agents' }, ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2']],
-  ['🗺️', { zh: '中观：大模型', en: 'Meso: the LLM' }, ['T3']],
-  ['🔬', { zh: '微观：模型内部', en: 'Micro: inside the model' }, ['N', 'T4', 'T4a', 'T4b', 'T5']],
+  ['🔭', { zh: '远看：应用与 Agent', en: 'Big picture: apps & agents' }, ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2']],
+  ['🗺️', { zh: '近看：大模型', en: 'Closer: the LLM' }, ['T3']],
+  ['🔬', { zh: '细看：模型内部', en: 'Inside the model' }, ['N', 'T4', 'T4a', 'T4b', 'T5']],
   ['🧭', { zh: '专题与速查', en: 'Topics & reference' }, ['T6', 'T7', 'T8']],
   ['∑', { zh: '数学层：推导与证明', en: 'Math layer: derivations & proofs' }, ['K1', 'K2', 'K3', 'K4', 'K5']],
 ];

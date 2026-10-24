@@ -20,7 +20,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       const deep = sec.locator('details.deep');
       expect(await deep.count(), S).toBeGreaterThanOrEqual(3);
       expect(await deep.evaluateAll((d) => d.filter((x) => (x as HTMLDetailsElement).open).length), S).toBe(0);
-      const first = sec.locator(`#c_${S}_0 .plain`);
+      const first = sec.locator(`.pl-top[data-pl="${S}"] .plain`); // R21: the first plain opening is the top card
       await expect(first).toBeVisible();
       if (lang === 'en') expect(await sec.locator('.plain, details.deep > summary').allInnerTexts()).not.toContainEqual(expect.stringMatching(CJK));
       expect(await wide(page, `section#${S} .plain, section#${S} details.deep > summary`), S).toEqual([]);

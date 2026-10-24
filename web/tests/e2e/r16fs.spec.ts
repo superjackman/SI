@@ -121,20 +121,46 @@ test.describe('(A) full screen', () => {
     expect(errors).toEqual([]);
   });
 
-  test('first tap on a touch screen enters full screen once; not again after the reader left it', async ({ page }) => {
-    await page.goto('./?lang=zh#T3'); await ready(page, 'T3', 'zh');
-    await page.waitForFunction(() => document.readyState === 'complete');
-    await page.waitForTimeout(800);   // fs chunk installs at idle
+  /* R21 (P10): no silent full screen any more — a small card asks first; "full screen" enters it, "no thanks" or leaving
+     full screen means never again */
+  for (const lang of ['zh', 'en'] as Lang[]) test(`asks before going full screen; yes enters, no thanks / leaving it stops asking (${lang})`, async ({ page }) => {
+    await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
     await page.locator('main p').first().tap();
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(false);   // a tap alone does nothing
+    const ask = page.locator('#siFsAsk');
+    await expect(ask).toBeVisible({ timeout: 9000 });
+    await expect(ask).toContainText(lang === 'zh' ? '要全屏看吗？' : 'Go full screen?');
+    expect(await ask.evaluate((t) => { const r = t.getBoundingClientRect(), b = document.querySelector('#bnav')?.getBoundingClientRect(); return r.left >= 0 && r.right <= document.documentElement.clientWidth && (!b || r.bottom <= b.top + 0.5); })).toBe(true);
+    await ask.locator('[data-fs="yes"]').tap();
     await expect.poll(() => page.evaluate(() => !!document.fullscreenElement)).toBe(true);
     await expect(page.locator('html')).toHaveClass(/is-fs/);
     await page.evaluate(() => document.exitFullscreen());
-    await expect(page.locator('html')).not.toHaveClass(/is-fs/);
     await expect.poll(() => page.evaluate(() => localStorage.getItem('si.fs'))).toBe('0');
-    await page.reload(); await ready(page, 'T3', 'zh'); await page.waitForTimeout(800);
-    await page.locator('main p').first().tap();
-    await page.waitForTimeout(300);
-    expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(false);
+    await page.reload(); await ready(page, 'T3', lang); await page.waitForTimeout(5000);
+    await expect(ask).toHaveCount(0);
+    // "no thanks" on a fresh profile
+    await page.evaluate(() => localStorage.removeItem('si.fs'));
+    await page.reload(); await ready(page, 'T3', lang);
+    await expect(ask).toBeVisible({ timeout: 9000 });
+    await ask.locator('[data-fs="no"]').tap();
+    await expect(ask).toHaveCount(0);
+    expect(await page.evaluate(() => [!!document.fullscreenElement, localStorage.getItem('si.fs')])).toEqual([false, '0']);
+  });
+
+  test.describe('first visit', () => {
+  test.use({ storageState: { cookies: [], origins: [] } });
+  test('the full-screen question waits while first-visit help (welcome card / coach marks) is on screen', async ({ page }) => {
+    await page.goto('./?lang=zh#T1'); await ready(page, 'T1', 'zh');
+    await expect(page.locator('section.level.active .ob-wel')).toBeVisible({ timeout: 9000 });
+    await page.waitForTimeout(5500);
+    await expect(page.locator('#siFsAsk')).toHaveCount(0);           // not on top of the welcome card
+    await page.locator('[data-ob="onb-x"]').click();                // → coach marks
+    await page.locator('[data-ob="coach-skip"]').click();
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await page.evaluate(() => { for (const e of document.querySelectorAll('.ob-bub')) e.remove(); });
+    await expect(page.locator('#siFsAsk')).toBeVisible({ timeout: 12000 });
+  });
   });
 
   test.describe('iPhone (no Fullscreen API)', () => {

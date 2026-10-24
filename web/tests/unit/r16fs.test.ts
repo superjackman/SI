@@ -49,20 +49,24 @@ describe('R16 full screen + add-to-home-screen tip', () => {
   beforeEach(() => { vi.resetModules(); localStorage.clear(); document.body.innerHTML = ''; });
   afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); delete (document.documentElement as { requestFullscreen?: unknown }).requestFullscreen; });
 
-  it('first tap enters full screen (touch screens, API present), once; never again after the reader left it', async () => {
+  it('asks first (R21 P10): a tap alone never goes full screen; ⛶ 全屏 does; leaving or 不用了 is remembered', async () => {
     vi.stubGlobal('matchMedia', mm(true));
     const req = vi.fn(() => Promise.resolve());
     (document.documentElement as { requestFullscreen?: unknown }).requestFullscreen = req;
+    vi.useFakeTimers();
     const fs = await import('../../src/boot/fs');
     expect(fs.canFS()).toBe(true);
     fs.installFS();
-    document.body.innerHTML = '<button id="b">x</button><button id="fsBtn"></button>';
-    document.getElementById('fsBtn')!.click();
-    expect(req).not.toHaveBeenCalled();           // the ⛶ button handles itself
+    document.body.innerHTML = '<button id="b">x</button>';
     document.getElementById('b')!.click();
+    expect(req).not.toHaveBeenCalled();           // no silent first-tap full screen any more
+    await vi.advanceTimersByTimeAsync(4100);
+    vi.useRealTimers();
+    await vi.waitFor(() => expect(document.getElementById('siFsAsk')).not.toBeNull());
+    expect(document.getElementById('siFsAsk')!.textContent).toMatch(/全屏|full screen/i);
+    document.querySelector<HTMLElement>('#siFsAsk [data-fs=yes]')!.click();
     expect(req).toHaveBeenCalledTimes(1);
-    document.getElementById('b')!.click();
-    expect(req).toHaveBeenCalledTimes(1);         // only the first tap
+    expect(document.getElementById('siFsAsk')).toBeNull();
     // reader leaves full screen → remembered
     Object.defineProperty(document, 'fullscreenElement', { configurable: true, get: () => document.documentElement });
     document.dispatchEvent(new Event('fullscreenchange'));
@@ -71,11 +75,21 @@ describe('R16 full screen + add-to-home-screen tip', () => {
     document.dispatchEvent(new Event('fullscreenchange'));
     expect(document.documentElement.classList.contains('is-fs')).toBe(false);
     expect(localStorage.getItem('si.fs')).toBe('0');
+  });
+  it('不用了 is remembered: never asked again', async () => {
+    vi.stubGlobal('matchMedia', mm(true));
+    const req = vi.fn(() => Promise.resolve());
+    (document.documentElement as { requestFullscreen?: unknown }).requestFullscreen = req;
+    const a = await import('../../src/boot/a2hs');
+    a.askFS(req);
+    document.querySelector<HTMLElement>('#siFsAsk [data-fs=no]')!.click();
+    expect(req).not.toHaveBeenCalled();
+    expect(localStorage.getItem('si.fs')).toBe('0');
+    vi.useFakeTimers();
     vi.resetModules();
-    const fs2 = await import('../../src/boot/fs');
-    fs2.installFS();
-    document.getElementById('b')!.click();
-    expect(req).toHaveBeenCalledTimes(1);
+    (await import('../../src/boot/fs')).installFS();
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(document.getElementById('siFsAsk')).toBeNull();
   });
   it('no auto full screen with a mouse', async () => {
     vi.stubGlobal('matchMedia', mm(false));
