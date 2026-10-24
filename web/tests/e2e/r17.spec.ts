@@ -84,8 +84,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
     await page.locator('#mMenu').tap(); await expect(page.locator('#mDrawer')).toBeVisible(); await page.waitForTimeout(300);
     check(await iconOnly(page, '#mDrawer'), 'drawer'); await page.keyboard.press('Escape');
-    await page.locator('[data-bn="more"]').tap(); await expect(page.locator('#moreSheet')).toBeVisible(); await page.waitForTimeout(300);
-    check(await iconOnly(page, '#moreSheet'), 'sheet'); await page.locator('#moreSheet .sh-x').tap();
+    for (const k of ['toc', 'lab', 'prog']) {
+      await page.locator(`#bnav [data-bn="${k}"]`).tap(); await expect(page.locator(`#dkSheet[data-k="${k}"]`)).toBeVisible(); await page.waitForTimeout(300);
+      check(await iconOnly(page, '#dkSheet'), `sheet ${k}`); await page.locator('#dkSheet .sh-x').tap(); await expect(page.locator('#dkSheet')).toHaveCount(0);
+    }
     await page.locator('#mShare').tap(); await expect(page.locator('#sharePanel')).toBeVisible(); await page.waitForTimeout(300);
     check(await iconOnly(page, '#sharePanel'), 'share'); await page.keyboard.press('Escape');
     await page.locator('.mh-x[data-open]').first().tap(); await expect(page.locator('#modal')).toBeVisible(); await page.waitForTimeout(300);

@@ -57,10 +57,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(await page.evaluate(() => { const r = [...document.querySelectorAll('.ob-tl span:not([hidden])')].map((e) => e.getBoundingClientRect()).sort((a, b) => a.left - b.left); return Math.min(...r.slice(1).map((q, i) => q.left - r[i]!.right)); })).toBeGreaterThanOrEqual(4);
     expect(await clean(page, `${act} .ob-wel .ob-b, ${act} .ob-wel .ob-x`)).toEqual([]);
     if (lang === 'en') expect(CJK.test((await w.innerText()) + (await page.locator('.ob-tl').innerText()))).toBe(false);
-    // full route → coach marks: menu, prev/next, find/share/lang, signpost; each bubble inside the screen
+    // full route → coach marks: menu, prev/next, find/share/lang, signpost, the bottom bar (R22); each bubble inside the screen
     await page.locator('[data-ob="onb-all"]').click();
     await expect(w).toHaveCount(0);
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 5; i++) {
       const b = page.locator('.ob-bub.coach');
       await expect(b).toBeVisible();
       expect(await clean(page, '.ob-bub')).toEqual([]);

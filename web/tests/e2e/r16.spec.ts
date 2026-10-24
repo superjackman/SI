@@ -162,7 +162,7 @@ test.describe('share the current page', () => {
       const c = cs[Math.min(3, cs.length - 1)]!; window.scrollTo(0, c.getBoundingClientRect().top + window.pageYOffset - 80); return c.id;
     });
     await page.waitForTimeout(300);
-    await page.evaluate(() => (document.getElementById('mShare') as HTMLButtonElement).click()); // crumb may be scrolled off; MoreSheet has the same entry
+    await page.evaluate(() => (document.getElementById('mShare') as HTMLButtonElement).click()); // crumb may be scrolled off; the header ⤴ is always there
     const v = await page.locator('#sharePanel .sp-copy input').inputValue();
     expect(v).toMatch(new RegExp(`\\?lang=zh&from=copy#T1/${id}$`));
     const p2 = await browser.newPage({ viewport: page.viewportSize()! });
@@ -172,12 +172,13 @@ test.describe('share the current page', () => {
     } finally { await p2.close(); }
   });
 
-  test('More sheet has a share entry too (reachable when the crumb is scrolled away)', async ({ page }) => {
+  test('share stays reachable when the page is scrolled far down (R22: the header ⤴; the old More-sheet entry is gone)', async ({ page }) => {
     await page.goto('./?lang=en#K2'); await ready(page, 'K2', 'en');
-    await page.evaluate(() => (window as unknown as { __si: { state: () => { set: (o: object) => void } } }).__si.state().set({ sheetOpen: true }));
-    await page.locator('#shShare').tap();
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    await page.waitForTimeout(300);
+    await expect(page.locator('#mShare')).toBeInViewport();
+    await page.locator('#mShare').tap();
     await expect(page.locator('#sharePanel .sp-head b')).toHaveText('Share this page');
-    await expect(page.locator('#moreSheet.open')).toHaveCount(0);
   });
 
   test('inside WeChat (simulated UA): the ··· hint, QR still there, no system-share assumptions', async ({ browser }) => {

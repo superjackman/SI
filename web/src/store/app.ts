@@ -6,6 +6,7 @@ import { isStation } from '../legacy/kb';
 
 export interface DrillEntry { from: string; to: string; y: number; open: string | null; ph?: boolean }
 export interface Popup { id: string; tab: number }
+export type Sheet = 'toc' | 'lab' | 'prog' | 'next' | 'more';
 interface AppState {
   lang: Lang;
   langSource: 'url' | 'saved' | 'browser' | 'manual';
@@ -18,7 +19,8 @@ interface AppState {
   /** station drills (↩ in the crumb / floating) */
   drill: DrillEntry[];
   drawerOpen: boolean;
-  sheetOpen: boolean;
+  /** R22: the bottom bar's sheets (and the ☰ menu's progress / map sheets) */
+  sheetOpen: Sheet | false;
   searchOpen: boolean;
   toast: { text: string; n: number } | null;
   full: { host: HTMLElement; station: string } | null;

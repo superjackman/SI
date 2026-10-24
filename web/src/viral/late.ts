@@ -239,5 +239,9 @@ export function mountLate(sec: HTMLElement, S: string, L: Lang): () => void {
   let gone = false, ob: (() => void) | null = null;
   void import('../onboard').then((m) => { if (!gone) ob = m.mountOnboard(sec, S, L); }, () => undefined);
   offs.push(() => { gone = true; ob?.(); });
+  /* R22 bottom bar badges: ✨ lit X/22 (k/6 on the kids' route), ✅ done, 🧪 how many labs */
+  let bd: (() => void) | null = null;
+  void import('../shell/dock').then((m) => { if (!gone) bd = m.badges(sec, S, L); }, () => undefined);
+  offs.push(() => bd?.());
   return () => { offs.forEach((f) => f()); added.forEach((e) => e.remove()); delete sec.dataset.late; };
 }

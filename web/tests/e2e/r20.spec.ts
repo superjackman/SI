@@ -126,8 +126,8 @@ test('progress card + certificate: the rule is stated, the map fits, the certifi
   }
   /* all 22 opened: certificate offered; from the menu too */
   await page.evaluate((o) => localStorage.setItem('aiexp.v2.visited', JSON.stringify(o)), ORDER);
-  await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toHaveClass(/open/);
+  await page.locator('#bnav [data-bn="prog"]').click();
+  await expect(page.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);
   await page.locator('#shProgCard').click();
   await page.locator('#cardPanel img.cp-img[data-kind=progress][data-cert="1"]').waitFor();
   await page.locator('#cardPanel [data-act=cert]').click();
@@ -171,7 +171,7 @@ test('prompts: inline (never a dialog), at most one per session, a dismissed kin
   const nd = page.locator('section.level.active .vr-q .vr-nudge[data-kind=quiz]');
   await expect(nd).toContainText('All correct! Want to challenge a friend?');
   await expect(page.locator('#cardPanel')).toHaveCount(0);
-  await expect(page.locator('#moreSheet')).not.toHaveClass(/open/);
+  await expect(page.locator('#dkSheet')).toHaveCount(0);
   expect(await evs(page)).toContain('nudge-quiz');
   /* a second all-correct in the same session: no second prompt */
   await at(page, './?lang=en#T4', 'T4', 'en'); await answer(page, 'T4');

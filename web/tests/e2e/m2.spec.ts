@@ -74,16 +74,17 @@ const cjkOnPage = (page: Page) => page.evaluate(() => {
 
 for (const lang of ['zh', 'en'] as Lang[]) {
   for (const S of M2) {
-    test(`${lang} ${S}: renders, diagram clean, lab + quiz present, more-tab lit, fits the phone, no errors / external requests`, async ({ page }) => {
+    test(`${lang} ${S}: renders, diagram clean, lab + quiz present, bottom-bar badges, fits the phone, no errors / external requests`, async ({ page }) => {
       const w = watch(page);
       await open(page, lang, S);
       await expect(page.locator(`section#${S}.level.active .m-stage svg`).first()).toBeVisible();
-      await expect(page.locator('#bnav [data-bn="more"]')).toHaveClass(/on/);
       await expect(page.locator(`section#${S} .st-fail`)).toHaveCount(0);
       await expect(page.locator(`section#${S} .tag.demo`).first()).toHaveText(lang === 'zh' ? '示意' : 'Illustrative');
       const lab = LABS[S] ?? [];
       await expect(page.locator(`section#${S} .card.lab`)).toHaveCount(lab.length);
       for (const id of lab) await expect(page.locator(`#${id}`)).toBeAttached();
+      await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', lab.length ? '' : 'off');
+      await expect(page.locator('#bnav [data-bn="quiz"]')).not.toHaveAttribute('data-st', 'off');
       await reveal(page, `#quiz${S}`);
       await expect(page.locator(`#quiz${S} .qz`)).toHaveCount(QN[S]!);
       await expect(page.locator(`section#${S} .card.m3ph`)).toHaveCount(0);
@@ -97,15 +98,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   }
 }
 
-test('navigation: U only in More + all-stops lists, not the bottom bar; ▶ walks T1 → U → Ua … Ud → Up → T2; ◀ back', async ({ page }) => {
+test('navigation: U stops in the all-stops list, not the bottom bar; 下一站 and ▶ walk T1 → U → Ua … Ud → Up → T2; ◀ back', async ({ page }) => {
   await open(page, 'zh', 'T1');
   for (const s of M2) await expect(page.locator(`#bnav [data-bn="${s}"]`)).toHaveCount(0);
-  await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toHaveClass(/open/);
-  await expect(page.locator('#shStations .st-b[data-st="U"]')).toBeVisible();
-  for (const s of ['Ua', 'Ub', 'Uc', 'Ud']) await expect(page.locator(`#shStations .st-b[data-st="${s}"]`)).toHaveCount(0);
-  for (const s of M2) await expect(page.locator(`#shStations .st-all [data-st="${s}"]`)).toHaveCount(1);
-  await page.locator('#shStations .st-b[data-st="U"]').click();
+  await page.locator('#bnav [data-bn="next"]').click();
   await expect.poll(() => station(page)).toBe('U');
   await page.locator('#mMenu').click();
   await expect(page.locator('#mDrawer')).toHaveClass(/open/);
@@ -301,8 +297,8 @@ test('quiz scoring on the M2 stops: right / wrong answers count per stop and in 
   await expect(page.locator('#quizU .qsum')).toContainText('本页 3 题，已答 3 题，答对 2 题');
   await expect(page.locator('#quizU .opt.right')).toHaveCount(3);
   await expect(page.locator('#quizU .opt.wrong')).toHaveCount(1);
-  await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toContainText('测验答对 2 / 89（已答 3）');
+  await page.locator('#bnav [data-bn="prog"]').click();
+  await expect(page.locator('#dkSheet #shProgTxt')).toContainText('测验答对 2 / 89（已答 3）');
   await page.keyboard.press('Escape');
   /* every M2 stop's key matches its rendered options (all right → full marks), in English too */
   for (const S of ['Ua', 'Ub', 'Uc', 'Ud']) {

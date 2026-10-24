@@ -1,0 +1,27 @@
+/* R22 bottom bar: badges + the sheets behind it (lazy) */
+#bnav button{position:relative}
+#bnav button[data-n]::after{content:attr(data-n);position:absolute;top:3px;left:calc(50% + 3px);min-width:17px;height:17px;padding:0 4px;box-sizing:border-box;border-radius:9px;background:#4f46e5;color:#fff;font:800 10px/17px system-ui,sans-serif;text-align:center;white-space:nowrap;box-shadow:0 0 0 2px #fff}
+#bnav button[data-st=ok][data-n]::after{background:#10b981}
+#bnav button[data-st=rt][data-n]::after{background:#f59e0b;color:#451a03}
+#bnav button[data-st=off] i{opacity:.4;filter:grayscale(1)}
+#bnav button[data-st=off] span{opacity:.6}
+.dk-sheet{outline:none}
+.dk-tip{margin:0 0 8px}
+.dk-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.dk-it{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:6px 10px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.dk-it i{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#eef2ff;color:#4338ca;font-style:normal;font-weight:800;font-size:13px}
+.dk-it b{flex:1;min-width:0;font-weight:600;line-height:1.35;overflow-wrap:anywhere}
+.dk-it small{flex:none;padding:2px 7px;border-radius:9px;background:#4f46e5;color:#fff;font-size:11.5px;font-weight:700}
+.dk-it small.rt{background:#fef3c7;color:#92400e}
+.dk-it.on{border-color:#6366f1;box-shadow:0 0 0 2px #c7d2fe;background:#f5f7ff}
+.dk-it.k-lab i{background:#ecfdf5;color:#047857}
+.dk-it.k-quiz i{background:#fef3c7;color:#92400e}
+.dk-big>b{display:block;font-size:17px;margin-bottom:6px}
+.dk-acts{display:grid;gap:8px}
+.dk-acts .btn.wide{margin:0}
+.dk-p{margin:0 0 4px;line-height:1.55}
+.dk-rt{justify-self:center;min-height:44px;background:none;border:0;color:#4f46e5;font:inherit;font-weight:600;text-decoration:underline;cursor:pointer}
+.dk-rl{margin-top:6px}
+/* a sheet sits on top of the bar, not over it: the bar stays above the dim mask and every button keeps working */
+body.sheet-open #bnav{z-index:86}
+.dk-sheet.sheet{bottom:var(--bnh);padding-bottom:18px;max-height:calc(86vh - var(--bnh));max-height:calc(86dvh - var(--bnh));box-shadow:0 -12px 40px rgba(15,23,42,.25),0 1px 0 #e5e8ef}

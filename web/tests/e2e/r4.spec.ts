@@ -19,7 +19,10 @@ async function open(page: Page, lang: Lang, S: string) {
   await page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached' });
 }
 const station = (page: Page) => page.evaluate(() => (window as unknown as SI).__si.state().station);
-const sheet = async (page: Page) => { await page.locator('#bnav [data-bn="more"]').click(); await expect(page.locator('#moreSheet')).toHaveClass(/open/); };
+/* R22: the old 更多 sheet is gone — detail level lives in the ☰ menu, phase / icons / map in ☰ → 🗺️, progress behind ✨ */
+const menu = async (page: Page) => { await page.locator('#mMenu').click(); await expect(page.locator('#mDrawer')).toHaveClass(/open/); };
+const sheet = async (page: Page) => { await menu(page); await page.locator('#dwMore').click(); await expect(page.locator('#dkSheet[data-k="more"]')).toHaveClass(/open/); };
+const progSheet = async (page: Page) => { await page.locator('#bnav [data-bn="prog"]').click(); await expect(page.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/); };
 /* the live fixture's encoding of what a step lit */
 const lit = (page: Page, S: string) => page.evaluate((S) => [...document.getElementById(S)!.querySelectorAll<HTMLElement>('.tour-hl,[data-tourrun]')]
   .map((e) => (e.namespaceURI === 'http://www.w3.org/2000/svg' ? 'svg:' : 'html:') + e.dataset.id + '@' + (e.closest('.m-stage') ? 'stage' : e.closest('.card')?.id || '-')), S);
@@ -59,23 +62,20 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   });
 }
 
-test('tour: starts at mid-level when on overview, × and Escape end it; sheet ◀ ▶ step it, top-bar ◀ ▶ only change stops', async ({ page }) => {
+test('tour: starts at mid-level when on overview, × and Escape end it; 下一站 steps it, top-bar ◀ ▶ only change stops', async ({ page }) => {
   await open(page, 'zh', 'T1');
-  await sheet(page); await page.locator('#zoom [data-z="1"]').click(); await page.keyboard.press('Escape');
+  await menu(page); await page.locator('#zoom [data-z="1"]').click(); await page.keyboard.press('Escape');
   expect(await LS(page, 'zoom')).toBe('1');
   await page.locator('#mMenu').click(); await page.locator('#mTour').click();
   await expect(page.locator('#tour')).toHaveClass(/open/);
   expect(await LS(page, 'zoom')).toBe('2');
   await expect(page.locator('#toast')).toHaveText('🎬 导览开始：点下方面板的按钮前进后退，× 退出');
-  await sheet(page); await page.locator('#shNext').click();
-  await expect(page.locator('#moreSheet')).not.toHaveClass(/open/);
+  await page.locator('#bnav [data-bn="next"]').click();
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
-  /* as on live, the sheet's ◀ is disabled on the first stop (T1) even while the tour runs */
-  await sheet(page); await expect(page.locator('#shPrev')).toBeDisabled();
-  await page.locator('#shNext').click();
+  await page.locator('#bnav [data-bn="next"]').click();
   await expect(page.locator('#tourN')).toContainText('第 3 / 15 步');
   await expect.poll(() => station(page)).toBe('T2');
-  await sheet(page); await page.locator('#shPrev').click();
+  await page.locator('#tourPrev').click();
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
   await expect.poll(() => station(page)).toBe('T1');
   /* the top-bar ▶ follows the stop order (T1 → U, the M2 overview) and leaves the tour step alone */
@@ -108,7 +108,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(page.locator('#slotMode [data-mode="train"]')).toHaveClass(/active/);
     await expect(page.locator('#useBanner')).toBeHidden(); await expect(page.locator('#trainBanner')).toBeVisible();
     await page.keyboard.press('Escape');
-    await page.locator('#bnav [data-bn="T4"]').click();
+    await page.locator('#mMenu').click(); await page.locator('#mDrawer [data-dw="T4"], #mDrawer [data-go="T4"]').first().click();
     await page.locator(`html[data-si-ready="T4.${lang}"]`).waitFor({ state: 'attached' });
     const tp = page.locator('section#T4 #trainPanel');
     await expect(tp).toBeAttached();
@@ -128,9 +128,12 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
   await open(page, 'en', 'T3');
   const shown = () => page.locator('section#T3 .card[data-z]').evaluateAll((c) => c.filter((e) => e.getClientRects().length > 0).length);
   const all = await shown();
-  await sheet(page); await page.locator('#zoom [data-z="1"]').click();
+  await menu(page); await page.locator('#zoom [data-z="1"]').click();
   await expect(page.locator('#toast')).toHaveText('🔭 Overview: just the one-line summary and diagram');
-  await expect(page.locator('#zoom [data-z="1"]')).toHaveClass(/active/);
+  await expect(page.locator('#zoom [data-z="1"]')).toHaveClass(/on/);
+  await expect(page.locator('#zoom [data-z="1"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  await sheet(page);
   await page.locator('#shMap > summary').click();
   const secRows = () => page.locator('#tree .tn.sec').count();
   const rows1 = await secRows();
@@ -141,37 +144,44 @@ test('detail level: overview hides mid/detail cards with a note, the map follows
   await expect(page.locator('#znT3')).toContainText('Current view: “Overview”');
   await page.locator('#znT3 [data-zset="3"]').click();
   expect(await shown()).toBe(all);
-  await sheet(page); await page.locator('#zoom [data-z="2"]').click();
-  expect(await secRows()).toBeGreaterThan(rows1);
+  await menu(page); await page.locator('#zoom [data-z="2"]').click(); await page.keyboard.press('Escape');
+  await sheet(page); await page.locator('#shMap > summary').click();
+  await expect.poll(secRows).toBeGreaterThan(rows1);
+  await page.keyboard.press('Escape');
   await page.reload(); await page.locator('html[data-si-ready="T3.en"]').waitFor({ state: 'attached' });
   expect(await LS(page, 'zoom')).toBe('2');
-  await sheet(page); await expect(page.locator('#zoom [data-z="2"]')).toHaveClass(/active/);
+  await menu(page); await expect(page.locator('#zoom [data-z="2"]')).toHaveClass(/on/);
 });
 
-test('More sheet: progress counts quiz answers, ◀ ▶ change stops, progress detail → T8, learning map navigates', async ({ page }) => {
+test('✨ progress counts quiz answers, 下一站 changes stops, progress detail → T8; ☰ → 🗺️ icons + learning map navigate', async ({ page }) => {
   await open(page, 'zh', 'T1');
-  await sheet(page);
+  await progSheet(page);
   await expect(page.locator('#shProgTxt')).toHaveText('已看 1 / 22 站 · 测验答对 0 / 89（已答 0）');
-  await expect(page.locator('#shPrev')).toBeDisabled();
-  await expect(page.locator('#moreSheet .ic-leg span')).toHaveCount(14);
-  await page.locator('#shNext').click();
+  await page.keyboard.press('Escape');
+  await sheet(page);
+  await expect(page.locator('#dkSheet .ic-leg span')).toHaveCount(18);
+  await page.keyboard.press('Escape');
+  await page.locator('#bnav [data-bn="next"]').click();
   await expect.poll(() => station(page)).toBe('U');
-  await page.locator('#bnav [data-bn="T2"]').click();
+  await page.locator('#mMenu').click(); await page.locator('#mDrawer [data-dw="T2"], #mDrawer [data-go="T2"]').first().click();
   await expect.poll(() => station(page)).toBe('T2');
   await page.locator('html[data-si-ready="T2.zh"]').waitFor({ state: 'attached' });
   await page.locator('section#T2 #quizT2 .opt[data-q]').first().evaluate((b) => (b as HTMLElement).click());
-  await sheet(page);
+  await progSheet(page);
   await expect(page.locator('#shProgTxt')).toContainText('已看 3 / 22 站');
   await expect(page.locator('#shProgTxt')).toContainText('（已答 1）');
+  await page.keyboard.press('Escape');
+  await sheet(page);
   await page.locator('#shMap > summary').click();
   await expect(page.locator('#tree .tn.cur')).toHaveCount(1);
   await page.locator('#tree a[data-go="T6"]').click();
   await expect.poll(() => station(page)).toBe('T6');
-  await expect(page.locator('#moreSheet')).not.toHaveClass(/open/);
+  await expect(page.locator('#dkSheet')).toHaveCount(0);
   await sheet(page);
+  await page.locator('#shMap > summary').click();
   await page.locator('#tree a[data-sj="quizT6"]').click();
   await expect(page.locator('#quizT6')).toBeInViewport();
-  await sheet(page); await page.locator('#shProgDetail').click();
+  await progSheet(page); await page.locator('#shProgDetail').click();
   await expect.poll(() => station(page)).toBe('T8');
   await expect(page.locator('#progCard')).toBeInViewport();
 });

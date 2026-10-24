@@ -131,7 +131,7 @@ test.describe('cutover (repo layout under /SI/)', () => {
       await ready(p, 'T1.en');
       await expect.poll(() => hits.length).toBe(4);
       expect(new URL(hits[3]!).searchParams.get('p')).toBe('/en/home');
-      await p.locator('#bnav [data-bn="more"]').click(); await expect(p.locator('#moreSheet')).toHaveClass(/open/);
+      await p.locator('#bnav [data-bn="prog"]').click(); await expect(p.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);
       await p.waitForTimeout(800);
       expect(hits.length).toBe(4);
       /* legacy.html keeps its own counter (same virtual paths, same event scheme) */

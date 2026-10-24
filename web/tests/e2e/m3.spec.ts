@@ -36,7 +36,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     page.on('request', (r) => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && u.protocol !== 'data:') external.push(r.url()); });
     await open(page, lang);
     await expect(page.locator('section#Up .m-stage svg').first()).toBeVisible();
-    await expect(page.locator('#bnav [data-bn="more"]')).toHaveClass(/on/);
+    await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', 'off'); // R22: no lab here, the 🧪 button says so
     await expect(page.locator('section#Up .st-fail')).toHaveCount(0);
     await expect(page.locator('section#Up .card.lab')).toHaveCount(0);
     await expect(page.locator('section#Up .tag.demo')).toHaveCount(0);

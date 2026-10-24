@@ -27,6 +27,8 @@ export const K = { onb: 'aiexp.v2.onb', route: 'aiexp.v2.route', coach: 'aiexp.v
 export type Route = 'kid' | 'all' | null;
 export const route = (): Route => { const r = LS(K.route); return r === 'kid' || r === 'all' ? r : null; };
 export const ROUTE_S = ROUTE.map((r) => r[0]);
+/** pick a route; the bottom bar's ✨ badge listens (R22) */
+export const setRoute = (r: 'kid' | 'all') => { LSset(K.route, r); document.dispatchEvent(new Event('si-route')); };
 const tipsDone = (): string[] => { try { const a: unknown = JSON.parse(LS(K.tips) ?? '[]'); return Array.isArray(a) ? a.filter((x): x is string => typeof x === 'string') : []; } catch { return []; } };
 const tipDone = (k: string) => { const a = tipsDone(); if (!a.includes(k)) LSset(K.tips, JSON.stringify(a.concat(k))); };
 
@@ -113,7 +115,7 @@ function bubble(targets: Element[], html: string, acts: HTMLElement[], cls = '',
 }
 
 /* ---- coach marks (header) ---- */
-const STEPS: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4']];
+const STEPS: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4'], ['#bnav', 'c5']];
 const shown = (e: Element | null): e is HTMLElement => !!e && (e as HTMLElement).getClientRects().length > 0;
 let coachOn = false;
 export function coach(L: Lang, i = 0) {
@@ -200,7 +202,7 @@ function welcome(sec: HTMLElement, S: string, L: Lang, again = false) {
   const tour = btn('ob-b pri big', O.wTour[L], () => { done('tour'); startTour(); }, 'onb-tour');
   const pk = el('p', 'ob-pk', O.wPick[L]);
   const rr = el('div', 'ob-rr');
-  rr.append(btn('ob-b', O.wKid[L], () => { LSset(K.route, 'kid'); done('kid'); }, 'onb-kid'), btn('ob-b', O.wAll[L], () => { LSset(K.route, 'all'); done('all'); }, 'onb-all'));
+  rr.append(btn('ob-b', O.wKid[L], () => { setRoute('kid'); done('kid'); }, 'onb-kid'), btn('ob-b', O.wAll[L], () => { setRoute('all'); done('all'); }, 'onb-all'));
   const why = el('p', 'ob-why', O.rWhy[L]);
   const bt = btn('ob-lnk', O.wBtns[L], () => done('btns'), 'onb-btns');
   c.append(x, h, lead, ol, tour, pk, rr, why, bt);
@@ -260,7 +262,7 @@ function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: ()
         if (s === S) b.setAttribute('aria-current', 'step');
         li.append(b); ol.append(li);
       });
-      pan.append(ol, el('p', 'ob-why', O.rWhy[L]), btn('ob-lnk', O.rAll[L], () => { LSset(K.route, 'all'); ev('ob-route-all'); pan.hidden = true; draw(); }, 'route-all'));
+      pan.append(ol, el('p', 'ob-why', O.rWhy[L]), btn('ob-lnk', O.rAll[L], () => { setRoute('all'); ev('ob-route-all'); pan.hidden = true; draw(); }, 'route-all'));
     } else pan.hidden = true;
     /* after the quiz */
     if (qn) {
@@ -268,7 +270,7 @@ function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: ()
       const [, d, n] = stopQuiz(S), done = n > 0 && d === n;
       const left = ROUTE_S.filter((s) => !lit(s));
       if (r === 'kid' && ri === ROUTE_S.length - 1 && done) {
-        if (!left.length) qn.append(el('p', '', O.rEnd[L]), btn('ob-b pri', O.rGoAll[L], () => { LSset(K.route, 'all'); ev('ob-route-end'); const t = TABORDER.find((s) => !lit(s)); if (t) go(t); else draw(); }, 'route-end'));
+        if (!left.length) qn.append(el('p', '', O.rEnd[L]), btn('ob-b pri', O.rGoAll[L], () => { setRoute('all'); ev('ob-route-end'); const t = TABORDER.find((s) => !lit(s)); if (t) go(t); else draw(); }, 'route-end'));
         else qn.append(el('p', '', fill(O.rLeft[L], { n: left.length })), btn('ob-b pri', tabn(left[0]!, L) + ' ›', () => go(left[0]!), 'route-left'));
       } else {
         qn.append(el('p', '', done ? O.qDone[L] : O.qNext[L]));
@@ -281,8 +283,8 @@ function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: ()
      before the other si-progress listeners (window capture) so their counts agree */
   const onP = () => { const v = visited(); if (!v.includes(S)) LSset(K.vis, JSON.stringify(v.concat(S))); };
   const onP2 = () => draw();
-  addEventListener('si-progress', onP, true); document.addEventListener('si-progress', onP2);
-  return { draw, off: () => { removeEventListener('si-progress', onP, true); document.removeEventListener('si-progress', onP2); row.remove(); pan.remove(); n1.remove(); qn?.remove(); } };
+  addEventListener('si-progress', onP, true); document.addEventListener('si-progress', onP2); document.addEventListener('si-route', onP2);
+  return { draw, off: () => { removeEventListener('si-progress', onP, true); document.removeEventListener('si-progress', onP2); document.removeEventListener('si-route', onP2); row.remove(); pan.remove(); n1.remove(); qn?.remove(); } };
 }
 
 /* ---- the menu entry that shows the welcome card again ---- */

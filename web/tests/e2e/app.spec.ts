@@ -4,7 +4,8 @@ type Lang = 'zh' | 'en';
 const LANGS: Lang[] = ['zh', 'en'];
 const STATIONS = ['T1', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8'] as const;
 /* drill badges on the live diagrams (T4a, T5, T8 have none on live either) */
-const BNAV: Record<string, string> = { T4a: 'T4', T4b: 'T4', N: 'more', T5: 'more', T6: 'more', T7: 'more', T8: 'more' };
+/* R22: the bottom bar is the same 5 page buttons on every stop */
+const DOCK = ['toc', 'lab', 'quiz', 'prog', 'next'];
 /* every station (R13: the T1 diagram drills into all of them, including U…, K1–K5) */
 const ALLST = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
 const BADGES: Record<string, number> = { T1: 31, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
@@ -81,7 +82,7 @@ for (const lang of LANGS) {
       await expect(page.locator('html')).toHaveAttribute('lang', lang === 'en' ? 'en' : 'zh-CN');
       await expect(page).toHaveTitle(lang === 'en' ? /^\(Mobile\) .+ · AI, explained plainly$/ : /^（手机版）.+ · 大白话拆解 AI$/);
       await expect(page.locator(`section#${S}.level.active .m-stage .m-dg .m-vw svg`)).toBeVisible();
-      await expect(page.locator(`#bnav [data-bn="${BNAV[S] ?? S}"]`)).toHaveClass(/on/);
+      expect(await page.locator('#bnav button').evaluateAll((bs) => bs.map((b) => (b as HTMLElement).dataset.bn))).toEqual(DOCK);
       await expect(page.locator('#crumb .chip.on')).toBeVisible();
       expect(await page.locator(`section#${S} .dd-b`).count(), 'drill badges (same as live)').toBe(BADGES[S]);
       await expect(page.locator(`section#${S} .st-fail`)).toHaveCount(0);
@@ -279,10 +280,10 @@ test('full screen: portrait phone layout, landscape original wide diagram', asyn
   await expect(page.locator('#dgFull')).not.toHaveClass(/open/);
 });
 
-test('bottom tabs, drawer, prev/next, search, more sheet → T5', async ({ page }) => {
+test('bottom bar 下一站, drawer, prev/next, search, ☰ map sheet → T5', async ({ page }) => {
   const w = watch(page);
-  await open(page, 'zh', 'T1');
-  await page.locator('#bnav [data-bn="T3"]').click();
+  await open(page, 'zh', 'T2');
+  await page.locator('#bnav [data-bn="next"]').click();
   await expect.poll(() => station(page)).toBe('T3');
   expect(new URL(page.url()).hash).toBe('#T3');
   await page.locator('#mMenu').click();
@@ -302,10 +303,13 @@ test('bottom tabs, drawer, prev/next, search, more sheet → T5', async ({ page 
   await expect(page.locator('#modal.open .m-head h3')).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.locator('#modal')).not.toHaveClass(/open/);
-  await page.locator('#bnav [data-bn="more"]').click();
-  await expect(page.locator('#moreSheet')).toHaveClass(/open/);
-  await page.locator('#shStations .st-b[data-st="T5"]').click();
+  await page.locator('#mMenu').click();
+  await page.locator('#dwMore').click();
+  await expect(page.locator('#dkSheet[data-k="more"]')).toHaveClass(/open/);
+  await page.locator('#shMap summary').click();
+  await page.locator('#slotTree [data-go="T5"]').first().click();
   await expect.poll(() => station(page)).toBe('T5');
+  await expect(page.locator('#dkSheet')).toHaveCount(0);
   await expect(page.locator('section#T5.level.active .m-stage .m-vw svg')).toBeVisible();
   await expect(page.locator('section#T5 #labQuant')).toBeAttached();
   expect(w.errors).toEqual([]);

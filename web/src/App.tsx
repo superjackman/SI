@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { NO } from './boot/noswipe';
 import { TopBar } from './shell/TopBar';
-import { BackFab, BottomNav, Crumb, Drawer, MoreSheet, Toast } from './shell/Nav';
+import { BackFab, Crumb, Dock, Drawer, Toast } from './shell/Nav';
 import { Popup } from './shell/Popup';
 import { Fullscreen } from './shell/Fullscreen';
 import { StationView, preload } from './station/StationView';
@@ -39,7 +39,7 @@ function onDocClickCapture(e: MouseEvent) {
 }
 function onDocClick(e: MouseEvent) {
   const t = e.target as Element | null; if (!t || !t.closest) return;
-  if (t.closest('#modalBox,#mDrawer,#moreSheet,#bnav,#topbar,#dgFull,#symSheet')) {
+  if (t.closest('#modalBox,#mDrawer,#dkSheet,#bnav,#topbar,#dgFull,#symSheet')) {
     /* shell layers handle their own clicks; crumb + content are below */
     if (!t.closest('#modalBox')) return;
   }
@@ -145,8 +145,7 @@ export function App() {
         <main><StationView /></main>
         <footer dangerouslySetInnerHTML={{ __html: footer[lang] }} />
       </div>
-      <BottomNav />
-      <MoreSheet />
+      <Dock />
       <Fullscreen />
       <Drawer />
       <BackFab />

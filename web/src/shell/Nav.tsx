@@ -1,14 +1,12 @@
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useApp } from '../store/app';
 import { useShallow } from 'zustand/react/shallow';
 import { tx, useT, useTx } from '../i18n/L';
-import { GRP, GROUP, ICON, PATH, TABORDER, tabn } from '../legacy/kb';
-import { canBack, go, jumpTo, toast, visited } from '../nav';
+import { GRP, ICON, PATH, TABORDER, tabn } from '../legacy/kb';
+import { canBack, go, toast, visited } from '../nav';
 import { layer, svgHtml } from './common';
 import { closeDrawer } from './drawer';
 import { setZoom } from './zoom';
-import { Tree } from './Tree';
-import { quizScore } from '../station/quiz';
 import { toggleTour, tourStep } from '../tour/api';
 
 /** breadcrumb chips from PATH, children as ↓ chips, ↩ when a drill can be undone (live renderCrumb) */
@@ -51,119 +49,33 @@ function FsBtn() {
 /** R16: share the current page — the panel (and its QR encoder) is a lazy chunk loaded on the first tap */
 export const openShare = () => { void import('../share/panel').then((m) => m.openShare()).catch(() => toast(tx('st.loadfail', useApp.getState().lang))); };
 
-const BN: [string, string, { zh: string; en: string }][] = [
-  ['T1', '🏠', { zh: '应用', en: 'App' }], ['T2', '🤖', { zh: 'Agent', en: 'Agent' }], ['T3', '🧠', { zh: '大模型', en: 'LLM' }], ['T4', '🧩', { zh: 'Transformer', en: 'Transformer' }],
-];
-const MORE_LBL: Record<string, { zh: string; en: string }> = { N: { zh: '入门', en: 'Basics' }, T5: { zh: 'MoE', en: 'MoE' }, T6: { zh: '多模态', en: 'Multimodal' }, T7: { zh: '训练', en: 'Training' }, T8: { zh: '速查', en: 'Reference' }, U: { zh: '用法', en: 'Usage' }, Ua: { zh: '一起干', en: 'Together' }, Ub: { zh: '自己干', en: 'Solo' }, Uc: { zh: '装本事', en: 'Extend' }, Ud: { zh: '用得好', en: 'Use well' }, Up: { zh: '产品', en: 'Products' }, K1: { zh: '微积分', en: 'Calculus' }, K2: { zh: '线代', en: 'Lin. alg.' }, K3: { zh: '概率', en: 'Probability' }, K4: { zh: '优化', en: 'Optimize' }, K5: { zh: '证明', en: 'Proofs' } };
-export function BottomNav() {
-  const t = useT(), tx = useTx();
-  const S = useApp((s) => s.station), sh = useApp((s) => s.sheetOpen), set = useApp((s) => s.set);
-  const g = GROUP[S];
-  const close = { popup: null, cardStack: [], searchOpen: false, full: null };
-  return (
-    <nav id="bnav" aria-label={t('nav.main')}>
-      {BN.map(([k, ic, lb]) => {
-        const on = !sh && g === k;
-        return (
-          <button key={k} data-bn={k} className={on ? 'on' : undefined} aria-current={on ? 'page' : 'false'}
-            onClick={() => { set({ ...close, sheetOpen: false }); if (g === k && S === k) window.scrollTo({ top: 0, behavior: 'smooth' }); else go(k); }}>
-            <i aria-hidden="true">{ic}</i><span>{tx(lb)}</span>
-          </button>
-        );
-      })}
-      <button data-bn="more" className={sh || g === 'more' ? 'on' : undefined} aria-controls="moreSheet" aria-expanded={sh ? 'true' : 'false'}
-        onClick={() => set({ ...close, sheetOpen: !sh })}>
-        <i aria-hidden="true">⋯</i><span>{g === 'more' && !sh ? tx(MORE_LBL[S] ?? { zh: tabn(S, 'zh').slice(0, 4), en: tabn(S, 'en').slice(0, 4) }) : t('nav.more')}</span>
-      </button>
-    </nav>
-  );
+/** R22 bottom bar: what to do on this page. Taps load ./dock (the jumps, badges) or the lazy sheets (./dock/Sheets) */
+const DockSheets = lazy(() => import('./dock/Sheets'));
+const DK = ['toc', 'lab', 'quiz', 'prog', 'next'] as const;
+const DKI: Record<string, string> = { toc: '📑', lab: '🧪', quiz: '✅', prog: '✨' };
+export function dock(k: string) {
+  const s = useApp.getState(), o = { popup: null, cardStack: [], searchOpen: false, full: null };
+  /* the button that owns the open sheet closes it; any other button switches straight to its own action */
+  if (s.sheetOpen === k) { s.set({ ...o, sheetOpen: false }); return; }
+  if (k === 'toc' || k === 'prog') { s.set({ ...o, sheetOpen: k }); return; }
+  s.set({ ...o, sheetOpen: false });
+  if (k === 'next' && tourStep(1)) return; /* during the tour 下一站 steps it, as the old sheet's ▶ did */
+  void import('./dock').then((m) => m.act(k), () => toast(tx('st.loadfail', s.lang)));
 }
-
-const SUB: Record<string, { zh: string; en: string }> = {
-  U: { zh: '对话、编程、后台、例程、MCP、提示词', en: 'Chat, coding, background, routines, MCP, prompts' },
-  N: { zh: '神经元、反向传播、梯度下降', en: 'Neurons, backprop, gradient descent' }, T5: { zh: 'MoE、KV 缓存、量化、LoRA', en: 'MoE, KV cache, quantization, LoRA' },
-  T6: { zh: '看图、听声、画画、做视频', en: 'See, hear, draw, make video' }, T7: { zh: '预训练、微调、强化学习', en: 'Pretraining, fine-tuning, RL' }, T8: { zh: '关系总图、术语表、进度', en: 'Overall map, glossary, progress' },
-};
-/** live sheet progress text: "已看 n / N 站 · 测验答对 c / Q（已答 d）" (N, Q from TABORDER / the quiz key) */
-function useProgress(active: boolean) {
-  const [v, setV] = useState(0);
-  useEffect(() => { const f = () => setV((x) => x + 1); document.addEventListener('si-progress', f); return () => document.removeEventListener('si-progress', f); }, []);
-  useEffect(() => { if (active) setV((x) => x + 1); }, [active]);
-  return v;
-}
-const ModeBtns = () => {
-  const t = useT(), mode = useApp((s) => s.mode), set = useApp((s) => s.set);
-  return (
-    <div className="mode" id="mode" title={t('mode.title')}>
-      {(['use', 'train'] as const).map((m) => <button key={m} data-mode={m} className={mode === m ? 'active' : undefined} onClick={() => set({ mode: m })}>{t(m === 'use' ? 'mode.use' : 'mode.train')}</button>)}
-    </div>
-  );
-};
-/** 更多 sheet — all live sections: stops, language, phase, detail level, progress, icon guide, prev/next, progress card, learning map */
-export function MoreSheet() {
-  const t = useT(), tx = useTx();
-  const open = useApp((s) => s.sheetOpen), lang = useApp((s) => s.lang), S = useApp((s) => s.station), zoom = useApp((s) => s.zoom), set = useApp((s) => s.set), setLang = useApp((s) => s.setLang);
-  useEffect(() => { document.body.classList.toggle('sheet-open', open); }, [open]);
-  useProgress(open);
-  const [mapOn, setMapOn] = useState(false);
-  /* banners + icon guide are lazy (R17 first-load budget): fetched when the sheet first opens */
-  const [sc, setSc] = useState<typeof import('./sheetContent') | null>(null);
-  useEffect(() => { if (open && !sc) void import('./sheetContent').then((m) => setSc(m), () => undefined); }, [open, sc]);
-  const i = TABORDER.indexOf(S);
-  const close = () => set({ sheetOpen: false });
-  const pick = (k: string) => { close(); go(k); };
-  const step = (d: number) => { close(); if (tourStep(d)) return; const k = TABORDER[i + d]; if (k) go(k); };
-  const vis = visited(), n = TABORDER.filter((k) => vis.includes(k)).length, q = quizScore();
-  const ptxt = t('sh.viewed') + n + ' / ' + TABORDER.length + t('sh.quizC') + q[0] + ' / ' + q[2] + (q[1] < q[2] ? t('sh.answered') + ' ' + q[1] + t('sh.answeredEnd') : '');
-  /* the learning map's links: a stop, or a card on a stop (live [data-sj] handler), then the sheet closes */
-  const onTree = (e: React.MouseEvent) => {
-    const el = e.target as Element, sj = el.closest<HTMLElement>('[data-sj]'), g = el.closest<HTMLElement>('[data-go]');
-    if (sj) { e.preventDefault(); const sp = sj.dataset.sp ?? S; close(); if (sp !== useApp.getState().station) go(sp, false); jumpTo(sj.dataset.sj ?? ''); return; }
-    if (g) { e.preventDefault(); pick(g.dataset.go ?? S); }
-  };
+export function Dock() {
+  const t = useT();
+  const S = useApp((s) => s.station), sh = useApp((s) => s.sheetOpen);
   return (
     <>
-      <div id="sheetMask" className={open ? 'open' : undefined} onClick={close} />
-      <div id="moreSheet" className={'sheet' + (open ? ' open' : '')} role="dialog" aria-modal="true" aria-label={t('nav.more')} {...layer(open)}>
-        <div className="sh-grip" aria-hidden="true"><i /></div>
-        <div className="sh-head"><b>⋯ {t('nav.more')}</b><button className="icon-btn sh-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
-        <div className="sh-sec"><div className="sh-lbl">{t('sh.stops')}</div>
-          <div className="sh-st" id="shStations">
-            {['U', 'N', 'T5', 'T6', 'T7', 'T8'].map((k) => (
-              <button key={k} type="button" className={'st-b' + (k === S ? ' on' : '')} data-st={k} onClick={() => pick(k)}><i aria-hidden="true">{ICON[k]}</i><b>{tabn(k, lang)}</b><small>{SUB[k] ? tx(SUB[k]) : ''}</small></button>
-            ))}
-            <div className="st-all">{TABORDER.map((k, j) => <button key={k} type="button" className={'chip' + (k === S ? ' on' : '')} data-st={k} onClick={() => pick(k)}>{j + 1}. {tabn(k, lang)}</button>)}</div>
-          </div>
-        </div>
-        <div className="sh-sec"><div className="sh-lbl">{t('sh.lang')}</div>
-          <div className="sh-lang" role="group" aria-label="Language">
-            {(['zh', 'en'] as const).map((l) => <button key={l} type="button" className={'btn' + (lang === l ? ' on' : '')} data-setlang={l} lang={l === 'zh' ? 'zh-CN' : 'en'} aria-pressed={lang === l} onClick={() => setLang(l)}>{l === 'zh' ? '中文' : 'English'}</button>)}
-          </div>
-        </div>
-        <div className="sh-sec"><button type="button" className="btn wide" id="shShare" onClick={() => { close(); openShare(); }}><span {...svgHtml('share')} />{t('share.title')}</button></div>
-        <div className="sh-sec"><div className="sh-lbl">{t('mode.which')}</div>
-          <div id="slotMode"><ModeBtns /></div>
-          <p className="sh-small">{t('mode.small')}</p>
-          <div id="slotBanner">{sc?.BANNERS.map((b) => <div key={b.id} className={'banner ' + b.cls} id={b.id} role="note" dangerouslySetInnerHTML={{ __html: b[lang] }} />)}</div>
-        </div>
-        <div className="sh-sec"><div className="sh-lbl">{t('zoom.level')}</div>
-          <div id="slotZoom"><div className="zoom" id="zoom" role="group" aria-label={t('zoom.level')}>
-            {([1, 2, 3] as const).map((z) => <button key={z} data-z={z} className={zoom === z ? 'active' : undefined} onClick={() => setZoom(z, true)}>{t(`zoom.${z}`)}</button>)}
-          </div></div>
-          <p className="sh-small">{t('zoom.small')}</p>
-        </div>
-        <div className="sh-sec"><div className="sh-lbl">{t('sh.prog')}</div><div className="sh-prog"><div className="prog-bar"><i id="shProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div><div id="shProgTxt" className="sh-small">{ptxt}</div></div></div>
-        <div className="sh-sec"><div className="sh-lbl">{t('sh.legend')}</div><p className="ic-leg" dangerouslySetInnerHTML={{ __html: sc ? sc.LEGEND[lang] : '' }} /></div>
-        <div className="sh-sec sh-pn">
-          <button className="btn" id="shPrev" disabled={i <= 0} onClick={() => step(-1)}><span {...svgHtml('prev')} />{t('sh.prev')}</button>
-          <button className="btn primary" id="shNext" disabled={i >= TABORDER.length - 1} onClick={() => step(1)}>{t('sh.next')}<span {...svgHtml('next')} /></button>
-        </div>
-        <div className="sh-sec"><button className="btn wide" id="shProgDetail" onClick={() => { close(); jumpTo('progCard', 'T8'); }}>{t('sh.detail')}</button>
-          <button className="btn wide" id="shProgCard" data-share-ch="progress" onClick={() => { close(); void import('../viral/cards').then((m) => m.openProgress(), () => undefined); }}>{t('sh.pcard')}</button></div>
-        <div className="sh-sec"><details className="sh-map" id="shMap" onToggle={(e) => setMapOn((e.target as HTMLDetailsElement).open)}><summary>{t('sh.map')}</summary>
-          <div id="slotTree" onClick={onTree}><Tree active={open && mapOn} /></div>
-        </details></div>
-      </div>
+      <nav id="bnav" aria-label={t('nav.main')}>
+        {DK.map((k) => (
+          <button key={k === 'lab' || k === 'quiz' ? k + S : k} type="button" data-bn={k} className={sh === k ? 'on' : undefined} aria-label={t(`dk.${k}A`)} onClick={() => dock(k)}>
+            {DKI[k] ? <i aria-hidden="true">{DKI[k]}</i> : <i aria-hidden="true" {...svgHtml('next')} />}<span>{t(`dk.${k}`)}</span>
+          </button>
+        ))}
+      </nav>
+      <div id="sheetMask" onClick={() => useApp.getState().set({ sheetOpen: false })} />
+      {sh ? <Suspense fallback={null}><DockSheets k={sh} /></Suspense> : null}
     </>
   );
 }
@@ -173,10 +85,11 @@ export function mTourClick() {
   useApp.getState().set({ full: null, sheetOpen: false, searchOpen: false, popup: null, cardStack: [] });
   toggleTour();
 }
-/** left drawer: all stations grouped macro → micro, progress, phase, language, search, tour (live r3 drawer) */
+/** left drawer: all stations grouped macro → micro, progress, phase, detail level, language, my progress, map & icons,
+    search, tour (live r3 drawer; R22: the old 更多 sheet's extras live here now) */
 export function Drawer() {
   const t = useT(), tx = useTx();
-  const open = useApp((s) => s.drawerOpen), lang = useApp((s) => s.lang), S = useApp((s) => s.station), mode = useApp((s) => s.mode), touring = useApp((s) => s.tour != null), set = useApp((s) => s.set), setLang = useApp((s) => s.setLang);
+  const open = useApp((s) => s.drawerOpen), lang = useApp((s) => s.lang), S = useApp((s) => s.station), mode = useApp((s) => s.mode), zoom = useApp((s) => s.zoom), touring = useApp((s) => s.tour != null), set = useApp((s) => s.set), setLang = useApp((s) => s.setLang);
   const ref = useRef<HTMLElement>(null);
   const last = useRef<Element | null>(null);
   const [v, setV] = useState<string[]>([]);
@@ -229,11 +142,18 @@ export function Drawer() {
           <div className="dw-row" role="group" aria-label={t('mode.which')}><div className="dw-seg">
             {(['use', 'train'] as const).map((m) => <button key={m} type="button" data-dwmode={m} className={mode === m ? 'on' : undefined} aria-pressed={mode === m} onClick={() => set({ mode: m })}>{t(m === 'use' ? 'mode.use' : 'mode.train')}</button>)}
           </div></div>
+          <div className="dw-row" role="group" aria-label={t('zoom.level')}><div className="dw-seg" id="zoom">
+            {([1, 2, 3] as const).map((z) => <button key={z} type="button" data-z={z} className={zoom === z ? 'on' : undefined} aria-pressed={zoom === z} onClick={() => setZoom(z, true)}>{t(`zoom.${z}`)}</button>)}
+          </div></div>
           <div className="dw-row" role="group" aria-label="Language"><div className="dw-seg">
             {(['zh', 'en'] as const).map((l) => <button key={l} type="button" data-setlang={l} lang={l === 'zh' ? 'zh-CN' : 'en'} className={lang === l ? 'on' : undefined} aria-pressed={lang === l} onClick={() => { if (l !== lang) closeDrawer(() => setLang(l)); }}>{l === 'zh' ? '中文' : 'English'}</button>)}
           </div></div>
           <div className="dw-row">
-            <button type="button" className="dw-act" id="dwSearch" onClick={() => closeDrawer(() => set({ searchOpen: true }))}><i {...svgHtml('search')} /><span>{t('search.parts')}</span></button>
+            <button type="button" className="dw-act" id="dwProg" onClick={() => closeDrawer(() => set({ sheetOpen: 'prog' }))}><i aria-hidden="true">✨</i><span>{t('dw.prog')}</span></button>
+            <button type="button" className="dw-act" id="dwMore" onClick={() => closeDrawer(() => set({ sheetOpen: 'more' }))}><i aria-hidden="true">🗺️</i><span>{t('dw.more')}</span></button>
+          </div>
+          <div className="dw-row">
+            <button type="button" className="dw-act" id="dwSearch" aria-label={t('search.parts')} onClick={() => closeDrawer(() => set({ searchOpen: true }))}><i {...svgHtml('search')} /><span>{t('dw.search')}</span></button>
             <button type="button" className={'dw-act' + (touring ? ' on' : '')} id="mTour" aria-pressed={touring} aria-label={t(touring ? 'tour.exit' : 'tour.start')} onClick={() => closeDrawer(mTourClick)}><i aria-hidden="true">🎬</i><span>{t(touring ? 'tour.exit' : 'tour.tour')}</span></button>
           </div>
         </div>

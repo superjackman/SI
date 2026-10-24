@@ -229,3 +229,8 @@ details.deep[open]>summary .ic{transform:none}
 
 /* R19: 生成分享图 at the end of each stop */
 #shProgCard{margin-top:8px}
+
+/* R22 bottom bar: the ›-arrow of 下一站 matches the emoji icons; 下一站 is the main action */
+#bnav .ic{width:22px;height:22px;vertical-align:top}
+#bnav [data-bn=next]{color:#4338ca;font-weight:700}
+.dw-it b{white-space:normal;overflow-wrap:anywhere;line-height:1.25;padding:2px 0}.dw-act span{white-space:normal;text-overflow:clip;line-height:1.2;text-align:center}

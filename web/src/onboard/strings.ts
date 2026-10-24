@@ -40,9 +40,10 @@ export const O = {
   cNext: { zh: '下一个', en: 'Next' },
   cOk: { zh: '知道了', en: 'Got it' },
   cSkip: { zh: '跳过', en: 'Skip' },
-  c1: { zh: '☰ <b>菜单</b>：22 站都在这里，还有导览、全屏 ⛶ 和「👋 新手入门」。', en: '☰ <b>Menu</b>: all 22 stops, plus the tour, full screen ⛶ and “👋 Getting started”.' },
+  c1: { zh: '☰ <b>菜单</b>：22 站都在这里，还有导览、全屏 ⛶、「👋 新手入门」、看得多细、地图和图标。', en: '☰ <b>Menu</b>: all 22 stops, plus the tour, full screen ⛶, “👋 Getting started”, how much detail, the map and icons.' },
   c2: { zh: '‹ › <b>换站</b>：去上一站 / 下一站。在页面上左右滑也行。中间的小圆点告诉你在第几站。', en: '‹ › <b>Change stop</b>: previous / next. Swiping left or right on the page works too. The small dots show which stop you are on.' },
   c3: { zh: '🔍 <b>找词</b>　⤴ <b>分享</b>给朋友　<b>EN</b> 换成英文（再点换回中文）。', en: '🔍 <b>Find a word</b>　⤴ <b>Share</b> with a friend　<b>中</b> switch to Chinese (tap again for English).' },
+  c5: { zh: '最下面这一排管<b>这一页</b>：📑 目录 跳到某一段，🧪 实验 去动手玩，✅ 小测 做题，✨ 进度 看点亮了几站，下一站 › 接着往下走。', en: 'The bottom row is for <b>this page</b>: 📑 Contents jumps to a part, 🧪 Labs to play, ✅ Quiz to answer, ✨ Progress shows stops lit, Next › moves on.' },
   c4: { zh: '这一排是<b>小路标</b>：⌂ 是现在这一站，↓ 后面是可以往里钻、看得更细的站。', en: 'This row is a <b>signpost</b>: ⌂ is this stop, and after ↓ come the stops that look closer inside it.' },
   /* one-time tips next to things in the pictures */
   tDd: { zh: '⤵ 带这个圆钮的方块，里面还有一整站。点圆钮就钻进去，点「↩」回来。', en: 'A box with this ⤵ button has a whole stop inside. Tap the button to go in, and “↩” to come back.' },
