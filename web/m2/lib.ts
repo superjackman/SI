@@ -38,7 +38,7 @@ const ZL: Record<number, [string, Bi]> = {
   2: ['zm', { zh: '③ 细节·为什么', en: '③ Details · why' }],
   3: ['z3', { zh: '③ 动手演示', en: '③ Hands-on demo' }],
 };
-export interface CardOpt { h2?: boolean; closed?: boolean; tag?: Bi; cls?: string; noMap?: boolean }
+export interface CardOpt { h2?: boolean; closed?: boolean; tag?: Bi; cls?: string; noMap?: boolean; /** R23: a label other than the detail level's */ zl?: [string, Bi] }
 
 /** one station page under construction */
 export class Page {
@@ -53,7 +53,7 @@ export class Page {
   go(s: string, label?: string) { return `<a data-go="${s}">${label ?? esc(this.st(s))}</a>`; }
   tag(b?: Bi) { const x = b ?? { zh: code('use.demo', 'zh'), en: code('use.demo', 'en') }; return `<span class="tag demo tag-s" title="${esc(x[this.L])}">${esc(x[this.L])}</span>`; }
   card(id: string, z: 1 | 2 | 3, title: string, body: string, o: CardOpt = {}) {
-    const [zc, zl] = ZL[z] as [string, Bi];
+    const [zc, zl] = o.zl ?? (ZL[z] as [string, Bi]);
     const h = o.h2 ? 'h2' : 'h3';
     this.out.push(`<div class="card has-meta${o.cls ? ' ' + o.cls : ''}${o.closed ? ' cc-closed' : ''}" id="${id}" data-z="${z}" data-zl="${zl[this.L]}" data-nh="1" data-cc="1">
 <div class="cc-meta"><span class="zl ${zc}">${zl[this.L]}</span>${o.tag ? this.tag(o.tag) : ''}</div><${h}><button type="button" class="cc-h" aria-expanded="${o.closed ? 'false' : 'true'}">${title}</button></${h}><div class="cc-body">

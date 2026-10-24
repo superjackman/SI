@@ -1,0 +1,26 @@
+/* R23 ⚠️ mix-up cards and labEmbOut (lazy: imported by viral/late.ts) */
+.card.cf{border-left:4px solid #f59e0b}
+.cf-one{background:#fffbeb;border-radius:8px;padding:8px 10px;margin:6px 0}
+.cf-mem{background:#eef2ff;border-radius:8px;padding:8px 10px}
+.cf-tw{max-width:100%;overflow-x:auto}
+.cf-t{table-layout:fixed;font-size:14px}
+.cf-t th,.cf-t td{overflow-wrap:break-word;word-break:normal;hyphens:auto}
+.cf-t tbody th{background:#f8fafc;color:#334155;width:24%}
+.cf-g{display:grid;gap:8px;margin:8px 0}
+.cf-c{border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.cf-ch{font-weight:700;margin:2px 0;color:#92400e}
+.cf-c .pts{margin:2px 0;padding-left:18px}
+.cf-ol>li{margin:4px 0}
+.cf-go .btn{margin:3px 4px 3px 0}
+.eo-steps{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.eo-steps .btn.on{background:#4338ca;color:#fff;border-color:#4338ca}
+.eo-out{overflow-wrap:break-word}
+.eo-out table{table-layout:fixed}
+.eo-v{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.92em}
+.eo-dims span{display:inline-block;margin-right:8px}
+.eo-b{display:block;height:5px;border-radius:2px;background:#94a3b8;margin-top:2px}
+.eo-b.f{background:#16a34a}.eo-b.p{background:#4338ca;height:10px;margin:0}
+.eo-pc{width:45%}
+.eo-sent{font-size:1.3em;text-align:center;margin:8px 0}
+.eo-sent b{color:#4338ca;border-bottom:2px solid #4338ca;padding:0 4px}
+.zl.zcf{background:#fef3c7;color:#92400e}

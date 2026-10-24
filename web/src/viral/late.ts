@@ -20,6 +20,7 @@ import { T, fill } from './strings';
 import { IC } from '../shell/common';
 import { IC2 } from '../ui/ic2';
 import './viral.css';
+import '../station/cf.css';
 
 /* ---- session state ---- */
 const SS = (k: string) => { try { return sessionStorage.getItem(k); } catch { return null; } };

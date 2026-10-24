@@ -32,6 +32,7 @@ import { M7 } from './content/ext/m7';
 import { M8 } from './content/ext/m8';
 import { M9 } from './content/ext/m9';
 import { M10 } from './content/ext/m10';
+import { M11 } from './content/ext/m11';
 import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
@@ -48,7 +49,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10, M11];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 const XNEAR: Record<string, { after: string; f: (P: Page) => void }[]> = {};
@@ -97,8 +98,11 @@ const W: World = { order: kb.TABORDER, path: kb.PATH, tabn: kb.TABN, part: (id) 
 
 /* ---------- stations, popups, outline ---------- */
 const outline: Record<Lang, Record<string, OutlineRow[]>> = { zh: readJ('outline.zh.json'), en: readJ('outline.en.json') };
+/* R23: "⚠️ 容易混淆：A vs B" titles keep the ⚠️ and drop the long prefix in the outline and the page map */
+const cfShort = (s: string) => s.replace(/^⚠️\s*(容易混淆：|Easy to mix up: )/u, '⚠️ ');
 const cutRow = (r: OutlineRow, L: Lang): OutlineRow => {
   const n = 20;
+  if (r[1].startsWith('⚠️')) return [r[0], [...cfShort(r[1])].slice(0, L === 'en' ? 44 : 24).join(''), r[2], r[3]];
   if (r[2] === 'lab') return [r[0], '🧪 ' + [...r[1].replace(/^🧪\s*/, '')].slice(0, L === 'en' ? 20 : 18).join(''), 'lab', r[3]];
   if (r[2] === 'quiz') return r;
   return [r[0], [...r[1].replace(/^[^\p{L}\p{N}]+/u, '')].slice(0, n).join(''), '', r[3]];
@@ -127,7 +131,7 @@ for (const L of LANGS) {
     const ca = la >= 0 ? la : qa;
     if (Pl.out.length) h = h.slice(0, qa) + `<!--m2x-->${Pl.out.join('\n')}<!--/m2x-->\n` + h.slice(qa);
     if (Pc.out.length) h = h.slice(0, ca) + `<!--m2x-->${Pc.out.join('\n')}<!--/m2x-->\n` + h.slice(ca);
-    const cut = (s: string) => [...s].slice(0, L === 'en' ? 18 : 16).join('');
+    const cut = (s: string) => [...cfShort(s)].slice(0, L === 'en' ? 18 : 16).join('');
     const btn = (r: OutlineRow) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-m2x="1" data-sj="${r[0]}" data-sp="${S}">${esc(cut(r[1]))}</button>`;
     const pm = h.indexOf(`<div class="ph-map" id="pm${S}">`); if (pm < 0) throw new Error('no page map on ' + S);
     const pmEnd = h.indexOf('</div>', pm);
