@@ -15,7 +15,7 @@ export type Ch = 'weibo' | 'qq' | 'qzone' | 'x' | 'facebook' | 'telegram' | 'lin
 export const CHANNELS: Ch[] = ['weibo', 'qq', 'qzone', 'x', 'facebook', 'telegram', 'linkedin', 'whatsapp', 'email'];
 
 type Loc = { origin: string; pathname: string; search: string; hash: string };
-const OURS = /^(_r|v|lang|from)=/i;
+const OURS = /^(_r|v|lang|from|ch|lab)=/i;
 /** the current page to share: same path and hash route (#station or #station/card-or-part), query without our cache
     tokens (_r, v) and without a source tag the page was opened with (from=, R19), and ?lang=<current language> so the receiver sees the same language */
 export function shareURL(loc: Loc, lang: string, route?: { station: string; node?: string | null }): string {

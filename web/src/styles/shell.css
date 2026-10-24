@@ -228,5 +228,4 @@ details.deep[open]>summary .ic{transform:none}
 .tb-where b.fit2{font-size:11.5px}
 
 /* R19: 生成分享图 at the end of each stop */
-.pn-card{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px auto 4px;min-height:44px;padding:0 18px;border:1px solid #c7d2fe;border-radius:999px;background:#eef2ff;color:#3730a3;font:inherit;font-weight:700;cursor:pointer}
-.pn-card .ic{width:20px;height:20px}
+#shProgCard{margin-top:8px}

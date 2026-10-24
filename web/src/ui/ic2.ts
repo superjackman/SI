@@ -5,6 +5,7 @@ export const IC2 = {
   pause: ic('M9 5.5v13M15 5.5v13'),
   step: ic('M6 6v12l8-6zM18 6v12'),
   undo: IC.back,
+  img: ic('M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M16 9h.01'),
   copy: ic('M9 9h10v11H9zM15 5V4H5v11h1'),
   dl: ic('M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14'),
   open: ic('M14 4h6v6M20 4l-8.5 8.5M18 14v5H5V6h5'),

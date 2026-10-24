@@ -102,7 +102,7 @@ function render(ua: string) {
     `<div class="sp-head"><b>${esc(tx('share.title', L))}</b><button type="button" class="sp-x" aria-label="${esc(tx('ui.close', L))}" title="${esc(tx('ui.close', L))}">${IC.x}</button></div>`
     + `<div class="sp-what"><b>${esc(c.title)}</b></div>`
     + (sys ? `<button type="button" class="sp-sys" data-share-ch="system" data-act="sys">${IC.share}<span>${t(S.sys)}</span></button>` : '')
-    + `<button type="button" class="sp-card" data-share-ch="card" data-act="card">${IC.img}<span>${esc(tx('share.card', L))}</span></button>`
+    + `<button type="button" class="sp-card" data-share-ch="card" data-act="card">${IC2.img}<span>${esc(tx('share.card', L))}</span></button>`
     + `<div class="sp-lbl">${t(S.to)}</div><div class="sp-grid">`
     + `<button type="button" class="sp-ch" data-act="wx"><i style="background:#07c160">${IC2.chat}</i><span>${t(S.wx)}</span></button>`
     + CHANNELS.map((ch) => {

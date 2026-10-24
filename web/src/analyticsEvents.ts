@@ -2,6 +2,8 @@
    a lab counts on a click on its button/select/input/canvas/svg or on any input inside it; a quiz on a click on an
    answer option. Tiny and dependency-free so main.tsx can queue interactions made before the analytics chunk loads. */
 export function eventFor(e: Event): string | null {
+  /* R20: lazy code names its own events: dispatchEvent(new CustomEvent('si-ev', { detail: 'challenge-open' })) */
+  if (e.type === 'si-ev') return String((e as CustomEvent).detail);
   const t = e.target as Element | null;
   if (!t || typeof t.closest !== 'function') return null;
   const lab = t.closest('.card.lab[id]');

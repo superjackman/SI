@@ -80,26 +80,47 @@ export function cardData(station: string, lang: Lang, loc: Pick<Location, 'origi
 }
 /** what was drawn where (for tests: everything inside the card, nothing cut) */
 export interface Layout { name: string[]; nameSize: number; take: string[]; takeSize: number; url: string[]; textBottom: number; qrTop: number; qr: { x: number; y: number; size: number } }
-/** draw the card; returns the layout */
-export function draw(c: HTMLCanvasElement, d: CardData): Layout {
-  c.width = W; c.height = H;
-  const g = c.getContext('2d')!; const L = d.lang, F = L === 'en' ? FONT_EN : FONT;
-  /* background */
-  const bg = g.createLinearGradient(0, 0, W, H); bg.addColorStop(0, '#4f46e5'); bg.addColorStop(1, '#7c3aed');
-  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+/** R20: the frame every share image uses (gradient, AI badge + site name, a chip at the top right, the white card);
+    returns the drawing context and the card box */
+export interface Frame { g: G; F: string; X: number; Y: number; CW: number; CH: number; PAD: number; TW: number }
+export function frame(c: HTMLCanvasElement, w: number, h: number, L: Lang, site: string, chipText: string, colors: [string, string] = ['#4f46e5', '#7c3aed']): Frame {
+  c.width = w; c.height = h;
+  const g = c.getContext('2d')!; const F = L === 'en' ? FONT_EN : FONT;
+  const bg = g.createLinearGradient(0, 0, w, h); bg.addColorStop(0, colors[0]); bg.addColorStop(1, colors[1]);
+  g.fillStyle = bg; g.fillRect(0, 0, w, h);
   g.textBaseline = 'alphabetic';
-  /* brand row */
   g.fillStyle = '#fff'; rr(g, 60, 52, 76, 76, 20); g.fill();
-  g.fillStyle = '#4f46e5'; g.font = `800 34px ${F}`; g.textAlign = 'center'; g.fillText('AI', 98, 103);
-  g.textAlign = 'left'; g.fillStyle = '#fff'; g.font = `800 42px ${F}`; g.fillText(d.site, 158, 106, 520);
-  const chip = fill(S.stop[L], d.n, d.total); g.font = `700 28px ${F}`;
-  const cw = g.measureText(chip).width + 44; g.fillStyle = 'rgba(255,255,255,.18)'; rr(g, W - 60 - cw, 64, cw, 54, 27); g.fill();
-  g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(chip, W - 60 - cw / 2, 101); g.textAlign = 'left';
-  /* white card */
-  const X = 60, Y = 170, CW = W - 120, CH = H - Y - 60, PAD = 72, TW = CW - PAD * 2;
+  g.fillStyle = colors[0]; g.font = `800 34px ${F}`; g.textAlign = 'center'; g.fillText('AI', 98, 103);
+  g.textAlign = 'left'; g.fillStyle = '#fff'; g.font = `800 42px ${F}`; g.fillText(site, 158, 106, 520);
+  g.font = `700 28px ${F}`;
+  const cw = g.measureText(chipText).width + 44; g.fillStyle = 'rgba(255,255,255,.18)'; rr(g, w - 60 - cw, 64, cw, 54, 27); g.fill();
+  g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText(chipText, w - 60 - cw / 2, 101); g.textAlign = 'left';
+  const X = 60, Y = 170, CW = w - 120, CH = h - Y - 60, PAD = 72;
   g.shadowColor = 'rgba(15,23,42,.25)'; g.shadowBlur = 40; g.shadowOffsetY = 12;
   g.fillStyle = '#fff'; rr(g, X, Y, CW, CH, 44); g.fill();
   g.shadowColor = 'transparent'; g.shadowBlur = 0; g.shadowOffsetY = 0;
+  return { g, F, X, Y, CW, CH, PAD, TW: CW - PAD * 2 };
+}
+/** R20: the QR block (divider, QR code of url, "scan" line, the link as text) at qrTop; returns its layout */
+export function qrBlock(f: Frame, url: string, qrTop: number, scan: string, QR = 300): { qr: Layout['qr']; url: string[] } {
+  const { g, F, X, CW, PAD, TW } = f;
+  g.fillStyle = '#e2e8f0'; g.fillRect(X + PAD, qrTop - 36, TW, 2);
+  const m = qrMatrix(url), n = m.length, mod = Math.floor(QR / n), qs = mod * n, qx = X + PAD, qy = qrTop + (QR - qs) / 2;
+  g.fillStyle = '#fff'; g.fillRect(qx, qy, qs, qs); g.fillStyle = '#0f172a';
+  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (m[r]?.[k]) g.fillRect(qx + k * mod, qy + r * mod, mod, mod);
+  const rx = qx + QR + 44, rw = X + CW - PAD - rx;
+  g.fillStyle = '#1e1b4b'; g.font = `800 40px ${F}`;
+  const sc = wrap(g, scan, rw); let ry = qrTop + 20;
+  for (const l of sc) { ry += 52; g.fillText(l, rx, ry - 10); }
+  g.fillStyle = '#4f46e5'; g.font = `600 26px ${MONO}`;
+  const uw = wrapURL(g, url, rw); ry += 18;
+  for (const l of uw.slice(0, 6)) { ry += 36; g.fillText(l, rx, ry - 8); }
+  return { qr: { x: qx, y: qy, size: qs }, url: uw };
+}
+export { rr };
+/** draw the stop card; returns the layout */
+export function draw(c: HTMLCanvasElement, d: CardData): Layout {
+  const L = d.lang, f = frame(c, W, H, L, d.site, fill(S.stop[L], d.n, d.total)), { g, F, X, Y, CH, PAD, TW } = f;
   /* the QR block sits at the bottom of the card; the text block gets the rest */
   const QR = 300, qrTop = Y + CH - PAD - QR, textTop = Y + PAD, room = qrTop - 56 - textTop;
   /* pick the largest sizes that fit: name 88 → 60 px (≤ 3 lines), takeaway 46 → 34 px (≤ 5 lines) */
@@ -120,32 +141,37 @@ export function draw(c: HTMLCanvasElement, d: CardData): Layout {
   g.fillStyle = '#334155'; g.font = `500 ${takeSize}px ${F}`;
   for (const l of take) { y += takeSize * 1.5; g.fillText(l, X + PAD, y - takeSize * 0.4); }
   const textBottom = y;
-  /* divider + QR + link */
-  g.fillStyle = '#e2e8f0'; g.fillRect(X + PAD, qrTop - 36, TW, 2);
-  const m = qrMatrix(d.url), n = m.length, mod = Math.floor(QR / n), qs = mod * n, qx = X + PAD, qy = qrTop + (QR - qs) / 2;
-  g.fillStyle = '#fff'; g.fillRect(qx, qy, qs, qs); g.fillStyle = '#0f172a';
-  for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (m[r]?.[k]) g.fillRect(qx + k * mod, qy + r * mod, mod, mod);
-  const rx = qx + QR + 44, rw = X + CW - PAD - rx;
-  g.fillStyle = '#1e1b4b'; g.font = `800 40px ${F}`;
-  const sc = wrap(g, S.scan[L], rw); let ry = qrTop + 20;
-  for (const l of sc) { ry += 52; g.fillText(l, rx, ry - 10); }
-  g.fillStyle = '#4f46e5'; g.font = `600 26px ${MONO}`;
-  const uw = wrapURL(g, d.url, rw); ry += 18;
-  for (const l of uw.slice(0, 6)) { ry += 36; g.fillText(l, rx, ry - 8); }
-  return { name, nameSize, take, takeSize, url: uw, textBottom, qrTop, qr: { x: qx, y: qy, size: qs } };
+  const b = qrBlock(f, d.url, qrTop, S.scan[L], QR);
+  return { name, nameSize, take, takeSize, url: b.url, textBottom, qrTop, qr: b.qr };
 }
 
 /** the text block ends above the QR block, within the line limits (name ≤ 3, takeaway ≤ 5, link ≤ 6 lines) */
 export const fits = (l: Layout) => l.textBottom <= l.qrTop - 36 && l.name.length <= 3 && l.take.length <= 5 && l.url.length <= 6;
-/* ---- the sheet ---- */
+/* ---- the sheet (R20: one sheet for every share image — the stop card, the quiz challenge, the progress card and the
+   certificate; R19's markup, buttons and data-share-ch="<kind>-share|save" names are unchanged for the stop card) ---- */
+export interface Sheet {
+  kind: string; head: string; alt: string; file: string; w: number; h: number;
+  paint(c: HTMLCanvasElement): { fit: boolean; attrs?: string };
+  share: { title: string; text: string };
+  hint?: string;
+  /** extra buttons (html) before Save / Share */
+  links?: string;
+}
+export interface SheetOpts {
+  /** html above the image that is not redrawn while typing (name / nickname fields) */
+  top?: (L: Lang) => string;
+  make: (L: Lang) => Sheet;
+  /** a tap on [data-act] that is not share / save; true = handled */
+  act?: (act: string, el: HTMLElement, L: Lang) => void;
+}
 let root: HTMLElement | null = null, mask: HTMLElement | null = null, back: HTMLElement | null = null, blobURL = '', unsub: (() => void) | null = null;
-let file: File | null = null, cur: CardData | null = null;
-const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+let file: File | null = null, cur: Sheet | null = null, opts: SheetOpts | null = null, seq = 0, tmr = 0;
+export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 export const isOpen = () => !!root;
 export function closeCard() {
   if (!root) return;
   root.remove(); mask?.remove(); root = mask = null; unsub?.(); unsub = null;
-  if (blobURL) URL.revokeObjectURL(blobURL); blobURL = ''; file = null; cur = null;
+  if (blobURL) URL.revokeObjectURL(blobURL); blobURL = ''; file = null; cur = null; opts = null; clearTimeout(tmr);
   document.removeEventListener('keydown', onKey, true);
   document.body.classList.remove('card-open');
   back?.focus?.(); back = null;
@@ -153,58 +179,77 @@ export function closeCard() {
 function onKey(e: KeyboardEvent) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); closeCard(); } }
 const canFiles = (f: File) => { try { return typeof navigator.share === 'function' && !!navigator.canShare?.({ files: [f] }); } catch { return false; } };
 
+/** the R19 stop card as a sheet */
+function stopSheet(station: string, L: Lang): Sheet {
+  const d = cardData(station, L);
+  return {
+    kind: 'card', head: S.head[L], alt: S.alt[L].replace('{s}', d.name), file: `SI-${station}-${L}.png`, w: W, h: H,
+    paint: (c) => { const lay = draw(c, d); return { fit: fits(lay), attrs: ` data-lines="${lay.name.length},${lay.take.length},${lay.url.length}" data-qr="${lay.qr.x},${lay.qr.y},${lay.qr.size}"` }; },
+    share: { title: d.name + ' · ' + d.site, text: S.got[L] + d.name + '\n' + d.url },
+  };
+}
 export function openCard(station = useApp.getState().station) {
   if (!TABORDER.includes(station)) return;
+  openSheet({ make: (L) => stopSheet(station, L) });
+}
+export function openSheet(o: SheetOpts) {
+  opts = o;
   if (!root) {
     back = document.activeElement as HTMLElement | null;
     mask = document.createElement('div'); mask.id = 'cardMask'; mask.onclick = closeCard;
     root = document.createElement('div'); root.id = 'cardPanel'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true');
     root.addEventListener('click', onClick);
+    root.addEventListener('input', () => { clearTimeout(tmr); tmr = window.setTimeout(() => void render(false), 250); });
     document.body.append(mask, root);
     document.body.classList.add('card-open');
     document.addEventListener('keydown', onKey, true);
-    unsub = useApp.subscribe((s, p) => { if (s.lang !== p.lang && cur) void render(cur.station); else if (s.station !== p.station) closeCard(); });
+    unsub = useApp.subscribe((s, p) => { if (s.lang !== p.lang && cur) void render(true); else if (s.station !== p.station) closeCard(); });
   }
-  void render(station);
+  void render(true);
 }
+/** redraw the image and the buttons (after a name / nickname change) */
+export const refresh = () => { if (root) void render(false); };
 
-async function render(station: string) {
-  if (!root) return;
-  const L = useApp.getState().lang, d = cardData(station, L), t = (b: Bi) => esc(b[L]);
+async function render(full: boolean) {
+  if (!root || !opts) return;
+  const L = useApp.getState().lang, o = opts, d = o.make(L), my = ++seq;
   cur = d;
   const c = document.createElement('canvas');
-  const lay = draw(c, d);
+  const r = d.paint(c);
   const png = c.toDataURL('image/png');
-  const blob = await new Promise<Blob | null>((r) => c.toBlob(r, 'image/png'));
-  if (!root || cur !== d) return;
+  const blob = await new Promise<Blob | null>((res) => c.toBlob(res, 'image/png'));
+  if (!root || my !== seq) return;
   if (blobURL) URL.revokeObjectURL(blobURL);
-  const name = `SI-${station}-${L}.png`;
-  file = blob ? new File([blob], name, { type: 'image/png' }) : null;
+  file = blob ? new File([blob], d.file, { type: 'image/png' }) : null;
   blobURL = blob ? URL.createObjectURL(blob) : '';
-  const wx = inWeChat(navigator.userAgent), sh = !!file && !wx && canFiles(file);
-  root.setAttribute('aria-label', S.head[L]);
-  root.innerHTML =
-    `<div class="cp-head"><b>${t(S.head)}</b><button type="button" class="cp-x" aria-label="${esc(tx('ui.close', L))}" title="${esc(tx('ui.close', L))}">${IC.x}</button></div>`
-    + `<img class="cp-img" src="${png}" width="${W}" height="${H}" data-fit="${fits(lay) ? 1 : 0}" data-lines="${lay.name.length},${lay.take.length},${lay.url.length}" data-qr="${lay.qr.x},${lay.qr.y},${lay.qr.size}" alt="${esc(S.alt[L].replace('{s}', d.name))}">`
-    + `<p class="cp-hint">${wx ? t(S.wx) : t(S.hint)}</p>`
-    + `<div class="cp-acts">`
-    + (sh ? `<button type="button" class="cp-b pri" data-act="share" data-share-ch="card-share">${IC.share}<span>${t(S.share)}</span></button>` : '')
-    + `<a class="cp-b${sh ? '' : ' pri'}" data-act="save" data-share-ch="card-save" href="${blobURL || png}" download="${name}">${IC2.dl}<span>${t(S.save)}</span></a>`
+  const wx = inWeChat(navigator.userAgent), sh = !!file && !wx && canFiles(file), k = d.kind;
+  const body = `<img class="cp-img" src="${png}" width="${d.w}" height="${d.h}" data-kind="${k}" data-fit="${r.fit ? 1 : 0}"${r.attrs ?? ''} alt="${esc(d.alt)}">`
+    + `<p class="cp-hint">${esc(d.hint ?? (wx ? S.wx[L] : S.hint[L]))}</p>`
+    + `<div class="cp-acts">${d.links ?? ''}`
+    + (sh ? `<button type="button" class="cp-b pri" data-act="share" data-share-ch="${k}-share">${IC.share}<span>${esc(S.share[L])}</span></button>` : '')
+    + `<a class="cp-b${sh || d.links ? '' : ' pri'}" data-act="save" data-share-ch="${k}-save" href="${blobURL || png}" download="${esc(d.file)}">${IC2.dl}<span>${esc(S.save[L])}</span></a>`
     + `</div>`;
+  root.setAttribute('aria-label', d.head);
+  const bd = root.querySelector<HTMLElement>('.cp-body');
+  if (!full && bd) { bd.innerHTML = body; return; }
+  root.innerHTML =
+    `<div class="cp-head"><b>${esc(d.head)}</b><button type="button" class="cp-x" aria-label="${esc(tx('ui.close', L))}" title="${esc(tx('ui.close', L))}">${IC.x}</button></div>`
+    + (o.top?.(L) ?? '') + `<div class="cp-body">${body}</div>`;
   root.querySelector<HTMLElement>('.cp-x')?.focus();
 }
 
 function onClick(e: MouseEvent) {
   const el = (e.target as Element).closest<HTMLElement>('.cp-x,[data-act]'); if (!el || !root) return;
   if (el.classList.contains('cp-x')) { closeCard(); return; }
-  const L = useApp.getState().lang;
-  if (el.dataset.act === 'share') {
+  const L = useApp.getState().lang, a = el.dataset.act ?? '';
+  if (a === 'share') {
     const f = file, d = cur; if (!f || !d) return;
-    navigator.share({ files: [f], title: d.name + ' · ' + d.site, text: S.got[L] + d.name + '\n' + d.url })
+    navigator.share({ files: [f], title: d.share.title, text: d.share.text })
       .catch((err: unknown) => { if ((err as { name?: string })?.name !== 'AbortError') save(); });
     return;
   }
-  if (el.dataset.act === 'save') { if (inWeChat(navigator.userAgent)) { e.preventDefault(); toast(S.wx[L]); } else toast(S.saved[L]); }
+  if (a === 'save') { if (inWeChat(navigator.userAgent)) { e.preventDefault(); toast(S.wx[L]); } else toast(S.saved[L]); return; }
+  opts?.act?.(a, el, L);
 }
 /** fallback when the share sheet fails: start the download */
 function save() { root?.querySelector<HTMLAnchorElement>('[data-act="save"]')?.click(); }

@@ -36,6 +36,7 @@ if (__SI_ANALYTICS__ && location.protocol !== 'file:' && !isLocalHost(h)) {
   const onEv = (e: Event) => { const n = eventFor(e); if (n) { if (send) send(n); else if (q.length < 50) q.push(n); } };
   addEventListener('click', onEv, { capture: true, passive: true });
   addEventListener('input', onEv, { capture: true, passive: true });
+  addEventListener('si-ev', onEv);
   const start = () => setTimeout(() => {
     void import('./analytics').then((a) => {
       const run = () => { const s = useApp.getState(); a.count(s.lang, s.station, document.title); };

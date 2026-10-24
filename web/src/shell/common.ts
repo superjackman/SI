@@ -17,7 +17,6 @@ export const IC = {
   fs: ic('M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5'),
   search: ic('M17 10.5a6.5 6.5 0 1 1-13 0a6.5 6.5 0 1 1 13 0M15.5 15.5L20 20'),
   x: ic('M6 6l12 12M18 6L6 18'),
-  img: ic('M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4M16 9h.01'),
   plus: ic('M12 5v14M5 12h14'),
   minus: ic('M5 12h14'),
   reset: ic('M4 12a8 8 0 1 0 2.3-5.7L4 8.6M4 4v4.6h4.6'),

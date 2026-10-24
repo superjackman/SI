@@ -103,6 +103,7 @@ export const CODES = {
   'sh.prev': { zh: '上一站', en: 'Previous stop' },
   'sh.next': { zh: '下一站', en: 'Next stop' },
   'sh.detail': { zh: '🏁 查看学习进度与全部实验', en: '🏁 View progress and all labs' },
+  'sh.pcard': { zh: '生成我的点亮图', en: 'Make my progress card' },
   'sh.map': { zh: '🗺️ 学习地图：全部站点和章节', en: '🗺️ Learning map: all stops and sections' },
   'sh.viewed': { zh: '已看 ', en: 'Viewed ' },
   'sh.quizC': { zh: ' 站 · 测验答对 ', en: ' stops · quiz correct ' },
