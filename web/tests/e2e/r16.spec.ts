@@ -212,6 +212,8 @@ test.describe('share the current page', () => {
     const b = await playwright.chromium.launch({ channel: 'chrome', args: ['--host-resolver-rules=MAP si.test 127.0.0.1'] });
     try {
       const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+      /* a returning visitor: a first visit also sends the welcome / tip events (evt-onb-show, evt-tip-*: events, not page views; covered in r29.spec) */
+      await ctx.addInitScript(() => { try { localStorage.setItem('aiexp.v2.onb', '1'); localStorage.setItem('aiexp.v2.coach', '1'); localStorage.setItem('aiexp.v2.obtips', '["dd","ro","dots"]'); } catch { /* */ } });
       const hits: string[] = [];
       await ctx.route(GC + '**', (r) => { hits.push(r.request().url()); return r.fulfill({ status: 200, contentType: 'image/gif', body: Buffer.from('R0lGODlhAQABAAAAACw=', 'base64') }); });
       await ctx.route((u) => u.hostname !== 'si.test' && !u.href.startsWith(GC), (r) => r.abort());

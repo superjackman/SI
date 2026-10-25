@@ -21,6 +21,9 @@ async function touch(page: Page, pts: [number, number][], ms = 160) {
   await c.detach();
 }
 
+/* R29 hardening: the card comes 4 s after load, and waits 5 s more (then retries) while a one-time tip bubble is on
+   screen, so 9 s was right at the edge under load; 15 s covers one retry. The tests themselves get test.slow(). */
+const ASK_MS = 15_000;
 test.describe('(B) phone swipe gestures', () => {
   test('CSS: no overscroll on html/body/scrollers, main pan-y, sliders own their drag', async ({ page }) => {
     await page.goto('./?lang=zh#T5'); await ready(page, 'T5', 'zh');
@@ -127,12 +130,13 @@ test.describe('(A) full screen', () => {
   /* R21 (P10): no silent full screen any more — a small card asks first; "full screen" enters it, "no thanks" or leaving
      full screen means never again */
   for (const lang of ['zh', 'en'] as Lang[]) test(`asks before going full screen; yes enters, no thanks / leaving it stops asking (${lang})`, async ({ page }) => {
+    test.slow();
     await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
     await page.locator('main p').first().tap();
     await page.waitForTimeout(300);
     expect(await page.evaluate(() => !!document.fullscreenElement)).toBe(false);   // a tap alone does nothing
     const ask = page.locator('#siFsAsk');
-    await expect(ask).toBeVisible({ timeout: 9000 });
+    await expect(ask).toBeVisible({ timeout: ASK_MS });
     await expect(ask).toContainText(lang === 'zh' ? '要全屏看吗？' : 'Go full screen?');
     expect(await ask.evaluate((t) => { const r = t.getBoundingClientRect(), b = document.querySelector('#bnav')?.getBoundingClientRect(); return r.left >= 0 && r.right <= document.documentElement.clientWidth && (!b || r.bottom <= b.top + 0.5); })).toBe(true);
     await ask.locator('[data-fs="yes"]').tap();
@@ -145,7 +149,7 @@ test.describe('(A) full screen', () => {
     // "no thanks" on a fresh profile
     await page.evaluate(() => localStorage.removeItem('si.fs'));
     await page.reload(); await ready(page, 'T3', lang);
-    await expect(ask).toBeVisible({ timeout: 9000 });
+    await expect(ask).toBeVisible({ timeout: ASK_MS });
     await ask.locator('[data-fs="no"]').tap();
     await expect(ask).toHaveCount(0);
     expect(await page.evaluate(() => [!!document.fullscreenElement, localStorage.getItem('si.fs')])).toEqual([false, '0']);
@@ -169,10 +173,11 @@ test.describe('(A) full screen', () => {
   test.describe('iPhone (no Fullscreen API)', () => {
     test.use({ userAgent: IPHONE });
     for (const lang of ['zh', 'en'] as const) test(`one-time add-to-home-screen tip, dismissible; ⛶ shows it again (${lang})`, async ({ page }) => {
+      test.slow();
       await page.addInitScript(noFS);
       await page.goto(`./?lang=${lang}#T1`); await ready(page, 'T1', lang);
       const tip = page.locator('#siA2hs');
-      await expect(tip).toBeVisible({ timeout: 9000 });
+      await expect(tip).toBeVisible({ timeout: ASK_MS });
       await expect(tip).toContainText(lang === 'zh' ? '添加到主屏幕后可全屏打开' : 'Add to Home Screen to open it full screen');
       const fit = await tip.evaluate((t) => { const r = t.getBoundingClientRect(); return r.left >= 0 && r.right <= document.documentElement.clientWidth; });
       expect(fit).toBe(true);

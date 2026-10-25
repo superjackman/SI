@@ -4,7 +4,13 @@
    Off on file:, localhost and on /SI/next/ (build flag __SI_ANALYTICS__), so previews never pollute the dashboard. */
 import type { Lang } from './i18n/types';
 const GC_COUNT = 'https://superjackman-si.goatcounter.com/count';
+import { GCRE } from './boot/stale';
 let last = '';
+const GCP = 'si.gcp';
+/** sessionStorage get (v undefined), set (string) or remove-and-return (null); never throws */
+function ss(k: string, v?: string | null): string | null {
+  try { const o = sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else if (v !== undefined) sessionStorage.setItem(k, v); return o; } catch { return null; }
+}
 let ref = typeof document !== 'undefined' ? document.referrer : '';
 export function pathFor(lang: Lang, station: string): string { return '/' + lang + '/' + (station === 'H' ? 'home' : station); }
 /* R19 source tag of the landing: ?from=wechat (share links) or a manual ?from=zhihu / xhs / v2ex / bilibili on a post.
@@ -33,7 +39,9 @@ if (typeof location !== 'undefined') {
 export function count(lang: Lang, station: string, title: string): void {
   const p = pathFor(lang, station);
   if (p === last) return;
-  last = p;
+  const re = !last && ss(GCRE, null) && ss(GCP) === p; // first view after our own reload, same stop: already counted
+  last = p; ss(GCP, p);
+  if (re) { ref = ''; from = null; return; }
   const s = screenStr(), f = from;
   const q = `p=${encodeURIComponent(p)}&t=${encodeURIComponent(title)}${ref ? '&r=' + encodeURIComponent(ref) : ''}${f ? '&q=' + encodeURIComponent('?campaign=' + f + '&ref=' + f) : ''}&s=${encodeURIComponent(s)}&rnd=${Math.random().toString(36).slice(2, 9)}`;
   ref = ''; from = null;

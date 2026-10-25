@@ -13,14 +13,16 @@ const git = (...a: string[]) => execFileSync('git', a, { cwd: new URL('../../..'
 
 async function ready(page: Page, key: string) {
   await page.locator(`html[data-si-ready="${key}"]`).waitFor({ state: 'attached', timeout: 15_000 });
-  await expect(page.locator('section.level.active .pagehead')).toBeVisible();
+  /* R27: the home page H has its own top (.hm), no .pagehead */
+  await expect(page.locator(key.startsWith('H.') ? 'section#H.level.active .hm' : 'section.level.active .pagehead')).toBeVisible();
 }
 const path = (page: Page) => { const u = new URL(page.url()); return u.pathname + u.search + u.hash; };
 
 test.describe('cutover (repo layout under /SI/)', () => {
   test.skip(!REPO, 'needs SI_TARGET=root SI_E2E_SERVE=repo');
 
-  for (const [link, key] of [['?lang=en', 'T1.en'], ['#T3&lang=en', 'T3.en'], ['?lang=zh#T5', 'T5.zh'], ['?lang=en#T4a', 'T4a.en'], ['#N', 'N.zh'], ['#/T6?lang=en', 'T6.en']] as const) {
+  /* R27: a bare ?lang=en opens the home page H (it used to open T1) */
+  for (const [link, key] of [['?lang=en', 'H.en'], ['#T3&lang=en', 'T3.en'], ['?lang=zh#T5', 'T5.zh'], ['?lang=en#T4a', 'T4a.en'], ['#N', 'N.zh'], ['#/T6?lang=en', 'T6.en']] as const) {
     test(`old shared link /SI/${link} opens ${key}`, async ({ page }) => {
       await page.goto(BASE + link);
       await ready(page, key);
@@ -49,7 +51,7 @@ test.describe('cutover (repo layout under /SI/)', () => {
     ['next/#T3&lang=en', '#T3&lang=en', 'T3.en'],
     ['next?lang=en#T5', '?lang=en#T5', 'T5.en'],
     ['next/?_r=123&lang=en#T4', '?lang=en#T4', 'T4.en'],
-    ['next/', '', 'T1.zh'],
+    ['next/', '', 'H.zh'], // R27: a bare address opens the home page H
     ['next/index.html#T7', '#T7', 'T7.zh'],
   ] as const) {
     test(`/SI/${from} → /SI/${to}`, async ({ page }) => {
@@ -89,6 +91,8 @@ test.describe('cutover (repo layout under /SI/)', () => {
     const b = await playwright.chromium.launch({ channel: 'chrome', args: ['--host-resolver-rules=MAP si.test 127.0.0.1'] });
     try {
       const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, screen: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+      /* a returning visitor: a first visit also sends the welcome / tip events (evt-onb-show, evt-tip-*: events, not page views; covered in r29.spec) */
+      await ctx.addInitScript(() => { try { localStorage.setItem('aiexp.v2.onb', '1'); localStorage.setItem('aiexp.v2.coach', '1'); localStorage.setItem('aiexp.v2.obtips', '["dd","ro","dots"]'); } catch { /* */ } });
       const hits: string[] = [];
       await ctx.route(GC + '**', (r) => { hits.push(r.request().url()); return r.fulfill({ status: 200, contentType: 'image/gif', body: Buffer.from('R0lGODlhAQABAAAAACw=', 'base64') }); });
       await ctx.route((u) => u.hostname !== 'si.test' && !u.href.startsWith(GC), (r) => r.abort());
@@ -126,22 +130,26 @@ test.describe('cutover (repo layout under /SI/)', () => {
       const evs = hits.slice(1).map((h) => new URL(h).searchParams);
       expect(evs.map((q) => q.get('p'))).toEqual(['evt-lab-labTok', 'evt-quiz-T3']);
       for (const q of evs) { expect([...q.keys()]).toEqual(['p', 't', 'e', 's', 'rnd']); expect(q.get('t')).toBe(q.get('p')); expect(q.get('e')).toBe('true'); expect(q.get('s')).toBe('390,844,3'); }
-      /* stop change → one more; the same stop again (opening a sheet etc.) → none */
+      /* stop change → one more; the same stop again (opening a sheet etc.) → none. R27: T1 counts as /en/T1, home H as /en/home */
       await p.evaluate(() => (window as unknown as { __si: { go(s: string): void } }).__si.go('T1'));
       await ready(p, 'T1.en');
       await expect.poll(() => hits.length).toBe(4);
-      expect(new URL(hits[3]!).searchParams.get('p')).toBe('/en/home');
+      expect(new URL(hits[3]!).searchParams.get('p')).toBe('/en/T1');
       await p.locator('#bnav [data-bn="prog"]').click(); await expect(p.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);
       await p.waitForTimeout(800);
       expect(hits.length).toBe(4);
+      await p.evaluate(() => (window as unknown as { __si: { go(s: string): void } }).__si.go('H'));
+      await ready(p, 'H.en');
+      await expect.poll(() => hits.length).toBe(5);
+      expect(new URL(hits[4]!).searchParams.get('p')).toBe('/en/home');
       /* legacy.html keeps its own counter (same virtual paths, same event scheme) */
       await p.goto(`http://si.test:${PORT}${BASE}legacy.html?lang=zh#T5`);
-      await expect.poll(() => hits.length, { timeout: 10_000 }).toBe(5);
-      expect(new URL(hits[4]!).searchParams.get('p')).toBe('/zh/T5');
+      await expect.poll(() => hits.length, { timeout: 10_000 }).toBe(6);
+      expect(new URL(hits[5]!).searchParams.get('p')).toBe('/zh/T5');
       await p.locator('section#T5 #labKv input').first().dispatchEvent('input');
       await p.locator('#quizT5 .opt').first().dispatchEvent('click');
-      await expect.poll(() => hits.length).toBe(7);
-      const lev = hits.slice(5).map((h) => new URL(h).searchParams);
+      await expect.poll(() => hits.length).toBe(8);
+      const lev = hits.slice(6).map((h) => new URL(h).searchParams);
       expect(lev.map((q) => q.get('p'))).toEqual(['evt-lab-labKv', 'evt-quiz-T5']);
       for (const q of lev) { expect([...q.keys()]).toEqual(['p', 't', 'e', 's', 'rnd']); expect(q.get('t')).toBe(q.get('p')); expect(q.get('e')).toBe('true'); }
 

@@ -9,7 +9,7 @@
    A missing / broken version.json (dev, LAN preview of an old build, offline) is ignored silently. */
 import { tx } from '../i18n/L';
 import { useApp } from '../store/app';
-import { BUST } from './stale';
+import { BUST, reloadTo } from './stale';
 import { IC } from '../shell/common';
 
 export const VKEY = 'si.vreload';
@@ -59,7 +59,7 @@ export async function check(touched: () => boolean, o: { cur?: string; base?: st
     if (d === 'reload' && !ss) d = 'banner'; // no sessionStorage → no loop guard → never auto-reload
     if (d === 'reload') {
       try { sessionStorage.setItem(VKEY, remote); } catch { d = 'banner'; }
-      if (d === 'reload') { location.replace(freshURL(location, remote)); return d; }
+      if (d === 'reload') { reloadTo(freshURL(location, remote)); return d; }
     }
     if (d === 'banner') banner(remote);
     return d;
@@ -79,7 +79,7 @@ export function banner(id: string) {
   const txt = () => { const l = useApp.getState().lang; go.innerHTML = IC.re + '<span></span>'; (go.lastChild as HTMLElement).textContent = tx('upd.banner', l); x.setAttribute('aria-label', tx('ui.close', l)); x.title = tx('ui.close', l); };
   txt();
   const un = useApp.subscribe((s, p) => { if (s.lang !== p.lang) txt(); });
-  go.onclick = () => { location.replace(freshURL(location, id)); };
+  go.onclick = () => { reloadTo(freshURL(location, id)); };
   x.onclick = () => { un(); b.remove(); };
   b.append(go, x); document.body.appendChild(b);
 }

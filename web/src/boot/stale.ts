@@ -6,6 +6,10 @@
    The inline guard in index.html does the same for the entry script / stylesheet itself (window.__siStale). */
 export const RKEY = 'si.reload';
 export const BUST = '_r';
+/** set just before any reload the app does on its own (stale build, chunk recovery, update banner): the reloaded page
+    is the same visit, so analytics does not count its first page view again when it equals the last one counted */
+export const GCRE = 'si.gcre';
+export function reloadTo(url: string) { try { sessionStorage.setItem(GCRE, '1'); } catch { /* */ } location.replace(url); }
 
 /** basename of the running entry script, e.g. "index-Do0ajEEB.js" ("" in dev) */
 export function buildId(doc: Document = document): string {
@@ -38,7 +42,7 @@ export function reloadOnce(id = buildId()): boolean {
     if (sessionStorage.getItem(RKEY) === (id || '?')) return false;
     sessionStorage.setItem(RKEY, id || '?');
   } catch { return false; } // no sessionStorage: never auto-reload (cannot guard against loops)
-  location.replace(bustURL(location));
+  reloadTo(bustURL(location));
   return true;
 }
 /** is a newer build deployed than the one running? (null = cannot tell, e.g. offline) */
@@ -58,7 +62,7 @@ export function recover(err?: unknown): Promise<boolean> {
   return (inflight ||= newerBuild().then((n) => (n ? reloadOnce() : false)).finally(() => { setTimeout(() => { inflight = null; }, 0); }));
 }
 /** ⟳ after a chunk failure: try the import again; if the chunk is still missing, reload the page (user asked) */
-export function userReload() { try { sessionStorage.removeItem(RKEY); } catch { /* */ } location.replace(bustURL(location)); }
+export function userReload() { try { sessionStorage.removeItem(RKEY); } catch { /* */ } reloadTo(bustURL(location)); }
 
 export function installStaleGuard() {
   const c = cleanURL(location);
