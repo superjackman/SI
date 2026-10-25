@@ -20,7 +20,7 @@ export function kids(id: string): string[] {
   return kidsIdx[id] ?? [];
 }
 /** station icons (live: drawer / bottom bar) and drawer groups */
-export const ICON: Record<string, string> = { T1: '🏠', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', U: '🛠️', Ua: '🤝', Ub: '🚀', Uc: '🧰', Ud: '🎯', Up: '🗂️', Api: '🔌', Loc: '💻', Job: '🙋', Skl: '🔧', Bld: '🏗️', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
+export const ICON: Record<string, string> = { H: '🏠', T1: '🔭', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', U: '🛠️', Ua: '🤝', Ub: '🚀', Uc: '🧰', Ud: '🎯', Up: '🗂️', Api: '🔌', Loc: '💻', Job: '🙋', Skl: '🔧', Bld: '🏗️', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
 export const GRP: [string, Bi, string[]][] = [
   ['🔭', { zh: '远看：应用与 Agent', en: 'Big picture: apps & agents' }, ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']],
   ['🗺️', { zh: '近看：大模型', en: 'Closer: the LLM' }, ['T3']],

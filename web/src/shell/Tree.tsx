@@ -4,16 +4,17 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useApp } from '../store/app';
 import { useT } from '../i18n/L';
 import type { Lang } from '../i18n/types';
-import { PATH, TABORDER, tabn } from '../legacy/kb';
+import { ICON, PATH, TABORDER, tabn } from '../legacy/kb';
 import { visited } from '../nav';
 import { svgHtml } from './common';
 
 type Row = [string, string, '' | 'lab' | 'quiz', number];
 const OUT = import.meta.glob<Record<string, Row[]>>('../legacy/gen/outline.*.json', { import: 'default' });
 type N = [string, N[]];
-const TREE: N[] = [['T1', [['U', [['Ua', []], ['Ub', []], ['Uc', []], ['Ud', []], ['Up', []]]], ['Api', []], ['Loc', []], ['Job', []], ['Skl', []], ['Bld', []], ['T2', [['T3', [['N', []], ['T4', [['T4a', []], ['T4b', []]]]]]]]]], ['T5', []], ['T6', []], ['T7', []], ['T8', []], ['K1', []], ['K2', []], ['K3', []], ['K4', []], ['K5', []]];
+/* R27: 首页 → 专区 → 细节站 (the zones hang off the home page; T1 is the principles zone) */
+const TREE: N[] = [['H', [['U', [['Ua', []], ['Ub', []], ['Uc', []], ['Ud', []], ['Up', []]]], ['Api', []], ['Loc', []], ['Job', []], ['Skl', []], ['Bld', []], ['T1', [['T2', [['T3', [['N', []], ['T4', [['T4a', []], ['T4b', []]]]]]]]]]]], ['T5', []], ['T6', []], ['T7', []], ['T8', []], ['K1', []], ['K2', []], ['K3', []], ['K4', []], ['K5', []]];
 const LSK = 'aiexp.v2.open';
-function loadOpen(): Record<string, number> { try { const v = JSON.parse(localStorage.getItem(LSK) ?? 'null') as unknown; if (v && typeof v === 'object') return v as Record<string, number>; } catch { /* */ } return { T1: 1, T2: 1, T3: 1, T4: 1 }; }
+function loadOpen(): Record<string, number> { try { const v = JSON.parse(localStorage.getItem(LSK) ?? 'null') as unknown; if (v && typeof v === 'object') return v as Record<string, number>; } catch { /* */ } return { H: 1, T1: 1, T2: 1, T3: 1, T4: 1 }; }
 const saveOpen = (o: Record<string, number>) => { try { localStorage.setItem(LSK, JSON.stringify(o)); } catch { /* private mode */ } };
 
 /** live spy(): the card under the top bar */
@@ -57,7 +58,7 @@ export function Tree({ active }: { active: boolean }) {
         <div className={'tn' + (cur ? ' cur' : '') + (v ? ' vis' : '')}>
           <button className="car" aria-label={t('tree.toggle') + tabn(id, lang)} aria-expanded={o} data-tg={id}
             onClick={(e) => { e.stopPropagation(); setOpen((x) => { const n = { ...x, [id]: x[id] ? 0 : 1 }; saveOpen(n); return n; }); }} {...svgHtml('next')} />
-          <a data-go={id} aria-current={cur ? 'page' : undefined}><span className="num">{num}</span>{tabn(id, lang)}</a>
+          <a data-go={id} aria-current={cur ? 'page' : undefined}><span className="num">{num || ICON[id]}</span>{tabn(id, lang)}</a>
           <span className="ck" title={v ? t('tree.vis') : t('tree.notVis')}>{v ? '✓' : '○'}</span>
         </div>
         <ul>

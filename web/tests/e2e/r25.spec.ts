@@ -1,4 +1,4 @@
-/* R25: the six "I want to…" doorways on T1, the 🔌 Api and 💻 Loc stops (boundary line on top, cost and memory
+/* R25: the six "I want to…" doorways (R27: on the home page), the 🔌 Api and 💻 Loc stops (boundary line on top, cost and memory
    calculators), and their place in the drawer, search and prev/next. zh + en on 360/390/430. */
 import { test, expect, type Page } from '@playwright/test';
 
@@ -23,27 +23,33 @@ const startLab = async (page: Page, id: string) => { await page.locator(`#${id}`
 for (const lang of ['zh', 'en'] as Lang[]) {
   const tr = (zh: string, en: string) => (lang === 'zh' ? zh : en);
 
-  test(`${lang} T1 doorways: six doors under the page head, inside the screen, each goes where it says`, async ({ page }) => {
-    await open(page, lang, 'T1');
+  /* R27: the doorways moved to the home page (bare URL); their old shortcut chips became the zones' ⬇ links, the 🧠 door's route chips the T1 route map */
+  test(`${lang} home doorways: six doors, inside the screen, each goes where it says; Uc / Up one ⬇ further; routes on T1`, async ({ page }) => {
+    const home = async () => { await page.goto(`./?lang=${lang}`); await ready(page, 'H', lang); };
+    await home();
     const d = page.locator(`${act} .m-door`);
-    await expect(d.locator('.dr')).toHaveCount(6);
+    await expect(d.locator('.dr-m')).toHaveCount(6);
     await expect(d).toBeInViewport({ ratio: 0.3 });
-    expect(await page.evaluate((a) => { const s = document.querySelector(a)!; return !!(s.querySelector('.pagehead')!.compareDocumentPosition(s.querySelector('.m-door')!) & 4) && !!(s.querySelector('.m-door')!.compareDocumentPosition(s.querySelector('.m-stage')!) & 4); }, act)).toBe(true);
-    expect(await inside(page, `${act} .m-door .dr, ${act} .m-door .dr-c button`)).toEqual([]);
+    expect(await inside(page, `${act} .m-door .dr-m`)).toEqual([]);
     expect(await overflow(page)).toBeLessThanOrEqual(0);
-    await expect(page.locator(`${act} .m-stage svg`).first()).toBeAttached(); /* the T1 diagram stays */
     if (lang === 'en') expect(CJK.test(await d.innerText())).toBe(false);
-    for (const [S, sel] of [['Api', '[data-go="Api"]'], ['Loc', '[data-go="Loc"]'], ['Job', '.dr-m[data-go="Job"]'], ['Skl', '.dr-m[data-go="Skl"]'], ['Bld', '.dr-m[data-go="Bld"]'], ['Uc', '.dr-c [data-go="Uc"]'], ['Up', '.dr-c [data-go="Up"]']] as const) {
-      await open(page, lang, 'T1');
-      await page.locator(`${act} .m-door ${sel}`).first().click();
+    for (const S of ['Api', 'Loc', 'Job', 'Skl', 'Bld', 'T1'] as const) {
+      await home();
+      await page.locator(`${act} .m-door [data-go="${S}"]`).click();
+      await ready(page, S, lang);
+    }
+    await expect(page.locator(`${act} .m-stage svg`).first()).toBeAttached(); /* the T1 diagram stays */
+    for (const [Z, S] of [['Skl', 'Uc'], ['Job', 'Up']] as const) {
+      await open(page, lang, Z);
+      await page.locator(`${act} .m-zone .mz-dn [data-go="${S}"]`).click();
       await ready(page, S, lang);
     }
     await open(page, lang, 'T1');
-    await page.locator(`${act} .m-door [data-route="all"]`).click();
+    await page.locator(`${act} .m-rmap [data-route="all"]`).click();
     await ready(page, 'T2', lang);
     expect(await page.evaluate(() => localStorage.getItem('aiexp.v2.route'))).toBe('all');
     await open(page, lang, 'T1');
-    await page.locator(`${act} .m-door [data-route="kid"]`).click();
+    await page.locator(`${act} .m-rmap [data-route="kid"]`).click();
     await expect(page.locator(`${act} [data-ob="route"]`)).toContainText('1/6');
   });
 

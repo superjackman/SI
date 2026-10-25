@@ -28,7 +28,7 @@ export function go(L: string, scroll: boolean | 'top' = true) {
   if (!isStation(L)) return;
   const s = st();
   if (!inDrill && s.drill.length) { const t = s.drill[s.drill.length - 1]; if (t && L !== t.to && L !== s.station) s.set({ drill: [] }); }
-  markVisited(L);
+  if (L !== 'H') markVisited(L); /* R27: the home page is not a stop */
   pendingScroll.v = scroll === 'top' ? 'top' : scroll ? 'main' : null;
   try { history.replaceState(history.state, '', navURL(location, L, s.lang)); } catch { /* ignore */ }
   st().set({ station: L, navSeq: s.navSeq + 1, full: null });

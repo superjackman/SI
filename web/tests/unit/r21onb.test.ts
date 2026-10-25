@@ -1,6 +1,7 @@
 /* R21: the onboarding rules — who counts as a first visitor, where "next" goes on each route, what the lab chip opens */
 import { describe, it, expect } from 'vitest';
-import { isFresh, nextStop, labsOf, ROUTE_S } from '../../src/onboard';
+import { isFresh, nextStop, labsOf, ROUTE_S, welcomeKind, HSTEPS } from '../../src/onboard';
+import fs from 'node:fs';
 import { O, ROUTE, LABN } from '../../src/onboard/strings';
 import { TABORDER } from '../../src/legacy/kb';
 
@@ -53,5 +54,29 @@ describe('labsOf', () => {
 describe('strings', () => {
   it('every string has zh and en; en has no Chinese', () => {
     for (const [k, v] of Object.entries(O)) { expect(v.zh, k).toBeTruthy(); expect(v.en, k).toBeTruthy(); expect(/[\u3400-\u9fff]/.test(v.en.replace(/<b>中<\/b>/g, '')), k).toBe(false); }
+  });
+});
+
+describe('R27+ home page first visit', () => {
+  it('a fresh visitor landing on H counts as fresh (H is never marked visited)', () => {
+    expect(isFresh('H', [], null, null, null)).toBe(true);
+    expect(isFresh('H', ['T2'], null, null, null)).toBe(false);
+  });
+  it('welcomeKind: home strip on H, R21 card on a stop, none for returning / dismissed / friend link / tour / later pages', () => {
+    expect(welcomeKind('H', true, 'H', null, false, false)).toBe('home');
+    expect(welcomeKind('T4a', true, 'T4a', null, false, false)).toBe('stop');
+    expect(welcomeKind('H', false, 'H', null, false, false)).toBe(null);
+    expect(welcomeKind('H', true, 'H', '1', false, false)).toBe(null);
+    expect(welcomeKind('H', true, 'H', null, true, false)).toBe(null);
+    expect(welcomeKind('H', true, 'H', null, false, true)).toBe(null);
+    expect(welcomeKind('H', true, 'T1', null, false, false)).toBe(null);
+  });
+  it('the home coach marks cover what / where to start / doorways / header / bottom row, and point at real H parts', () => {
+    expect(HSTEPS.map((s) => s[1])).toEqual(['h1', 'h2', 'h3', 'c1', 'c2', 'c3', 'h5']);
+    for (const L of ['zh', 'en'] as const) {
+      const h = JSON.parse(fs.readFileSync(`src/legacy/gen/st/H.${L}.json`, 'utf8')).html as string;
+      for (const c of ['hm-t', 'hm-go', 'hm-door', 'dr-g', 'hm-s']) expect(h, c).toContain(c);
+      expect(O.hwGo[L]).toContain(String(HSTEPS.length));
+    }
   });
 });

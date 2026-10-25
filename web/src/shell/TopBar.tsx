@@ -127,7 +127,7 @@ export function TopBar() {
         <button className="icon-btn tb-ic tb-menu" id="mMenu" aria-label={t('nav.menu.open')} title={t('nav.allStops')} aria-controls="mDrawer" aria-expanded={drawer ? 'true' : 'false'}
           onClick={toggleDrawer} {...svgHtml('menu')} />
         <button className="icon-btn tb-ic tb-nv" id="mPrev" disabled={!pv} aria-label={pvL} title={pvL} onClick={() => pv && go(pv)} {...svgHtml('prev')} />
-        <div className="tb-where" id="tbWhere" aria-live="polite"><b ref={ttl} title={nm}>{nm}</b><span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span></div>
+        <div className="tb-where" id="tbWhere" aria-live="polite"><b ref={ttl} title={nm}>{nm}</b>{i >= 0 ? <span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span> : null}</div>
         <button className="icon-btn tb-ic tb-nv" id="mNext" disabled={!nx} aria-label={nxL} title={nxL} onClick={() => nx && go(nx)} {...svgHtml('next')} />
         <button className="icon-btn tb-ic" id="mSearch" aria-label={t('search.parts')} title={t('search.parts')} aria-controls="search"
           onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }} {...svgHtml('search')} />

@@ -26,7 +26,7 @@ test('every sitemap URL is served and is the page it claims to be; robots.txt na
   expect(await nf.text()).toContain('<meta name="robots" content="noindex">');
 });
 
-for (const [lang, S, path] of [['zh', 'Api', 's/Api/'], ['en', 'Loc', 'en/s/Loc/'], ['zh', 'T4a', 's/T4a/'], ['en', 'T1', 'en/s/']] as const) {
+for (const [lang, S, path] of [['zh', 'Api', 's/Api/'], ['en', 'Loc', 'en/s/Loc/'], ['zh', 'T4a', 's/T4a/'], ['en', 'H', 'en/s/']] as const) /* R27: the catalogue opens the app's home page */ {
   test(`${lang} static page ${path}: fits the screen, links work, "open in the app" lands on ${S}`, async ({ page }) => {
     await page.goto(`./${path}`);
     await expect(page.locator('h1')).toBeVisible();
@@ -36,7 +36,7 @@ for (const [lang, S, path] of [['zh', 'Api', 's/Api/'], ['en', 'Loc', 'en/s/Loc/
     if (lang === 'en') expect(/[\u3400-\u9fff]/.test((await page.locator('main').innerText()))).toBe(false);
     await page.locator('.open a').first().click();
     await page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached' });
-    await expect(page.locator('section.level.active .pagehead')).toBeVisible();
+    await expect(page.locator(S === 'H' ? 'section.level.active .hm-t' : 'section.level.active .pagehead')).toBeVisible();
   });
 }
 

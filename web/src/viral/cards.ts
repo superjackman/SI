@@ -78,7 +78,7 @@ const copyText = (inp: HTMLInputElement | null | undefined, L: Lang) => copy(inp
 
 /* ---- progress card (1080 × 1920): the stops as a snake of lit / opened / not-yet circles ---- */
 export interface ProgLayout { names: string[][]; cut: boolean; textBottom: number; qrTop: number; qr: { x: number; y: number; size: number } }
-const homeURL = (L: Lang, tag: string) => withFrom(shareURL(location, L, { station: 'T1' }), tag);
+const homeURL = (L: Lang, tag: string) => withFrom(shareURL(location, L, { station: 'H' }), tag);
 export function drawProgress(cv: HTMLCanvasElement, p: Prog, L: Lang, url: string): ProgLayout {
   const f: Frame = frame(cv, 1080, 1920, L, site(L), T.pChip[L]), { g, F, X, Y, CW, CH, PAD, TW } = f;
   const QR = 240, qrTop = Y + CH - PAD - QR;

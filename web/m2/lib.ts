@@ -92,7 +92,7 @@ ${body}
   /** the page head: title, one-liner, notes, stop n of N, breadcrumb, page map */
   head(sub: string, one: string, why: string) {
     const i = this.W.order.indexOf(this.S), N = this.W.order.length, L = this.L;
-    const crumb = (this.W.path[this.S] ?? []).map((s) => this.st(s)).join(' › ');
+    const crumb = (this.W.path[this.S] ?? []).filter((s) => s !== 'H').map((s) => this.st(s)).join(' › ');
     const cut = (s: string) => fit(s, L === 'en' ? 22 : 16, L);
     const map = this.rows.filter((r) => r[2] !== 'quiz').map((r) => `<button class="${r[3] === 3 ? 'l3' : ''}" data-sj="${r[0]}" data-sp="${this.S}">${esc(cut(r[1]))}</button>`).join('');
     return `<div class="pagehead" id="ph${this.S}"><h1 class="pg-t"><span class="pg-n">${i + 1}</span>${esc(this.st(this.S))}</h1><p class="pg-s">${sub}</p><details class="pg-more"><summary aria-label="${this.t('展开本站说明', 'Expand notes for this stop')}" title="${this.t('本站说明', 'Notes for this stop')}"><span aria-hidden="true">ⓘ</span> ${this.t('说明', 'Notes')}</summary><div class="ph-one">${one}</div><p class="ph-why"><b>${this.t('为什么这样设计：', 'Why it’s designed this way: ')}</b>${why}</p></details><div class="ph-top"><span class="ph-lv">${L === 'en' ? `Stop ${i + 1} of ${N} ` : `第 ${i + 1} 站 / 共 ${N} 站`}</span><span>📍 ${esc(crumb)}</span></div><div class="ph-map" id="pm${this.S}"><span>${this.t('本页结构：', 'On this page: ')}</span>${map}</div><div class="zoomnote" id="zn${this.S}" style="display:none"></div></div>`;
@@ -146,7 +146,7 @@ const TABS: Bi[] = [{ zh: '🎯 作用', en: '🎯 What it does' }, { zh: '▶ �
 export function popBody(id: string, owner: string, sp: PopSpec, W: World, L: Lang) {
   const t: T = (zh, en) => (L === 'en' ? en : zh);
   const p = W.part(id); if (!p) throw new Error('unknown part ' + id);
-  const crumb = (W.path[owner] ?? []).map((s) => `<a data-go="${s}">${esc((W.tabn[s] as Bi)[L])}</a>`).join(' › ');
+  const crumb = (W.path[owner] ?? []).filter((s) => s !== 'H').map((s) => `<a data-go="${s}">${esc((W.tabn[s] as Bi)[L])}</a>`).join(' › ');
   const status = sp.status ?? t('⚙️ 用法层：不改模型的参数，改的是你怎么用它', '⚙️ Usage layer: no model parameters change, only how you use it');
   let o = `<div class="m-meta"><p class="role">${sp.role}</p><div class="where">${t('📍 所在位置：', '📍 Location: ')}${crumb} › <b>${esc(p.n[L])}</b></div><span class="status no">${status}</span></div>`;
   if (sp.tryit) o += `<div class="tryit"><b>${t('🧪 动手试试：', '🧪 Try it: ')}</b><button class="btn primary" data-jump="${sp.tryit[0]}" data-lv="${sp.tryit[1]}">${sp.tryit[2]}</button></div>`;

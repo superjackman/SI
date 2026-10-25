@@ -65,9 +65,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     for (const u of ['https://jimeng.jianying.com', 'https://hailuoai.com']) expect(await page.locator(`${act} a[href="${u}"]`).count(), u).toBeGreaterThan(0);
   });
 
-  test(`${lang} T1 doorways 🤖 🧰 🛠 land on Job / Skl / Bld; Loc → next is Job, Bld → next is T2`, async ({ page }) => {
+  test(`${lang} home doorways 🤖 🧰 🛠 land on Job / Skl / Bld; Loc → next is Job, Bld → next is T2`, async ({ page }) => {
     for (const S of ['Job', 'Skl', 'Bld']) {
-      await open(page, lang, 'T1');
+      await page.goto(`./?lang=${lang}`); await ready(page, 'H', lang); /* R27: the doorways are on the home page */
       await page.locator(`${act} .m-door .dr-m[data-go="${S}"]`).click();
       await ready(page, S, lang);
     }

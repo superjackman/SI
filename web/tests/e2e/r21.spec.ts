@@ -41,8 +41,64 @@ async function answer(page: Page, S: string) {
 
 for (const lang of ['zh', 'en'] as Lang[]) {
   const q = lang === 'en' ? '?lang=en' : '';
+  const home = async (page: Page) => {
+    await page.goto(q || './');
+    await page.locator(`html[data-si-ready="H.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
+    await expect(page.locator(`${act} .hm-door`)).toBeVisible();
+  };
+  test(`${lang} R27 first visit on the home page: slim welcome strip, doorways still on the first screen, header labels, no overlap; 7 coach marks on request`, async ({ page }) => {
+    await home(page);
+    const w = page.locator(`${act} .hm .ob-hw`);
+    await expect(w).toBeVisible({ timeout: 5000 });
+    expect(await page.evaluate(() => document.querySelector('.ob-hw')!.previousElementSibling?.classList.contains('hm-s'))).toBe(true);
+    if (lang === 'en') expect(CJK.test(await w.innerText())).toBe(false);
+    await expect(page.locator('.ob-bub')).toHaveCount(0); /* nothing pops up on its own */
+    await expect(page.locator('.ob-tl span:not([hidden])')).toHaveCount(6);
+    /* the first row of doorways is still on the first screen, and nothing overlaps */
+    const top = await page.locator(`${act} .hm-door .dr-m`).first().evaluate((e) => e.getBoundingClientRect().bottom);
+    expect(top).toBeLessThan(await page.evaluate(() => innerHeight - (document.getElementById('bnav')?.offsetHeight ?? 0)));
+    expect(await clean(page, `${act} .hm > *, ${act} .ob-hw > *, ${act} .hm-go > *, ${act} .hm-door .dr-m`)).toEqual([]);
+    for (const b of await page.locator('.ob-hw button').all()) expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(43);
+    await page.locator('.ob-hw [data-ob="onb-btns"]').click();
+    await expect(page.locator('.ob-hw')).toHaveCount(0);
+    for (let i = 0; i < 7; i++) {
+      const bub = page.locator('.ob-bub.coach');
+      await expect(bub).toBeVisible();
+      const bb = (await bub.boundingBox())!, vw = page.viewportSize()!.width;
+      expect(bb.x).toBeGreaterThanOrEqual(0); expect(bb.x + bb.width).toBeLessThanOrEqual(vw + 0.5);
+      if (lang === 'en') expect(CJK.test((await bub.innerText()).replace(/中/g, ''))).toBe(false);
+      await page.locator('.ob-bub.coach [data-ob="coach-next"]').click();
+    }
+    await expect(page.locator('.ob-bub')).toHaveCount(0);
+    expect(await page.evaluate(() => [localStorage.getItem('aiexp.v2.onb'), localStorage.getItem('aiexp.v2.coach'), localStorage.getItem('aiexp.v2.visited')])).toEqual(['1', '1', null]);
+    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-btns', 'coach-done']));
+  });
+  test(`${lang} R27 home strip: × dismisses it for good (reload), the menu brings it back; a returning visitor never sees it`, async ({ page }) => {
+    await home(page);
+    await page.locator('.ob-hw [data-ob="onb-x"]').click();
+    await expect(page.locator('.ob-hw')).toHaveCount(0);
+    await expect(page.locator('.ob-bub.coach')).toHaveCount(0);
+    await page.goto('about:blank'); await home(page); await page.waitForTimeout(600);
+    await expect(page.locator('.ob-wel, .ob-tl, .ob-bub.coach')).toHaveCount(0);
+    await page.locator('#mMenu').click();
+    await page.locator('#obDw').click();
+    await expect(page.locator(`${act} .ob-hw`)).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('aiexp.v2.visited'))).toBeNull(); /* home is never counted */
+  });
+  test(`${lang} R27 home strip: a doorway tap closes it and brings the coach marks on the zone`, async ({ page }) => {
+    await home(page);
+    await expect(page.locator('.ob-hw')).toBeVisible({ timeout: 5000 });
+    await page.locator(`${act} .hm-door [data-go="Job"]`).click();
+    await page.locator(`html[data-si-ready="Job.${lang}"]`).waitFor({ state: 'attached' });
+    await expect(page.locator('.ob-bub.coach')).toBeVisible({ timeout: 3000 });
+    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-door']));
+    expect(await page.evaluate(() => localStorage.getItem('aiexp.v2.onb'))).toBe('1');
+    await page.goto('about:blank'); await home(page); await page.waitForTimeout(600);
+    await expect(page.locator('.ob-hw')).toHaveCount(0);
+  });
   test(`${lang} first visit: welcome card on top, header labels, coach marks once, then never again`, async ({ page }) => {
-    await at(page, q, 'T1', lang);
+    // R27: the bare URL is the home page (its own welcome); a first visit straight onto a stop gets the welcome card
+    await at(page, q + '#T1', 'T1', lang);
     const w = page.locator(`${act} .ob-wel`);
     await expect(w).toBeVisible();
     await expect(w).toBeInViewport();
@@ -58,10 +114,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(await clean(page, `${act} .ob-wel .ob-b, ${act} .ob-wel .ob-x`)).toEqual([]);
     if (lang === 'en') expect(CJK.test((await w.innerText()) + (await page.locator('.ob-tl').innerText()))).toBe(false);
     // full route → coach marks: menu, prev/next, find/share/lang, signpost, the bottom bar (R22); each bubble inside the screen
-    // R25: on T1 the "I want to…" doorways stand in for the route picker; the 🧠 door's full-route chip picks the route
-    await expect(w.locator('.ob-rr')).toHaveCount(0);
-    await expect(w.locator('.m-door .dr')).toHaveCount(6);
-    await w.locator('[data-route="all"]').click();
+    // R27: the doorways moved to the home page, so the card offers the two routes again
+    await expect(w.locator('.ob-rr')).toHaveCount(1);
+    await expect(w.locator('.m-door')).toHaveCount(0);
+    await w.locator('[data-ob="onb-all"]').click();
     await expect(w).toHaveCount(0);
     for (let i = 0; i < 5; i++) {
       const b = page.locator('.ob-bub.coach');
@@ -74,12 +130,13 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await page.locator('[data-ob="coach-next"]').click();
     }
     await expect(page.locator('.ob-bub.coach')).toHaveCount(0);
-    // R25: the door took us to T2, where a one-time tip may follow the coach marks; only a tip may still mark a target
+    // a one-time tip may follow the coach marks; only a tip may still mark a target
     await expect.poll(() => page.evaluate(() => document.querySelectorAll('.ob-hl').length - (document.querySelector('.ob-bub.tip') ? 1 : 0))).toBeLessThanOrEqual(0);
-    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-door', 'coach-done']));
+    expect(await evs(page)).toEqual(expect.arrayContaining(['onb-show', 'onb-all', 'coach-done']));
     expect(await page.evaluate(() => [localStorage.getItem('aiexp.v2.onb'), localStorage.getItem('aiexp.v2.coach'), localStorage.getItem('aiexp.v2.route')])).toEqual(['1', '1', 'all']);
     // never again, not even on reload; labels gone too once you are not on a first visit
-    await at(page, q, 'T1', lang);
+    await page.goto('about:blank'); /* a real reload, not a hash change */
+    await at(page, q + '#T1', 'T1', lang);
     await page.waitForTimeout(400);
     await expect(page.locator('.ob-wel')).toHaveCount(0);
     await expect(page.locator('.ob-bub.coach')).toHaveCount(0);
@@ -87,7 +144,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   });
 
   test(`${lang} welcome: × closes and skips coach marks can be skipped; menu brings the card back`, async ({ page }) => {
-    await at(page, q, 'T1', lang);
+    await at(page, q + '#T1', 'T1', lang);
     await page.locator('[data-ob="onb-x"]').click();
     await expect(page.locator('.ob-wel')).toHaveCount(0);
     await expect(page.locator('.ob-bub.coach')).toBeVisible();
@@ -109,7 +166,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   });
 
   test(`${lang} welcome: the big button starts the 15-step tour; coach marks follow when it ends`, async ({ page }) => {
-    await at(page, q, 'T1', lang);
+    await at(page, q + '#T1', 'T1', lang);
     await page.locator('[data-ob="onb-tour"]').click();
     await expect(page.locator('#tour')).toBeVisible();
     await expect(page.locator('.ob-wel')).toHaveCount(0);
@@ -120,11 +177,11 @@ for (const lang of ['zh', 'en'] as Lang[]) {
   });
 
   test(`${lang} kids' route: 6 stops, route chip k/6, its lab, next stop on the route, after-quiz line`, async ({ page }) => {
-    await at(page, q, 'T1', lang);
-    // R25: the 🧠 door in the welcome card picks the kids' route (it starts on T1, so we stay here)
-    await page.locator(`${act} .ob-wel [data-route="kid"]`).click();
+    await at(page, q + '#T1', 'T1', lang);
+    // the welcome card's 🧒 button picks the kids' route (it starts on T1, so we stay here)
+    await page.locator(`${act} .ob-wel [data-ob="onb-kid"]`).click();
     await expect(page.locator(`${act} .ob-wel`)).toHaveCount(0);
-    await expect(page.locator(`${act} .m-door`)).toHaveCount(1);
+    await expect(page.locator(`${act} .m-door`)).toHaveCount(0);
     await page.locator('[data-ob="coach-skip"]').click();
     const row = page.locator(`${act} .ob-row`);
     await expect(row.locator('[data-ob="route"]')).toContainText(lang === 'zh' ? '路线 1/6' : '1/6');
@@ -183,6 +240,19 @@ test('full route: lab chip says how many labs, opens and starts the first; lit c
   await expect(page.locator(`${act} [data-ob="next"]`)).toContainText('神经网络');
   await page.locator(`${act} [data-ob="lit"]`).click();
   await expect(page.locator('#cardPanel')).toBeVisible();
+});
+
+test('R27 returning visitor on the home page: no strip, labels or coach marks', async ({ page }) => {
+  await page.addInitScript(() => { if (location.search.includes('ret')) localStorage.setItem('aiexp.v2.visited', '["T2"]'); });
+  await page.goto('./?ret=1');
+  await page.locator('html[data-si-ready="H.zh"]').waitFor({ state: 'attached', timeout: 15_000 });
+  await page.waitForTimeout(800);
+  await expect(page.locator('.ob-wel, .ob-tl, .ob-bub.coach')).toHaveCount(0);
+});
+test('R27 old hash link on a fresh profile: the stop gets the R21 welcome card, not the home strip', async ({ page }) => {
+  await at(page, '#T4a', 'T4a', 'zh');
+  await expect(page.locator(`${act} .ob-wel`)).toBeVisible();
+  await expect(page.locator('.ob-hw')).toHaveCount(0);
 });
 
 test('nothing new on a returning visit: no welcome card, labels or coach marks', async ({ page }) => {

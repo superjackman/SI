@@ -72,7 +72,7 @@ export function buildSeo({ web, base, lastmod } = {}) {
   const abs = (p) => ORIGIN + base + p;
   const pagePath = (S, L) => (L === 'en' ? 'en/' : '') + `s/${S}/`;
   const catPath = (L) => (L === 'en' ? 'en/' : '') + 's/';
-  const appHref = (S, L) => base + (L === 'en' ? '?lang=en' : '') + '#' + S;
+  const appHref = (S, L) => base + (L === 'en' ? '?lang=en' : '') + (S === 'H' ? '' : '#' + S); /* R27: the app's home page is the bare URL */
   const CSS = 'body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}'
     + 'header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}'
     + 'a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}'
@@ -128,7 +128,7 @@ ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
       if (!desc || [...descs.values()].includes(desc)) desc = clip(`${nm}: ${desc || r.plain[0] || ''}`, L === 'zh' ? 110 : 160);
       descs.set(`${L}:${S}`, desc);
       const path = pagePath(S, L), alt = { zh: pagePath(S, 'zh'), en: pagePath(S, 'en') };
-      const trail = [[T[L].home, L === 'en' ? '?lang=en' : ''], [T[L].cat, catPath(L)], ...kb.PATH[S].filter((x) => x !== S && x !== 'T1').map((x) => [name(x, L), pagePath(x, L)]), [nm, path]];
+      const trail = [[T[L].home, L === 'en' ? '?lang=en' : ''], [T[L].cat, catPath(L)], ...kb.PATH[S].filter((x) => x !== S && x !== 'H').map((x) => [name(x, L), pagePath(x, L)]), [nm, path]];
       const ld = { '@context': 'https://schema.org', '@graph': [website(L),
         { '@type': 'LearningResource', '@id': abs(path) + '#lesson', name: nm, headline: title, description: desc, url: abs(path), inLanguage: HL[L],
           learningResourceType: L === 'zh' ? '图解课程' : 'illustrated lesson', educationalLevel: L === 'zh' ? '入门' : 'beginner', isAccessibleForFree: true,
@@ -152,7 +152,7 @@ ${allList(L, S)}</main>
       { '@type': 'ItemList', itemListElement: ORDER.map((S, k) => ({ '@type': 'ListItem', position: k + 1, name: name(S, L), url: abs(pagePath(S, L)) })) },
       crumbs([[T[L].home, L === 'en' ? '?lang=en' : ''], [T[L].cat, path]])] };
     files.set(path + 'index.html', head({ L, title, desc: T[L].catD, path, alt, type: 'website', ld })
-      + `<main>\n<h1>${esc(T[L].catT(N))}</h1>\n<p>${esc(T[L].catD)}</p>\n<p class="open"><a href="${appHref('T1', L)}">${T[L].open}</a></p>\n<ol>${ORDER.map((S) => `<li><a href="${base}${pagePath(S, L)}"><b>${esc(name(S, L))}</b></a> — ${esc(descs.get(`${L}:${S}`))}</li>`).join('')}</ol>\n</main>\n` + foot(L));
+      + `<main>\n<h1>${esc(T[L].catT(N))}</h1>\n<p>${esc(T[L].catD)}</p>\n<p class="open"><a href="${appHref('H', L)}">${T[L].open}</a></p>\n<ol>${ORDER.map((S) => `<li><a href="${base}${pagePath(S, L)}"><b>${esc(name(S, L))}</b></a> — ${esc(descs.get(`${L}:${S}`))}</li>`).join('')}</ol>\n</main>\n` + foot(L));
     pages.push({ path, alt, lastmod: ORDER.map((S) => lm(S)).sort().at(-1) });
   }
   const newest = pages.map((p) => p.lastmod).sort().at(-1);

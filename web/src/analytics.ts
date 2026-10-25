@@ -6,7 +6,7 @@ import type { Lang } from './i18n/types';
 const GC_COUNT = 'https://superjackman-si.goatcounter.com/count';
 let last = '';
 let ref = typeof document !== 'undefined' ? document.referrer : '';
-export function pathFor(lang: Lang, station: string): string { return '/' + lang + '/' + (station === 'T1' ? 'home' : station); }
+export function pathFor(lang: Lang, station: string): string { return '/' + lang + '/' + (station === 'H' ? 'home' : station); }
 /* R19 source tag of the landing: ?from=wechat (share links) or a manual ?from=zhihu / xhs / v2ex / bilibili on a post.
    Read once when this chunk loads (after 'load', so content never waits), then taken out of the address bar
    (history.replaceState; hash route, ?lang and ?v untouched) so a reload or a copied address bar does not count it again.

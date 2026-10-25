@@ -45,7 +45,7 @@ export function nextStop(S: string, r: Route, lit: (s: string) => boolean): stri
     if (i >= 0) return ROUTE_S[i + 1] ?? null;
     return ROUTE_S.find((s) => !lit(s)) ?? ROUTE_S[0]!;
   }
-  const i = TABORDER.indexOf(S); return i >= 0 ? TABORDER[i + 1] ?? null : null;
+  const i = TABORDER.indexOf(S); return TABORDER[i + 1] ?? null; /* from the home page H (not a numbered stop): the first stop */
 }
 /** the hands-on parts of a stop: its labs (T1 has none, but its 🎬 walk-through demo plays the same role) */
 export const labsOf = (sec: ParentNode): HTMLElement[] => {
@@ -115,19 +115,28 @@ function bubble(targets: Element[], html: string, acts: HTMLElement[], cls = '',
 }
 
 /* ---- coach marks (header) ---- */
-const STEPS: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4'], ['#bnav', 'c5']];
+const STEPS0: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4'], ['#bnav', 'c5']];
+/** R27+: the home page's coach marks: what this is → where to start (🎬 / 🧒) → the six doorways → header (menu, change stop/swipe, find/share/lang) → bottom row */
+export const HSTEPS: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-go', 'h2'], ['.hm-door .dr-g', 'h3'], ['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#bnav', 'h5']];
+/** which first-visit card a page shows: the home page its slim strip, a stop the R21 card; none on a friend's link
+    (its banner is why they came), during the tour, once dismissed, or after the first page of the visit */
+export function welcomeKind(S: string, fresh: boolean, first: string | null, onb: string | null, tourOn: boolean, banner: boolean): 'home' | 'stop' | null {
+  if (!fresh || S !== first || onb || tourOn || banner) return null;
+  return S === 'H' ? 'home' : 'stop';
+}
 const shown = (e: Element | null): e is HTMLElement => !!e && (e as HTMLElement).getClientRects().length > 0;
 let coachOn = false;
-export function coach(L: Lang, i = 0) {
+export function coach(L: Lang, i = 0, STEPS = STEPS0) {
   if (st().tour != null) return;
   if (i >= STEPS.length) { killBub(); coachOn = false; LSset(K.coach, '1'); ev('coach-done'); tipsKick(); return; }
   const [q, k] = STEPS[i]!, ts = q.split(',').map((s) => document.querySelector(s)).filter(shown);
-  if (!ts.length) { coach(L, i + 1); return; }
+  if (!ts.length) { coach(L, i + 1, STEPS); return; }
   coachOn = true;
   if (i === STEPS.length - 1 && scrollY > 0) window.scrollTo({ top: 0 });
+  else if (STEPS !== STEPS0 && !ts[0]!.closest('#topbar,#bnav')) { const r = ts[0]!.getBoundingClientRect(); if (r.top < 60 || r.top > innerHeight * 0.6) window.scrollTo({ top: Math.max(0, scrollY + r.top - 90) }); }
   const skip = btn('ob-b', O.cSkip[L], () => { killBub(); coachOn = false; LSset(K.coach, '1'); ev('coach-skip'); tipsKick(); }, 'coach-skip');
   const last = i === STEPS.length - 1;
-  const nx = btn('ob-b pri', last ? O.cOk[L] : O.cNext[L] + ` (${i + 1}/${STEPS.length})`, () => coach(L, i + 1), 'coach-next');
+  const nx = btn('ob-b pri', last ? O.cOk[L] : O.cNext[L] + ` (${i + 1}/${STEPS.length})`, () => coach(L, i + 1, STEPS), 'coach-next');
   bubble(ts, O[k][L], last ? [nx] : [skip, nx], 'coach', () => { coachOn = false; });
   requestAnimationFrame(() => nx.focus({ preventScroll: true }));
 }
@@ -224,6 +233,20 @@ function welcome(sec: HTMLElement, S: string, L: Lang, again = false) {
   }
 }
 
+/* ---- R27+: the home page's first-visit strip (one slim row under the one-liner; the doorways stay on the first screen) ---- */
+function homeWelcome(sec: HTMLElement, L: Lang, again = false) {
+  sec.querySelector('.ob-wel')?.remove();
+  const c = el('section', 'ob-wel ob-hw'); c.setAttribute('aria-labelledby', 'obHwT');
+  const p = el('p', 'ob-hwt', O.hwT[L]); p.id = 'obHwT';
+  const x = btn('vr-x ob-x', '', () => done('x'), 'onb-x'); x.innerHTML = IC.x; x.setAttribute('aria-label', O.hwClose[L]); x.title = O.hwClose[L];
+  const go1 = btn('ob-b pri', O.hwGo[L], () => { done('btns'); window.scrollTo({ top: 0 }); coach(L, 0, HSTEPS); }, 'onb-btns');
+  c.append(p, x, go1);
+  const at = sec.querySelector('.hm-s'); if (at) at.after(c); else sec.prepend(c);
+  ev(again ? 'onb-reopen' : 'onb-show');
+  function done(how: string) { LSset(K.onb, '1'); ev('onb-' + how); c.remove(); if (how === 'x') tipsKick(); }
+  return c;
+}
+
 /* ---- the row under the plain opening + the line after the quiz ---- */
 function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: () => void } {
   /* chips right under the page head (above the 🧒 opening); the next-stop link right after the 🧒 opening */
@@ -299,7 +322,7 @@ function dwEntry(L: Lang) {
   const d = document.getElementById('mDrawer'); if (!d) return;
   let b = document.getElementById('obDw') as HTMLButtonElement | null;
   if (!b) {
-    b = btn('ob-dw', '', () => closeDrawer(() => { const c = cur; if (!c) return; welcome(c.sec, c.S, c.L, true); window.scrollTo({ top: 0 }); }), 'onb-menu');
+    b = btn('ob-dw', '', () => closeDrawer(() => { const c = cur; if (!c) return; if (c.S === 'H') homeWelcome(c.sec, c.L, true); else welcome(c.sec, c.S, c.L, true); window.scrollTo({ top: 0 }); }), 'onb-menu');
     b.id = 'obDw';
     const h = d.querySelector('.dw-head'); if (h) h.after(b); else d.prepend(b);
   }
@@ -308,15 +331,21 @@ function dwEntry(L: Lang) {
 
 export function mountOnboard(sec: HTMLElement, S: string, L: Lang): () => void {
   if (fresh === null) { fresh = isFresh(S, visited(), LS(K.quiz), LS(K.onb), LS(K.tour)); first = S; }
-  const R = rows(sec, S, L);
+  /* R27: no route row on the home page H (it has its own first-visit strip, homeWelcome) */
+  const R = S === 'H' ? { draw: () => undefined, off: () => undefined } : rows(sec, S, L);
   cur = { sec, S, L, draw: R.draw };
   dwEntry(L);
   const crumb = document.querySelector<HTMLElement>('#crumb .chips'); if (crumb) crumb.dataset.ob = O.crumb[L];
   /* arriving on a friend's link (challenge / lab banner): the banner is why they came — no welcome card on top of it
      (the ☰ entry still has it), only the header labels */
-  if (fresh && S === first) { if (!LS(K.onb) && st().tour == null && !sec.querySelector('.vr-ban')) welcome(sec, S, L); hdrLabels(L); } else hlOff?.();
+  const wk = welcomeKind(S, !!fresh, first, LS(K.onb), st().tour != null, !!sec.querySelector('.vr-ban'));
+  if (wk === 'home') homeWelcome(sec, L); else if (wk === 'stop') welcome(sec, S, L);
+  if (fresh && S === first) hdrLabels(L); else hlOff?.();
+  /* R27: a first visitor on the home page gets the coach marks once they pick a doorway or the kids' route (the 🎬 tour has its own hook below) */
+  const hd = (e: Event) => { if (!(e.target as Element).closest?.('.hm-door button, .hm-go [data-route]')) return; sec.removeEventListener('click', hd); sec.querySelector('.ob-hw')?.remove(); LSset(K.onb, '1'); if (LS(K.coach)) return; ev('onb-door'); setTimeout(() => coachOnce(cur?.L ?? L), 600); };
+  if (S === 'H' && fresh && S === first && !LS(K.onb)) sec.addEventListener('click', hd);
   const offT = tips(sec, L);
   /* coach marks after the tour (started from the welcome card or the menu) ends */
   const unsub = useApp.subscribe((s, p) => { if (p.tour != null && s.tour == null && fresh) setTimeout(() => coachOnce(cur?.L ?? L), 400); if (s.tour != null) { const w = sec.querySelector('.ob-wel'); if (w) { LSset(K.onb, '1'); doorBack(); w.remove(); } killBub(); } });
-  return () => { unsub(); offT(); R.off(); doorBack(); sec.querySelector('.ob-wel')?.remove(); if (bub?.el.classList.contains('tip')) killBub(); if (bub && !document.body.contains(bub.el)) bub = null; if (cur?.sec === sec) cur = null; };
+  return () => { sec.removeEventListener('click', hd); unsub(); offT(); R.off(); doorBack(); sec.querySelector('.ob-wel')?.remove(); if (bub?.el.classList.contains('tip')) killBub(); if (bub && !document.body.contains(bub.el)) bub = null; if (cur?.sec === sec) cur = null; };
 }

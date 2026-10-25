@@ -20,7 +20,8 @@ export const STATIONS: Record<string, Bi> = {
   Skl: { zh: '给 AI 装技能', en: 'Add skills to AI' },
   Bld: { zh: '自己搭 Agent', en: 'Build an agent' },
 };
-export const PATHS: Record<string, string[]> = { U: ['T1', 'U'], Ua: ['T1', 'U', 'Ua'], Ub: ['T1', 'U', 'Ub'], Uc: ['T1', 'U', 'Uc'], Ud: ['T1', 'U', 'Ud'], Up: ['T1', 'U', 'Up'], Api: ['T1', 'Api'], Loc: ['T1', 'Loc'], Job: ['T1', 'Job'], Skl: ['T1', 'Skl'], Bld: ['T1', 'Bld'] };
+/* R27: the zones hang off the home page (build.ts puts H in front of every path), not off T1 */
+export const PATHS: Record<string, string[]> = { U: ['U'], Ua: ['U', 'Ua'], Ub: ['U', 'Ub'], Uc: ['U', 'Uc'], Ud: ['U', 'Ud'], Up: ['U', 'Up'], Api: ['Api'], Loc: ['Loc'], Job: ['Job'], Skl: ['Skl'], Bld: ['Bld'] };
 
 const tryPick = (t: T): [string, string, string] => ['labPick', 'U', t('🧪 帮我选用法（怎么用 Agent）', '🧪 Pick a way to use it (Using agents)')];
 const trySess = (t: T): [string, string, string] => ['labSession', 'Ua', t('🧪 一次编程会话（跟它一起干）', '🧪 A coding session (Work alongside it)')];

@@ -19,7 +19,8 @@ export function Crumb() {
   const top = useApp.getState().drill.at(-1);
   const bl = top && canBack() ? t('nav.backTo') + tabn(top.from, lang) : null;
   return (
-    <div className="crumb" id="crumb">
+    /* R27: the home page is the top layer: no trail (its doorways are the ↓ links) */
+    <div className="crumb" id="crumb" style={S === 'H' && !bl ? { display: 'none' } : undefined}>
       <div className="chips" role="navigation" aria-label={t('nav.crumb')}>
         {bl ? <><button type="button" className="cb-back" data-dback="" aria-label={bl} title={bl} {...svgHtml('back')} /><i className="sep" aria-hidden="true">|</i></> : null}
         {p.map((k, i) => {
@@ -119,6 +120,11 @@ export function Drawer() {
         <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
         <div className="dw-prog" aria-hidden="true"><i id="dwProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div>
         <nav id="dwList" aria-label={tx({ zh: '站点：远看 → 细看', en: 'Stops: macro → micro' })}>
+          {/* R27: the home page sits above the numbered stops */}
+          <div className="dw-g dw-home"><ul><li><button type="button" className={'dw-it' + (S === 'H' ? ' on' : '')} data-dw="H" aria-current={S === 'H' ? 'page' : undefined} aria-label={tabn('H', lang) + (S === 'H' ? t('nav.current') : '')}
+            onClick={() => closeDrawer(() => { if (useApp.getState().station !== 'H') go('H'); else window.scrollTo({ top: 0, behavior: 'smooth' }); })}>
+            <span className="dw-n" aria-hidden="true" /><i aria-hidden="true">{ICON.H}</i><b>{tabn('H', lang)}</b><span className="dw-s" aria-hidden="true">{S === 'H' ? '●' : ''}</span>
+          </button></li></ul></div>
           {GRP.map(([ic, name, ks]) => {
             const seen = ks.filter((k) => v.includes(k)).length, base = Math.min(...ks.map((k) => PATH[k]?.length ?? 0));
             return (
@@ -155,6 +161,9 @@ export function Drawer() {
           <div className="dw-row">
             <button type="button" className="dw-act" id="dwSearch" aria-label={t('search.parts')} onClick={() => closeDrawer(() => set({ searchOpen: true }))}><i {...svgHtml('search')} /><span>{t('dw.search')}</span></button>
             <button type="button" className={'dw-act' + (touring ? ' on' : '')} id="mTour" aria-pressed={touring} aria-label={t(touring ? 'tour.exit' : 'tour.start')} onClick={() => closeDrawer(mTourClick)}><i aria-hidden="true">🎬</i><span>{t(touring ? 'tour.exit' : 'tour.tour')}</span></button>
+          </div>
+          <div className="dw-row">
+            <button type="button" className="dw-act" id="dwShare" onClick={() => closeDrawer(openShare)}><i aria-hidden="true">📣</i><span>{tx(S === 'H' ? { zh: '分享本站', en: 'Share this site' } : { zh: '分享这一页', en: 'Share this page' })}</span></button>
           </div>
         </div>
       </aside>

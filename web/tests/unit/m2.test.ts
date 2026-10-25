@@ -229,7 +229,7 @@ describe('M3 products (Up)', () => {
   it('every way part exists in kb, and the stop sits under U after Ud', () => {
     for (const g of GROUPS) expect(part(g), g).toBeTruthy();
     expect(TABORDER.indexOf('Up')).toBe(TABORDER.indexOf('Ud') + 1);
-    expect(KB.PATH.Up).toEqual(['T1', 'U', 'Up']);
+    expect(KB.PATH.Up).toEqual(['H', 'U', 'Up']);
     expect(GROUP.Up).toBe('more');
     expect(isStation('Up')).toBe(true);
   });

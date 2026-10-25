@@ -157,6 +157,7 @@ test.describe('share the current page', () => {
 
   test('scrolled down: the link carries the card in view, and opening it lands on that card', async ({ page, browser }) => {
     await page.goto('./?lang=zh#T1'); await ready(page, 'T1', 'zh');
+    await page.locator('section.level.active[data-late]').waitFor({ state: 'attached' }); /* R27: late blocks in first, so nothing shifts after the scroll */
     const id = await page.evaluate(() => {
       const cs = [...document.querySelectorAll<HTMLElement>('section#T1 .card[id]')].filter((c) => !c.parentElement?.closest('.card') && c.getClientRects().length);
       const c = cs[Math.min(3, cs.length - 1)]!; window.scrollTo(0, c.getBoundingClientRect().top + window.pageYOffset - 80); return c.id;

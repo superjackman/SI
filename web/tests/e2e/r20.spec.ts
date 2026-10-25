@@ -117,7 +117,7 @@ test('progress card + certificate: the rule is stated, the map fits, the certifi
   expect(await img.evaluate((i: HTMLImageElement) => [i.naturalWidth, i.naturalHeight, i.dataset.fit, i.dataset.lit, i.dataset.cert])).toEqual([1080, 1920, '1', '15', '0']);
   await expect(page.locator('#cardPanel')).toContainText('点亮规则：打开过这一站，并做完它的小测');
   await expect(page.locator('#cardPanel [data-act=cert]')).toHaveCount(0);
-  expect(await qrText(page)).toMatch(/\/\?lang=zh&from=progress#T1$/);
+  expect(await qrText(page)).toMatch(/\/\?lang=zh&from=progress$/) /* R27: the home page is the bare URL */;
   await page.keyboard.press('Escape');
   for (const L of ['en', 'zh'] as Lang[]) {
     await at(page, `./?lang=${L}#T1`, 'T1', L);
@@ -136,7 +136,7 @@ test('progress card + certificate: the rule is stated, the map fits, the certifi
   await page.fill('#cpName', '李小辉<b>'); await page.locator('#cpName').press('Enter');
   await expect.poll(() => page.evaluate(() => localStorage.getItem('si.name'))).toBe('李小辉b');
   await expect(cert).toHaveAttribute('data-fit', '1');
-  expect(await qrText(page)).toMatch(/from=cert#T1$/);
+  expect(await qrText(page)).toMatch(/\/\?lang=zh&from=cert$/);
   expect(await page.evaluate(() => localStorage.getItem('si.done'))).toMatch(/^\d{4}-\d\d-\d\d$/);
 });
 

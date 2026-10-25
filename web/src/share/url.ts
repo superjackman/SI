@@ -22,7 +22,7 @@ export function shareURL(loc: Loc, lang: string, route?: { station: string; node
   const q = loc.search.replace(/^\?/, '').split('&').filter((p) => p && !OURS.test(p));
   q.push('lang=' + lang);
   let h = loc.hash;
-  if (route) h = '#' + route.station + (route.node ? '/' + route.node : '');
+  if (route) h = route.station === 'H' && !route.node ? '#' : '#' + route.station + (route.node ? '/' + route.node : ''); /* R27: the home page is the bare URL */
   else h = h.replace(/([&?;])lang=[^&?;#]*/gi, '').replace(/^#lang=[^&?;#]*[&?;]?/i, '#');
   return loc.origin + loc.pathname + '?' + q.join('&') + (h === '#' ? '' : h);
 }

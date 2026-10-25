@@ -19,6 +19,7 @@ export function hashFor(station: string, lang: string, currentHash: string): str
 /** R19: URL to write on navigation — the hash route, and a from= tag found in the hash (#T3?from=zhihu, #T3&from=x)
     moved into the query (?from=zhihu#T3) instead of dropped, so the landing's source tag survives the rewrite */
 export function navURL(loc: { pathname: string; search: string; hash: string }, station: string, lang: string): string {
-  const h = hashFor(station, lang, loc.hash), m = /[?&#;/!]from=([\w-]+)/i.exec(loc.hash);
-  return m && !/[?&]from=/i.test(loc.search) ? loc.pathname + (loc.search ? loc.search + '&' : '?') + 'from=' + m[1] + h : h;
+  /* R27: the home page H is the bare address (no route in the hash; a hash lang token is kept) */
+  const h = station === 'H' ? hashFor('', lang, loc.hash).replace(/^#&/, '#').replace(/^#$/, '') : hashFor(station, lang, loc.hash), m = /[?&#;/!]from=([\w-]+)/i.exec(loc.hash);
+  return m && !/[?&]from=/i.test(loc.search) ? loc.pathname + (loc.search ? loc.search + '&' : '?') + 'from=' + m[1] + h : station === 'H' ? loc.pathname + loc.search + h : h;
 }

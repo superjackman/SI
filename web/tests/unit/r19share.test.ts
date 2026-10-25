@@ -66,6 +66,10 @@ describe('router ignores from=', () => {
     expect(N('?from=a', '#T3?from=b')).toBe('#T3'); // the query tag wins
     expect(N('', '#T4', 'T4')).toBe('#T4');
     expect(N('', '#T4&lang=en', 'T5')).toBe('#T5&lang=zh');
+    /* R27: the home page is the bare address */
+    expect(N('?lang=zh', '#T4', 'H')).toBe('/SI/?lang=zh');
+    expect(N('', '#T4&lang=en', 'H')).toBe('/SI/#lang=zh');
+    expect(N('', '#T3?from=zhihu', 'H')).toBe('/SI/?from=zhihu');
   });
 });
 

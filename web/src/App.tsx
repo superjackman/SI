@@ -1,9 +1,8 @@
-import { lazy, Suspense, useEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { NO } from './boot/noswipe';
 import { TopBar } from './shell/TopBar';
-import { BackFab, Crumb, Dock, Drawer, Toast } from './shell/Nav';
-import { Popup } from './shell/Popup';
-import { Fullscreen } from './shell/Fullscreen';
+import { BackFab, Crumb, Dock, Drawer, Toast, openShare } from './shell/Nav';
+import { openDrawer } from './shell/drawer';
 import { StationView, preload } from './station/StationView';
 import { useApp, initialNode } from './store/app';
 import { fromURL, htmlLang } from './i18n/lang';
@@ -18,6 +17,10 @@ import { startTour, tourStep, endTour } from './tour/api';
 /** a card element id from a shared link (#S/<id>); scrollToEl ignores ids that are not on the page */
 const cardId = (n: string) => /^[A-Za-z][\w-]{0,79}$/.test(n);
 const Tour = lazy(() => import('./tour/Tour'));
+/* R27: the card popup and the full-screen diagram are lazy chunks, mounted on first use and kept mounted after */
+const Popup = lazy(() => import('./shell/Popup').then((m) => ({ default: m.Popup })));
+const Fullscreen = lazy(() => import('./shell/Fullscreen').then((m) => ({ default: m.Fullscreen })));
+function useOnce(on: boolean) { const [m, setM] = useState(on); useEffect(() => { if (on) setM(true); }, [on]); return m || on; }
 /** 🔥 training mode on a Transformer stop: mount the lazy training panel after the diagram */
 function syncTrain() {
   const s = useApp.getState();
@@ -36,6 +39,15 @@ function onDocClickCapture(e: MouseEvent) {
   /* live: zoom-note buttons and 🎬 start buttons are capture-phase too */
   const zs = t.closest<HTMLElement>('[data-zset]'); if (zs) { setZoom(+(zs.dataset.zset ?? 3) as 1 | 2 | 3); return; }
   const tb = t.closest<HTMLElement>('[data-tour]'); if (tb) { startTour(); return; }
+  /* R27: the home page's share card and its "go deeper" links */
+  const hm = t.closest<HTMLElement>('[data-hm]')?.dataset.hm;
+  if (hm) {
+    if (hm === 'share') openShare();
+    else if (hm === 'poster') void import('./viral/cards').then((m) => m.openProgress(), () => toast(tx('st.loadfail', useApp.getState().lang)));
+    else if (hm === 'drawer') openDrawer();
+    else if (hm === 'search') useApp.getState().set({ searchOpen: true });
+    return;
+  }
 }
 function onDocClick(e: MouseEvent) {
   const t = e.target as Element | null; if (!t || !t.closest) return;
@@ -75,6 +87,8 @@ function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     if (s.searchOpen) s.set({ searchOpen: false }); else if (s.sheetOpen) s.set({ sheetOpen: false });
     else if (s.tour != null && !s.popup && !s.full && !s.drawerOpen) endTour(false);
+    /* R27: Esc pressed while the lazy card popup is still loading (its own key handler not there yet) still closes it */
+    else if (s.popup && !s.full && !document.querySelector('#modal.open')) closeInfo();
     return;
   }
   /* ← → step the tour while it is on (live stepPage), not while typing or in a layer */
@@ -89,6 +103,7 @@ export function App() {
     document.title = tx('doc.prefix', lang) + tabn(S, lang) + tx('doc.suffix', lang);
     document.body.dataset.page = S;
   }, [lang, S]);
+  const popM = useOnce(useApp((s) => s.popup != null)), fsM = useOnce(useApp((s) => s.full != null));
   const mode = useApp((s) => s.mode), touring = useApp((s) => s.tour != null);
   useEffect(() => { const c = document.body.classList; c.toggle('mode-use', mode === 'use'); c.toggle('mode-train', mode === 'train'); syncTrain(); }, [mode]);
   useEffect(() => { document.body.classList.toggle('in-T4', S.startsWith('T4')); }, [S]);
@@ -153,11 +168,11 @@ export function App() {
         <footer dangerouslySetInnerHTML={{ __html: footer[lang] }} />
       </div>
       <Dock />
-      <Fullscreen />
+      {fsM ? <Suspense fallback={null}><Fullscreen /></Suspense> : null}
       <Drawer />
       <BackFab />
       <Toast />
-      <Popup />
+      {popM ? <Suspense fallback={null}><Popup /></Suspense> : null}
       {touring ? <Suspense fallback={null}><Tour /></Suspense> : null}
     </>
   );

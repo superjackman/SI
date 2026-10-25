@@ -234,11 +234,25 @@ details.deep[open]>summary .ic{transform:none}
 #bnav .ic{width:22px;height:22px;vertical-align:top}
 #bnav [data-bn=next]{color:#4338ca;font-weight:700}
 .dw-it b{white-space:normal;overflow-wrap:anywhere;line-height:1.25;padding:2px 0}.dw-act span{white-space:normal;text-overflow:clip;line-height:1.2;text-align:center}
-/* R25: T1 "I want to…" doorways (m2/build.ts); also shown inside the first-visit welcome card */
-.m-door{margin:.5em 0 .8em}.m-door .dr-h{margin:0 0 .4em;font-weight:700;font-size:.95em}
+/* R27 home page H (m2/build.ts): one line, 🎬 + 🧒, six "I want to…" doorways, share card, folded "how to browse" */
+.hm{padding:.4em 0 .2em}.hm-t{margin:.1em 0 .2em;font-size:1.45em;line-height:1.25;color:#1e1b4b}.hm-s{margin:0 0 .7em;color:#475569;line-height:1.5}
+.hm-go,.hm-shb,.hm-all{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.hm-b{font:inherit;font-size:.92em;min-height:44px;padding:8px 14px;border-radius:12px;border:1px solid #c7d2fe;background:#fff;color:#3730a3;cursor:pointer;line-height:1.3;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.hm-b.pri{background:#4f46e5;border-color:#4f46e5;color:#fff;font-weight:700}.hm-b.kid{background:#fef3c7;border-color:#fcd34d;color:#92400e;font-weight:600}
+.hm-b:focus-visible,.m-zone button:focus-visible,.rm-rt button:focus-visible,.rm-s:focus-visible{outline:2px solid #4f46e5;outline-offset:2px}
+.m-door{margin:.9em 0}.m-door .dr-h{margin:0 0 .45em;font-weight:700;font-size:.95em}
 .dr-g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media(min-width:620px){.dr-g{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.dr{border:1px solid #c7d2fe;background:#eef2ff;border-radius:12px;padding:8px;min-width:0;display:flex;flex-direction:column;gap:6px}
-.dr-m{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;min-width:0;overflow-wrap:anywhere;line-height:1.35}button.dr-m{cursor:pointer}button.dr-m:focus-visible{outline:2px solid #4f46e5;outline-offset:2px;border-radius:6px}
-.dr-i{font-size:1.35em;line-height:1}.dr-m b{font-size:.93em;color:#1e1b4b}.dr-s,.dr-to{font-size:.78em;color:#475569}.dr-to{color:#4338ca;font-weight:600}
-.dr-c{display:flex;flex-wrap:wrap;gap:4px;margin:0}.dr-c button{font:inherit;font-size:.76em;line-height:1.3;padding:4px 7px;border-radius:999px;border:1px solid #a5b4fc;background:#fff;color:#3730a3;cursor:pointer;min-height:28px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+.dr-m{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:3px;min-width:0;min-height:44px;overflow-wrap:anywhere;line-height:1.35;border:1px solid #c7d2fe;background:#eef2ff;border-radius:12px;padding:10px}button.dr-m{cursor:pointer}button.dr-m:focus-visible{outline:2px solid #4f46e5;outline-offset:2px}
+.dr-i{font-size:1.35em;line-height:1}.dr-m b{font-size:.93em;color:#1e1b4b}.dr-s{font-size:.78em;color:#475569}
 .ob-wel .m-door{margin:.6em 0 .4em}
+.hm-sh{margin:.9em 0;padding:10px 12px;border-radius:12px;background:#f0fdf4;border:1px solid #bbf7d0}.hm-h{margin:0 0 .45em;font-weight:700}.hm-nt{margin:.45em 0 0;font-size:.82em;color:#475569}
+.hm-more{margin:.9em 0 .4em;border:1px solid #e2e8f0;border-radius:12px;padding:0 12px}.hm-more>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:#334155}.hm-mb{padding:0 0 10px}
+.hm-lv{list-style:none;margin:0 0 .5em;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.hm-lv li{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:6px 4px;border-radius:10px;background:#f8fafc;min-width:0;overflow-wrap:anywhere}.hm-lv li.on{background:#e0e7ff}.hm-lv small{font-size:.75em;color:#475569}
+/* R27 level strip on every stop: where am I (layer 2 zone / layer 3 detail), ⬆ up one layer, ⬇ drill down */
+.m-zone{margin:.2em 0 .6em;font-size:.88em}.mz-r,.mz-dn{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 .3em}.mz-lv{font-weight:700;color:#4338ca;padding:2px 8px;border-radius:999px;background:#eef2ff}.m-zone.z3 .mz-lv{color:#0f766e;background:#f0fdfa}
+.mz-r button,.mz-dn button,.rm-rt button{font:inherit;min-height:44px;padding:6px 12px;border-radius:999px;border:1px solid #c7d2fe;background:#fff;color:#3730a3;cursor:pointer;max-width:100%;overflow-wrap:anywhere;text-align:left;line-height:1.25}.mz-dn button,.rm-rt button{background:#eef2ff}
+/* R27 T1 route map */
+.m-rmap{margin:.6em 0 1em;padding:10px 12px;border:1px solid #c7d2fe;border-radius:12px;background:#fafaff}.rm-h{margin:0 0 .3em;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.rm-c{font-size:.8em;padding:1px 8px;border-radius:999px;background:#e0e7ff;color:#3730a3}.rm-tip{margin:0 0 .5em;font-size:.84em;color:#475569}
+.rm-g{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.rm-gh{margin:0 0 4px;font-size:.86em;font-weight:700;color:#334155}.rm-ss{display:flex;flex-wrap:wrap;gap:6px}
+.rm-s{font:inherit;font-size:.86em;min-height:44px;padding:6px 10px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#1e293b;cursor:pointer;display:inline-flex;align-items:center;gap:5px;max-width:100%;overflow-wrap:anywhere;text-align:left}.rm-n{font-size:.78em;min-width:1.6em;height:1.6em;border-radius:999px;background:#e2e8f0;display:inline-flex;align-items:center;justify-content:center}
+.rm-s.v{border-color:#86efac;background:#f0fdf4}.rm-s.v .rm-n{background:#16a34a;color:#fff}.rm-rt{display:flex;flex-wrap:wrap;gap:8px;margin:.6em 0 0}

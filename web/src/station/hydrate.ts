@@ -86,6 +86,17 @@ export function setupViewers(sec: HTMLElement): Viewer[] {
   return out;
 }
 export interface Hydrated { islands: Islands | null; dispose(): void }
+/** R27: the principles route map (T1) lights the stops already visited and counts them */
+export function markRmap(root: ParentNode): () => void {
+  const m = root.querySelector<HTMLElement>('.m-rmap'); if (!m) return () => undefined;
+  const upd = () => {
+    const v = visited(), b = [...m.querySelectorAll<HTMLElement>('.rm-s[data-rm]')];
+    let n = 0; b.forEach((e) => { const on = v.includes(e.dataset.rm ?? ''); e.classList.toggle('v', on); if (on) n++; });
+    m.querySelectorAll<HTMLElement>('[data-rmc]').forEach((c) => { c.textContent = n + '/' + b.length; });
+  };
+  upd(); document.addEventListener('si-progress', upd);
+  return () => document.removeEventListener('si-progress', upd);
+}
 export async function hydrate(sec: HTMLElement, S: string, lang: Lang, alive: () => boolean): Promise<Hydrated> {
   restoreTags(sec);
   renumber(sec, S, lang);
@@ -105,8 +116,9 @@ export async function hydrate(sec: HTMLElement, S: string, lang: Lang, alive: ()
   });
   if (!alive()) { quiz(); islands?.dispose(); vs.forEach((v) => v.destroy()); return { islands: null, dispose() {} }; }
   const prog = mountProgress(sec, S, lang);
+  const rm = markRmap(sec);
   /* R18 scrubber + R19/R20 share buttons, challenge, lab-setup links and prompts: one lazy chunk after the station is up */
   let late: (() => void) | null = null, gone = false;
   void import('../viral/late').then((m) => { if (!gone && alive()) late = m.mountLate(sec, S, lang); }, () => undefined);
-  return { islands, dispose() { gone = true; late?.(); quiz(); prog(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
+  return { islands, dispose() { gone = true; late?.(); quiz(); prog(); rm(); islands?.dispose(); vs.forEach((v) => v.destroy()); } };
 }

@@ -42,7 +42,7 @@ function initialZoom(): 1 | 2 | 3 {
 export const useApp = create<AppState>()((set) => ({
   lang: init.lang,
   langSource: init.source,
-  station: isStation(r0.station) ? r0.station : 'T1',
+  station: isStation(r0.station) ? r0.station : 'H', /* R27: the short home page */
   navSeq: 0,
   popup: null,
   cardStack: [],

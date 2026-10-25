@@ -94,11 +94,14 @@ const nlOf = (p: string) => !existsSync(join(GEN, p)) || read(p).endsWith('\n');
 const kb = readJ<KB>('kb.json');
 for (const id of Object.keys(ALLP)) delete kb.C[id];
 for (const c of Object.values(kb.C)) { delete c.use; delete c.math; }
-for (const s of SIDS) { delete kb.TABN[s]; delete kb.PATH[s]; }
+for (const s of [...SIDS, 'H']) { delete kb.TABN[s]; delete kb.PATH[s]; }
 kb.TABORDER = kb.TABORDER.filter((s) => !SIDS.includes(s));
 kb.TABORDER.splice(kb.TABORDER.indexOf('T1') + 1, 0, ...USIDS);
 kb.TABORDER.splice(kb.TABORDER.indexOf('T8') + 1, 0, ...KSIDS);
 for (const s of SIDS) { kb.TABN[s] = ALLST[s] as Bi; kb.PATH[s] = ALLPATH[s] as string[]; }
+/* R27: every path starts at the home page H (a page of its own, not one of the numbered stops) */
+for (const s of Object.keys(kb.PATH)) kb.PATH[s] = ['H', ...(kb.PATH[s] as string[]).filter((x) => x !== 'H')];
+kb.PATH.H = ['H']; kb.TABN.H = { zh: '首页', en: 'Home' };
 for (const [id, p] of Object.entries(ALLP)) {
   const o: KPart = { n: p.n, cat: p.cat ?? 'use', train: p.train ?? 'no', t: p.t };
   if (p.up) o.up = p.up; if (p.zoom) o.zoom = p.zoom; if (p.dn) o.dn = p.dn; if (p.use) o.use = p.use;
@@ -247,7 +250,7 @@ for (const L of LANGS) {
   for (const S of [...SIDS, ...XSIDS]) {
     if (!Object.values(ALLP).some((p) => p.t === S)) continue;
     const more = SIDS.includes(S) ? '' : L === 'en' ? ' · additions' : ' · 补充';
-    rows += `<tr class="grp" data-m2="1"><td colspan="4">${esc((kb.PATH[S] as string[]).map((s) => (kb.TABN[s] as Bi)[L]).join(' › ') + more)}</td></tr>`;
+    rows += `<tr class="grp" data-m2="1"><td colspan="4">${esc((kb.PATH[S] as string[]).filter((s) => s !== 'H').map((s) => (kb.TABN[s] as Bi)[L]).join(' › ') + more)}</td></tr>`;
     for (const [id, part] of Object.entries(ALLP)) if (part.t === S) {
       const up = part.up ? `<a data-open="${part.up}">${esc((kb.C[part.up] as KPart).n[L])}</a>` : '—';
       rows += `<tr data-m2="1"><td><a data-open="${id}">${esc(part.n[L])}</a></td><td data-label="${lbl.role}">${roleHtml[id] ? (roleHtml[id] as Bi)[L] : esc((search[id] as Bi)[L])}</td><td data-label="${lbl.stop}"><a data-go="${S}">${esc((kb.TABN[S] as Bi)[L])}</a></td><td data-label="${lbl.up}">${up}</td></tr>`;
@@ -385,37 +388,77 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) {
   if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
 }
 
-/* ---------- R25: six "I want to…" doorways at the top of T1 (between the page head and the 🧒 opening) ----------
-   Each door: a main button to the stop that answers it, plus small chips for the next stops. 🧠 picks a route
-   (data-route: App.tsx stores it; the kids' route starts on T1 itself). On a first visit the onboarding welcome card
-   borrows this block in place of its route picker, so two big blocks never stack. Idempotent (<!--m2door--> markers). */
+/* ---------- R27: a short home page (H) and a three-level drill-down: 首页 → 专区 → 细节站 ----------
+   H is a generated page of its own (st/H.*.json; in PATH/TABN but not in TABORDER, so the 27-stop numbering, progress
+   and challenge links do not move). It holds what the first screen needs: one line on what this is, 🎬 the tour, the
+   🧒 kids' route and the six "I want to…" doorways (moved here from T1, R25), then a small share card and a closed
+   "Go deeper" layer. T1 becomes the 🧠 principles zone: a route map of the theory stops grouped by theme (✓ = opened,
+   drawn by hydrate.ts). Every stop gets a small strip under its page head: which level it is, ⬆ one level up, and on
+   the zone pages ⬇ the stops to drill into. Idempotent (<!--m2door-->, <!--m2zone-->, <!--m2rmap--> markers). */
 {
-  const D: { i: string; t: Bi; s: Bi; go?: string; ch?: [string, Bi?][]; rt?: true }[] = [
+  type Door = { i: string; t: Bi; s: Bi; go: string };
+  const D: Door[] = [
     { i: '🔌', t: { zh: '我想用代码调模型', en: 'Call a model from my code' }, s: { zh: '密钥 · 第一次调用 · 算钱', en: 'keys · first call · cost' }, go: 'Api' },
     { i: '💻', t: { zh: '我想在自己电脑上跑', en: 'Run a model on my computer' }, s: { zh: '内存够不够 · 用什么工具', en: 'enough memory? · which tool' }, go: 'Loc' },
-    { i: '🤖', t: { zh: '我想让 AI 替我干活', en: 'Let an AI do tasks for me' }, s: { zh: '按事情挑 Agent · 国内产品', en: 'pick an agent by task · products' }, go: 'Job', ch: [['Ua'], ['Ub']] },
-    { i: '🧰', t: { zh: '我想给 AI 装技能', en: 'Add skills to an AI' }, s: { zh: '工具 · MCP · 技能包 · 真实目录', en: 'tools · MCP · skills · real catalogue' }, go: 'Skl', ch: [['Uc']] },
-    { i: '🛠', t: { zh: '我想自己搭一个 Agent', en: 'Build my own agent' }, s: { zh: '平台或代码 · 再看这几站：', en: 'platform or code · then these stops:' }, go: 'Bld', ch: [['Up'], ['Ua'], ['Ub'], ['Uc']] },
-    { i: '🧠', t: { zh: '我想弄懂原理', en: 'Understand how it works' }, s: { zh: '选一条路线：', en: 'pick a route:' }, rt: true },
+    { i: '🤖', t: { zh: '我想让 AI 替我干活', en: 'Let an AI do tasks for me' }, s: { zh: '按事情挑 Agent · 国内产品', en: 'pick an agent by task · products' }, go: 'Job' },
+    { i: '🧰', t: { zh: '我想给 AI 装技能', en: 'Add skills to an AI' }, s: { zh: '工具 · MCP · 技能包', en: 'tools · MCP · skill packs' }, go: 'Skl' },
+    { i: '🛠', t: { zh: '我想自己搭一个 Agent', en: 'Build my own agent' }, s: { zh: '平台或代码，一步步来', en: 'platform or code, step by step' }, go: 'Bld' },
+    { i: '🧠', t: { zh: '我想弄懂原理', en: 'Understand how it works' }, s: { zh: '路线图 · 从远看到细看', en: 'route map · big picture to detail' }, go: 'T1' },
   ];
+  /* level 2: the zones under the home page, and the stops each one drills down to (the doorways' old chips, R25) */
+  const ZONE: Record<string, string[]> = { T1: [], U: ['Ua', 'Ub', 'Uc', 'Ud', 'Up'], Api: ['T3', 'Loc'], Loc: ['T5', 'T2'], Job: ['U', 'Ua', 'Ub', 'Up'], Skl: ['Uc', 'T2'], Bld: ['Up', 'Ua', 'Ub', 'Uc', 'T2'] };
+  /* the principles route map on T1: theory stops by theme (same groups as the side menu) */
+  const RM: [string, Bi, string[]][] = [
+    ['🔭', { zh: '远看', en: 'Big picture' }, ['T1', 'T2']],
+    ['🗺️', { zh: '近看', en: 'Closer' }, ['T3']],
+    ['🔬', { zh: '细看：模型内部', en: 'Inside the model' }, ['N', 'T4', 'T4a', 'T4b', 'T5']],
+    ['🧭', { zh: '专题与速查', en: 'Topics & reference' }, ['T6', 'T7', 'T8']],
+    ['∑', { zh: '数学层', en: 'Math layer' }, ['K1', 'K2', 'K3', 'K4', 'K5']],
+  ];
+  const ICO: Record<string, string> = { T1: '🔭', T2: '🤖', T3: '🧠', N: '🕸️', T4: '🧩', T4a: '👀', T4b: '📚', T5: '⚡', T6: '🖼️', T7: '🏋️', T8: '🗺️', K1: '📈', K2: '🧮', K3: '🎲', K4: '⛰️', K5: '📝' };
+  for (const ks of Object.values(ZONE)) for (const s of ks) if (!kb.TABORDER.includes(s)) throw new Error('zone link to unknown stop ' + s);
+  const rmAll = RM.flatMap((g) => g[2]);
+  for (const s of rmAll) if (!kb.TABORDER.includes(s)) throw new Error('route map: unknown stop ' + s);
   const N = kb.TABORDER.length;
   for (const L of LANGS) {
-    const p = `st/T1.${L}.json`, st = stOf(p);
-    let h = st.html.replace(/<!--m2door-->[\s\S]*?<!--\/m2door-->\n?/g, '');
+    const t: T = (zh, en) => (L === 'en' ? en : zh);
     const nm = (s: string) => esc((kb.TABN[s] as Bi)[L]);
-    const chips = (d: (typeof D)[number]) => {
-      if (d.rt) return `<p class="dr-c"><button type="button" data-route="kid">${L === 'zh' ? '🧒 小学生路线 · 6 站（从本页开始）' : '🧒 Kids’ route · 6 stops (starts here)'}</button><button type="button" data-route="all" data-go="T2">${L === 'zh' ? `🗺 完整路线 · ${N} 站` : `🗺 Full route · ${N} stops`}</button></p>`;
-      if (!d.ch) return '';
-      return `<p class="dr-c">${d.ch.map(([s], k) => `<button type="button" data-go="${s}">${d.ch!.length > 2 ? `${k + 1}. ` : ''}${nm(s)}</button>`).join('')}</p>`;
-    };
-    const card = (d: (typeof D)[number]) => {
-      const head = `<span class="dr-i" aria-hidden="true">${d.i}</span><b>${esc(d.t[L])}</b><span class="dr-s">${esc(d.s[L])}${d.go && !d.ch ? ` → ${nm(d.go)}` : ''}</span>`;
-      return `<div class="dr">${d.go ? `<button type="button" class="dr-m" data-go="${d.go}">${head}${d.ch ? `<span class="dr-to">→ ${nm(d.go)}</span>` : ''}</button>` : `<div class="dr-m">${head}</div>`}${chips(d)}</div>`;
-    };
-    const block = `<!--m2door--><nav class="m-door" aria-label="${L === 'zh' ? '我想……' : 'I want to…'}"><p class="dr-h">${L === 'zh' ? '👋 你想做什么？点一个直接去' : '👋 What do you want to do? Tap one to go there'}</p><div class="dr-g">${D.map(card).join('')}</div></nav><!--/m2door-->\n`;
-    const at = h.indexOf('<!--m2top-->'); if (at < 0) throw new Error('doors: T1 has no top plain card');
-    h = h.slice(0, at) + block + h.slice(at);
-    if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+    /* --- H --- */
+    const door = (d: Door) => `<button type="button" class="dr-m" data-go="${d.go}"><span class="dr-i" aria-hidden="true">${d.i}</span><b>${esc(d.t[L])}</b><span class="dr-s">${esc(d.s[L])}</span></button>`;
+    const lv = (i: string, a: string, b: string, on = false) => `<li${on ? ' class="on"' : ''}><i aria-hidden="true">${i}</i><b>${a}</b><small>${b}</small></li>`;
+    const H = `<div class="hm" id="hmTop"><h1 class="hm-t">${t('大白话拆解 AI', 'AI, explained plainly')}</h1>`
+      + `<p class="hm-s">${t('用图和小实验，一层层看懂 AI：怎么用、怎么搭、为什么行。', 'Pictures and small experiments, layer by layer: how to use AI, how to build with it, why it works.')}</p>`
+      + `<div class="hm-go"><button type="button" class="hm-b pri" data-tour="start">${t('🎬 跟着一句话走一遍', '🎬 Follow one sentence through')}</button><button type="button" class="hm-b kid" data-route="kid" data-go="T1">${t('🧒 小学生路线 · 6 站', '🧒 Kids’ route · 6 stops')}</button></div></div>`
+      + `<!--m2door--><nav class="m-door hm-door" aria-label="${t('我想……', 'I want to…')}"><p class="dr-h">${t('👋 你想做什么？点一个', '👋 What do you want to do? Tap one')}</p><div class="dr-g">${D.map(door).join('')}</div></nav><!--/m2door-->`
+      + `<div class="hm-sh" id="hmShare"><p class="hm-h">${t('📣 觉得有用？分享给朋友', '📣 Useful? Share it with a friend')}</p><div class="hm-shb">`
+      + `<button type="button" class="hm-b" data-hm="share">${t('🔗 分享本站', '🔗 Share this site')}</button><button type="button" class="hm-b" data-hm="poster">${t('🏅 我的进度海报', '🏅 My progress card')}</button></div>`
+      + `<p class="hm-nt">${t('每一页右上角的 ↗ 都能分享那一页。', 'The ↗ at the top right of every page shares that page.')}</p></div>`
+      + `<details class="hm-more" id="hmMore"><summary>${t('想深入看：这个网站怎么逛', 'Go deeper: how this site is laid out')}</summary><div class="hm-mb">`
+      + `<ol class="hm-lv" aria-label="${t('三层', 'Three levels')}">${lv('🏠', t('首页', 'Home'), t('选一个“我想…”', 'pick an “I want to…”'), true)}${lv('📂', t('专区', 'Zone'), t('这件事的全貌', 'the whole of one job'))}${lv('🔬', t('细节站', 'Detail stop'), t('一个点讲透', 'one idea in depth'))}</ol>`
+      + `<ul class="pts"><li>${t('每页顶上一行写着<b>你在哪</b>：点 ⬆ 回上一层，点 ⬇ 往下钻。', 'The line at the top of each page says <b>where you are</b>: ⬆ goes up a level, ⬇ drills down.')}</li><li>${t('底部按钮：📑 本页目录、🧪 小实验、✅ 小测、✨ 进度、▶ 下一站。', 'Bottom bar: 📑 this page, 🧪 experiments, ✅ quiz, ✨ progress, ▶ next stop.')}</li></ul>`
+      + `<p class="hm-all"><button type="button" class="hm-b" data-hm="drawer">${t(`🧭 全部 ${N} 站`, `🧭 All ${N} stops`)}</button><button type="button" class="hm-b" data-hm="search">${t('🔍 搜索', '🔍 Search')}</button></p></div></details>`;
+    put(`st/H.${L}.json`, { cls: 'level', html: '\n' + H + '\n' });
+    /* --- the level strip on every stop, and the route map on T1 --- */
+    for (const S of kb.TABORDER) {
+      const p = `st/${S}.${L}.json`, st = stOf(p);
+      let h = st.html.replace(/<!--m2door-->[\s\S]*?<!--\/m2door-->\n?/g, '').replace(/<!--m2zone-->[\s\S]*?<!--\/m2zone-->\n?/g, '').replace(/<!--m2rmap-->[\s\S]*?<!--\/m2rmap-->\n?/g, '');
+      const path = (kb.PATH[S] as string[]), z = S in ZONE, up = path[path.length - 2] ?? 'H';
+      let o = `<!--m2zone--><nav class="m-zone${z ? ' z2' : ' z3'}" aria-label="${t('这一层', 'This level')}"><p class="mz-r"><span class="mz-lv">${z ? t('📂 第 2 层 · 专区', '📂 Level 2 · zone') : t('🔬 第 3 层 · 细节站', '🔬 Level 3 · detail')}</span>`
+        + `<button type="button" class="mz-up" data-go="${up}">⬆ ${up === 'H' ? t('回首页', 'Home') : nm(up)}</button></p>`;
+      const dn = ZONE[S] ?? [];
+      if (dn.length) o += `<p class="mz-dn"><span>${t('⬇ 往下钻：', '⬇ Drill down:')}</span>${dn.map((s) => `<button type="button" data-go="${s}">${nm(s)}</button>`).join('')}</p>`;
+      o += '</nav><!--/m2zone-->';
+      if (S === 'T1') {
+        o += `<!--m2rmap--><nav class="m-rmap" id="rmapT1" aria-label="${t('原理路线图', 'Route map of the ideas')}"><p class="rm-h"><b>${t('🧠 弄懂原理：路线图', '🧠 How it works: the route map')}</b><span class="rm-c" data-rmc="${rmAll.length}">0/${rmAll.length}</span></p>`
+          + `<p class="rm-tip">${t('从上往下，一步步拆开看。✓ = 已经看过。', 'Top to bottom, one layer at a time. ✓ = already opened.')}</p><ol class="rm-g">`
+          + RM.map(([ic, g, ks]) => `<li><p class="rm-gh"><i aria-hidden="true">${ic}</i>${esc(g[L])}</p><p class="rm-ss">${ks.map((s) => `<button type="button" class="rm-s" data-go="${s}" data-rm="${s}"><span class="rm-n">${kb.TABORDER.indexOf(s) + 1}</span>${ICO[s] ?? ''} ${nm(s)}</button>`).join('')}</p></li>`).join('')
+          + `</ol><p class="rm-rt"><button type="button" data-route="kid">${t('🧒 小学生路线 · 6 站（从本页开始）', '🧒 Kids’ route · 6 stops (starts here)')}</button><button type="button" data-route="all" data-go="T2">${t(`🗺 完整路线 · ${N} 站`, `🗺 Full route · ${N} stops`)}</button></p></nav><!--/m2rmap-->`;
+      }
+      const end = `<div class="zoomnote" id="zn${S}" style="display:none"></div></div>`, at = h.indexOf(end);
+      if (at < 0) throw new Error('level strip: no page head end on ' + S);
+      h = h.slice(0, at + end.length) + o + h.slice(at + end.length);
+      if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+    }
   }
 }
 

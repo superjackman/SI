@@ -1,4 +1,4 @@
-/* R11: the whole site is reachable from T1 by tapping links inside the content (no left sidebar / tree, no top-bar arrows),
+/* R11: the whole site is reachable from the home page (R27: H; was T1) by tapping links inside the content (no left sidebar / tree, no top-bar arrows),
    the guided "go deeper" hand-off chain alone walks T1 → … → K5, every lab is one tap from its station's hand-off block,
    and the search box covers every station, card, lab, quiz and part. Graph built from the generated HTML. */
 import { readdirSync, readFileSync } from 'node:fs';
@@ -22,7 +22,7 @@ const handOf = (h: string) => /<!--m2h-->([\s\S]*?)<!--\/m2h-->/.exec(h)?.[1] ??
 
 for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, () => {
   /* BFS over in-content links: station pages (data-go, data-ddgo, data-open, data-sj/data-sp, data-jump/data-lv), popups (same) */
-  const seenS = new Set<string>(), seenP = new Set<string>(), seenE = new Set<string>(), q: string[] = ['s:T1'];
+  const seenS = new Set<string>(), seenP = new Set<string>(), seenE = new Set<string>(), q: string[] = ['s:H']; /* R27: the walk starts at the short home page */
   const edges = (h: string, here: string) => {
     for (const s of [...attrs(h, 'data-go'), ...attrs(h, 'data-ddgo'), ...attrs(h, 'data-lv'), ...attrs(h, 'data-sp')]) q.push('s:' + s);
     for (const p of attrs(h, 'data-open')) q.push('p:' + p);
@@ -34,10 +34,10 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
     if (t === 's') { if (seenS.has(id) || !KB.TABN[id]) continue; seenS.add(id); edges(st(id, L), id); }
     else { if (seenP.has(id) || !KB.C[id]) continue; seenP.add(id); edges(pop(id, L), KB.C[id]!.t); }
   }
-  it('every station and every part is reachable from T1', () => {
+  it('every station and every part is reachable from the home page H', () => {
     expect(KB.TABORDER.filter((S) => !seenS.has(S))).toEqual([]);
     expect(Object.keys(KB.C).filter((p) => !seenP.has(p))).toEqual([]);
-    expect(seenS.size).toBe(27);
+    expect(seenS.size).toBe(28); /* the 27 stops + the home page */
   });
   it('every lab and card is reachable: its station is, and every lab has an explicit jump link', () => {
     for (const S of KB.TABORDER) for (const [id, cls] of cardIds(st(S, L))) if (/\blab\b/.test(cls)) expect(seenE.has(id), `${S}#${id}`).toBe(true);
@@ -48,9 +48,11 @@ for (const L of LANGS) describe(`R11 reachability without the sidebar (${L})`, (
     const one = new Set(['T1', ...zoomed.filter((z): z is string => !!z)]);
     expect(KB.TABORDER.filter((S) => !one.has(S))).toEqual([]);
   });
-  it('the "go deeper" hand-off chain alone walks T1 → … → K5 through all 27 stations', () => {
-    const seen = new Set<string>(), qq = ['T1'];
-    while (qq.length) { const S = qq.shift()!; if (seen.has(S)) continue; seen.add(S); qq.push(...attrs(handOf(st(S, L)).split('mh-b up')[0]!, 'data-go')); }
+  it('R27: the home doorways, then only "go down" links (level strip ⬇, T1 route map, hand-off ⬇) walk to all 27 stations', () => {
+    const down = (h: string) => [/<p class="mz-dn">[\s\S]*?<\/p>/.exec(h)?.[0] ?? '', /<!--m2rmap-->[\s\S]*?<!--\/m2rmap-->/.exec(h)?.[0] ?? '', handOf(h).split('mh-b up')[0]!].join('');
+    const seen = new Set<string>(), qq = attrs(/<!--m2door-->[\s\S]*?<!--\/m2door-->/.exec(st('H', L))![0], 'data-go');
+    expect(qq).toHaveLength(6);
+    while (qq.length) { const S = qq.shift()!; if (seen.has(S)) continue; seen.add(S); qq.push(...attrs(down(st(S, L)), 'data-go')); }
     expect(KB.TABORDER.filter((S) => !seen.has(S))).toEqual([]);
     /* the deepest stop says so */
     expect(handOf(st('K5', L))).toContain('mh-end');

@@ -53,7 +53,7 @@ test.describe('(B) phone swipe gestures', () => {
       await page.goto('./?lang=zh#T3'); await ready(page, 'T3', 'zh');
       await page.evaluate(() => { const w = window as unknown as { __tp: [number, boolean][] }; w.__tp = []; document.addEventListener('touchstart', (e) => w.__tp.push([Math.round(e.touches[0]!.clientX), e.defaultPrevented]), { passive: true }); });
       // a plain paragraph row (not a diagram / scroller: those keep their own gestures and are not guarded)
-      const row = () => page.evaluate((keep) => { for (const p of document.querySelectorAll<HTMLElement>('main p')) { const r = p.getBoundingClientRect(); if (r.height < 40 || p.closest(keep)) continue; scrollTo(0, scrollY + r.top - 200); const q = p.getBoundingClientRect(); const e = document.elementFromPoint(4, q.top + 20); if (e && !e.closest(keep)) return Math.round(q.top + 20); } return -1; }, KEEP);
+      const row = () => page.evaluate((keep) => { for (const p of document.querySelectorAll<HTMLElement>('main p')) { const r = p.getBoundingClientRect(); if (r.height < 40 || p.closest(keep) || p.closest('.m-zone')) continue; /* R27: the level strip is a row of buttons, not a paragraph */ scrollTo(0, scrollY + r.top - 200); const q = p.getBoundingClientRect(); const e = document.elementFromPoint(4, q.top + 20); if (e && !e.closest(keep) && ![4, innerWidth / 2, innerWidth - 4].some((x) => document.elementFromPoint(x, q.top + 20)?.closest(keep + ',.m-zone'))) return Math.round(q.top + 20); } return -1; }, KEEP);
       const y = await row();
       expect(y).toBeGreaterThan(0);
       const W = page.viewportSize()!.width;
@@ -68,9 +68,12 @@ test.describe('(B) phone swipe gestures', () => {
       await touch(page, Array.from({ length: 11 }, (_, i) => [Math.round(W / 2), 560 - i * 30] as [number, number]), 200);
       await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(150);
       // the app's own swipe is still the one that answers left/right
-      const y2 = await row();
-      await touch(page, [[W - 60, y2], [W - 120, y2 + 2], [W - 200, y2 + 4], [W - 260, y2 + 5]]);
-      await expect.poll(() => page.evaluate(() => (window as unknown as { __si: { state(): { station: string } } }).__si.state().station)).not.toBe('T3');
+      /* a loaded CI box can stretch the CDP gesture past the app's 650 ms swipe window: try the swipe up to 3 times */
+      await expect(async () => {
+        const y2 = await row();
+        await touch(page, [[W - 60, y2], [W - 120, y2 + 2], [W - 200, y2 + 4], [W - 260, y2 + 5]]);
+        await expect.poll(() => page.evaluate(() => (window as unknown as { __si: { state(): { station: string } } }).__si.state().station), { timeout: 1500 }).not.toBe('T3');
+      }).toPass({ timeout: 15_000 });
       expect(page.url()).not.toContain('#T3');
     });
   });

@@ -58,6 +58,14 @@ export const O = {
   hFind: { zh: '找词', en: 'Find' },
   hShare: { zh: '分享', en: 'Share' },
   hLang: { zh: '英文', en: 'Chinese' },
+  /* R27+: the first-visit card on the home page H (one slim strip, so the doorways stay on the first screen) + its coach marks */
+  hwT: { zh: '👋 第一次来？花 30 秒认一下：这是什么、从哪开始、怎么操作。', en: '👋 First time here? 30 seconds: what this is, where to start, how it works.' },
+  hwGo: { zh: '👀 带我认一遍（7 步）', en: '👀 Show me (7 steps)' },
+  hwClose: { zh: '关闭（菜单里的「👋 新手入门」可以再看）', en: 'Close (see it again with “👋 Getting started” in the menu)' },
+  h1: { zh: '<b>这是什么</b>：用大白话、图和小实验，一层层看懂 AI——怎么用、怎么搭、为什么行。不用会编程。', en: '<b>What this is</b>: plain words, pictures and small labs that explain AI layer by layer: how to use it, how to build with it, why it works. No coding needed.' },
+  h2: { zh: '<b>从哪开始</b>：没想好就点 🎬 跟着一句话走一遍；给孩子看就走 🧒 小学生路线（6 站）。', en: '<b>Where to start</b>: not sure? Tap 🎬 to follow one sentence all the way. For children, take the 🧒 kids’ route (6 stops).' },
+  h3: { zh: '<b>或者按需要选</b>：6 个「我想…」各通往一个专区，专区里再 ⬇ 往下钻到细节站，⬆ 回上一层。', en: '<b>Or pick by need</b>: each of the 6 “I want to…” doors leads to a zone; inside it, ⬇ drills down to detail stops and ⬆ goes back up.' },
+  h5: { zh: '<b>怎么操作</b>：进了站，最下面一排是 📑 目录、🧪 实验（动手玩）、✅ 小测（做完点亮一站）、✨ 进度、下一站 ›。图里的方块都能点开看。', en: '<b>How it works</b>: inside a stop, the bottom row has 📑 Contents, 🧪 Labs (hands-on), ✅ Quiz (finish it to light the stop), ✨ Progress and Next ›. Every box in a picture can be tapped.' },
   /* the chip row's title */
   crumb: { zh: '路标', en: 'Signpost' },
 } satisfies Record<string, Bi>;
