@@ -3,6 +3,7 @@
    "I just learned: <stop>", a one-line plain takeaway, a local QR of the stop's link with from=card, the link as text);
    save (download; long-press hint for iPhone / WeChat) and system share with the file where supported. Every shared link
    carries from=<channel>; ?from=… on landing never breaks the router, ?lang or ?v. */
+import { nextSel } from './r28h';
 import { test, expect, type Page } from '@playwright/test';
 import jsQR from 'jsqr';
 import { resolveBase } from '../../base.config.mjs';
@@ -195,8 +196,8 @@ test.describe('landing with a source tag', () => {
       const errors: string[] = []; page.on('pageerror', (e) => errors.push(e.message));
       await page.goto(`./${q}${h}`); await ready(page, S, lang);
       expect(await page.locator('section.level.active').getAttribute('id')).toBe(S);
-      /* arrows still route, the language toggle still works */
-      await page.locator('#mNext').tap();
+      /* arrows still route (R28 pilot pages: the bottom bar's 下一站), the language toggle still works */
+      await page.locator(nextSel(S)).tap();
       await expect.poll(() => page.evaluate(() => (window as unknown as { __si: { state(): { station: string } } }).__si.state().station)).not.toBe(S);
       expect(errors).toEqual([]);
     });

@@ -4,6 +4,7 @@
    ≥ 40×40; (4) the 360/390/430 header fits the title, the dots, search, share and EN; (5) labs keep working when their
    text is rewritten (the icon survives). */
 import { test, expect, type Page } from '@playwright/test';
+import { dockOf, isR28 } from './r28h';
 
 type Lang = 'zh' | 'en';
 const ready = (page: Page, S: string, lang: Lang) => page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
@@ -41,11 +42,13 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await expect(sh).toBeVisible();
       await expect(sh).toHaveAttribute('title', SHARE[lang]);
       await expect(sh.locator('svg.ic')).toHaveCount(1);
-      const b = (await sh.boundingBox())!, s = (await page.locator('#mSearch').boundingBox())!, l = (await page.locator('#mLang').boundingBox())!;
+      /* R28 pilot pages: no EN in the header (the language is in ☰), so share is the last button */
+      const b = (await sh.boundingBox())!, s = (await page.locator('#mSearch').boundingBox())!, l = isR28(S) ? null : (await page.locator('#mLang').boundingBox())!;
       expect(b.width).toBeGreaterThanOrEqual(40); expect(b.height).toBeGreaterThanOrEqual(40);
       expect(b.y).toBeLessThan(60); expect(b.x).toBeGreaterThan(vw / 2); // top-right
-      expect(s.x + s.width).toBeLessThanOrEqual(b.x + 0.5); expect(b.x + b.width).toBeLessThanOrEqual(l.x + 0.5); // search | share | EN, no overlap
-      expect(l.x + l.width).toBeLessThanOrEqual(vw + 0.5);
+      expect(s.x + s.width).toBeLessThanOrEqual(b.x + 0.5); // search | share (| EN), no overlap
+      if (l) { expect(b.x + b.width).toBeLessThanOrEqual(l.x + 0.5); expect(l.x + l.width).toBeLessThanOrEqual(vw + 0.5); } else expect(b.x + b.width).toBeLessThanOrEqual(vw + 0.5);
+      if (isR28(S)) await expect(page.locator('#mLang')).toHaveCount(0);
       await sh.tap();
       await expect(page.locator('#sharePanel')).toBeVisible();
       await expect(page.locator('#sharePanel .sp-what')).toContainText(await page.locator('#tbWhere b').innerText());
@@ -58,13 +61,16 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     test.setTimeout(90_000);
     for (const S of ORDER) {
       await page.goto(`./?lang=${lang}#${S}`); await ready(page, S, lang);
-      const r = await page.evaluate(() => {
+      /* R28 pilot pages: ☰ · name + "stop n of 27" · search · share (no ‹ › EN, no dots) */
+      const r = await page.evaluate((p28) => {
         const q = (s: string) => document.querySelector(s) as HTMLElement, rc = (s: string) => q(s).getBoundingClientRect();
-        const ids = ['#mMenu', '#mPrev', '#tbWhere', '#mNext', '#mSearch', '#mShare', '#mLang'], R = ids.map(rc);
+        const ids = p28 ? ['#mMenu', '#tbWhere', '#mSearch', '#mShare'] : ['#mMenu', '#mPrev', '#tbWhere', '#mNext', '#mSearch', '#mShare', '#mLang'], R = ids.map(rc);
         const overlap = R.slice(1).some((x, k) => x.left < R[k]!.right - 0.5);
-        const b = q('#tbWhere b'), d = q('#tbWhere .tb-dots'), w = q('#tbWhere');
-        return { overlap, out: R[6]!.right > document.documentElement.clientWidth + 0.5, title: b.scrollWidth - b.clientWidth, dots: d.getBoundingClientRect().right - w.getBoundingClientRect().right, cur: !!d.querySelector('i.on') && getComputedStyle(d.querySelector('i.on')!).display !== 'none', small: d.querySelector('small')!.getBoundingClientRect().right - w.getBoundingClientRect().right };
-      });
+        const b = q('#tbWhere b'), w = q('#tbWhere'), wr = w.getBoundingClientRect().right;
+        if (p28) { const sub = q('#tbWhere .tb-sub'); return { overlap, out: R[R.length - 1]!.right > document.documentElement.clientWidth + 0.5, title: b.scrollWidth - b.clientWidth, dots: sub.getBoundingClientRect().right - wr, cur: sub.innerText.trim() !== '', small: sub.scrollWidth - sub.clientWidth }; }
+        const d = q('#tbWhere .tb-dots');
+        return { overlap, out: R[6]!.right > document.documentElement.clientWidth + 0.5, title: b.scrollWidth - b.clientWidth, dots: d.getBoundingClientRect().right - wr, cur: !!d.querySelector('i.on') && getComputedStyle(d.querySelector('i.on')!).display !== 'none', small: d.querySelector('small')!.getBoundingClientRect().right - wr };
+      }, isR28(S));
       expect(r.overlap, S).toBe(false); expect(r.out, S).toBe(false);
       expect(r.dots, S).toBeLessThanOrEqual(0.5); expect(r.small, S).toBeLessThanOrEqual(0.5); expect(r.cur, S).toBe(true);
       expect(r.title, `${S} title clipped`).toBeLessThanOrEqual(1); // R18: long names wrap to two lines instead of '…'
@@ -84,7 +90,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
     await page.locator('#mMenu').tap(); await expect(page.locator('#mDrawer')).toBeVisible(); await page.waitForTimeout(300);
     check(await iconOnly(page, '#mDrawer'), 'drawer'); await page.keyboard.press('Escape');
-    for (const k of ['toc', 'lab', 'prog']) {
+    for (const k of ['toc', 'lab', 'prog'].filter((k) => dockOf('T3').includes(k))) { // R28: labs sit inside 目录
       await page.locator(`#bnav [data-bn="${k}"]`).tap(); await expect(page.locator(`#dkSheet[data-k="${k}"]`)).toBeVisible(); await page.waitForTimeout(300);
       check(await iconOnly(page, '#dkSheet'), `sheet ${k}`); await page.locator('#dkSheet .sh-x').tap(); await expect(page.locator('#dkSheet')).toHaveCount(0);
     }

@@ -1,5 +1,6 @@
 /* R25: the six "I want to…" doorways (R27: on the home page), the 🔌 Api and 💻 Loc stops (boundary line on top, cost and memory
    calculators), and their place in the drawer, search and prev/next. zh + en on 360/390/430. */
+import { nextSel, prevStop } from './r28h';
 import { test, expect, type Page } from '@playwright/test';
 
 type Lang = 'zh' | 'en';
@@ -61,9 +62,10 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     expect(await overflow(page)).toBeLessThanOrEqual(0);
     if (lang === 'en') expect(CJK.test(await page.locator(`${act}`).innerText())).toBe(false);
     await expect(page.locator(`${act} .ph-lv`)).toContainText(S === 'Api' ? tr('第 8 站 / 共 27 站', 'Stop 8 of 27') : tr('第 9 站 / 共 27 站', 'Stop 9 of 27'));
-    await page.locator('#mNext').click();
-    await ready(page, S === 'Api' ? 'Loc' : 'Job', lang);
-    await page.locator('#mPrev').click();
+    await page.locator(nextSel(S)).click();
+    const N = S === 'Api' ? 'Loc' : 'Job';
+    await ready(page, N, lang);
+    await prevStop(page, N); /* R28 pilot (Job): no ‹ in the header, a swipe goes back */
     await ready(page, S, lang);
   });
 

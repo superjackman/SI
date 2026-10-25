@@ -4,6 +4,7 @@
    🔒 and the dot strip; menu entry to see the welcome card again. Fresh profile, every phone width, zh + en. */
 import { test, expect, type Page } from '@playwright/test';
 import fs from 'node:fs';
+import { isR28, tocKinds } from './r28h';
 
 type Lang = 'zh' | 'en';
 const KEY: Record<string, number[]> = JSON.parse(fs.readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')).key;
@@ -46,14 +47,16 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await page.locator(`html[data-si-ready="H.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
     await expect(page.locator(`${act} .hm-door`)).toBeVisible();
   };
-  test(`${lang} R27 first visit on the home page: slim welcome strip, doorways still on the first screen, header labels, no overlap; 7 coach marks on request`, async ({ page }) => {
+  test(`${lang} R27 first visit on the home page: slim welcome strip, doorways still on the first screen, header labels, no overlap; 7 (R28: 5) coach marks on request`, async ({ page }) => {
     await home(page);
     const w = page.locator(`${act} .hm .ob-hw`);
     await expect(w).toBeVisible({ timeout: 5000 });
     expect(await page.evaluate(() => document.querySelector('.ob-hw')!.previousElementSibling?.classList.contains('hm-s'))).toBe(true);
     if (lang === 'en') expect(CJK.test(await w.innerText())).toBe(false);
     await expect(page.locator('.ob-bub')).toHaveCount(0); /* nothing pops up on its own */
-    await expect(page.locator('.ob-tl span:not([hidden])')).toHaveCount(6);
+    /* R28 pilot home: the header is ☰ · title · search · share, so 3 labels and a 5-step walk-through (else 6 and 7) */
+    const p28 = isR28('H');
+    await expect(page.locator('.ob-tl span:not([hidden])')).toHaveCount(p28 ? 3 : 6);
     /* the first row of doorways is still on the first screen, and nothing overlaps */
     const top = await page.locator(`${act} .hm-door .dr-m`).first().evaluate((e) => e.getBoundingClientRect().bottom);
     expect(top).toBeLessThan(await page.evaluate(() => innerHeight - (document.getElementById('bnav')?.offsetHeight ?? 0)));
@@ -61,7 +64,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     for (const b of await page.locator('.ob-hw button').all()) expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(43);
     await page.locator('.ob-hw [data-ob="onb-btns"]').click();
     await expect(page.locator('.ob-hw')).toHaveCount(0);
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < (p28 ? 5 : 7); i++) {
       const bub = page.locator('.ob-bub.coach');
       await expect(bub).toBeVisible();
       const bb = (await bub.boundingBox())!, vw = page.viewportSize()!.width;
@@ -107,7 +110,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(w.locator('.ob-steps li')).toHaveCount(3);
     await expect(page.locator('[data-ob="onb-tour"]')).toBeInViewport();
     // header text labels: one per visible icon, inside the screen, none overlapping
-    await expect(page.locator('.ob-tl span:not([hidden])')).toHaveCount(6);
+    await expect(page.locator('.ob-tl span:not([hidden])')).toHaveCount(isR28('T1') ? 3 : 6); // R28: ☰ · search · share
     expect(await clean(page, '.ob-tl span:not([hidden])')).toEqual([]);
     // and at least 4 px apart, so neighbouring words do not read as one ("ShareChinese")
     expect(await page.evaluate(() => { const r = [...document.querySelectorAll('.ob-tl span:not([hidden])')].map((e) => e.getBoundingClientRect()).sort((a, b) => a.left - b.left); return Math.min(...r.slice(1).map((q, i) => q.left - r[i]!.right)); })).toBeGreaterThanOrEqual(4);
@@ -196,15 +199,18 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     // the lab chip opens the T1 demo
     await row.locator('[data-ob="lab"]').click();
     await expect(page.locator('#walkCard')).toBeInViewport({ ratio: 0.05 });
-    // next on the route: T2, 2/6, its chip names the agent lab
-    await page.locator(`${act} .ob-n1 [data-ob="next"]`).click();
+    // next on the route: T2, 2/6, its chip names the agent lab (R28: the next stop is the bottom bar's 下一站, which follows the route)
+    if (isR28('T1')) { await expect(page.locator(`${act} .ob-n1 [data-ob="next"]`)).toHaveCount(0); await page.locator('#bnav [data-bn="next"]').click(); }
+    else await page.locator(`${act} .ob-n1 [data-ob="next"]`).click();
     await page.locator(`html[data-si-ready="T2.${lang}"]`).waitFor({ state: 'attached' });
     await expect(page.locator(`${act} [data-ob="route"]`)).toContainText('2/6');
     await page.locator(`${act} [data-ob="lab"]`).click();
     await expect(page.locator('#labAgent')).toBeInViewport({ ratio: 0.05 });
     // quiz → "lit" count goes up, the after-quiz line points at T3 on the route
     await answer(page, 'T2');
-    await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/27');
+    // (R28: the lit count is the bottom bar's 进度 — its label says 1/27, its badge the route's 1/6)
+    if (isR28('T2')) { await expect(page.locator('#bnav [data-bn="prog"]')).toHaveAttribute('aria-label', /1\s*(\/|of)\s*27/); await expect(page.locator('#bnav [data-bn="prog"]')).toHaveAttribute('data-n', '1/6'); }
+    else await expect(page.locator(`${act} [data-ob="lit"]`)).toContainText('1/27');
     const qn = page.locator(`${act} .ob-qn [data-ob="qnext"]`);
     await expect(qn).toBeVisible();
     await qn.click();
@@ -232,9 +238,20 @@ test('full route: lab chip says how many labs, opens and starts the first; lit c
   expect(seen.length).toBe(1);
   await page.evaluate(() => window.scrollTo(0, 0));
   const n = await page.locator(`${act} .card.lab[id]`).count();
+  const id = await page.locator(`${act} .card.lab[id]`).first().getAttribute('id');
+  if (isR28('T3')) {
+    /* R28: no chip row for the full route — 目录 lists the N labs (a row scrolls to it), 下一站 names the next stop, 进度 opens the progress sheet */
+    await expect(page.locator(`${act} .ob-row`)).toBeHidden();
+    expect((await tocKinds(page)).filter((k) => k === 'lab').length).toBe(n);
+    await page.locator('#bnav [data-bn="toc"]').click(); await page.locator('#dkSheet[data-k="toc"].open #dkToc .dk-it.k-lab').first().click();
+    await expect(page.locator('#' + id)).toBeInViewport({ ratio: 0.05 });
+    await expect(page.locator('#bnav [data-bn="next"]')).toHaveAttribute('aria-label', /神经网络/);
+    await page.locator('#bnav [data-bn="prog"]').click();
+    await expect(page.locator('#dkSheet[data-k="prog"]')).toBeVisible();
+    return;
+  }
   const lab = page.locator(`${act} [data-ob="lab"]`);
   await expect(lab).toContainText(n === 1 ? '1 个实验' : `${n} 个实验`);
-  const id = await page.locator(`${act} .card.lab[id]`).first().getAttribute('id');
   await lab.click();
   await expect(page.locator('#' + id)).toBeInViewport({ ratio: 0.05 });
   await expect(page.locator(`${act} [data-ob="next"]`)).toContainText('神经网络');
@@ -260,5 +277,5 @@ test('nothing new on a returning visit: no welcome card, labels or coach marks',
   await at(page, '#T2', 'T2', 'zh');
   await page.waitForTimeout(500);
   await expect(page.locator('.ob-wel, .ob-tl, .ob-bub.coach')).toHaveCount(0);
-  await expect(page.locator(`${act} [data-ob="next"]`)).toBeVisible();
+  await expect(page.locator(isR28('T2') ? '#bnav [data-bn="next"]' : `${act} [data-ob="next"]`)).toBeVisible();
 });

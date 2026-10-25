@@ -2,6 +2,7 @@
    the drawer's history entry, native quiz answer/reset. Live-vs-next behaviour diffs: scripts/shelldiff.mjs. */
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { isR28 } from './r28h';
 
 type Lang = 'zh' | 'en';
 type SI = { __si: { state(): { station: string } } };
@@ -78,8 +79,9 @@ test('tour: starts at mid-level when on overview, × and Escape end it; 下一�
   await page.locator('#tourPrev').click();
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
   await expect.poll(() => station(page)).toBe('T1');
-  /* the top-bar ▶ follows the stop order (T1 → U, the M2 overview) and leaves the tour step alone */
-  await page.locator('#mNext').click();
+  /* the top-bar ▶ follows the stop order (T1 → U, the M2 overview) and leaves the tour step alone (R28: no ▶, and swipes are off while touring — the ☰ list changes the stop) */
+  if (isR28('T1')) { await page.locator('#mMenu').click(); await expect(page.locator('#mDrawer')).toHaveClass(/open/); await page.waitForTimeout(350); await page.locator('#mDrawer [data-dw="U"]').click(); }
+  else await page.locator('#mNext').click();
   await expect.poll(() => station(page)).toBe('U');
   await expect(page.locator('#tourN')).toContainText('第 2 / 15 步');
   await page.locator('#mMenu').click();

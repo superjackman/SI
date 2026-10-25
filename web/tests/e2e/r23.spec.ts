@@ -3,6 +3,7 @@
    drawing fills the sentence. */
 import { test, expect, type Page } from '@playwright/test';
 import { CF_IDS } from '../../m2/content/ext/m11';
+import { isR28 } from './r28h';
 
 type Lang = 'zh' | 'en';
 test.beforeEach(async ({ page }) => { await page.addInitScript(() => { localStorage.setItem('si.fs', '0'); localStorage.setItem('si.a2hs', '1'); }); });
@@ -95,9 +96,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
       await expect(page.locator(`#${id}`)).toBeInViewport();
     }
-    /* the 🧪 sheet on T4b now lists the new lab */
+    /* the 🧪 sheet on T4b now lists the new lab (R28: labs are rows of 📑 目录) */
     await at(page, 'T4b', lang);
-    await page.locator('#bnav [data-bn="lab"]').click();
+    await page.locator(isR28('T4b') ? '#bnav [data-bn="toc"]' : '#bnav [data-bn="lab"]').click();
     const lab = page.locator('#labEmbOut');
     if (await page.locator('#dkSheet').count()) await page.locator('#dkSheet .dk-it', { hasText: lang === 'zh' ? '我爱吃' : 'I love eating' }).click();
     await expect(lab).toBeInViewport();

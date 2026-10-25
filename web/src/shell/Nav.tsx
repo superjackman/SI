@@ -4,10 +4,11 @@ import { useShallow } from 'zustand/react/shallow';
 import { tx, useT, useTx } from '../i18n/L';
 import { GRP, ICON, PATH, TABORDER, tabn } from '../legacy/kb';
 import { canBack, go, toast, visited } from '../nav';
-import { layer, svgHtml } from './common';
+import { IC, ic, layer, svgHtml } from './common';
 import { closeDrawer } from './drawer';
 import { setZoom } from './zoom';
 import { toggleTour, tourStep } from '../tour/api';
+import { isR28, upOf } from './r28';
 
 /** breadcrumb chips from PATH, children as ↓ chips, ↩ when a drill can be undone (live renderCrumb) */
 export function Crumb() {
@@ -18,6 +19,20 @@ export function Crumb() {
   const ks = TABORDER.filter((k) => { const q = PATH[k] ?? []; return q.length === p.length + 1 && q[p.length - 1] === S; });
   const top = useApp.getState().drill.at(-1);
   const bl = top && canBack() ? t('nav.backTo') + tabn(top.from, lang) : null;
+  /* R28: one slim line, one job: ‹ one level up (or ↩ back where a drill came from). The trail, the ↓ chips and the
+     level strip under the page head are gone: the header says where you are, a zone lists its stops itself */
+  if (isR28(S)) {
+    const up = upOf(S);
+    if (!up && !bl) return <div className="crumb r28c" id="crumb" style={{ display: 'none' }}><div className="chips" /></div>;
+    return (
+      <div className="crumb r28c" id="crumb">
+        <div className="chips" role="navigation" aria-label={t('nav.crumb')}>
+          {bl ? <button type="button" className="cb-back cb-up" data-dback="" aria-label={bl} title={bl}><i {...svgHtml('back')} /><span>{tabn(top!.from, lang)}</span></button>
+            : <button type="button" className="cb-up" data-go={up!}><i {...svgHtml('prev')} /><span>{up === 'H' ? tabn('H', lang) : tabn(up!, lang)}</span></button>}
+        </div>
+      </div>
+    );
+  }
   return (
     /* R27: the home page is the top layer: no trail (its doorways are the ↓ links) */
     <div className="crumb" id="crumb" style={S === 'H' && !bl ? { display: 'none' } : undefined}>
@@ -54,6 +69,9 @@ export const openShare = () => { void import('../share/panel').then((m) => m.ope
 const DockSheets = lazy(() => import('./dock/Sheets'));
 const DK = ['toc', 'lab', 'quiz', 'prog', 'next'] as const;
 const DKI: Record<string, string> = { toc: '📑', lab: '🧪', quiz: '✅', prog: '✨' };
+const DK3 = ['toc', 'prog', 'next'] as const;
+/* line icons (one style with the header): a list, a star, → */
+const DK3I: Record<string, string> = { toc: ic('M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01'), prog: ic('M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z'), next: IC.next };
 export function dock(k: string) {
   const s = useApp.getState(), o = { popup: null, cardStack: [], searchOpen: false, full: null };
   /* the button that owns the open sheet closes it; any other button switches straight to its own action */
@@ -66,12 +84,16 @@ export function dock(k: string) {
 export function Dock() {
   const t = useT();
   const S = useApp((s) => s.station), sh = useApp((s) => s.sheetOpen);
+  /* R28: three stable items — 目录 (this page: parts, labs, quiz), 进度, 下一站 (the one strong button); none on the home
+     page, whose doorways are the action */
+  const r = isR28(S), ks = r ? DK3 : DK;
+  if (r && S === 'H') return <>{sh ? <><div id="sheetMask" onClick={() => useApp.getState().set({ sheetOpen: false })} /><Suspense fallback={null}><DockSheets k={sh} /></Suspense></> : null}</>;
   return (
     <>
-      <nav id="bnav" aria-label={t('nav.main')}>
-        {DK.map((k) => (
+      <nav id="bnav" className={r ? 'r28b' : undefined} aria-label={t('nav.main')}>
+        {ks.map((k) => (
           <button key={k === 'lab' || k === 'quiz' ? k + S : k} type="button" data-bn={k} className={sh === k ? 'on' : undefined} aria-label={t(`dk.${k}A`)} onClick={() => dock(k)}>
-            {DKI[k] ? <i aria-hidden="true">{DKI[k]}</i> : <i aria-hidden="true" {...svgHtml('next')} />}<span>{t(`dk.${k}`)}</span>
+            {r ? <i aria-hidden="true" dangerouslySetInnerHTML={{ __html: DK3I[k]! }} /> : DKI[k] ? <i aria-hidden="true">{DKI[k]}</i> : <i aria-hidden="true" {...svgHtml('next')} />}<span>{t(`dk.${k}`)}</span>
           </button>
         ))}
       </nav>
@@ -117,7 +139,7 @@ export function Drawer() {
         onTouchStart={(e) => { const s = sw.current; const p = e.touches[0]; if (e.touches.length !== 1 || !p) return; s.x0 = p.clientX; s.y0 = p.clientY; s.dx = 0; s.t0 = Date.now(); s.hz = null; }}
         onTouchMove={(e) => { const s = sw.current; const p = e.touches[0]; if (s.x0 == null || !p || !ref.current) return; const mx = p.clientX - s.x0, my = p.clientY - s.y0; if (s.hz == null && Math.abs(mx) + Math.abs(my) > 8) s.hz = Math.abs(mx) > Math.abs(my); if (!s.hz) return; s.dx = Math.min(0, mx); ref.current.style.transition = 'none'; ref.current.style.transform = `translateX(${s.dx}px)`; }}
         onTouchEnd={() => { const s = sw.current; if (s.x0 == null || !ref.current) return; s.x0 = null; ref.current.style.transition = ''; const vv = -s.dx / Math.max(1, Date.now() - s.t0); ref.current.style.transform = ''; if (s.hz && (s.dx < -70 || (s.dx < -30 && vv > 0.5))) close(); }}>
-        <div className="dw-head"><b>🧭 {t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
+        <div className="dw-head"><b>{t('nav.allStops')}</b><span className="dw-pt" id="dwProgTxt">✓ {n} / {TABORDER.length}</span><FsBtn /><button type="button" className="icon-btn dw-x" aria-label={t('ui.close')} title={t('ui.close')} onClick={close} {...svgHtml('x')} /></div>
         <div className="dw-prog" aria-hidden="true"><i id="dwProgBar" style={{ width: (n / TABORDER.length * 100) + '%' }} /></div>
         <nav id="dwList" aria-label={tx({ zh: '站点：远看 → 细看', en: 'Stops: macro → micro' })}>
           {/* R27: the home page sits above the numbered stops */}

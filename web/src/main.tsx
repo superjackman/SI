@@ -5,6 +5,7 @@ import { useApp } from './store/app';
 import { installStaleGuard } from './boot/stale';
 import './legacy/gen/legacy.css';
 import './styles/shell.css';
+import './styles/r28.css';
 
 import { eventFor, isLocalHost } from './analyticsEvents';
 

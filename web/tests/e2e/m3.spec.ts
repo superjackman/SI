@@ -3,6 +3,7 @@
    requests on load (links are only followed when tapped). */
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { isR28, tocKinds } from './r28h';
 
 type Lang = 'zh' | 'en';
 type SI = { __si: { state(): { station: string; popup: { id: string } | null } } };
@@ -36,7 +37,8 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     page.on('request', (r) => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && u.protocol !== 'data:') external.push(r.url()); });
     await open(page, lang);
     await expect(page.locator('section#Up .m-stage svg').first()).toBeVisible();
-    await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', 'off'); // R22: no lab here, the 🧪 button says so
+    if (isR28('Up')) expect(await tocKinds(page), 'R28: 目录 lists no lab here').not.toContain('lab');
+    else await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', 'off'); // R22: no lab here, the 🧪 button says so
     await expect(page.locator('section#Up .st-fail')).toHaveCount(0);
     await expect(page.locator('section#Up .card.lab')).toHaveCount(0);
     await expect(page.locator('section#Up .tag.demo')).toHaveCount(0);

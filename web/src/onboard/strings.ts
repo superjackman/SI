@@ -66,6 +66,15 @@ export const O = {
   h2: { zh: '<b>从哪开始</b>：没想好就点 🎬 跟着一句话走一遍；给孩子看就走 🧒 小学生路线（6 站）。', en: '<b>Where to start</b>: not sure? Tap 🎬 to follow one sentence all the way. For children, take the 🧒 kids’ route (6 stops).' },
   h3: { zh: '<b>或者按需要选</b>：6 个「我想…」各通往一个专区，专区里再 ⬇ 往下钻到细节站，⬆ 回上一层。', en: '<b>Or pick by need</b>: each of the 6 “I want to…” doors leads to a zone; inside it, ⬇ drills down to detail stops and ⬆ goes back up.' },
   h5: { zh: '<b>怎么操作</b>：进了站，最下面一排是 📑 目录、🧪 实验（动手玩）、✅ 小测（做完点亮一站）、✨ 进度、下一站 ›。图里的方块都能点开看。', en: '<b>How it works</b>: inside a stop, the bottom row has 📑 Contents, 🧪 Labs (hands-on), ✅ Quiz (finish it to light the stop), ✨ Progress and Next ›. Every box in a picture can be tapped.' },
+  /* R28 skeleton (shell/r28.ts): header ☰ · where · 🔍 ↗, a ‹ up link, bottom bar 目录 · 进度 · 下一站 */
+  n1: { zh: '☰ <b>菜单</b>：全部 {NS} 站、导览、全屏、「👋 新手入门」和中英文切换都在这里。', en: '☰ <b>Menu</b>: all {NS} stops, the tour, full screen, “👋 Getting started” and Chinese / English.' },
+  n2: { zh: '<b>你在哪</b>：这里写着这一站的名字，下面一行是第几站。', en: '<b>Where you are</b>: the name of this stop, and below it which stop it is.' },
+  n3: { zh: '🔍 <b>找词</b>　↗ <b>分享</b>这一页给朋友。', en: '🔍 <b>Find a word</b>　↗ <b>Share</b> this page with a friend.' },
+  n4: { zh: '‹ <b>回上一层</b>：回到这一站所在的那一层。', en: '‹ <b>Up one level</b>: back to the layer this stop belongs to.' },
+  n5: { zh: '最下面一排：<b>目录</b>（这一页的各段、实验、小测）、<b>进度</b>（点亮了几站）、<b>下一站</b>（接着往下走）。左右滑也能换站。', en: 'The bottom row: <b>Contents</b> (this page’s parts, labs and quiz), <b>Progress</b> (stops lit) and <b>Next</b> (keep going). Swiping left or right also changes stop.' },
+  n6: { zh: '<b>按需要选</b>：6 个「我想…」各通往一个专区，专区里列着它的几站。', en: '<b>Pick by need</b>: each of the 6 “I want to…” doors leads to a zone that lists its stops.' },
+  n7: { zh: '<b>没想好？</b>点「跟着一句话走一遍」；给孩子看就点「小学生路线」（6 站）。', en: '<b>Not sure?</b> Tap “Follow one sentence through”. For children, tap “the kids’ route” (6 stops).' },
+  hwGo5: { zh: '👀 带我认一遍（5 步）', en: '👀 Show me (5 steps)' },
   /* the chip row's title */
   crumb: { zh: '路标', en: 'Signpost' },
 } satisfies Record<string, Bi>;

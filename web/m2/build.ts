@@ -425,18 +425,15 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) {
     const nm = (s: string) => esc((kb.TABN[s] as Bi)[L]);
     /* --- H --- */
     const door = (d: Door) => `<button type="button" class="dr-m" data-go="${d.go}"><span class="dr-i" aria-hidden="true">${d.i}</span><b>${esc(d.t[L])}</b><span class="dr-s">${esc(d.s[L])}</span></button>`;
-    const lv = (i: string, a: string, b: string, on = false) => `<li${on ? ' class="on"' : ''}><i aria-hidden="true">${i}</i><b>${a}</b><small>${b}</small></li>`;
+    /* R28: the home page is three blocks, one job each: (1) what this is, in one line; (2) the six doorways, the main
+       action, as one list (icon · name · hint · ›); (3) not sure? one quiet start (🎬 tour) and the kids' route as a link,
+       then one share line. Gone (they live in ☰ / 🔍 / 进度 now): the share card's poster, "how this site is laid out". */
     const H = `<div class="hm" id="hmTop"><h1 class="hm-t">${t('大白话拆解 AI', 'AI, explained plainly')}</h1>`
-      + `<p class="hm-s">${t('用图和小实验，一层层看懂 AI：怎么用、怎么搭、为什么行。', 'Pictures and small experiments, layer by layer: how to use AI, how to build with it, why it works.')}</p>`
-      + `<div class="hm-go"><button type="button" class="hm-b pri" data-tour="start">${t('🎬 跟着一句话走一遍', '🎬 Follow one sentence through')}</button><button type="button" class="hm-b kid" data-route="kid" data-go="T1">${t('🧒 小学生路线 · 6 站', '🧒 Kids’ route · 6 stops')}</button></div></div>`
-      + `<!--m2door--><nav class="m-door hm-door" aria-label="${t('我想……', 'I want to…')}"><p class="dr-h">${t('👋 你想做什么？点一个', '👋 What do you want to do? Tap one')}</p><div class="dr-g">${D.map(door).join('')}</div></nav><!--/m2door-->`
-      + `<div class="hm-sh" id="hmShare"><p class="hm-h">${t('📣 觉得有用？分享给朋友', '📣 Useful? Share it with a friend')}</p><div class="hm-shb">`
-      + `<button type="button" class="hm-b" data-hm="share">${t('🔗 分享本站', '🔗 Share this site')}</button><button type="button" class="hm-b" data-hm="poster">${t('🏅 我的进度海报', '🏅 My progress card')}</button></div>`
-      + `<p class="hm-nt">${t('每一页右上角的 ↗ 都能分享那一页。', 'The ↗ at the top right of every page shares that page.')}</p></div>`
-      + `<details class="hm-more" id="hmMore"><summary>${t('想深入看：这个网站怎么逛', 'Go deeper: how this site is laid out')}</summary><div class="hm-mb">`
-      + `<ol class="hm-lv" aria-label="${t('三层', 'Three levels')}">${lv('🏠', t('首页', 'Home'), t('选一个“我想…”', 'pick an “I want to…”'), true)}${lv('📂', t('专区', 'Zone'), t('这件事的全貌', 'the whole of one job'))}${lv('🔬', t('细节站', 'Detail stop'), t('一个点讲透', 'one idea in depth'))}</ol>`
-      + `<ul class="pts"><li>${t('每页顶上一行写着<b>你在哪</b>：点 ⬆ 回上一层，点 ⬇ 往下钻。', 'The line at the top of each page says <b>where you are</b>: ⬆ goes up a level, ⬇ drills down.')}</li><li>${t('底部按钮：📑 本页目录、🧪 小实验、✅ 小测、✨ 进度、▶ 下一站。', 'Bottom bar: 📑 this page, 🧪 experiments, ✅ quiz, ✨ progress, ▶ next stop.')}</li></ul>`
-      + `<p class="hm-all"><button type="button" class="hm-b" data-hm="drawer">${t(`🧭 全部 ${N} 站`, `🧭 All ${N} stops`)}</button><button type="button" class="hm-b" data-hm="search">${t('🔍 搜索', '🔍 Search')}</button></p></div></details>`;
+      + `<p class="hm-s">${t('用图和小实验看懂 AI：怎么用、怎么搭、为什么行。', 'Pictures and small experiments: how to use AI, how to build with it, why it works.')}</p></div>`
+      + `<!--m2door--><nav class="m-door hm-door" aria-label="${t('我想……', 'I want to…')}"><p class="dr-h">${t('你想做什么？', 'What do you want to do?')}</p><div class="dr-g">${D.map(door).join('')}</div></nav><!--/m2door-->`
+      + `<div class="hm-go"><p class="hm-q">${t('不知道选哪个？', 'Not sure where to start?')}</p><button type="button" class="hm-b pri" data-tour="start">${t('跟着一句话走一遍', 'Follow one sentence through')}</button>`
+      + `<button type="button" class="hm-b kid" data-route="kid" data-go="T1">${t('给孩子看：小学生路线 · 6 站', 'For children: the kids’ route · 6 stops')}</button></div>`
+      + `<div class="hm-sh" id="hmShare"><p class="hm-h">${t('觉得有用？', 'Useful?')}</p><button type="button" class="hm-b" data-hm="share">${t('分享给朋友', 'Share it with a friend')}</button></div>`;
     put(`st/H.${L}.json`, { cls: 'level', html: '\n' + H + '\n' });
     /* --- the level strip on every stop, and the route map on T1 --- */
     for (const S of kb.TABORDER) {

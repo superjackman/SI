@@ -3,6 +3,7 @@
    labels under icons, never cut off, no overlap, ≥ 44 px; the old 更多 extras now live in the ☰ menu. */
 import { test, expect, type Page } from '@playwright/test';
 import fs from 'node:fs';
+import { DOCK3, DOCK5, isR28, tocKinds } from './r28h';
 
 type Lang = 'zh' | 'en';
 const KEY: Record<string, number[]> = JSON.parse(fs.readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')).key;
@@ -13,15 +14,19 @@ async function at(page: Page, S: string, lang: Lang, q = '') {
 }
 const station = (page: Page) => page.evaluate(() => document.querySelector('section.level.active')?.id);
 const bn = (page: Page, k: string) => page.locator(`#bnav [data-bn="${k}"]`);
-const DOCK = ['toc', 'lab', 'quiz', 'prog', 'next'];
-const LABEL = { zh: ['目录', '实验', '小测', '进度', '下一站'], en: ['Contents', 'Labs', 'Quiz', 'Progress', 'Next'] };
+/* R28 (all stops): the bar is 目录 · 进度 · 下一站 — labs and the quiz are rows of 目录 (k-lab / k-quiz), the route lab its chip */
+const R = isR28('T1');
+const DOCK = R ? DOCK3 : DOCK5;
+const LABEL = R ? { zh: ['目录', '进度', '下一站'], en: ['Contents', 'Progress', 'Next'] } : { zh: ['目录', '实验', '小测', '进度', '下一站'], en: ['Contents', 'Labs', 'Quiz', 'Progress', 'Next'] };
+/** R28: tap the first 目录 row of kind k (it scrolls there and closes the sheet) */
+const tocGo = async (page: Page, k: string) => { await bn(page, 'toc').click(); await page.locator(`#dkSheet[data-k="toc"].open #dkToc .dk-it.k-${k}`).first().click(); await expect(page.locator('#dkSheet')).toHaveCount(0); };
 
 for (const lang of ['zh', 'en'] as Lang[]) {
-  test(`${lang}: the bar — 5 buttons in order, labels under icons, nothing cut off or overlapping, ≥ 44 px, inside the screen`, async ({ page }) => {
+  test(`${lang}: the bar — ${DOCK.length} buttons in order, labels with icons, nothing cut off or overlapping, ≥ 44 px, inside the screen`, async ({ page }) => {
     for (const S of ['T1', 'K2', 'K5', 'T8']) {
       await at(page, S, lang);
       expect(await page.locator('#bnav button').evaluateAll((b) => b.map((e) => (e as HTMLElement).dataset.bn))).toEqual(DOCK);
-      const r = await page.evaluate(() => {
+      const r = await page.evaluate((r28) => {
         const cw = document.documentElement.clientWidth, bad: string[] = [], nav = document.getElementById('bnav')!.getBoundingClientRect();
         const bs = [...document.querySelectorAll<HTMLElement>('#bnav button')].map((b) => [b, b.getBoundingClientRect()] as const);
         bs.forEach(([b, R], i) => {
@@ -29,12 +34,13 @@ for (const lang of ['zh', 'en'] as Lang[]) {
           if (R.width < 44 || R.height < 44) bad.push('small:' + b.dataset.bn);
           if (R.left < -0.5 || R.right > cw + 0.5) bad.push('out:' + b.dataset.bn);
           if (sp.scrollWidth > sp.clientWidth + 0.5 || s.left < R.left - 0.5 || s.right > R.right + 0.5) bad.push('cut:' + b.dataset.bn);
-          if (I.bottom > s.top + 1) bad.push('notUnder:' + b.dataset.bn);
+          /* R28: icon beside its label on one line (calmer, lower bar); before, icon above the label */
+          if (r28 ? Math.abs((I.top + I.bottom) / 2 - (s.top + s.bottom) / 2) > 6 || (Math.min(I.right, s.right) - Math.max(I.left, s.left) > 0.5) : I.bottom > s.top + 1) bad.push((r28 ? 'notBeside:' : 'notUnder:') + b.dataset.bn);
           const n = bs[i + 1]; if (n && R.right > n[1].left + 0.5) bad.push('overlap:' + b.dataset.bn);
           if (getComputedStyle(sp).textOverflow === 'ellipsis' && sp.scrollWidth > sp.clientWidth) bad.push('ellipsis:' + b.dataset.bn);
         });
         return { bad, bottom: Math.round(nav.bottom), vh: innerHeight, labels: bs.map(([b]) => b.querySelector('span')!.textContent), aria: bs.map(([b]) => b.getAttribute('aria-label') ?? '') };
-      });
+      }, R);
       expect(r.bad, S).toEqual([]);
       expect(r.labels).toEqual(LABEL[lang]);
       expect(r.aria.every((a) => a.length > 1)).toBe(true);
@@ -68,7 +74,23 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await bn(page, 'toc').click(); await page.mouse.click(180, 130); await expect(page.locator('#dkSheet')).toHaveCount(0);
   });
 
-  test(`${lang}: 🧪 / ✅ — one lab opens at once (K2), several give a list (T3), none says so (T8); quiz scrolls and gets ✓ when lit`, async ({ page }) => {
+  if (R) test(`${lang}: R28 labs / quiz in 目录 — K2's lab and quiz rows scroll there, lit counts; T3 lists every lab; T8 has none`, async ({ page }) => {
+    await at(page, 'K2', lang);
+    const k2 = await tocKinds(page); expect(k2).toContain('lab'); expect(k2).toContain('quiz');
+    await tocGo(page, 'lab'); await expect(page.locator('section#K2 .card.lab').first()).toBeInViewport({ ratio: 0.05 });
+    await tocGo(page, 'quiz'); await expect(page.locator('section#K2 .card.quiz[id^="quiz"]')).toBeInViewport({ ratio: 0.05 });
+    await expect(bn(page, 'prog')).toHaveAttribute('data-n', '0/27');
+    for (const [i, r] of KEY.K2!.entries()) { const o = page.locator(`#quizK2 .opt[data-q="K2.${i}"][data-o="${r}"]`); await o.scrollIntoViewIfNeeded(); await o.click(); }
+    await expect(bn(page, 'prog')).toHaveAttribute('data-n', '1/27');
+    await at(page, 'T3', lang);
+    const n = await page.locator('section#T3 .card.lab[id]').count(); expect(n).toBeGreaterThan(1);
+    expect((await tocKinds(page)).filter((k) => k === 'lab').length).toBe(n);
+    await at(page, 'T8', lang);
+    const t8 = await tocKinds(page); expect(t8).not.toContain('lab'); expect(t8).not.toContain('quiz');
+    await expect(page.locator('#dkSheet')).toHaveCount(0);
+  });
+
+  if (!R) test(`${lang}: 🧪 / ✅ — one lab opens at once (K2), several give a list (T3), none says so (T8); quiz scrolls and gets ✓ when lit`, async ({ page }) => {
     await at(page, 'K2', lang);
     await bn(page, 'lab').click();
     await expect(page.locator('#dkSheet')).toHaveCount(0);
@@ -123,7 +145,8 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await at(page, 'T2', lang);
     await expect(bn(page, 'prog')).toHaveAttribute('data-n', '0/6');
     await expect(bn(page, 'prog')).toHaveAttribute('data-st', 'rt');
-    await bn(page, 'lab').click();
+    if (R) await page.locator('section.level.active .ob-row [data-ob="lab"]').click(); // R28: the route's lab is its chip under the title
+    else await bn(page, 'lab').click();
     await expect(page.locator('#dkSheet')).toHaveCount(0);
     await expect(page.locator('#labAgent')).toBeInViewport();
     await bn(page, 'prog').click();
@@ -166,7 +189,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       const hits = [...document.querySelectorAll<HTMLElement>('#bnav button')].map((b) => { const r = b.getBoundingClientRect(); return !!document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)?.closest(`#bnav [data-bn="${b.dataset.bn}"]`); });
       return { gap: Math.round(nav.top - sh.bottom), hits };
     });
-    expect(geo.hits).toEqual([true, true, true, true, true]);
+    expect(geo.hits).toEqual(DOCK.map(() => true));
     expect(Math.abs(geo.gap)).toBeLessThanOrEqual(1);
     await expect(bn(page, 'toc')).toHaveClass(/on/);
     /* 目录 → 进度 */
@@ -174,6 +197,12 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await expect(page.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);
     await expect(sheet).toHaveCount(1);
     await expect(bn(page, 'prog')).toHaveClass(/on/); await expect(bn(page, 'toc')).not.toHaveClass(/on/);
+    if (R) {
+      /* R28: 进度 → 目录 switches back, 目录 again closes it; a 目录 row is the way to the quiz */
+      await bn(page, 'toc').click(); await expect(page.locator('#dkSheet[data-k="toc"]')).toHaveClass(/open/); await expect(sheet).toHaveCount(1);
+      await bn(page, 'toc').click(); await expect(sheet).toHaveCount(0);
+      await tocGo(page, 'quiz'); await expect(page.locator('section#T3 .card.quiz[id^="quiz"]')).toBeInViewport({ ratio: 0.05 });
+    } else {
     /* 进度 → 🧪 (T3 has several labs: its list) */
     await bn(page, 'lab').click();
     await expect(page.locator('#dkSheet[data-k="lab"]')).toHaveClass(/open/);
@@ -184,6 +213,7 @@ for (const lang of ['zh', 'en'] as Lang[]) {
     await bn(page, 'prog').click(); await expect(page.locator('#dkSheet[data-k="prog"]')).toHaveClass(/open/);
     await bn(page, 'quiz').click(); await expect(sheet).toHaveCount(0);
     await expect(page.locator('section#T3 .card.quiz[id^="quiz"]')).toBeInViewport();
+    }
     /* 目录 → 下一站 closes the sheet and moves on */
     await bn(page, 'toc').click(); await expect(page.locator('#dkSheet[data-k="toc"]')).toHaveClass(/open/);
     await bn(page, 'next').click();

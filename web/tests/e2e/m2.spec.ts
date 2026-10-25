@@ -1,5 +1,6 @@
 /* M2 "how to use an agent": stops U/Ua/Ub/Uc/Ud in both languages on 360/390/430, the four labs, quiz scoring,
    drill-down from usage parts into the principles and the links back up, navigation placement, analytics paths/events. */
+import { isR28, nextSel, prevStop, tocKinds } from './r28h';
 import { test, expect, type Page } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolveBase } from '../../base.config.mjs';
@@ -83,8 +84,13 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       const lab = LABS[S] ?? [];
       await expect(page.locator(`section#${S} .card.lab`)).toHaveCount(lab.length);
       for (const id of lab) await expect(page.locator(`#${id}`)).toBeAttached();
-      await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', lab.length ? '' : 'off');
-      await expect(page.locator('#bnav [data-bn="quiz"]')).not.toHaveAttribute('data-st', 'off');
+      if (isR28(S)) { /* R28: the labs and the quiz are rows of 目录 */
+        const k = await tocKinds(page);
+        expect(k.filter((x) => x === 'lab').length).toBe(lab.length); expect(k).toContain('quiz');
+      } else {
+        await expect(page.locator('#bnav [data-bn="lab"]')).toHaveAttribute('data-st', lab.length ? '' : 'off');
+        await expect(page.locator('#bnav [data-bn="quiz"]')).not.toHaveAttribute('data-st', 'off');
+      }
       await reveal(page, `#quiz${S}`);
       await expect(page.locator(`#quiz${S} .qz`)).toHaveCount(QN[S]!);
       await expect(page.locator(`section#${S} .card.m3ph`)).toHaveCount(0);
@@ -108,8 +114,10 @@ test('navigation: U stops in the all-stops list, not the bottom bar; 下一站 a
   for (const s of M2) await expect(page.locator(`#mDrawer [data-dw="${s}"], #mDrawer [data-go="${s}"]`).first()).toBeAttached();
   await page.locator('#mDrawer [data-dw="T1"], #mDrawer [data-go="T1"]').first().click();
   await expect.poll(() => station(page)).toBe('T1');
-  for (const s of [...M2, 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']) { await page.locator('#mNext').click(); await expect.poll(() => station(page)).toBe(s); }
-  for (const s of ['Bld', 'Skl', 'Job', 'Loc', 'Api', 'Up', 'Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await page.locator('#mPrev').click(); await expect.poll(() => station(page)).toBe(s); }
+  /* R28 pilot pages (Job) step on with the bottom bar's 下一站 and back with a swipe */
+  let at = 'T1';
+  for (const s of [...M2, 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2']) { await page.locator(nextSel(at)).click(); await expect.poll(() => station(page)).toBe(s); at = s; }
+  for (const s of ['Bld', 'Skl', 'Job', 'Loc', 'Api', 'Up', 'Ud', 'Uc', 'Ub', 'Ua', 'U', 'T1']) { await prevStop(page, at); await expect.poll(() => station(page)).toBe(s); at = s; }
 });
 
 test('the U diagram: tap a group box → its popup → ⤵ chip zooms into the sub-stop; ↩ returns', async ({ page }) => {

@@ -19,6 +19,7 @@ import { copyText, ev } from './copy';
 import { T, fill } from './strings';
 import { IC } from '../shell/common';
 import { IC2 } from '../ui/ic2';
+import { isR28 } from '../shell/r28';
 import './viral.css';
 import '../station/cf.css';
 import '../m2/r25.css';
@@ -143,6 +144,8 @@ export function mountLate(sec: HTMLElement, S: string, L: Lang): () => void {
     const p = document.createElement('button'); p.type = 'button'; p.className = 'pn-pc'; p.dataset.prog = '1'; p.dataset.shareCh = 'progress';
     p.innerHTML = '<b aria-hidden="true">🏅</b><span></span>'; (p.lastChild as HTMLElement).textContent = T.pBtn[L];
     p.onclick = () => load(() => import('./cards'), (m) => m.openProgress());
+    /* R28: the end of a stop is the share moment — say so in one line (the ‹ • › row is hidden, 下一站 is in the bar) */
+    if (isR28(S)) { const h = document.createElement('p'); h.className = 'pn-done'; h.textContent = L === 'en' ? `Finished “${tabn(S, L)}”? Make a picture to share.` : `看完了「${tabn(S, L)}」？做一张图分享给朋友。`; a.append(h); }
     a.append(c, p); nav.insertBefore(a, nav.querySelector('.pn-cap')); acts.push(a);
   });
   /* the T8 progress card gets the same entry */

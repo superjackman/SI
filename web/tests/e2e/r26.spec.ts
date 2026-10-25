@@ -1,6 +1,7 @@
 /* R26: the 🤖 Job, 🧰 Skl and 🛠 Bld stops — scenario pickers switch panels (one shown at a time), the Skl catalogue
    lists real servers with official links, the T1 doorways and prev/next reach them, nothing is wider than the screen,
    and (fix a) the Loc / Api calculator dropdowns show their longest option without cutting it off. zh + en on 360/390/430. */
+import { nextSel, prevStop } from './r28h';
 import { test, expect, type Page } from '@playwright/test';
 
 type Lang = 'zh' | 'en';
@@ -71,9 +72,9 @@ for (const lang of ['zh', 'en'] as Lang[]) {
       await page.locator(`${act} .m-door .dr-m[data-go="${S}"]`).click();
       await ready(page, S, lang);
     }
-    await open(page, lang, 'Loc'); await page.locator('#mNext').click(); await ready(page, 'Job', lang);
-    await open(page, lang, 'Bld'); await page.locator('#mNext').click(); await ready(page, 'T2', lang);
-    await open(page, lang, 'Job'); await page.locator('#mPrev').click(); await ready(page, 'Loc', lang);
+    await open(page, lang, 'Loc'); await page.locator(nextSel('Loc')).click(); await ready(page, 'Job', lang);
+    await open(page, lang, 'Bld'); await page.locator(nextSel('Bld')).click(); await ready(page, 'T2', lang);
+    await open(page, lang, 'Job'); await prevStop(page, 'Job'); await ready(page, 'Loc', lang); /* R28 pilot: a swipe */
   });
 
   /* fix (a): on a phone each dropdown takes the whole row, so its longest option is not cut off */

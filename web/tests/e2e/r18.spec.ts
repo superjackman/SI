@@ -3,6 +3,7 @@
    under each station is one ≥ 44px-tall scrub control: a tap lands on the nearest dot, press-and-slide shows the stop name
    and goes on lift, dragging out of the strip cancels; keyboard (Enter on a dot) and the arrows still work. */
 import { test, expect, type Page } from '@playwright/test';
+import { isR28, swipe } from './r28h';
 
 type Lang = 'zh' | 'en';
 const ready = (page: Page, S: string, lang: Lang) => page.locator(`html[data-si-ready="${S}.${lang}"]`).waitFor({ state: 'attached', timeout: 15_000 });
@@ -27,7 +28,7 @@ for (const w of [360, 412]) for (const lang of ['zh', 'en'] as Lang[]) {
         const b = document.querySelector('#tbWhere b') as HTMLElement, rc = (s: string) => document.querySelector(s)!.getBoundingClientRect();
         const lh = parseFloat(getComputedStyle(b).lineHeight), wh = rc('#tbWhere');
         return { name: b.textContent, title: b.title, dx: b.scrollWidth - b.clientWidth, dy: b.scrollHeight - b.clientHeight, lines: Math.round(b.getBoundingClientRect().height / lh),
-          fs: parseFloat(getComputedStyle(b).fontSize), gapL: wh.left - rc('#mPrev').right, gapR: rc('#mNext').left - wh.right,
+          fs: parseFloat(getComputedStyle(b).fontSize), /* R28 pilot pages: no ‹ ›, the name sits between ☰ and search */ gapL: wh.left - rc(document.querySelector('#mPrev') ? '#mPrev' : '#mMenu').right, gapR: rc(document.querySelector('#mNext') ? '#mNext' : '#mSearch').left - wh.right,
           inBar: wh.top >= rc('#topbar').top - 0.5 && wh.bottom <= rc('#topbar').bottom + 0.5, bar: rc('#topbar').height };
       });
       expect(r.title, S).toBe(r.name);
@@ -41,7 +42,36 @@ for (const w of [360, 412]) for (const lang of ['zh', 'en'] as Lang[]) {
   });
 }
 
+/* R28: the dot strip at the end of a stop is gone (its job, "jump to any stop", is the ☰ list; next / back are the bar's
+   下一站 and a swipe). On the R28 skeleton the same two checks run against those owners. */
+const R = isR28('T3');
+const openDw = async (page: Page) => { await page.locator('#mMenu').click(); await expect(page.locator('#mDrawer')).toHaveClass(/open/);
+  await page.waitForFunction(() => { const e = document.querySelector('#mDrawer [data-dw="T1"]'); if (!e) return false; const l = e.getBoundingClientRect().left; const w = window as unknown as { __dwl?: number }; const ok = l >= 0 && w.__dwl === l; w.__dwl = l; return ok; }, null, { polling: 100 }); };
 for (const lang of ['zh', 'en'] as Lang[]) {
+  if (R) {
+    test(`${lang}: R28 — no dot strip at the stop end; ☰ lists all 27 stops as ≥ 44px rows inside the screen, each named`, async ({ page }) => {
+      await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
+      await page.evaluate(() => window.scrollTo(0, 1e6)); await page.waitForTimeout(300);
+      await expect(page.locator('section.level.active .m-pn .pn-dots')).toBeHidden();
+      await openDw(page);
+      const f = await page.evaluate((O) => O.map((S) => { const e = document.querySelector<HTMLElement>(`#mDrawer [data-dw="${S}"]`); if (!e) return S + ' missing'; e.scrollIntoView({ block: 'nearest' }); const r = e.getBoundingClientRect();
+        return r.height < 44 ? `${S} ${r.height}px` : r.left < -0.5 || r.right > innerWidth + 0.5 ? `${S} outside` : !(e.getAttribute('aria-label') ?? '').length ? `${S} no name` : e.scrollWidth > e.clientWidth + 1 ? `${S} cut` : ''; }).filter(Boolean), ORDER);
+      expect(f).toEqual([]);
+      await expect(page.locator('#mDrawer [data-dw="T3"]')).toHaveAttribute('aria-current', 'page');
+    });
+
+    test(`${lang}: R28 — ☰ row → that stop; Enter on a row works; bar 下一站 → next; swipe → back`, async ({ page }) => {
+      test.setTimeout(60_000);
+      await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
+      await openDw(page); await page.locator('#mDrawer [data-dw="T4"]').tap();
+      await ready(page, 'T4', lang); expect(await station(page)).toBe('T4');
+      await openDw(page); await page.locator('#mDrawer [data-dw="K1"]').focus(); await page.keyboard.press('Enter');
+      await ready(page, 'K1', lang); expect(await station(page)).toBe('K1');
+      await page.locator('#bnav [data-bn="next"]').tap(); await ready(page, 'K2', lang);
+      await swipe(page, -1); await ready(page, 'K1', lang); expect(await station(page)).toBe('K1');
+    });
+    continue;
+  }
   test(`${lang}: the stop-dot strip is one ≥ 44px scrub control that fits next to the arrows`, async ({ page }) => {
     await page.goto(`./?lang=${lang}#T3`); await ready(page, 'T3', lang);
     const bb = await toStrip(page);

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { NO } from './boot/noswipe';
 import { TopBar } from './shell/TopBar';
+import { isR28 } from './shell/r28';
 import { BackFab, Crumb, Dock, Drawer, Toast, openShare } from './shell/Nav';
 import { openDrawer } from './shell/drawer';
 import { StationView, preload } from './station/StationView';
@@ -107,6 +108,8 @@ export function App() {
   const mode = useApp((s) => s.mode), touring = useApp((s) => s.tour != null);
   useEffect(() => { const c = document.body.classList; c.toggle('mode-use', mode === 'use'); c.toggle('mode-train', mode === 'train'); syncTrain(); }, [mode]);
   useEffect(() => { document.body.classList.toggle('in-T4', S.startsWith('T4')); }, [S]);
+  /* R28 pilot: the calmer skeleton (shell/r28.ts); r28h = the home page (no bottom bar) */
+  useEffect(() => { const c = document.body.classList, r = isR28(S); c.toggle('r28', r); c.toggle('r28h', r && S === 'H'); }, [S]);
   useEffect(() => { document.addEventListener('si-station-shown', syncTrain); return () => document.removeEventListener('si-station-shown', syncTrain); }, []);
   useEffect(() => { document.body.classList.toggle('search-open', searchOpen); }, [searchOpen]);
   /* language switch: close full screen (like the live re-instantiation), say so */

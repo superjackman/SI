@@ -25,19 +25,21 @@ describe('R27 home page H', () => {
     expect(KB.PATH.H).toEqual(['H']); expect(KB.TABN.H).toEqual({ zh: '首页', en: 'Home' });
     for (const S of KB.TABORDER) expect(KB.PATH[S]![0], S).toBe('H');
   });
-  for (const L of LANGS) it(`${L}: one line, 🎬 tour, 🧒 kids route, six doorways, share card, folded guide — nothing else`, () => {
+  /* R28 (pilot skeleton): three calm blocks — what this is, the six doorways (the main action), "not sure?" (tour + kids'
+     route) and one share line. The poster moved to 进度, "how to browse" to ☰ / 🔍 — they are no longer on H */
+  for (const L of LANGS) it(`${L}: one line, six doorways, then tour + kids route, one share line — nothing else`, () => {
     const d = dom(st('H', L).html), kids = [...d.children].map((e) => e.className || e.tagName);
-    expect(kids).toEqual(['hm', 'm-door hm-door', 'hm-sh', 'hm-more']);
+    expect(kids).toEqual(['hm', 'm-door hm-door', 'hm-go', 'hm-sh']);
     expect(d.querySelectorAll('h1')).toHaveLength(1);
-    expect(d.querySelector('.hm [data-tour=start]')).toBeTruthy();
-    const kid = d.querySelector<HTMLElement>('.hm [data-route=kid]')!; expect(kid.dataset.go).toBe('T1');
+    expect(d.querySelectorAll('.hm-go [data-tour=start]')).toHaveLength(1);
+    const kid = d.querySelector<HTMLElement>('.hm-go [data-route=kid]')!; expect(kid.dataset.go).toBe('T1');
     expect([...d.querySelectorAll<HTMLElement>('.hm-door .dr-m')].map((b) => b.dataset.go)).toEqual(DOORS);
-    expect([...d.querySelectorAll<HTMLElement>('[data-hm]')].map((b) => b.dataset.hm)).toEqual(['share', 'poster', 'drawer', 'search']);
-    expect(d.querySelector('details.hm-more')!.hasAttribute('open')).toBe(false);
-    expect(d.querySelectorAll('.hm-lv li')).toHaveLength(3);
-    expect(d.textContent).toContain('27');
-    /* short: well under a screenful of text */
-    expect((d.textContent ?? '').replace(/\s+/g, '').length).toBeLessThan(L === 'zh' ? 400 : 1100);
+    expect([...d.querySelectorAll<HTMLElement>('[data-hm]')].map((b) => b.dataset.hm)).toEqual(['share']);
+    expect(d.querySelector('details')).toBeNull();
+    /* no emoji on the chrome-like buttons (doorway pictures are content) */
+    for (const b of d.querySelectorAll('.hm-b')) expect(b.textContent, b.textContent!).not.toMatch(/\p{Extended_Pictographic}/u);
+    /* short: well under a screenful of text (R27: < 400 / < 1100) */
+    expect((d.textContent ?? '').replace(/\s+/g, '').length).toBeLessThan(L === 'zh' ? 260 : 700);
     expect(d.textContent).not.toMatch(/VPN|科学上网|翻墙/i);
   });
   it('the doorways live only on the home page now (moved off T1, not copied)', () => {

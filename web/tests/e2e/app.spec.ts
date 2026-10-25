@@ -1,11 +1,11 @@
 import { test, expect, type Page } from '@playwright/test';
+import { dockOf, isR28, nextSel, prevStop, tapLang } from './r28h';
 
 type Lang = 'zh' | 'en';
 const LANGS: Lang[] = ['zh', 'en'];
 const STATIONS = ['T1', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8'] as const;
 /* drill badges on the live diagrams (T4a, T5, T8 have none on live either) */
 /* R22: the bottom bar is the same 5 page buttons on every stop */
-const DOCK = ['toc', 'lab', 'quiz', 'prog', 'next'];
 /* every station (R13: the T1 diagram drills into all of them, including U…, K1–K5) */
 const ALLST = ['T1', 'U', 'Ua', 'Ub', 'Uc', 'Ud', 'Up', 'Api', 'Loc', 'Job', 'Skl', 'Bld', 'T2', 'T3', 'N', 'T4', 'T4a', 'T4b', 'T5', 'T6', 'T7', 'T8', 'K1', 'K2', 'K3', 'K4', 'K5'];
 const BADGES: Record<string, number> = { T1: 36, T2: 1, T3: 14, N: 7, T4: 4, T4a: 0, T4b: 1, T5: 0, T6: 7, T7: 3, T8: 0 };
@@ -27,13 +27,19 @@ async function open(page: Page, lang: Lang, hash: string) {
 }
 const station = (page: Page) => page.evaluate(() => (window as unknown as SI).__si.state().station);
 const openCard = (page: Page, id: string) => page.evaluate((id) => (window as unknown as SI).__si.openInfo(id), id);
-/** tap the language button and wait until the station is rebuilt in the other language and its labs are mounted again */
-const switchLang = (page: Page) => page.evaluate(() => new Promise<void>((res) => {
-  const want = document.documentElement.lang === 'en' ? 'zh' : 'en';
-  const done = () => { if ((document.documentElement.dataset.siReady ?? '').endsWith('.' + want)) { document.removeEventListener('si-station-ready', done); res(); } };
-  document.addEventListener('si-station-ready', done);
-  document.getElementById('mLang')!.click();
-}));
+/** tap the language button (R28 pilot pages: ☰ → English / 中文) and wait until the station is rebuilt in the other
+    language and its labs are mounted again */
+async function switchLang(page: Page) {
+  const want = (await page.evaluate(() => document.documentElement.lang)).startsWith('en') ? 'zh' : 'en';
+  await page.evaluate(() => { (window as unknown as { __sw: Promise<void> }).__sw = new Promise<void>((res) => {
+    const want = document.documentElement.lang.startsWith('en') ? 'zh' : 'en';
+    const done = () => { if ((document.documentElement.dataset.siReady ?? '').endsWith('.' + want)) { document.removeEventListener('si-station-ready', done); res(); } };
+    document.addEventListener('si-station-ready', done);
+  }); });
+  await tapLang(page);
+  await page.evaluate(() => (window as unknown as { __sw: Promise<void> }).__sw);
+  await expect(page.locator('html')).toHaveAttribute('lang', want === 'en' ? 'en' : 'zh-CN');
+}
 /** like a reader: open the collapsed card(s) around an element by tapping their headers, then scroll to it */
 async function reveal(page: Page, sel: string) {
   for (let i = 0; i < 4; i++) {
@@ -82,8 +88,9 @@ for (const lang of LANGS) {
       await expect(page.locator('html')).toHaveAttribute('lang', lang === 'en' ? 'en' : 'zh-CN');
       await expect(page).toHaveTitle(lang === 'en' ? /^\(Mobile\) .+ · AI, explained plainly$/ : /^（手机版）.+ · 大白话拆解 AI$/);
       await expect(page.locator(`section#${S}.level.active .m-stage .m-dg .m-vw svg`)).toBeVisible();
-      expect(await page.locator('#bnav button').evaluateAll((bs) => bs.map((b) => (b as HTMLElement).dataset.bn))).toEqual(DOCK);
-      await expect(page.locator('#crumb .chip.on')).toBeVisible();
+      expect(await page.locator('#bnav button').evaluateAll((bs) => bs.map((b) => (b as HTMLElement).dataset.bn))).toEqual(dockOf(S));
+      /* where am I: the trail's current chip, or (R28 pilot) the header's name + the ‹ up link */
+      if (isR28(S)) { await expect(page.locator('#tbWhere b')).toBeVisible(); await expect(page.locator('#crumb .cb-up')).toBeVisible(); } else await expect(page.locator('#crumb .chip.on')).toBeVisible();
       expect(await page.locator(`section#${S} .dd-b`).count(), 'drill badges (same as live)').toBe(BADGES[S]);
       await expect(page.locator(`section#${S} .st-fail`)).toHaveCount(0);
       await expect(page.locator(`section#${S} a[href*="#${S}&lang="]`), 'no "open the live page" placeholder').toHaveCount(0);
@@ -181,9 +188,14 @@ test('language switch keeps station, popup and tab; the T1 lab keeps working (zh
   await openCard(page, 'app');
   const tabs = page.locator('#modal.open .m-tabs [role=tab]');
   await tabs.nth(1).click();
+  /* R28: the language lives in ☰, which a reader reaches after closing the popup (☰ sits under it); the popup then
+     reopens in English. The old header EN switched with the popup open and kept it and its tab. */
+  const r = isR28('T1');
+  if (r) await page.locator('#modal.open .m-head .close').click();
   await switchLang(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   expect(await station(page)).toBe('T1');
+  if (r) { await openCard(page, 'app'); await page.locator('#modal.open .m-tabs [role=tab]').nth(1).click(); }
   await expect(page.locator('#modal.open .m-head h3')).not.toContainText(/[\u3400-\u9fff]/);
   await expect(page.locator('#modal.open .m-tabs [role=tab]').nth(1)).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#toast')).toContainText('English');
@@ -291,9 +303,9 @@ test('bottom bar 下一站, drawer, prev/next, search, ☰ map sheet → T5', as
   await page.locator('#mDrawer [data-dw="T2"]').click();
   await expect.poll(() => station(page)).toBe('T2');
   await expect(page.locator('#mDrawer')).not.toHaveClass(/open/);
-  await page.locator('#mNext').click();
+  await page.locator(nextSel('T2')).click();
   await expect.poll(() => station(page)).toBe('T3');
-  await page.locator('#mPrev').click();
+  await prevStop(page, 'T3');
   await expect.poll(() => station(page)).toBe('T2');
   await page.locator('#mSearch').click();
   await page.locator('#search').fill('注意力');

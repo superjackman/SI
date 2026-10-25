@@ -10,6 +10,7 @@ import { svgHtml } from './common';
 import { toggleDrawer } from './drawer';
 import { openShare } from './Nav';
 import type { Lang } from '../i18n/types';
+import { isR28, isZone } from './r28';
 
 type Roles = Record<string, { zh: string; en: string }>;
 let rolesP: Promise<Roles> | null = null;
@@ -120,6 +121,26 @@ export function TopBar() {
   const pvL = pv ? t('nav.prevStop') + tabn(pv, lang) : t('nav.firstStop');
   const nxL = nx ? t('nav.nextStop') + tabn(nx, lang) : t('nav.lastStop');
   const langL = t('lang.switchTo');
+  const srch = <button className="icon-btn tb-ic" id="mSearch" aria-label={t('search.parts')} title={t('search.parts')} aria-controls="search"
+    onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }} {...svgHtml('search')} />;
+  const shr = <button className="icon-btn tb-ic tb-sh" id="mShare" aria-label={t('share.title')} title={t('share.title')} aria-haspopup="dialog" onClick={openShare} {...svgHtml('share')} />;
+  /* R28: where am I (name + one small line) and three tools: ☰ all stops, 🔍 find, ↗ share. No ‹ › (the bottom bar's
+     下一站, swipe and back cover them) and no EN (☰ has the language; links keep ?lang=) */
+  if (isR28(S)) {
+    const en = lang === 'en', sub = S === 'H' ? '' : isZone(S) ? (en ? 'Zone' : '专区') : i >= 0 ? (en ? `Stop ${i + 1} of ${TABORDER.length}` : `第 ${i + 1} 站 · 共 ${TABORDER.length} 站`) : '';
+    return (
+      <div className="topbar r28t" id="topbar">
+        <i id="tbProg" ref={prog} aria-hidden="true" />
+        <div className="tb-in">
+          <button className="icon-btn tb-ic tb-menu" id="mMenu" aria-label={t('nav.menu.open')} title={t('nav.allStops')} aria-controls="mDrawer" aria-expanded={drawer ? 'true' : 'false'}
+            onClick={toggleDrawer} {...svgHtml('menu')} />
+          <div className="tb-where" id="tbWhere" aria-live="polite"><b ref={ttl} title={nm}>{S === 'H' ? t('site.title') : nm}</b>{sub ? <small className="tb-sub">{sub}</small> : null}</div>
+          {srch}{shr}
+          <Search lang={lang} />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="topbar" id="topbar">
       <i id="tbProg" ref={prog} aria-hidden="true" />
@@ -129,9 +150,7 @@ export function TopBar() {
         <button className="icon-btn tb-ic tb-nv" id="mPrev" disabled={!pv} aria-label={pvL} title={pvL} onClick={() => pv && go(pv)} {...svgHtml('prev')} />
         <div className="tb-where" id="tbWhere" aria-live="polite"><b ref={ttl} title={nm}>{nm}</b>{i >= 0 ? <span className="tb-dots" aria-hidden="true">{dotClasses(S).map((c, k) => <i key={k} className={k < w0 || k >= w0 + 7 ? c + ' far' : c} />)}<small>{i + 1}/{TABORDER.length}</small></span> : null}</div>
         <button className="icon-btn tb-ic tb-nv" id="mNext" disabled={!nx} aria-label={nxL} title={nxL} onClick={() => nx && go(nx)} {...svgHtml('next')} />
-        <button className="icon-btn tb-ic" id="mSearch" aria-label={t('search.parts')} title={t('search.parts')} aria-controls="search"
-          onClick={() => { const o = useApp.getState().searchOpen; set({ searchOpen: !o, sheetOpen: false, popup: null, cardStack: [], full: null }); }} {...svgHtml('search')} />
-        <button className="icon-btn tb-ic tb-sh" id="mShare" aria-label={t('share.title')} title={t('share.title')} aria-haspopup="dialog" onClick={openShare} {...svgHtml('share')} />
+        {srch}{shr}
         <button className="icon-btn tb-ic tb-lang" id="mLang" aria-label={langL} title={langL} lang={lang === 'en' ? 'zh-CN' : 'en'} onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}>{lang === 'en' ? '中' : 'EN'}</button>
         <Search lang={lang} />
       </div>

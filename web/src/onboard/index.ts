@@ -17,6 +17,7 @@ import { ev } from '../viral/copy';
 import { fill } from '../viral/strings';
 import { closeDrawer } from '../shell/drawer';
 import { IC } from '../shell/common';
+import { isR28 } from '../shell/r28';
 import { O, ROUTE, LABN } from './strings';
 import './onboard.css';
 
@@ -118,6 +119,9 @@ function bubble(targets: Element[], html: string, acts: HTMLElement[], cls = '',
 const STEPS0: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4'], ['#bnav', 'c5']];
 /** R27+: the home page's coach marks: what this is → where to start (🎬 / 🧒) → the six doorways → header (menu, change stop/swipe, find/share/lang) → bottom row */
 export const HSTEPS: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-go', 'h2'], ['.hm-door .dr-g', 'h3'], ['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#bnav', 'h5']];
+/** R28 skeleton: the same walk-through for the calmer header / bottom bar (no ‹ ›, no EN, 3 items at the bottom) */
+const STEPS28: [string, keyof typeof O][] = [['#mMenu', 'n1'], ['#tbWhere', 'n2'], ['#mSearch,#mShare', 'n3'], ['#crumb .cb-up', 'n4'], ['#bnav', 'n5']];
+export const HSTEPS28: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-door .dr-g', 'n6'], ['.hm-go', 'n7'], ['#mMenu', 'n1'], ['#mSearch,#mShare', 'n3']];
 /** which first-visit card a page shows: the home page its slim strip, a stop the R21 card; none on a friend's link
     (its banner is why they came), during the tour, once dismissed, or after the first page of the visit */
 export function welcomeKind(S: string, fresh: boolean, first: string | null, onb: string | null, tourOn: boolean, banner: boolean): 'home' | 'stop' | null {
@@ -128,12 +132,13 @@ const shown = (e: Element | null): e is HTMLElement => !!e && (e as HTMLElement)
 let coachOn = false;
 export function coach(L: Lang, i = 0, STEPS = STEPS0) {
   if (st().tour != null) return;
+  if (STEPS === STEPS0 && isR28(st().station)) STEPS = STEPS28;
   if (i >= STEPS.length) { killBub(); coachOn = false; LSset(K.coach, '1'); ev('coach-done'); tipsKick(); return; }
   const [q, k] = STEPS[i]!, ts = q.split(',').map((s) => document.querySelector(s)).filter(shown);
   if (!ts.length) { coach(L, i + 1, STEPS); return; }
   coachOn = true;
   if (i === STEPS.length - 1 && scrollY > 0) window.scrollTo({ top: 0 });
-  else if (STEPS !== STEPS0 && !ts[0]!.closest('#topbar,#bnav')) { const r = ts[0]!.getBoundingClientRect(); if (r.top < 60 || r.top > innerHeight * 0.6) window.scrollTo({ top: Math.max(0, scrollY + r.top - 90) }); }
+  else if (STEPS !== STEPS0 && STEPS !== STEPS28 && !ts[0]!.closest('#topbar,#bnav')) { const r = ts[0]!.getBoundingClientRect(); if (r.top < 60 || r.top > innerHeight * 0.6) window.scrollTo({ top: Math.max(0, scrollY + r.top - 90) }); }
   const skip = btn('ob-b', O.cSkip[L], () => { killBub(); coachOn = false; LSset(K.coach, '1'); ev('coach-skip'); tipsKick(); }, 'coach-skip');
   const last = i === STEPS.length - 1;
   const nx = btn('ob-b pri', last ? O.cOk[L] : O.cNext[L] + ` (${i + 1}/${STEPS.length})`, () => coach(L, i + 1, STEPS), 'coach-next');
@@ -239,7 +244,7 @@ function homeWelcome(sec: HTMLElement, L: Lang, again = false) {
   const c = el('section', 'ob-wel ob-hw'); c.setAttribute('aria-labelledby', 'obHwT');
   const p = el('p', 'ob-hwt', O.hwT[L]); p.id = 'obHwT';
   const x = btn('vr-x ob-x', '', () => done('x'), 'onb-x'); x.innerHTML = IC.x; x.setAttribute('aria-label', O.hwClose[L]); x.title = O.hwClose[L];
-  const go1 = btn('ob-b pri', O.hwGo[L], () => { done('btns'); window.scrollTo({ top: 0 }); coach(L, 0, HSTEPS); }, 'onb-btns');
+  const r28 = isR28('H'), go1 = btn('ob-b pri', (r28 ? O.hwGo5 : O.hwGo)[L], () => { done('btns'); window.scrollTo({ top: 0 }); coach(L, 0, r28 ? HSTEPS28 : HSTEPS); }, 'onb-btns');
   c.append(p, x, go1);
   const at = sec.querySelector('.hm-s'); if (at) at.after(c); else sec.prepend(c);
   ev(again ? 'onb-reopen' : 'onb-show');
@@ -263,6 +268,9 @@ function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: ()
   const qn = qc ? el('div', 'ob-qn') : null;
   if (qc && qn) (qc.nextElementSibling?.classList.contains('vr-q') ? qc.nextElementSibling : qc).after(qn);
   const labs = labsOf(sec);
+  /* R28: the labs and the lit count live in the bottom bar (目录 / 进度) and the next stop is its 下一站 — this row keeps
+     only the kids' route (its chip and its lab), so it is empty, and hidden, for everyone else */
+  const r28 = isR28(S);
   const draw = () => {
     const r = route(), ri = r === 'kid' ? ROUTE_S.indexOf(S) : -1, lit = litNow(), p = progress(), nx = nextStop(S, r, lit);
     row.replaceChildren();
@@ -273,13 +281,14 @@ function rows(sec: HTMLElement, S: string, L: Lang): { draw: () => void; off: ()
       } else row.append(btn('ob-c rt', O.rBack[L] + ' ›', () => { ev('ob-route-back'); go(nx!); }, 'route-back'));
     }
     const lab = ri >= 0 ? ROUTE[ri]![1] : labs[0]?.id;
-    if (lab && document.getElementById(lab)) {
+    if (lab && document.getElementById(lab) && (!r28 || ri >= 0)) {
       const t = ri >= 0 ? fill(O.try[L], { lab: LABN[lab]![L] }) : labs[0]!.id === 'walkCard' ? O.demo[L] : labs.length === 1 ? O.lab1[L] : fill(O.labs[L], { n: labs.length });
       row.append(btn('ob-c lab', t + ' ›', () => { ev('ob-lab'); openLab(lab); }, 'lab'));
     }
-    row.append(btn('ob-c lit', fill(O.lit[L], { n: p.lit }), () => { ev('ob-lit'); void import('../viral/cards').then((m) => m.openProgress()); }, 'lit'));
+    if (!r28) row.append(btn('ob-c lit', fill(O.lit[L], { n: p.lit }), () => { ev('ob-lit'); void import('../viral/cards').then((m) => m.openProgress()); }, 'lit'));
+    row.hidden = !row.childElementCount;
     n1.replaceChildren();
-    if (nx) n1.append(btn('ob-c nx', fill(r === 'kid' ? O.nextR[L] : O.next[L], { stop: tabn(nx, L) }), () => { ev('ob-next'); go(nx); }, 'next'));
+    if (nx && !r28) n1.append(btn('ob-c nx', fill(r === 'kid' ? O.nextR[L] : O.next[L], { stop: tabn(nx, L) }), () => { ev('ob-next'); go(nx); }, 'next'));
     /* route panel */
     pan.replaceChildren();
     if (r === 'kid') {
@@ -335,7 +344,7 @@ export function mountOnboard(sec: HTMLElement, S: string, L: Lang): () => void {
   const R = S === 'H' ? { draw: () => undefined, off: () => undefined } : rows(sec, S, L);
   cur = { sec, S, L, draw: R.draw };
   dwEntry(L);
-  const crumb = document.querySelector<HTMLElement>('#crumb .chips'); if (crumb) crumb.dataset.ob = O.crumb[L];
+  const crumb = document.querySelector<HTMLElement>('#crumb .chips'); if (crumb && !isR28(S)) crumb.dataset.ob = O.crumb[L]; else if (crumb) delete crumb.dataset.ob;
   /* arriving on a friend's link (challenge / lab banner): the banner is why they came — no welcome card on top of it
      (the ☰ entry still has it), only the header labels */
   const wk = welcomeKind(S, !!fresh, first, LS(K.onb), st().tour != null, !!sec.querySelector('.vr-ban'));

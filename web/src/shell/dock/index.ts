@@ -81,6 +81,9 @@ export function badges(x: HTMLElement, S: string, L: Lang): () => void {
       pb.dataset.n = g.n; pb.dataset.st = g.rt ? 'rt' : '';
       pb.setAttribute('aria-label', tx('dk.progA', L) + ' · ' + fill(D.lit[L], { x: g.x, t: TABORDER.length }) + (g.rt ? ' · ' + fill(D.rH[L], { k: g.k }) : ''));
     }
+    /* 下一站 says where it goes (screen readers, long press): the next stop on your route */
+    const nb = b('next'), nx = nextStop(S, r, lit);
+    if (nb) nb.setAttribute('aria-label', tx('dk.nextA', L) + (nx ? ' · ' + tabn(nx, L) : ''));
     const qb = b('quiz'), q = !!quizOf(x), ok = q && lit(S);
     if (qb) {
       qb.dataset.st = !q ? 'off' : ok ? 'ok' : '';
