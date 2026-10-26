@@ -1,4 +1,4 @@
-/* R31d scene (K3): two white dice in front and, behind them, a bar chart of the sums 2 to 12 on a white base. Each
+/* R31d scene (K3): two white dice in front and, behind them, a bar chart of the sums 2 to 12 on a white base. R32: pale ghost bars show the expected shape from the start; the bigger dice sit in front, below the sums. Each
    tap rolls the dice 10 more times: the dice tumble and the bars grow. A dotted purple curve shows what the bars
    should look like after very many rolls (7 is the most common sum: 6 ways out of 36). */
 import { CatmullRomCurve3, Group, Mesh, TubeGeometry, Vector3 } from 'three';
@@ -8,7 +8,7 @@ import { WAYS, dice, sumCounts } from '../m2/w3d3';
 import type { View } from '../m2/s3d';
 
 export interface DiceApi { lang: 'zh' | 'en'; raf: (f: FrameRequestCallback) => number; caf: (id: number) => void; n(): number }
-const DX = 0.4, X0 = -2.0, BZ = -0.6, FY = -0.9, HMAX = 2.5, DUR = 0.6;
+const DX = 0.4, X0 = -2.0, BZ = -0.6, FY = -0.9, HMAX = 2.5, DUR = 0.6, DS = 0.8, DZ = 1.6;
 const PIPS: Record<number, [number, number][]> = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]], 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] };
 const pip = (v: number) => paint(128, 128, (g) => { g.fillStyle = v === 1 ? '#e11d48' : '#3b347a'; for (const [x, y] of PIPS[v]!) { g.beginPath(); g.arc(64 + x * 32, 64 + y * 32, v === 1 ? 17 : 12, 0, 7); g.fill(); } });
 const side = (v: number) => [1, 2, 3, 4, 5, 6].find((s) => s !== v && s !== 7 - v)!;
@@ -16,7 +16,7 @@ const side = (v: number) => [1, 2, 3, 4, 5, 6].find((s) => s !== v && s !== 7 - 
 export function make(box: HTMLElement, api: DiceApi): View {
   let t = DUR, last = -1;
   const st = stage(box, {
-    raf: api.raf, caf: api.caf, cam: [0.6, 3.4, 9], look: [0.05, 0.1, 0], fit: 2.6, yaw: -0.2,
+    raf: api.raf, caf: api.caf, cam: [0.5, 5.6, 8.4], look: [0.0, -0.1, 0.35], fit: 2.45, yaw: -0.16,
     busy: () => t < DUR, tick: (dt) => { if (t < DUR) { t = Math.min(DUR, t + dt); pose(); } },
   });
   rig(st);
@@ -26,30 +26,33 @@ export function make(box: HTMLElement, api: DiceApi): View {
   P.add(rb(W, 0.2, 1.3, 0.08, gloss('#f4f2fc'), X0 + 5 * DX, FY - 0.1, BZ));
   const lab = face(W - 0.2, 0.26, paint(704, 44, (g) => { g.fillStyle = '#5b5591'; g.font = 'bold 30px sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; for (let s = 2; s <= 12; s++) g.fillText(String(s), 352 + (s - 7) * 64, 24); }));
   lab.position.set(X0 + 5 * DX, FY - 0.1, BZ + 0.655); P.add(lab);
-  const sh = st.blob(1, 0.2); sh.scale.set(2.7, 1.6, 1); sh.position.set(0, FY - 0.22, 0.2); P.add(sh);
+  const sh = st.blob(1, 0.2); sh.scale.set(2.9, 2.0, 1); sh.position.set(0, FY - 0.22, 0.5); P.add(sh);
   /* the bars */
+  /* R32: pale ghost bars always show the expected 1:2:3:4:5:6:5:4:3:2:1 shape, so the first screen is not empty */
+  const ghosts = WAYS.map((w, i) => { const m = gloss('#c4b5fd'); m.transparent = true; m.opacity = 0.32; m.depthWrite = false; const g = rb(0.34, 1, 0.34, 0.05, m, X0 + i * DX, FY, BZ); g.scale.y = (w / 6) * HMAX; g.position.y = FY + g.scale.y / 2; P.add(g); return g; });
   const bars = WAYS.map((_, i) => { const m = gloss('#8b5cf6', { emissive: '#7c3aed', glow: 0.1 }); const b = rb(0.3, 1, 0.3, 0.05, m, X0 + i * DX, FY, BZ); P.add(b); return { b, m, h0: 0.02, h1: 0.02 }; });
   /* the two dice */
   const die = (x: number) => {
-    const g = new Group(); g.position.set(x, FY + 0.32, 1.25); P.add(g);
+    const g = new Group(); g.position.set(x, FY - 0.2 + DS / 2, DZ); g.scale.setScalar(DS / 0.62); P.add(g);
     g.add(rb(0.62, 0.62, 0.62, 0.12, gloss('#ffffff')));
     const top = face(0.5, 0.5, pip(1)); top.rotation.x = -Math.PI / 2; top.position.y = 0.312; g.add(top);
     const fr = face(0.5, 0.5, pip(2)); fr.position.z = 0.312; g.add(fr);
     return { g, top, fr, spin: 0 };
   };
-  const dd = [die(-1.55), die(-0.7)];
+  const dd = [die(-0.55), die(0.55)];
   const pin = st.tag('', 'pin up');
   let curve: Mesh | null = null, dots: Group | null = null;
   function pose() {
     const e = 1 - (1 - t / DUR) ** 3;
     bars.forEach((b) => { const h = b.h0 + (b.h1 - b.h0) * e; b.b.scale.y = h; b.b.position.y = FY + h / 2; });
-    dd.forEach((d, i) => { d.g.rotation.set((1 - e) * 6.3 * (i ? 1 : -1), (1 - e) * 3.1, 0); d.g.position.y = FY + 0.32 + Math.sin(e * Math.PI) * 0.5 * (t < DUR ? 1 : 0); });
+    dd.forEach((d, i) => { d.g.rotation.set((1 - e) * 6.3 * (i ? 1 : -1), (1 - e) * 3.1, 0); d.g.position.y = FY - 0.2 + DS / 2 + Math.sin(e * Math.PI) * 0.5 * (t < DUR ? 1 : 0); });
   }
   function update() {
     const n = api.n(), c = sumCounts(n), top = Math.max(1, ...c);
     /* the bar scale: the expected tallest bar (n × 6/36) or the tallest real bar, whichever is bigger */
     const unit = HMAX / Math.max(top, (n * 6) / 36, 3);
     bars.forEach((b, i) => { b.h0 = b.b.scale.y; b.h1 = Math.max(0.02, c[i]! * unit); b.m.color.set(c[i] === top && n > 0 ? '#6d28d9' : '#a78bfa'); });
+    ghosts.forEach((g, i) => { g.scale.y = n > 0 ? Math.max(0.02, ((n * WAYS[i]!) / 36) * unit) : (WAYS[i]! / 6) * HMAX; g.position.y = FY + g.scale.y / 2; });
     /* the expected curve */
     if (curve) freeObj(curve); if (dots) freeObj(dots);
     curve = null; dots = null;

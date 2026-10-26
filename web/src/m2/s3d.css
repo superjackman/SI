@@ -73,6 +73,8 @@
 body:has(.level.active>nav.m-zone+.card.s3c) #crumb{padding-top:2px!important}
 .level:has(>nav.m-zone+.card.s3c)>.pagehead{margin:2px 0 4px!important;padding:8px 12px!important}
 .level:has(>nav.m-zone+.card.s3c)>.pagehead .pg-t{margin-bottom:0!important}
+/* R32: English stop names are longer; on a 3D stop the title is 16 px so it stays on one line beside the Notes pill */
+html[lang^=en] .level:has(>nav.m-zone+.card.s3c)>.pagehead .pg-t{font-size:16px!important}
 /* R31c: short screens (360×740): the crumb row lays out 32 px tall (its button keeps a 44 px tap area by overlapping), and the
    gaps around the page head close a little, so the stage keeps ≥54% of the screen */
 @media (max-height:780px){

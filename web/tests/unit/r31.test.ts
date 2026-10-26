@@ -45,6 +45,8 @@ describe('R31 toy numbers', () => {
   it('Skl / Bld: five tools, four blocks; sentences change with the choice', () => {
     expect(SKL_TOOLS).toHaveLength(5); expect(BLD_PARTS.map((b) => b[0])).toEqual(['model', 'tools', 'mem', 'ins']);
     expect(sklSay([0, 1], true, 'zh')).not.toBe(sklSay([0, 1], false, 'zh'));
+    /* R32: the English Skl line fits one 360 px line (no wrap pushes the stage down) */
+    for (const on of [[0], [0, 1], [2, 3], [0, 1, 2], [0, 1, 2, 3, 4]]) for (const a of [true, false]) expect(sklSay(on, a, 'en').length).toBeLessThanOrEqual(38);
     expect(new Set((['', 'nocode', 'code'] as Road[]).map((r) => bldSay(r, 'en'))).size).toBe(3);
     expect(duoSay('with', 'zh')).not.toBe(duoSay('solo', 'zh'));
   });

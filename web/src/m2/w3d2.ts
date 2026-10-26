@@ -50,9 +50,10 @@ export const SKL_TOOLS: [id: string, icon: string, zh: string, en: string][] = [
 export function sklSay(on: number[], ask: boolean, L: Lang): string {
   if (!on.length) return T(L, '点一张工具卡，把它插到机器人身上。', 'Tap a tool card to plug it into the robot.');
   const names = on.map((i) => T(L, SKL_TOOLS[i]![2], SKL_TOOLS[i]![3]));
-  const list = on.length > 3 ? T(L, `${on.length} 个工具`, `${on.length} tools`) : names.join(T(L, '、', ', '));
-  return ask ? T(L, `已连接${list}。每次用之前先问你。`, `Connected: ${list}. Asks before each use.`)
-    : T(L, `已连接${list}。它会直接用，不再问你。`, `Connected: ${list}. Uses them without asking.`);
+  /* R32: the English line stays on one line at 360 px: names only while short, else a count */
+  const en = names.join(', '), list = L === 'en' ? (on.length > 1 && en.length > 12 ? `${on.length} tools` : en) : on.length > 3 ? `${on.length} 个工具` : names.join('、');
+  return ask ? T(L, `已连接${list}。每次用之前先问你。`, `${list} plugged in. Asks you first.`)
+    : T(L, `已连接${list}。它会直接用，不再问你。`, `${list} plugged in. Won’t ask you.`);
 }
 
 /* ---------- 4. Bld: four blocks make an agent; two roads to build one ---------- */

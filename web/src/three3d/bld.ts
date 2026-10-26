@@ -64,8 +64,8 @@ export function make(box: HTMLElement, api: BldApi): View {
   gFeet.add(brick(1.6, 0.56, 1.0, COL.mem!, 3, 2, RX, 0.28, 0.1), decal('db', 0.32, RX - 0.5, 0.28, 0.61, '#7a5a10'));
   gBody.add(brick(1.4, 1.2, 0.95, COL.ins!, 2, 1, RX, 1.22, 0.1), decal('doc', 0.4, RX, 1.48, 0.58));
   for (const s of [-1, 1]) {
-    const arm = new Group(); arm.position.set(RX + s * 1.06, 1.3, 0.1); arm.rotation.z = s * 0.1; gArms.add(arm);
-    arm.add(brick(0.66, 1.0, 0.56, COL.tools!, 1, 1), decal('wrench', 0.3, 0, 0.22, 0.29));
+    const arm = new Group(); arm.position.set(RX + s * 1.16, 1.3, 0.1); arm.rotation.z = s * 0.1; gArms.add(arm);
+    arm.add(brick(0.86, 1.0, 0.56, COL.tools!, 1, 1), decal('wrench', 0.3, 0, 0.22, 0.29));
     arm.add(ball(0.2, gloss('#d9d6ea'), 0, -0.62, 0.06));
   }
   gBody.add(cyl(0.22, 0.26, 0.16, gloss('#d9d6ea'), RX, 1.9, 0.1));
@@ -89,7 +89,7 @@ export function make(box: HTMLElement, api: BldApi): View {
   tags.model = st.tag(name('model'), 'dark'); tags.model.at.set(RX + 0.12, 2.28, 0.62);
   tags.ins = st.tag(name('ins'), 'dark'); tags.ins.at.set(RX, 1.02, 0.6);
   tags.mem = st.tag(name('mem'), 'onw'); tags.mem.at.set(RX + 0.15, 0.28, 0.62);
-  tags.tools = st.tag(name('tools'), 'dark'); tags.tools.at.set(RX - 1.06, 1.12, 0.42);
+  tags.tools = st.tag(name('tools'), 'dark'); tags.tools.at.set(RX - 1.16, 1.12, 0.42);
   /* the wooden signpost with two 3D arrow boards */
   const wood = std('#ffffff', 0.62, 0, { map: woodTex('#c98d55', 'rgba(90,50,20,.22)', 256) });
   P.add(cyl(0.12, 0.14, 3.7, wood, SX, 1.6, 0), cyl(0.16, 0.14, 0.1, gloss('#8a5a2f'), SX, 3.48, 0));

@@ -109,7 +109,7 @@ export function diceSay(n: number, L: Lang): string {
 /* ---------- T6: a picture cut into patches, next to the word ---------- */
 export const PATCH = [2, 3, 4], PATCH0 = 3;
 export function patchSay(g: number, L: Lang): string {
-  return T(L, `切成 ${g * g} 块：每块变成一个“词”，和“猫”放一起。`, `${g * g} patches, each a “word” like “cat”.`);
+  return T(L, `切成 ${g * g} 块，每块都当一个“词”。`, `${g * g} patches, each a “word” like “cat”.`);
 }
 
 /* ---------- T3: guess the next word ---------- */

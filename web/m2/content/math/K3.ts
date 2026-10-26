@@ -105,7 +105,8 @@ ${proof(P, t(`推论：${m('n')} 个结果的分布，熵最大为 ${m(r`\ln n`)
 
   P.quiz();
   return {
-    sub: t('分布 → softmax → 交叉熵 → KL：模型怎么表达“不确定”，又怎么被打分。', 'Distributions → softmax → cross-entropy → KL: how a model expresses uncertainty and how it is scored.'),
+    /* R32: short so the 360 px stage keeps its height; the chain is in the Notes fold */
+    sub: t('模型怎么表达“不确定”，又怎么被打分。', 'How models show doubt and get scored.'),
     one: t('本站讲语言模型用到的概率与信息论，并逐步证明方差公式、贝叶斯公式、softmax 平移不变、交叉熵分解和 KL ≥ 0。', 'The probability and information theory a language model uses, with step-by-step proofs of the variance identities, Bayes’ rule, softmax shift invariance, the cross-entropy decomposition and KL ≥ 0.'),
     why: t('理解损失函数和对齐训练里的 KL，都离不开这几条。', 'You need these to understand the loss function and the KL term in alignment training.'),
     svg, legend: kLegend(t),
