@@ -29,7 +29,8 @@ export default function Ua(P: Page): StationOut {
 <li>${P.open('uCli')}${t('：在终端里改文件、跑命令。', ': edits files and runs commands in a terminal.')}</li>
 <li>${P.open('uCua')}${t('：像人一样操作网页和软件。', ': operates web pages and programs like a person.')}</li>
 </ul>
-<p>${t(`它们能动的东西从少到多，所以越往下，越要用好 ${P.open('perm')}。原理都在 ${P.go('T2')} 站的 ${P.open('loop')}。`, `They can touch more and more as you go down the list, so ${P.open('perm')} matters more. The principle is the ${P.open('loop')} at the ${P.go('T2')} stop.`)}</p>`, { h2: true });
+<p>${t(`它们能动的东西从少到多，所以越往下，越要用好 ${P.open('perm')}。原理都在 ${P.go('T2')} 站的 ${P.open('loop')}。`, `They can touch more and more as you go down the list, so ${P.open('perm')} matters more. The principle is the ${P.open('loop')} at the ${P.go('T2')} stop.`)}</p>
+<p>${t(`“一起干”和“自己干”并排的 3D 小场景，在 ${P.go('U')} 站。`, `A 3D side-by-side of “together” and “on its own” is at the ${P.go('U')} stop.`)}</p>`, { h2: true });
 
   P.card('c_Ua_1', 2, `💬 ${code('use.chat', L)}`, `
 <p>${t('在网页或 App 里一问一答。它通常带几样内置工具（联网搜索、跑一小段代码、读你上传的文件），但碰不到你的电脑和账号。', 'Ask and answer in a web page or app. It usually has a few built-in tools (web search, running a short piece of code, reading files you upload), but it cannot reach your computer or accounts.')}</p>

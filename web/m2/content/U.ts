@@ -92,7 +92,7 @@ export default function U(P: Page): StationOut {
 <p>${t(`每种用法对应哪些真实产品、官网在哪，见 ${P.go('Up')} 这一站：按用法分组，附官方链接，可筛选国内运营或开源的。`, `Which real products offer each way, and their official sites, are on the ${P.go('Up')} stop: grouped by way, with official links, filterable by mainland-run or open source.`)}</p>`);
 
   return {
-    sub: t('同一个 Agent，八种用法；差别只在四件事。', 'One agent, eight ways to use it; they differ in four things.'),
+    sub: t('同一个 Agent，八种用法；差别只在四件事。', 'One agent, eight uses: four things differ.'),
     one: t('从“你怎么用它”的角度看 Agent：谁来发起、在哪里跑、能动什么、你要不要盯着。每种用法都能往下钻到原理那一侧。', 'Agents seen from “how you use them”: who starts it, where it runs, what it can touch, and whether you watch. Each way links down to how it works.'),
     why: t('先知道“能怎么用”，再看“为什么能这样用”，学原理时就有了挂钩。', 'Knowing how it can be used first gives the principles something to hang on.'),
     svg, legend: [lg.use as [string, string, string], lg.agent as [string, string, string]],

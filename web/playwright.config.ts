@@ -19,6 +19,8 @@ const phone = (name: string, width: number, height: number) => ({
 export default defineConfig({
   testDir: 'tests/e2e',
   fullyParallel: true,
+  // SI_E2E_WORKERS=<n> lowers parallel browsers on a busy machine (same tests, nothing skipped); default = Playwright's own
+  ...(process.env.SI_E2E_WORKERS ? { workers: Number(process.env.SI_E2E_WORKERS) } : {}),
   reporter: [['list']],
   retries: 0,
   // older specs start as returning visitors (R21 welcome card, coach marks and tips already seen); r21.spec.ts starts empty

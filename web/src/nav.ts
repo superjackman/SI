@@ -78,6 +78,14 @@ export function scrollToEl(id: string) {
   /* R11: content above may still grow (labs mounting, math typesetting) after a cross-station jump — settle once or twice */
   const at = () => el.getBoundingClientRect().top;
   for (const ms of [700, 1400]) window.setTimeout(() => { const t = at(); if (el.isConnected && (t > innerHeight * 0.6 || t < 0)) window.scrollTo({ top: Math.max(0, t + window.pageYOffset - 70) }); }, ms);
+  /* R30: on a slow phone the smooth scroll can still be running after 1.4 s (and then lands on a stale spot) or the labs
+     above (T3 now has one) keep growing. Re-check a few more times, but stop for good as soon as the reader touches,
+     wheels or presses a key, so this never fights the reader. */
+  const ev = ['wheel', 'touchstart', 'pointerdown', 'keydown'] as const;
+  let gone = false; const off = () => { gone = true; ev.forEach((e) => window.removeEventListener(e, off, true)); };
+  ev.forEach((e) => window.addEventListener(e, off, { capture: true, passive: true }));
+  for (const ms of [2200, 3200, 4400]) window.setTimeout(() => { if (gone || !el.isConnected) return; const t = at(); if (t > innerHeight * 0.6 || t < 0) window.scrollTo({ top: Math.max(0, t + window.pageYOffset - 70) }); }, ms);
+  window.setTimeout(off, 4500);
 }
 /** open the collapsed cards / details around an element (live ccOpen) */
 export function openCollapsed(el: Element) {

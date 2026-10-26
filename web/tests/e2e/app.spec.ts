@@ -14,7 +14,9 @@ type SI = { __si: { state(): { station: string; popup: { id: string } | null }; 
 /** console errors/warnings and every request that leaves localhost (must be none: no CDNs, fonts or analytics on /next/) */
 function watch(page: Page) {
   const errors: string[] = [], external: string[] = [];
-  page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(m.type() + ': ' + m.text()); });
+  /* R30: headless Chrome draws WebGL in software and its GL driver logs a performance note ("GPU stall due to ReadPixels")
+     when it copies the 3D canvas to the screen; that is the test browser, not the page, so only that note is ignored */
+  page.on('console', (m) => { if ((m.type() === 'error' || m.type() === 'warning') && !/GL Driver Message .*GPU stall due to ReadPixels/.test(m.text())) errors.push(m.type() + ': ' + m.text()); });
   page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
   page.on('request', (r) => { const u = new URL(r.url()); if (!['localhost', '127.0.0.1'].includes(u.hostname) && u.protocol !== 'data:') external.push(r.url()); });
   return { errors, external };

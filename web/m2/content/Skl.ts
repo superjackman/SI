@@ -155,7 +155,7 @@ ${src(P, [['https://modelcontextprotocol.io/specification/2025-06-18/basic/secur
 
   P.quiz();
   return {
-    sub: t('工具、MCP、技能包、提示模板：按事情选，装之前看权限。', 'Tools, MCP, skill packs, prompt templates: choose by job, check access first.'),
+    sub: t('工具、MCP、技能包：按事情选，先看权限。', 'Tools, MCP, skill packs: pick by job, check access.'),
     one: t('缺“手”装 MCP 服务器，缺“方法”装技能包；从官方来源装，只给需要的权限。', 'Missing a hand: an MCP server; missing a method: a skill pack; install from official sources with only the access needed.'),
     why: t('装对了，Agent 能连上你的文件和网上的服务；装错了，等于把钥匙交给陌生人。', 'The right add-on connects the agent to your files and services; the wrong one hands your keys to a stranger.'),
     svg, legend: [lg.use as [string, string, string], lg.safe as [string, string, string], lg.agent as [string, string, string]],

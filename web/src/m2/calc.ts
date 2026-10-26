@@ -32,6 +32,8 @@ export const KV_TOKEN_BYTES = 2 * 36 * 8 * 128 * 2;
 export const weightsGB = (paramsB: number, bpw: number) => (paramsB * bpw) / 8;
 /** KV cache in GB for `ctx` tokens; scaled by `kvScale` (1 = the Qwen3-8B shape) */
 export const kvGB = (ctx: number, kvScale = 1) => (ctx * KV_TOKEN_BYTES * kvScale) / 1e9;
+/** runtime overhead in GB on top of weights and KV cache (illustrative; labMem and the 3D memory scene) */
+export const OVER_GB = 1;
 /** the verdict when `need` GB must fit in `have` GB: 'ok' (≥ 20% left), 'tight' (fits, < 20% left), 'no' */
 export function fitVerdict(need: number, have: number): 'ok' | 'tight' | 'no' {
   if (need > have) return 'no';

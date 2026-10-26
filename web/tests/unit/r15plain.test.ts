@@ -95,12 +95,13 @@ describe('R15 plain layer covers the whole site', () => {
     expect(order.length).toBe(27);
     expect([...PLAIN_STATIONS].sort()).toEqual([...order].sort());
   });
+  /* a 3D stage card (s3c) keeps its plain words in its own closed "want to know why" layer (R30b) */
   it('every non-quiz card of every station got a plain opening in both languages', () => {
     const miss: string[] = [];
     for (const S of PLAIN_STATIONS) for (const L of LANGS) {
       const h = st(S, L);
       /* R21: the first card's plain opening sits in its own top card (above the diagram) */
-      for (const c of cards(h)) if (!/\bquiz\b/.test(c.cls) && !(c.id === `c_${S}_0` ? topCard(h) : cardHtml(h, c.id)).includes('class="plain')) miss.push(`${S}.${L}#${c.id}`);
+      for (const c of cards(h)) if (!/\b(quiz|s3c)\b/.test(c.cls) && !(c.id === `c_${S}_0` ? topCard(h) : cardHtml(h, c.id)).includes('class="plain')) miss.push(`${S}.${L}#${c.id}`);
     }
     expect(miss).toEqual([]);
   });
@@ -153,8 +154,8 @@ for (const S of PLAIN_STATIONS) for (const L of LANGS) describe(`R15 plain layer
       else { expect(c, id).toContain('<details class="deep"><summary>'); expect(c, id).not.toMatch(/<details class="deep"[^>]*\bopen\b/); }
     }
   });
-  it('every non-quiz card on the station has a plain opening', () => {
-    for (const c of cards(h)) if (!/\bquiz\b/.test(c.cls)) expect(Object.keys(P.cards), c.id).toContain(c.id);
+  it('every non-quiz card on the station has a plain opening (a 3D stage card keeps its plain words in its own closed layer)', () => {
+    for (const c of cards(h)) if (!/\b(quiz|s3c)\b/.test(c.cls)) expect(Object.keys(P.cards), c.id).toContain(c.id);
   });
   it('every display formula is followed by its "What the symbols mean" notes', () => {
     const kx = (h.match(/<div class="kx( kx-w)?">/g) ?? []).length, sn = (h.match(/<!--m2s--><div class="sn">/g) ?? []).length;

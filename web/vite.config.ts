@@ -49,6 +49,9 @@ export default defineConfig({
     assetsInlineLimit: 2048,
     cssCodeSplit: true,
     sourcemap: false,
+    // R30: three.js (+ the shared 3D stage) is one lazy chunk named three-*.js, fetched only when a 3D scene box is on
+    // screen (src/m2/s3d.ts → import('../../three3d/<scene>')); nothing on the first screen imports it
+    rollupOptions: { output: { manualChunks: (id: string) => (/[\\/]node_modules[\\/]three[\\/]|[\\/]src[\\/]three3d[\\/]core\.ts$/.test(id) ? 'three' : undefined) } },
   },
   preview: { port: 4173, strictPort: true },
   server: { port: 5173 },

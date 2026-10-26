@@ -26,6 +26,8 @@ export interface Env extends Shell {
   IntersectionObserver: typeof IntersectionObserver | undefined;
   updProg: () => void; noop: () => void;
   rt: Record<string, unknown>;
+  /** R30: run f when the island is disposed (station change, language switch): the 3D scenes free their GPU objects here */
+  onDispose: (f: () => void) => void;
 }
 /* one island per station: the live page's lifted labs (gen/islands/<S>.js) and the hand-written M2 labs (m2/labs/<S>.ts) */
 /* extension labs on a legacy station (m2/labs/<S>.x.ts) are merged with that station's island: their LABS come after the island's */
@@ -123,6 +125,7 @@ export async function mountIslands(S: string, root: HTMLElement, lang: Lang, she
     IntersectionObserver: TrackedIO,
     updProg: () => {}, noop: () => {},
     rt: makeRt(lang, I18N),
+    onDispose: (f) => { off.push(f); },
   };
   env.window = bind(window, {
     addEventListener: track(window), removeEventListener: window.removeEventListener.bind(window),

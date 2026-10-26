@@ -10,6 +10,8 @@ const J = <T>(p: string) => JSON.parse(readFileSync(join(GEN, p), 'utf8')) as T;
 const st = (S: string, L: string) => J<{ html: string }>(`st/${S}.${L}.json`).html;
 const KB = J<{ TABORDER: string[]; C: Record<string, { zoom?: string }> }>('kb.json');
 
+/* R31: a 3D stage card (with its 2D fallback figure) now opens the stop; the boundary line must come before the first diagram after it */
+const svgAfterStage = (h: string) => { const s = h.indexOf('id="lab3d'); return h.indexOf('<svg', s < 0 ? 0 : h.indexOf('<!--/m2x-->', s)); };
 describe('R25 zones', () => {
   it('Api and Loc follow Up in the tab order, and T1 has a 🔍 box for each', () => {
     const o = KB.TABORDER; expect(o.slice(o.indexOf('Up'), o.indexOf('Up') + 3)).toEqual(['Up', 'Api', 'Loc']);
@@ -19,7 +21,7 @@ describe('R25 zones', () => {
     const h = st(S, L);
     it('says what it covers and what it does not, above the first diagram', () => {
       const i = h.indexOf('pl-bd'); expect(i).toBeGreaterThan(-1);
-      expect(i).toBeLessThan(h.indexOf('<svg'));
+      expect(i).toBeLessThan(svgAfterStage(h));
       expect(h).toContain(L === 'zh' ? '这里不讲' : 'Not covered');
     });
     it('has its calculator, quiz, and jumps into the principle stations', () => {

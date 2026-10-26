@@ -72,7 +72,10 @@ describe('R27+ home page first visit', () => {
     expect(welcomeKind('H', true, 'T1', null, false, false)).toBe(null);
   });
   it('the home coach marks cover what / where to start / doorways / header / bottom row, and point at real H parts', () => {
-    expect(HSTEPS.map((s) => s[1])).toEqual(['h1', 'h2', 'h3', 'c1', 'c2', 'c3', 'h5']);
+    expect(HSTEPS.map((s) => s[1])).toEqual(['h1', 'h2', 'h3', 'c1', 'hc2', 'c3', 'h5']);
+    // R30: the home header has no ‹ › and no dots, so its step 5 must not talk about them
+    for (const L of ['zh', 'en'] as const) for (const k of ['hc2', 'c2'] as const) expect(O[k][L]).not.toMatch(/小圆点|dots/);
+    expect(HSTEPS.find((s) => s[1] === 'hc2')![0]).toBe('#tbWhere');
     for (const L of ['zh', 'en'] as const) {
       const h = JSON.parse(fs.readFileSync(`src/legacy/gen/st/H.${L}.json`, 'utf8')).html as string;
       for (const c of ['hm-t', 'hm-go', 'hm-door', 'dr-g', 'hm-s']) expect(h, c).toContain(c);

@@ -83,6 +83,12 @@ ${body}
 </div>`);
     this.rows.push([id, '🧪 ' + strip(title), 'lab', 3]);
   }
+  /** R30b: a 3D scene card — no tag, no visible title (a screen-reader-only h3 keeps the outline/page-map title checkable); just the stage, one sentence (+ at most one control) and a closed
+      "Want to know why" layer. Shown at every zoom level (it is the first thing on its stop). */
+  s3c(id: string, title: string, html: string) {
+    this.out.push(`<div class="card s3c" id="${id}" data-z="1" data-nh="1" aria-label="${esc(strip(title))}">\n<h3 class="s3c-t">🧪 ${title}</h3>\n${html}\n</div>`);
+    this.rows.push([id, '🧪 ' + strip(title), 'lab', 3]);
+  }
   quiz() {
     const zl = this.t('❓ 小测验', '❓ Quiz');
     this.out.push(`<div class="card quiz has-meta" id="quiz${this.S}" data-sec="${this.S}" data-z="3" data-zl="${zl}" data-nh="1"></div>`);

@@ -118,7 +118,7 @@ function bubble(targets: Element[], html: string, acts: HTMLElement[], cls = '',
 /* ---- coach marks (header) ---- */
 const STEPS0: [string, keyof typeof O][] = [['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#crumb .chips', 'c4'], ['#bnav', 'c5']];
 /** R27+: the home page's coach marks: what this is → where to start (🎬 / 🧒) → the six doorways → header (menu, change stop/swipe, find/share/lang) → bottom row */
-export const HSTEPS: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-go', 'h2'], ['.hm-door .dr-g', 'h3'], ['#mMenu', 'c1'], ['#mPrev,#tbWhere,#mNext', 'c2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#bnav', 'h5']];
+export const HSTEPS: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-go', 'h2'], ['.hm-door .dr-g', 'h3'], ['#mMenu', 'c1'], ['#tbWhere', 'hc2'], ['#mSearch,#mShare,#mLang', 'c3'], ['#bnav', 'h5']];
 /** R28 skeleton: the same walk-through for the calmer header / bottom bar (no ‹ ›, no EN, 3 items at the bottom) */
 const STEPS28: [string, keyof typeof O][] = [['#mMenu', 'n1'], ['#tbWhere', 'n2'], ['#mSearch,#mShare', 'n3'], ['#crumb .cb-up', 'n4'], ['#bnav', 'n5']];
 export const HSTEPS28: [string, keyof typeof O][] = [['.hm-t', 'h1'], ['.hm-door .dr-g', 'n6'], ['.hm-go', 'n7'], ['#mMenu', 'n1'], ['#mSearch,#mShare', 'n3']];

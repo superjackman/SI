@@ -146,7 +146,7 @@ ${tryit(P, jump(P, 'labCost', 'Api', t('🧪 算算要花多少钱', '🧪 Work 
 
   P.quiz();
   return {
-    sub: t('零代码平台或写代码：搭的都是“模型想 → 跑工具 → 再想”的循环。', 'A no-code platform or code: either way you build the think → tool → think loop.'),
+    sub: t('拖拽平台或写代码，搭的都是同一个循环。', 'No-code or code: the same think → tool loop.'),
     one: t('不会代码用平台拖，会代码用 SDK 写循环；步骤固定就用工作流。', 'No code: drag it on a platform; code: write the loop with an SDK; fixed steps: use a workflow.'),
     why: t('懂了这个循环，看任何 Agent 产品都知道它在干什么。', 'Once you know the loop, you understand what any agent product does.'),
     svg, legend: [lg.use as [string, string, string], lg.llm as [string, string, string], lg.agent as [string, string, string]],

@@ -28,7 +28,8 @@ export default function Ub(P: Page): StationOut {
 <li>${t('<b>隔离</b>：在沙盒、副本或分支里干活，碰不到真正重要的东西。', '<b>Isolation</b>: it works in a sandbox, a copy or a branch, away from anything that really matters.')}</li>
 <li>${t(`<b>产出能检查</b>：交回 PR、报告、草稿，而不是直接生效；有 ${P.open('evalag')} 的办法（测试、清单）。`, `<b>Checkable output</b>: it hands back a PR, a report or a draft instead of acting directly, with a way to ${P.open('evalag')} it (tests, a checklist).`)}</li>
 <li>${t(`<b>不可逆的一步留给人</b>：合并、发送、付款由你来按，见 ${P.open('perm')}。`, `<b>People take the irreversible step</b>: merging, sending, paying are yours to press; see ${P.open('perm')}.`)}</li>
-</ol>`, { h2: true });
+</ol>
+<p>${t(`“一起干”和“自己干”并排的 3D 小场景，在 ${P.go('U')} 站。`, `A 3D side-by-side of “together” and “on its own” is at the ${P.go('U')} stop.`)}</p>`, { h2: true });
 
   P.card('c_Ub_1', 2, `☁️ ${code('use.bg', L)}`, `
 <p>${t('你写好任务交出去，它在云端开一个隔离环境：拉一份代码、装依赖、改代码、跑测试，最后推到一个新分支并开一个合并请求（PR）。你可以同时开好几个，关掉电脑也照样跑。', 'You write the task and hand it off. It opens an isolated cloud environment: gets a copy of the code, installs dependencies, edits, runs tests, then pushes a new branch and opens a pull request (PR). You can run several at once, even with your computer off.')}</p>

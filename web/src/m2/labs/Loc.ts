@@ -1,11 +1,11 @@
 /* Station Loc lab: labMem — will this model fit? weights (llama.cpp bits/weight) + KV cache (Qwen3-8B shape, scaled). */
 import type { Env } from '../../legacy/runtime';
 import { bar, byId, tr, wire } from '../kit';
-import { BPW, fitVerdict, kvGB, weightsGB, type Quant } from '../calc';
+import { BPW, fitVerdict, kvGB, OVER_GB, weightsGB, type Quant } from '../calc';
 
 export const LABS = [{ ids: ['labMem', 'lmP', 'lmQ', 'lmC', 'lmM', 'lmT', 'lmOut', 'lmBar'], hooks: [] as string[] }];
 /** runtime overhead in GB (illustrative) */
-const OVER = 1;
+const OVER = OVER_GB;
 
 export function mount(env: Env) {
   const t = tr(env);

@@ -16,6 +16,8 @@ const KB = J<{ TABORDER: string[]; C: Record<string, { zoom?: string; up?: strin
 const doc = (h: string) => new DOMParser().parseFromString(`<body>${h}</body>`, 'text/html');
 const PK: Record<string, [string, string[]]> = { Job: ['pkJob', SCENES.map((s) => s.k)], Skl: ['pkSkl', NEED.map((n) => n.k)], Bld: ['pkBld', ROAD.map((r) => r.k)] };
 
+/* R31: a 3D stage card (with its 2D fallback figure) now opens the stop; the boundary line must come before the first diagram after it */
+const svgAfterStage = (h: string) => { const s = h.indexOf('id="lab3d'); return h.indexOf('<svg', s < 0 ? 0 : h.indexOf('<!--/m2x-->', s)); };
 describe('R26 zones', () => {
   it('Job, Skl, Bld follow Loc in the tab order, and T1 has a box zooming into each', () => {
     const o = KB.TABORDER; expect(o.slice(o.indexOf('Loc'), o.indexOf('Loc') + 5)).toEqual(['Loc', 'Job', 'Skl', 'Bld', 'T2']);
@@ -31,7 +33,7 @@ describe('R26 zones', () => {
   for (const L of ['zh', 'en'] as const) for (const S of ['Job', 'Skl', 'Bld']) describe(`${S} ${L}`, () => {
     const h = st(S, L), d = doc(h);
     it('says what it covers and what it does not, above the first diagram', () => {
-      const i = h.indexOf('pl-bd'); expect(i).toBeGreaterThan(-1); expect(i).toBeLessThan(h.indexOf('<svg'));
+      const i = h.indexOf('pl-bd'); expect(i).toBeGreaterThan(-1); expect(i).toBeLessThan(svgAfterStage(h));
       expect(h).toContain(L === 'zh' ? '这里不讲' : 'Not covered');
     });
     it('never covers circumvention or overseas sign-up', () => {

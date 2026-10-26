@@ -39,11 +39,14 @@ import { M9 } from './content/ext/m9';
 import { M10 } from './content/ext/m10';
 import { M11 } from './content/ext/m11';
 import { M12 } from './content/ext/m12';
+import { M13, S3D_TOP } from './content/ext/m13';
+import { M14, S3D_TOP2 } from './content/ext/m14';
+import { M15, S3D_TOP3 } from './content/ext/m15';
 import { HAND } from './content/handoff';
 import { render as dgRender, legend as dgLegend } from './content/t1dg';
 import { check as dgCheck } from './dgcheck';
 import { PLAIN, PLAIN_STATIONS } from './plain';
-import { glossaryJson, plainNodes, plainPage, topPlain } from './plainpass';
+import { divEnd, glossaryJson, plainNodes, plainPage, topPlain } from './plainpass';
 import { SYM } from './content/symbols';
 
 const GEN = join(dirname(fileURLToPath(import.meta.url)), '../src/legacy/gen');
@@ -55,7 +58,7 @@ const SIDS = [...USIDS, ...KSIDS];
 const ALLST: Record<string, Bi> = { ...STATIONS, ...KSTATIONS }, ALLPATH: Record<string, string[]> = { ...PATHS, ...KPATHS };
 type AnyPart = { n: Bi; t: string; up?: string; zoom?: string; dn?: string[]; use?: string[]; cat?: string; train?: string; pop: (t: T) => PopSpec };
 /* M4–M6: extension cards, labs, popups and quiz questions added to the legacy stations (injected between <!--m2x--> markers) */
-const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10, M11, M12];
+const EXTS: Ext[] = [M4, M5, M6, M7, M8, M9, M10, M11, M12, M13, M14, M15];
 const XPARTS: Record<string, AnyPart> = Object.assign({}, ...EXTS.map((e) => e.parts));
 const XCARDS: Record<string, ((P: Page) => void)[]> = {}, XLABS: Record<string, ((P: Page) => void)[]> = {};
 const XNEAR: Record<string, { after: string; f: (P: Page) => void }[]> = {};
@@ -485,6 +488,35 @@ for (const L of LANGS) {
       const f = H.m.get(id); return o + esc(f ? fit(cfShort(f), L === 'en' ? 22 : 16, L) : recut(strip(txt), L, 18)) + e;
     }) + c);
     if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+  }
+  put(op, out, nlOf(op));
+}
+
+/* ---------- R30b: a 3D stage card is the first thing on its stop ----------
+   The "near" pass put it after its anchor card in an <!--m2x--> block; here that block moves to just after the page head
+   and its level strip (before the plain intro <!--m2top-->), and its page-map button and outline row move to the front.
+   Idempotent: the m2x blocks are rebuilt from scratch on every run, and a block already in front stays there. */
+for (const L of LANGS) {
+  const op = `outline.${L}.json`, out = JSON.parse(files.get(op) as string) as Record<string, OutlineRow[]>;
+  for (const [S, id] of Object.entries({ ...S3D_TOP, ...S3D_TOP2, ...S3D_TOP3 })) {
+    const p = `st/${S}.${L}.json`, st = stOf(p); let h = st.html;
+    const ci = h.indexOf(`<div class="card s3c" id="${id}"`); if (ci < 0) throw new Error(`s3d top: no ${id} on ${S}`);
+    const top = h.indexOf('<!--m2top-->'), stg = h.indexOf('<div class="m-stage'), to = top >= 0 ? top : stg;
+    if (to < 0) throw new Error(`s3d top: no stage on ${S}`);
+    if (to < ci) {
+      const ce = divEnd(h, ci), card = h.slice(ci, ce);
+      /* R31: on a generated stop (Api, Loc, Skl, Bld, U) the near pass emits the card bare, right after its anchor */
+      const inX = h.lastIndexOf('<!--m2x-->', ci) > h.lastIndexOf('<!--/m2x-->', ci);
+      h = inX ? (h.slice(0, ci).replace(/\n$/, '') + h.slice(ce)).replace(/<!--m2x-->\s*<!--\/m2x-->\n?/g, '') : h.slice(0, ci) + h.slice(ce).replace(/^\n/, '');
+      h = h.slice(0, to) + `<!--m2x-->\n${card}<!--/m2x-->\n` + h.slice(to);
+    }
+    const pm = h.indexOf(`<div class="ph-map" id="pm${S}">`), pe = h.indexOf('</div>', pm), bi = h.indexOf(`data-sj="${id}"`, pm);
+    if (pm < 0 || bi < 0 || bi > pe) throw new Error(`s3d top: ${id} not in the page map of ${S}`);
+    const b0 = h.lastIndexOf('<button', bi), b1 = h.indexOf('</button>', bi) + 9, btn = h.slice(b0, b1), first = h.indexOf('<button', pm);
+    if (first !== b0) { h = h.slice(0, b0) + h.slice(b1); h = h.slice(0, first) + btn + h.slice(first); }
+    if (h !== st.html) put(p, { ...st, html: h }, nlOfF(p));
+    const rs = out[S] ?? [], ri = rs.findIndex((r) => r[0] === id); if (ri < 0) throw new Error(`s3d top: ${id} not in the outline of ${S}`);
+    if (ri > 0) { const [r] = rs.splice(ri, 1); rs.unshift(r!); }
   }
   put(op, out, nlOf(op));
 }
