@@ -166,12 +166,14 @@ describe('R30 power: one scene at a time, render on demand, spin turns itself of
 
 describe('R30 three.js stays out of the first load', () => {
   const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : /\.(ts|tsx)$/.test(e.name) ? [path.join(d, e.name)] : []));
-  it("only src/three3d imports 'three'; everyone else reaches src/three3d by dynamic import or type-only import", () => {
+  /* R34: the 3D site's scenes and experiments (src/w3/sc, src/w3/lab) are lazy three.js trees too, like src/three3d */
+  const T3 = [`${path.sep}three3d${path.sep}`, `${path.sep}w3${path.sep}sc${path.sep}`, `${path.sep}w3${path.sep}lab${path.sep}`];
+  it("only the three.js trees (src/three3d, src/w3/sc, src/w3/lab) import 'three'; everyone else reaches them by dynamic import or type-only import", () => {
     for (const f of walk('src')) {
       const s = fs.readFileSync(f, 'utf8');
-      if (f.includes(`${path.sep}three3d${path.sep}`)) continue;
+      if (T3.some((d) => f.includes(d))) continue;
       expect(s, f).not.toMatch(/from ['"]three(\/[^'"]*)?['"]/);
-      for (const m of s.matchAll(/^import\s+(type\s+)?[^;]*?from\s+['"]([^'"]*three3d[^'"]*)['"]/gm)) expect(m[1], `${f}: ${m[2]}`).toBeTruthy();
+      for (const m of s.matchAll(/^import\s+(type\s+)?[^;]*?from\s+['"]([^'"]*(?:three3d|\/sc\/|\.\/sc\b|\/lab\/|\.\/lab\b)[^'"]*)['"]/gm)) expect(m[1], `${f}: ${m[2]}`).toBeTruthy();
     }
   });
   it('the build puts three into its own chunk', () => {

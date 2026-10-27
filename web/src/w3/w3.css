@@ -1,0 +1,38 @@
+/* R34: the all-3D shell's own bits on top of the pilot's glass look (pilot3d/pilot.css) */
+.w3 .w3-cr{display:flex;align-items:center;gap:8px}
+.w3 .w3-bulb{flex:none;width:38px;height:38px;border:0;border-radius:50%;padding:0;display:grid;place-items:center;color:#a16207;cursor:pointer;
+  background:linear-gradient(150deg,#fff7d6,#fde68a);box-shadow:0 3px 10px rgba(161,98,7,.25)}
+.w3 .w3-bulb[hidden]{display:none}
+.w3 .w3-bulb svg{width:22px;height:22px}
+.w3 .w3-bulb.on{box-shadow:0 0 0 3px #facc15,0 0 18px rgba(250,204,21,.8)}
+.w3 .w3-len{gap:8px}
+.w3 .w3-len span{flex:none;font-size:13px;font-weight:700;color:#4c1d95;max-width:40%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.w3 .w3-len input{flex:1;min-width:0}
+.w3 .p3-dot.w3-dk{width:auto;min-width:22px;height:22px;font-size:12px;line-height:22px;padding:0 3px;background:rgba(255,255,255,.55)}
+.w3 .p3-dot.w3-dk.on{background:#ede9fe;box-shadow:0 0 0 2px #8b5cf6}
+.w3 .p3-r.w3-glow{animation:w3g 1.4s ease-in-out infinite}
+.w3 .p3-r[hidden]{display:none}
+@keyframes w3g{50%{box-shadow:0 0 0 6px rgba(250,204,21,.55),0 0 26px rgba(250,204,21,.8)}}
+.w3 .w3-wel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(86%,360px);padding:18px 18px 16px;border-radius:24px;text-align:center;z-index:6;
+  background:rgba(255,255,255,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 12px 40px rgba(76,29,149,.25);color:#3b0764}
+.w3 .w3-wel b{display:block;font-size:22px;margin-bottom:6px}
+.w3 .w3-wel p{margin:0 0 8px;font-size:15px;line-height:1.5}
+.w3 .w3-sm{font-size:13px!important;opacity:.8}
+.w3 .w3-go{color:#fff!important;background:linear-gradient(150deg,#a78bfa,#6d28d9)!important}
+.w3 .w3-rb{position:absolute;left:50%;top:66px;transform:translateX(-50%);width:min(94%,420px);z-index:6;display:flex;gap:6px}
+.w3 .w3-rb .p3-btn{flex:1;min-width:0;padding-left:6px;padding-right:6px}
+.w3 .p3-flat .w3-rb{position:static;transform:none;margin:12px auto}
+.w3 .w3-fl{max-width:420px;margin:10px auto;padding:12px 16px;border-radius:18px;background:rgba(255,255,255,.7);color:#3b0764;font-size:15px;line-height:1.5}
+.w3 .w3-medal{font-size:64px;text-align:center;margin:0}
+.w3 .p3-card{position:relative}
+.w3 .w3-ok{position:absolute;right:6px;top:6px;color:#16a34a}
+.w3 .w3-ok svg{width:16px;height:16px}
+.w3 .p3-list h3{margin:10px 0 4px;font-size:14px;color:#6d28d9}
+.w3 .p3-row small{display:block;margin-left:6px;font-size:12px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+@media (prefers-reduced-motion:reduce){.w3 .p3-r.w3-glow{animation:none;box-shadow:0 0 0 4px rgba(250,204,21,.6)}}
+/* quiz answers: long answers wrap so the three labels never cover each other */
+.w3[data-kind=quiz] .s3t.p3l>span{white-space:normal;width:max-content;max-width:calc(33vw - 10px);text-align:center;border-radius:14px;line-height:1.25;font-size:14px;padding:5px 9px}
+/* the 3D site does not load the classic css, so name the font here (body falls back to a serif) */
+.p3.w3{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",sans-serif}
+/* map island names: long English names wrap instead of running into the next island name */
+.w3[data-kind=map] .s3t.p3l>span:lang(en){white-space:normal;width:max-content;max-width:calc(36vw - 8px);text-align:center;border-radius:14px;line-height:1.25}

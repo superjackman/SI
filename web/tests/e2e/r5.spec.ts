@@ -91,6 +91,7 @@ test.describe('cutover (repo layout under /SI/)', () => {
     const b = await playwright.chromium.launch({ channel: 'chrome', args: ['--host-resolver-rules=MAP si.test 127.0.0.1'] });
     try {
       const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, screen: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+      await ctx.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); // R34: the classic site (the 3D site is the default)
       /* a returning visitor: a first visit also sends the welcome / tip events (evt-onb-show, evt-tip-*: events, not page views; covered in r29.spec) */
       await ctx.addInitScript(() => { try { localStorage.setItem('aiexp.v2.onb', '1'); localStorage.setItem('aiexp.v2.coach', '1'); localStorage.setItem('aiexp.v2.obtips', '["dd","ro","dots"]'); } catch { /* */ } });
       const hits: string[] = [];

@@ -10,6 +10,7 @@ type Lang = 'zh' | 'en';
 const KEY: Record<string, number[]> = JSON.parse(fs.readFileSync(new URL('../../src/legacy/gen/qkey.json', import.meta.url), 'utf8')).key;
 const CJK = /[\u3400-\u9fff]/;
 test.use({ storageState: { cookies: [], origins: [] } });
+test.beforeEach(async ({ context }) => { await context.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); }); // R34: the classic site
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('si.fs', '0');

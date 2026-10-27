@@ -1,18 +1,20 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { App } from './App';
 import { useApp } from './store/app';
 import { installStaleGuard } from './boot/stale';
-import './legacy/gen/legacy.css';
-import './styles/shell.css';
-import './styles/r28.css';
 
 import { eventFor, isLocalHost } from './analyticsEvents';
 
 declare const __SI_ANALYTICS__: boolean;
 
 installStaleGuard();
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+/* R34: the all-3D site is the default (src/w3, its own lazy chunk; three.js loads with its first scene). The classic React
+   site is a lazy chunk too: ?classic=1, or the menu's "classic version" (remembered in si.view until ?w=3d). */
+const q = location.search;
+let ls: string | null = null;
+try { if (/[?&]w=3d(&|$)/.test(q)) localStorage.removeItem('si.view'); ls = localStorage.getItem('si.view'); } catch { /* private mode */ }
+const classic = /[?&]classic=1(&|$)/.test(q) || ls === 'classic' || /[?&](ch|lab)=/.test(q); // a friend's challenge (?ch=) or lab-setup (?lab=) link opens the classic page that reads it
+const loadClassic = () => import('./classic').then((m) => m.mount());
+if (classic) void loadClassic();
+else void import('./w3/shell').then((m) => m.start()).catch((e) => { console.error('[w3]', e); void loadClassic(); });
 
 /* R16 stale-cache check (src/boot/version.ts, own chunk): at idle after load, and again when the tab comes back
    (the chunk throttles that to once per 5 min). "touched" = any tap / key / wheel since the page opened. */
@@ -49,6 +51,3 @@ if (__SI_ANALYTICS__ && location.protocol !== 'file:' && !isLocalHost(h)) {
   }, 0);
   if (document.readyState === 'complete') start(); else addEventListener('load', start, { once: true });
 }
-
-/* small read-mostly handle for tests and debugging (same role as the live page's window.__u) */
-void import('./nav').then((n) => { (window as unknown as { __si: unknown }).__si = { go: n.go, openInfo: n.openInfo, drill: n.drill, back: n.back, state: () => useApp.getState() }; });

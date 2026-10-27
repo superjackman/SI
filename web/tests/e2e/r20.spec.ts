@@ -30,7 +30,7 @@ async function qrText(page: Page): Promise<string | null> {
   });
   return jsQR(Uint8ClampedArray.from(px.d), px.w, px.w)?.data ?? null;
 }
-const fresh = (page: Page) => page.evaluate(() => { const fs0 = localStorage.getItem('si.fs'); localStorage.clear(); sessionStorage.clear(); if (fs0) localStorage.setItem('si.fs', fs0); });
+const fresh = (page: Page) => page.evaluate(() => { const fs0 = localStorage.getItem('si.fs'), v0 = localStorage.getItem('si.view'); localStorage.clear(); sessionStorage.clear(); if (fs0) localStorage.setItem('si.fs', fs0); if (v0) localStorage.setItem('si.view', v0); }); // R34: keeps the classic view these specs test
 const evs = (page: Page) => page.evaluate(() => (window as unknown as { __ev: string[] }).__ev.slice());
 
 test.beforeEach(async ({ page }) => {

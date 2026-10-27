@@ -10,6 +10,7 @@ const GIF = Buffer.from('R0lGODlhAQABAAAAACw=', 'base64');
 type Hit = { p: string; r: string | null; q: string | null };
 async function site(b: Browser, opt: { returning?: boolean; newer?: boolean } = {}): Promise<{ ctx: BrowserContext; hits: Hit[]; docs: string[] }> {
   const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await ctx.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); // R34: the classic site (the 3D site is the default)
   const hits: Hit[] = [], docs: string[] = [];
   await ctx.route(GC + '**', (r) => { const s = new URL(r.request().url()).searchParams; hits.push({ p: s.get('p')!, r: s.get('r'), q: s.get('q') }); return r.fulfill({ status: 200, contentType: 'image/gif', body: GIF }); });
   await ctx.route((u) => u.hostname !== 'si.test' && !u.href.startsWith(GC), (r) => r.abort());

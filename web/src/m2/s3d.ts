@@ -64,7 +64,14 @@ export function fitStage(env: Env, box: HTMLElement): void {
   /* the sentence under the stage is written by the lab and may wrap once fonts arrive: refit when the card or anything above it changes size
      (a refit that only changes the stage gives the same value again, so this settles at once) */
   const RO = (w as Window & { ResizeObserver?: typeof ResizeObserver }).ResizeObserver;
-  if (RO) { const ro = new RO(() => fit()); ro.observe(card); for (let e = card.previousElementSibling; e; e = e.previousElementSibling) ro.observe(e); env.onDispose(() => ro.disconnect()); }
+  /* R34: also watch the card's ancestors and what sits above them, and the bottom bar: a node added above the card later (e.g. an
+     empty row that breaks a margin collapse) moves the card without resizing anything already watched, but it does grow the ancestors */
+  if (RO) {
+    const ro = new RO(() => fit()); ro.observe(card);
+    for (let a: Element | null = card; a && a !== env.document.body; a = a.parentElement) { if (a !== card) ro.observe(a); for (let e = a.previousElementSibling; e; e = e.previousElementSibling) ro.observe(e); }
+    const bar = env.document.getElementById('bnav'); if (bar) ro.observe(bar);
+    env.onDispose(() => ro.disconnect());
+  }
   void env.document.fonts?.ready.then(fit);
   /* phones resize the window when the address bar slides away while scrolling: refit only when the width changes */
   let lw = w.innerWidth; const onResize = () => { if (w.innerWidth !== lw) { lw = w.innerWidth; fit(); } };

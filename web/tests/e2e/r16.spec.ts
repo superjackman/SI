@@ -167,6 +167,7 @@ test.describe('share the current page', () => {
     const v = await page.locator('#sharePanel .sp-copy input').inputValue();
     expect(v).toMatch(new RegExp(`\\?lang=zh&from=copy#T1/${id}$`));
     const p2 = await browser.newPage({ viewport: page.viewportSize()! });
+    await p2.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); // R34: the classic site (the 3D site is the default)
     try {
       await p2.goto(v); await ready(p2, 'T1', 'zh');
       await expect.poll(() => p2.evaluate((id) => { const r = document.getElementById(id)!.getBoundingClientRect(); return r.top > -5 && r.top < innerHeight / 2; }, id), { timeout: 8000 }).toBe(true);
@@ -187,6 +188,7 @@ test.describe('share the current page', () => {
       viewport: { width: 360, height: 740 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3, locale: 'zh-CN',
       userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/120.0.6099.193 Mobile Safari/537.36 XWEB/1220067 MMWEBSDK/20240404 MMWEBID/1234 MicroMessenger/8.0.49.2600(0x28003133) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64',
     });
+    await ctx.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); // R34: the classic site (the 3D site is the default)
     try {
       const page = await ctx.newPage();
       await page.goto('./#T3'); await ready(page, 'T3', 'zh');
@@ -212,6 +214,7 @@ test.describe('share the current page', () => {
     const b = await playwright.chromium.launch({ channel: 'chrome', args: ['--host-resolver-rules=MAP si.test 127.0.0.1'] });
     try {
       const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+      await ctx.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); // R34: the classic site (the 3D site is the default)
       /* a returning visitor: a first visit also sends the welcome / tip events (evt-onb-show, evt-tip-*: events, not page views; covered in r29.spec) */
       await ctx.addInitScript(() => { try { localStorage.setItem('aiexp.v2.onb', '1'); localStorage.setItem('aiexp.v2.coach', '1'); localStorage.setItem('aiexp.v2.obtips', '["dd","ro","dots"]'); } catch { /* */ } });
       const hits: string[] = [];

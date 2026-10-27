@@ -157,6 +157,7 @@ test.describe('(A) full screen', () => {
 
   test.describe('first visit', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
+  test.beforeEach(async ({ context }) => { await context.addInitScript(() => { try { localStorage.setItem('si.view', 'classic'); } catch { /* */ } }); }); // R34: the classic site
   test('the full-screen question waits while first-visit help (welcome card / coach marks) is on screen', async ({ page }) => {
     await page.goto('./?lang=zh#T1'); await ready(page, 'T1', 'zh');
     await expect(page.locator('section.level.active .ob-wel')).toBeVisible({ timeout: 9000 });

@@ -104,6 +104,11 @@ test.describe('R31d 3D scenes', () => {
         await open(p, S, lang);
         if (S === 'T3') await p.locator('#' + lab).evaluate((e) => scrollBy(0, e.getBoundingClientRect().top - 60));
         await p.waitForTimeout(300);
+        /* the stage starts at its CSS height and fitStage refits it on the next frames (and again at 400/1500 ms); under a
+           loaded run that refit can land after a fixed wait, so wait until fonts are in and two reads (stage height, fold title) 150 ms apart agree */
+        await p.evaluate(() => document.fonts.ready.then(() => undefined));
+        const stageH = () => p.locator('#' + lab).evaluate((r) => `${Math.round(r.querySelector('.s3d')!.getBoundingClientRect().height)}/${Math.round(r.querySelector('details.s3c-why summary')!.getBoundingClientRect().bottom)}`);
+        for (let i = 0, a = await stageH(); i < 20; i++) { await p.waitForTimeout(150); const b = await stageH(); if (b === a && i >= 1) break; a = b; }
         const m = await p.locator('#' + lab).evaluate((root) => {
           const vh = innerHeight, st = root.querySelector('.s3d')!.getBoundingClientRect(), why = root.querySelector('details.s3c-why') as HTMLDetailsElement;
           const bars = [...document.querySelectorAll<HTMLElement>('nav,footer,[class*="bar"]')].filter((e) => getComputedStyle(e).position === 'fixed' && e.getBoundingClientRect().top > vh / 2).map((e) => e.getBoundingClientRect().top);

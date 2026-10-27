@@ -31,6 +31,8 @@ export interface StageOpt {
   tap?: (x: number, y: number) => void;
   /** start angle of the turntable */
   yaw?: number;
+  /** R33 pilot: take every pointer gesture instead of the turntable (canvas pixels; tap = moved less than 8 px) */
+  grab?: { down(x: number, y: number): void; move(x: number, y: number): void; up(x: number, y: number, tap: boolean): void };
 }
 /** an HTML label pinned to a point of the pivot; cls picks the look (see .s3t in s3d.css) */
 export interface Tag { el: HTMLElement; at: Vector3; show(on: boolean): void; set(html: string): void }
@@ -85,7 +87,12 @@ export function stage(box: HTMLElement, o: StageOpt): Stage {
   const place = () => {
     for (const t of tags) {
       if (t.el.hidden) continue;
-      const [x, y] = toScreen(t.at);
+      let [x, y] = toScreen(t.at);
+      if (t.el.dataset.clamp !== undefined) { // R33 v2: keep a bubble on the screen; its arrow still points at the thing
+        const c = t.el.firstElementChild as HTMLElement, hw = c.offsetWidth / 2, nx = Math.max(hw + 8, Math.min(W - hw - 8, x));
+        if (t.el.dataset.clamp === 'x') { if (x > -hw && x < W + hw) x = Math.max(hw + 4, Math.min(W - hw - 4, x)); } // a label: nudge it in only while its thing is on screen
+        else { t.el.style.setProperty('--ax', `${(x - nx).toFixed(1)}px`); x = nx; y = Math.max(c.offsetHeight + 18 + (Number(box.dataset.padt) || 0), y); } // v3: the stage runs under a top bar this tall
+      }
       t.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
     }
   };
@@ -106,14 +113,17 @@ export function stage(box: HTMLElement, o: StageOpt): Stage {
 
   /* drag left / right turns the turntable; up / down stays a page scroll (touch-action: pan-y) */
   let drag = false, x0 = 0, y0 = 0, moved = 0, yaw0 = 0;
-  const down = (e: PointerEvent) => { drag = true; x0 = e.clientX; y0 = e.clientY; moved = 0; yaw0 = pivot.rotation.y; try { canvas.setPointerCapture(e.pointerId); } catch { /* synthetic */ } };
+  const at = (e: PointerEvent): [number, number] => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  const down = (e: PointerEvent) => { drag = true; x0 = e.clientX; y0 = e.clientY; moved = 0; yaw0 = pivot.rotation.y; try { canvas.setPointerCapture(e.pointerId); } catch { /* synthetic */ } if (o.grab) { o.grab.down(...at(e)); draw(); } };
   const move = (e: PointerEvent) => {
     if (!drag) return;
     moved = Math.max(moved, Math.hypot(e.clientX - x0, e.clientY - y0));
+    if (o.grab) { o.grab.move(...at(e)); draw(); return; }
     pivot.rotation.y = yaw0 + (e.clientX - x0) * 0.012; draw();
   };
   const up = (e: PointerEvent) => {
     if (!drag) return; drag = false;
+    if (o.grab) { o.grab.up(...at(e), moved < 8); draw(); return; }
     if (moved < 8 && o.tap) { const r = canvas.getBoundingClientRect(); o.tap(e.clientX - r.left, e.clientY - r.top); }
     draw();
   };

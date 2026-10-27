@@ -1,0 +1,104 @@
+/* R34 zone 5 "Math layer": K1-K5, every idea as geometry you can touch */
+import type { RawSt } from './types';
+export const Z: Record<string, RawSt> = {
+  K1: {
+    i: [
+      ['微积分第一招：看一条线在某一点有多陡。|Calculus trick one: how steep is a curve at one point?', [
+        ['slope', '切线|Tangent', '贴着曲线轻轻碰一下的直线。|A straight line that just touches the curve.', '它的陡度，就是这一点的“导数”。|Its steepness is the derivative at that point.'],
+        ['glass', '放大看|Zoom in', '把曲线放得很大很大，它几乎就是直的。|Zoom far enough and a curve looks straight.', '这就是“极限”的想法。|That is the idea of a limit.'],
+        ['stairs', '一节套一节|Chain', '一个变化带动下一个变化，陡度要乘起来。|One change drives the next; steepnesses multiply.', '这叫链式法则，训练模型全靠它。|The chain rule: training depends on it.'],
+      ]],
+      ['在山坡上，最陡的方向叫“梯度”。|On a hillside, the steepest direction is the gradient.', [
+        ['valley', '山坡|Hillside', '把“错误”想成一座山。|Picture the error as a hill.', '梯度指向最陡的上坡。|The gradient points straight uphill.'],
+        ['arrow', '反着走|Go the other way', '想要错误变小，就往梯度反方向走。|To reduce error, walk against the gradient.', '这就是模型学习的方向。|That is the direction a model learns in.'],
+        ['ball', '小球|A ball', '小球会自己往下滚。|A ball rolls down by itself.', '模型的学习就像这颗小球。|A model learns like that ball.'],
+      ]],
+    ],
+    lab: ['slope', '拖动小球沿着曲线走，看切线和陡度数字怎么变。|Drag the ball along the curve and watch the tangent and its steepness.', '在谷底，切线是平的，陡度是 0。|At the bottom, the tangent is flat and the steepness is 0.'],
+    q: [
+      ['曲线最低点的切线是什么样？|What does the tangent look like at the lowest point?', ['平的|Flat', '竖直的|Straight up', '没有切线|There is none'], 0, '在谷底，不上也不下。|At the bottom it goes neither up nor down.'],
+      ['想让错误变小，往哪走？|To make the error smaller, which way?', ['梯度的反方向|Against the gradient', '梯度的方向|Along the gradient', '原地不动|Stay still'], 0, '梯度指向上坡。|The gradient points uphill.'],
+    ],
+    d: '你摸到了导数和梯度！|You touched derivatives and gradients!',
+  },
+  K2: {
+    i: [
+      ['线性代数：用箭头和格子做计算。|Linear algebra: computing with arrows and grids.', [
+        ['arrow', '向量|Vector', '一个箭头：有方向、有长短。|An arrow with a direction and a length.', '一个词在模型里就是一个很长的箭头。|Inside a model, a word is a very long arrow.'],
+        ['scale', '点积|Dot product', '一个箭头投在另一个上的影子。|One arrow’s shadow on another.', '同向分高，垂直为零，反向为负。|Same way: high; square: zero; opposite: negative.'],
+        ['grid', '矩阵|Matrix', '一个能把整张格子拉、转、斜的机器。|A machine that stretches, turns and slants a whole grid.', '模型里到处都是这样的变换。|Models are full of these transformations.'],
+      ]],
+      ['格子被拉大，面积也会变：这就是行列式。|When the grid stretches, areas change: that is the determinant.', [
+        ['cube', '面积倍数|Area factor', '一个小方块变成多大，就是行列式。|How much a unit square grows is the determinant.', '变成 0，说明格子被压扁成一条线。|Zero means the grid was squashed flat.'],
+        ['blocks', '组合|Combining', '先转再拉，等于两个矩阵相乘。|Turning then stretching equals multiplying two matrices.', '模型一层层的计算就是这样叠起来的。|A model’s layers stack up the same way.'],
+        ['eye', '换个角度看|New viewpoint', '矩阵也像换一副眼镜看同一样东西。|A matrix is like new glasses for the same thing.', '注意力里的“问题”和“名片”都是这么算的。|Attention’s questions and cards come from this.'],
+      ]],
+    ],
+    lab: ['grid', '拖动滑块，看矩阵把整张格子拉斜；红绿箭头跟着变。|Drag the slider and watch the matrix slant the grid; the red and green arrows move along.', '格子里每一个点都按同一个规则移动。|Every point of the grid moves by the same rule.'],
+    q: [
+      ['两个箭头互相垂直，点积是？|Two arrows at a right angle: the dot product is…', ['0|0', '1|1', '最大|The largest'], 0, '垂直时影子没有长度。|At a right angle the shadow has no length.'],
+      ['矩阵对格子做什么？|What does a matrix do to a grid?', ['拉、转、斜整张格子|Stretches, turns, slants it', '涂颜色|Paints it', '删掉格子|Deletes it'], 0, '每个点都按同一个规则移动。|Every point moves by one rule.'],
+    ],
+    d: '你会用格子看矩阵了！|You can see matrices as grids!',
+  },
+  K3: {
+    i: [
+      ['概率：多扔几次，就能看出什么最常出现。|Probability: roll many times and see what comes up most.', [
+        ['dice', '两颗骰子|Two dice', '加起来是 7 的方法最多。|There are the most ways to make 7.', '扔很多次，7 的柱子最高。|Roll many times and the 7 bar grows tallest.'],
+        ['blocks', '柱状图|Bar chart', '每个结果一根柱子，越常出现越高。|One bar per result; more often means taller.', '柱子的高低就是概率的样子。|The bar heights show the probabilities.'],
+        ['scale', '加起来是 1|Adds up to 1', '所有可能性加起来正好是 100%。|All chances together make exactly 100%.', '模型给下一个词的可能性也是这样。|The model’s next-word chances work the same way.'],
+      ]],
+      ['模型把分数变成可能性，还会衡量“有多意外”。|A model turns scores into chances and measures surprise.', [
+        ['stairs', '分数变概率|Scores to chances', '分高的词得到大块，分低的得到小块。|High scores get a big share, low scores a small one.', '这个变法叫 softmax。|This is called softmax.'],
+        ['bulb', '意外程度|Surprise', '常见的事不意外，罕见的事很意外。|Common things are not surprising; rare things are.', '平均的意外程度叫“熵”。|Average surprise is called entropy.'],
+        ['magnet', '猜得像不像|How close a guess is', '比较模型的猜测和真实答案有多不一样。|Compare the model’s guess with the true answer.', '训练就是让它们越来越像。|Training makes them more and more alike.'],
+      ]],
+    ],
+    lab: ['dice', '点骰子扔一次，或者长按连续扔，看哪根柱子长得最高。|Tap the dice to roll, again and again: which bar grows tallest?', '和是 7 的组合最多（6 种），所以 7 最常出现。|Seven has the most combinations (6), so it comes up most.'],
+    q: [
+      ['两颗骰子，哪个和最常出现？|With two dice, which sum is most common?', ['7|7', '2|2', '12|12'], 0, '数数能凑成它的组合。|Count the combinations.'],
+      ['所有可能性加起来是多少？|All the chances together add up to…', ['100%|100%', '50%|50%', '7|7'], 0, '一定会有一个结果。|Some result always happens.'],
+    ],
+    d: '你看见了概率的形状！|You saw the shape of probability!',
+  },
+  K4: {
+    i: [
+      ['优化：在“错误山谷”里一步步走到最低处。|Optimisation: step by step to the bottom of the error valley.', [
+        ['valley', '错误山谷|Error valley', '越低的地方，模型错得越少。|The lower you are, the fewer the mistakes.', '目标就是走到谷底。|The goal is the bottom.'],
+        ['ball', '一步|One step', '看看哪边往下，就往那边走一步。|See which way is down and step that way.', '这叫梯度下降。|This is gradient descent.'],
+        ['stairs', '步子大小|Step size', '每步走多远，叫学习率。|How far each step goes is the learning rate.', '太小走得慢，太大会冲过头。|Too small is slow; too big overshoots.'],
+      ]],
+      ['聪明一点的走法：随便抓几个例子，还带上惯性。|Smarter walking: use a few random examples and add momentum.', [
+        ['dice', '抓一把|A handful', '每次只看一小把例子，不看全部。|Each step looks at a small handful of examples.', '快很多，路线有点晃但能到。|Much faster; a bit wobbly but it gets there.'],
+        ['rocket', '惯性|Momentum', '像滚下坡的球，越滚越顺。|Like a ball rolling downhill, it builds up speed.', '小坑不容易困住它。|Small bumps do not trap it.'],
+        ['gear', '自动调步子|Auto step size', '每个旋钮自己决定走多大步。|Each knob picks its own step size.', '这就是常用的 Adam。|That is the popular Adam method.'],
+      ]],
+    ],
+    lab: ['valley', '拖动滑块改学习率，点小球走一步：太大的步子会冲过谷底！|Change the learning rate, then tap the ball to step: too big a step overshoots!', '合适的步子，几步就能到谷底。|A good step size reaches the bottom in a few steps.'],
+    q: [
+      ['学习率太大会怎样？|What happens if the learning rate is too big?', ['冲过谷底来回跳|It overshoots and bounces', '走得特别准|It is very accurate', '停在原地|It stays still'], 0, '步子太大会跳过最低点。|Steps too big jump over the bottom.'],
+      ['梯度下降每一步往哪走？|Which way does each gradient-descent step go?', ['往下坡|Downhill', '往上坡|Uphill', '随便|Anywhere'], 0, '目标是谷底。|The goal is the bottom.'],
+    ],
+    d: '你会在山谷里找最低点了！|You can find the valley floor!',
+  },
+  K5: {
+    i: [
+      ['反向传播：一串踏脚石，错误从最后一块往回传。|Backpropagation: stepping stones, the error travels back from the last one.', [
+        ['stairs', '往前走|Forward', '一个数字一块块石头往前走，每块做一次计算。|A number hops forward stone by stone, each doing one sum.', '最后一块给出答案。|The last stone gives the answer.'],
+        ['arrow', '往回传|Backward', '答案错多少，从最后一块往回告诉每一块。|How wrong the answer is goes back to every stone.', '每块的陡度乘起来，就是链式法则。|Multiplying the steepnesses is the chain rule.'],
+        ['gear', '各自调整|Each adjusts', '每块石头知道自己该改多少。|Each stone learns how much to change.', '大模型几十亿个数字就是这样一起改的。|Billions of numbers in a model are tuned this way.'],
+      ]],
+      ['几个小证明：为什么模型这样设计。|A few little proofs: why models are built this way.', [
+        ['scale', '除以根号|Divide by a root', '注意力的分数要除以 √维度，免得太大。|Attention scores are divided by √dimension so they do not get too big.', '分数太大，概率会变成全有或全无。|Too-big scores make chances all-or-nothing.'],
+        ['arrow', '近路帮忙|The shortcut helps', '近路让错误可以直接传回很深的地方。|The shortcut lets the error travel straight back deep down.', '所以很深的模型也能学。|So very deep models can learn.'],
+        ['star', '奖励的梯度|Reward gradient', '得到奖励的回答，被调得更容易再说。|Answers that got rewards are tuned to be said more.', '这是用奖励训练的数学。|That is the maths of training with rewards.'],
+      ]],
+    ],
+    lab: ['steps', '点“往前”看数字走过石头，再点“往回”看错误怎么一块块传回来。|Tap Forward to send the number across the stones, then Back to see the error come home.', '往回传时，每块石头的陡度乘在一起：这就是链式法则。|Going back, each stone’s steepness multiplies: the chain rule.'],
+    q: [
+      ['反向传播里，错误从哪里开始往回传？|In backprop, where does the error start travelling back?', ['最后一块石头|The last stone', '第一块石头|The first stone', '中间随便一块|Any stone'], 0, '答案在最后一块，错误也从那里开始。|The answer is at the end, so the error starts there.'],
+      ['链式法则把每块的陡度怎么样？|What does the chain rule do with each stone’s steepness?', ['乘起来|Multiplies them', '删掉|Deletes them', '忘掉|Forgets them'], 0, '一节套一节，要乘。|Link by link, multiply.'],
+    ],
+    d: '你走通了反向传播的踏脚石！|You crossed the backprop stones!',
+  },
+};
