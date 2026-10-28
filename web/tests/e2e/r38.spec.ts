@@ -48,8 +48,8 @@ test.describe('R38 explorer', () => {
     await page.locator('.l4-lv.live').nth(4).click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L5$/);
     await page.goto('./?lang=zh#home'); await page.locator('.l4-hr.pri').click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
     await page.goto('./?lang=zh#home');
-    await expect(page.locator('.l4-home .l4-hr')).toHaveCount(2); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
-    await page.locator('.l4-home [data-a="prog"]').click(); await expect(page.locator('.l4-ms .l4-pg').first()).toBeVisible();
+    await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
+    await page.locator('.l4-home [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-st b').first()).toBeVisible();
     expect(errs).toEqual([]);
   });
   test('old addresses (?w=3d, ?classic=1, #T1, #learn) land on the explorer home: the old sites are gone', async ({ page }) => {
@@ -147,9 +147,9 @@ test.describe('R38 explorer', () => {
     await expect(page.locator('.l4-ms a.here')).toHaveCount(1);
     await page.locator('.l4-ms a[href$="#L4/tr/2"]').click(); await expect(page).toHaveURL(/tr\/2$/);
     await go('#L4/tr/3'); await page.locator('[data-a="map"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
-    await go('#L4/tr/2'); await page.locator('[data-a="prog"]').click();
-    expect(Number(await page.locator('.l4-ms .l4-pg b').first().textContent())).toBeGreaterThanOrEqual(2);
-    await expect(page.locator('.l4-ms a[href*="w=3d"], .l4-ms a[href*="classic=1"]')).toHaveCount(0);
+    await go('#L4/tr/2'); await page.locator('[data-a="prog"]').click(); await expect(page).toHaveURL(/#R$/);
+    await expect.poll(async () => Number(await page.locator('.px-st b').first().textContent())).toBeGreaterThanOrEqual(2);
+    await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
     await go('#L4/tr/2');
     await page.locator('[data-a="lang"]').click(); await expect(page.locator('#l4')).toHaveAttribute('data-lang', 'en'); expect(await page$(page)).toBe('TR2');
   });

@@ -9,9 +9,9 @@ export const SIZE: Record<Fmt, [number, number]> = { story: [1080, 1920], post: 
 export interface Data { site: string; url: string; lv: string; lvC: string; path: string; icon: string; name: string; idea: string; parts: { n: string; s: string }[]; co: string; why: string; head: string; badge: string; scan: string; how: string; whyT: string }
 export const words = (d: Data) => [d.head, d.name, d.idea, ...d.parts.map((p) => `${p.n}: ${p.s}`), d.co, d.why].filter(Boolean).join('\n');
 
-const FONT = 'system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",sans-serif';
+export const FONT = 'system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",sans-serif';
 const tok = (s: string) => s.match(/[\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F](?:[，。、：；！？）」』”’,.!?:;)]*)|[^\s\u2E80-\u9FFF\uFF00-\uFFEF\u3000-\u303F]+\s*|\s+/g) ?? [];
-function wrap(g: CanvasRenderingContext2D, s: string, w: number, max = 9): string[] {
+export function wrap(g: CanvasRenderingContext2D, s: string, w: number, max = 9): string[] {
   const out: string[] = []; let cur = '';
   for (const t of tok(s)) {
     if (g.measureText(cur + t).width <= w || !cur) { cur += t; continue; }
@@ -21,10 +21,10 @@ function wrap(g: CanvasRenderingContext2D, s: string, w: number, max = 9): strin
   if (out.length > max) { out.length = max; out[max - 1] = out[max - 1]!.replace(/.{0,2}$/, '…'); }
   return out;
 }
-function rr(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+export function rr(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
 }
-const font = (px: number, wt = 700) => `${wt} ${px}px ${FONT}`;
+export const font = (px: number, wt = 700) => `${wt} ${px}px ${FONT}`;
 /** draw a card; returns the canvas */
 export function draw(d: Data, fmt: Fmt, doc: Document = document): HTMLCanvasElement {
   const [W, H] = SIZE[fmt], cv = doc.createElement('canvas'); cv.width = W; cv.height = H;
