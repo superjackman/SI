@@ -13,14 +13,17 @@ import type { P3 } from '../three3d/p3/base';
 import type { Note } from './note';
 import { W } from './text';
 import type { View, WApi, Mod } from './sc/world';
+import * as RC from './rec';
 
 const DONE = 'si.w3.done', SEEN = 'si.w3.seen', HI = 'si.w3.hi';
 type AnyMod = Mod<unknown>;
 const SC: Record<string, () => Promise<AnyMod>> = {
   hall: () => import('./sc/hall') as unknown as Promise<AnyMod>, stand: () => import('./sc/stand') as unknown as Promise<AnyMod>,
   quiz: () => import('./sc/quiz') as unknown as Promise<AnyMod>, reward: () => import('./sc/reward') as unknown as Promise<AnyMod>,
-  map: () => import('./sc/map') as unknown as Promise<AnyMod>,
+  map: () => import('./sc/map') as unknown as Promise<AnyMod>, tree: () => import('./sc/tree') as unknown as Promise<AnyMod>,
 };
+/** R37: the three areas (learn, practice, share) share one 3D scene, the knowledge tree */
+export const isArea = (r: Route): r is Extract<Route, { v: 'learn' | 'practice' | 'share' }> => r.v === 'learn' || r.v === 'practice' || r.v === 'share';
 const ZEMB = ['robot', 'letters', 'brain', 'globe', 'grid'];
 const ZSKY: [string, string, string] = ['#c9bdf2', '#e0d6fa', '#f4effd'];
 /** the pages of a station: its ideas, then the experiment, the quiz and the medal */
@@ -45,7 +48,7 @@ export function start(doc: Document = document, win: Window = window) {
 <div class="p3-stage" id="p3s" role="main"></div>
 <div class="p3-foot"><div class="p3-cap"><div class="p3-dots" role="tablist"></div><div class="w3-cr"><button type="button" class="w3-bulb" data-act="why" hidden></button><p class="p3-say" aria-live="polite"></p></div></div>
 <label class="p3-len w3-len" hidden><span></span><input type="range"><i aria-hidden="true"></i></label>
-<nav class="p3-bot"><button type="button" class="p3-r" data-act="map"></button><button type="button" class="p3-r" data-act="prog"></button><button type="button" class="p3-r pri" data-act="next"></button></nav></div>
+<nav class="p3-bot"><button type="button" class="p3-r" data-act="learn"></button><button type="button" class="p3-r" data-act="prog"></button><button type="button" class="p3-r pri" data-act="next"></button></nav></div>
 <div class="p3-sheet" hidden></div><div class="p3-toast" role="status" hidden></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   const stg = $('#p3s'), len = $<HTMLLabelElement>('.w3-len'), lenIn = $<HTMLInputElement>('.w3-len input'), say = $('.p3-say'), bulb = $('.w3-bulb'), dots = $('.p3-dots'), crumb = $('.p3-crumb'), sheet = $('.p3-sheet'), toast = $('.p3-toast');
@@ -55,14 +58,20 @@ export function start(doc: Document = document, win: Window = window) {
   /* R36: what the finger last pressed (stage px), which parts a tap already explained, which things this idea page has shown */
   let px = -1, py = -1, cardAt = -1, tapN = 0, TE: typeof import('./c/t') | null = null;
   const tapSeen = new Set<number>(), ideaSeen = new Set<number>();
+  /* R37: the knowledge tree (levels, parents, how / why lines) and the area panels load on demand */
+  let TR: typeof import('./c/tree') | null = null, AR: typeof import('./area') | null = null;
+  const tree = async () => (TR ??= await import('./c/tree'));
   const ls = { get: <T>(k: string, d: T): T => { try { const v = win.localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { win.localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } } };
   if (R.v === 'home' && !ls.get(HI, 0) && !win.location.hash) R = { v: 'welcome' };
   const T = (x: Tx) => tx(x, lang);
   const done = () => new Set(ls.get<string[]>(DONE, []));
   const markDone = (s: string) => { const d = done(); d.add(s); ls.set(DONE, [...d]); };
-  const markSeen = () => { if (R.v !== 'st') return; const s = new Set(ls.get<string[]>(SEEN, [])); s.add(`${R.s}/${R.p}`); ls.set(SEEN, [...s]); };
+  /* R37: the learning record (rec.ts) next to the old done / seen keys */
+  const rec = () => RC.fix(ls.get<unknown>(RC.KEY, null));
+  const recDo = (f: (r: RC.Rec, now: number) => void) => { const r = rec(); f(r, Date.now()); ls.set(RC.KEY, r); };
+  const markSeen = () => { if (R.v !== 'st') return; const s = new Set(ls.get<string[]>(SEEN, [])), id = R.s; s.add(`${R.s}/${R.p}`); ls.set(SEEN, [...s]); recDo((r, t) => RC.seen(r, id, t)); };
   const icons = () => {
-    for (const [a, ic, lab] of [['menu', IC.menu, W.menu], ['back', IC.back, W.back], ['search', IC.search, W.search], ['share', IC.share, W.share], ['map', IC.map, W.mapN], ['prog', IC.prog, W.progress], ['next', IC.next, W.nextP]] as const) {
+    for (const [a, ic, lab] of [['menu', IC.menu, W.menu], ['back', IC.back, W.back], ['search', IC.search, W.search], ['share', IC.share, W.share], ['learn', IC.map, W.treeN], ['prog', IC.prog, W.progress], ['next', IC.next, W.nextP]] as const) {
       const b = $(`[data-act=${a}]`); b.innerHTML = ic; b.setAttribute('aria-label', T(lab)); b.title = T(lab);
     }
     bulb.innerHTML = IC.bulb; bulb.setAttribute('aria-label', T(W.why)); bulb.title = T(W.why);
@@ -95,6 +104,7 @@ export function start(doc: Document = document, win: Window = window) {
     let s = '';
     if (R.v === 'home' || R.v === 'welcome') s = T(W.home); // the welcome card already says hello
     else if (R.v === 'map') s = T(W.map);
+    else if (isArea(R)) s = '';
     else if (R.v === 'zone') s = T(W.zone);
     else if (!C) s = T(W.loading);
     else if (k === 'ideas') s = T(C.ideas[(R as { p: number }).p]!.say);
@@ -121,10 +131,13 @@ export function start(doc: Document = document, win: Window = window) {
   }
   /* ---------- chrome: the crumb, the dots, the slider, the next button ---------- */
   const chrome = () => {
-    const depth = R.v === 'home' || R.v === 'welcome' ? 0 : R.v === 'map' || R.v === 'zone' ? 1 : 2;
+    const depth = R.v === 'home' || R.v === 'welcome' ? 0 : R.v === 'map' || R.v === 'zone' || isArea(R) ? 1 : 2;
     $('.p3-back').hidden = depth === 0;
-    const label = R.v === 'st' ? `${stIcon(R.s)} ${stName(R.s, lang)}` : R.v === 'zone' ? `${ZONES[R.z - 1]!.icon} ${T(ZONES[R.z - 1]!.name)}` : R.v === 'map' ? T(W.mapN) : T(W.title);
-    crumb.innerHTML = (depth ? `<span class="p3-cd" aria-hidden="true">${[0, 1, 2].slice(0, depth + 1).map((k) => `<i${k === depth ? ' class="on"' : ''}></i>`).join('')}</span>` : '') + `<b>${label}</b>`;
+    const label = R.v === 'st' ? `${stIcon(R.s)} ${stName(R.s, lang)}` : R.v === 'zone' ? `${ZONES[R.z - 1]!.icon} ${T(ZONES[R.z - 1]!.name)}` : R.v === 'map' ? T(W.mapN) : isArea(R) ? T(W[`${R.v}A`]) : T(W.title);
+    const nd = R.v === 'st' ? TR?.NODES[R.s] : undefined; // R37: the station's level in the knowledge tree
+    crumb.innerHTML = (depth && !nd ? `<span class="p3-cd" aria-hidden="true">${[0, 1, 2].slice(0, depth + 1).map((k) => `<i${k === depth ? ' class="on"' : ''}></i>`).join('')}</span>` : '')
+      + (nd && TR ? `<em class="w3-lv" style="--c:${TR.LV[nd.lv]!.c}" title="${T(TR.LV[nd.lv]!.n)}">L${nd.lv}</em>` : '') + `<b>${label}</b>`;
+    if (nd) root.dataset.lv = String(nd.lv); else delete root.dataset.lv;
     const n = R.v === 'st' && C ? pagesOf(C) : 0, p = R.v === 'st' ? R.p : 0;
     /* R35: real tabs with words (Idea 1, Idea 2, Lab, Quiz, Medal), 36 px tall, instead of tiny dots and emoji */
     const tab = (k: number) => (C && k >= C.ideas.length ? T([W.tLab, W.tQuiz, W.tMedal][k - C.ideas.length]!) : T(W.tIdea).replace('{i}', String(k + 1)));
@@ -139,6 +152,36 @@ export function start(doc: Document = document, win: Window = window) {
     len.hidden = !sl || flat;
     if (sl) { lenIn.min = String(sl.min); lenIn.max = String(sl.max); lenIn.step = String(sl.step ?? 1); lenIn.value = String(sl.val); len.querySelector('span')!.textContent = sl.label; lenIn.setAttribute('aria-label', sl.label); }
     doc.title = (R.v === 'st' ? stName(R.s, lang) + ' · ' : '') + T(W.title);
+    drill(); areaPanel();
+  };
+  /* ---------- R37: the drill bar (up a level, how the parts fit, go deeper) and the area panel ---------- */
+  const footEl = $('.p3-foot'), dr = doc.createElement('div'); dr.className = 'w3-dr'; dr.hidden = true; footEl.insertBefore(dr, $('.p3-cap'));
+  const dBtn = (h: string, top: Tx, s: string, cls: string) => `<button type="button" class="w3-db ${cls}" data-act="goto" data-h="${h}"><small>${T(top)}</small><b>${s ? `${stIcon(s)} ${stName(s, lang)}` : T(W.dTree)}</b></button>`;
+  function drill() {
+    const nd = R.v === 'st' && TR ? TR.NODES[R.s] : undefined, k = kind();
+    if (!nd || !k) { if (!dr.hidden) { dr.hidden = true; dr.innerHTML = ''; } root.dataset.dr = ''; return; }
+    const key = `${nd.s}:${k}:${lang}`; if (dr.dataset.k === key && !dr.hidden) return;
+    const deep = nd.deep ? dBtn(`#${nd.deep}`, W.dDeep, nd.deep, 'dn') : `<button type="button" class="w3-db dn" data-act="goto" data-h="#learn"><small>${T(W.dFloor)}</small><b>${T(W.dTree)}</b></button>`;
+    dr.innerHTML = k === 'ideas'
+      ? dBtn(nd.up ? `#${nd.up}` : '#learn', W.dUp, nd.up, 'up') + `<button type="button" class="w3-db co" data-act="coop"><small>${T(W.dCo)}</small><b>${T(W.dCoB)}</b></button>` + deep
+      : dBtn(`#${nd.s}`, W.dBack, nd.s, 'bk') + deep;
+    dr.dataset.k = key; dr.hidden = false; root.dataset.dr = '1';
+  }
+  const coop = () => { const nd = R.v === 'st' && TR ? TR.NODES[R.s] : undefined; if (!nd) return; openCard({ t: `${stIcon(nd.s)} ${stName(nd.s, lang)} · L${nd.lv}`, p: `<b class="w3-ch">${T(W.dHow)}</b>${T(nd.co)}</p><p><b class="w3-ch">${T(W.dWhy)}</b>${T(nd.why)}` }); };
+  const ap = doc.createElement('div'); ap.className = 'w3-ap'; ap.hidden = true; root.appendChild(ap);
+  let apKey = '';
+  function areaPanel() {
+    if (!isArea(R)) { delete root.dataset.area; if (!ap.hidden) { ap.hidden = true; ap.innerHTML = ''; apKey = ''; } return; }
+    const r = R, key = `${r.v}:${r.v === 'share' ? r.s ?? '' : ''}:${lang}:${ls.get(RC.KEY, '').toString().length}:${done().size}`;
+    if (key === apKey && !ap.hidden) return;
+    apKey = key; ap.hidden = false; root.dataset.area = r.v;
+    void import('./area').then((m) => { AR = m; if (R !== r) return; m.panel(ap, { lang, area: r.v, rec: rec(), done: done(), now: Date.now() }); footH(); if (r.v === 'share' && r.s && !root.querySelector('.w3-sc')) void openShare('node', r.s); });
+  }
+  const footH = () => root.style.setProperty('--fh', `${Math.round(footEl.getBoundingClientRect().height)}px`);
+  win.addEventListener('resize', footH);
+  const openShare = async (k: string, s: string, head?: string, badge?: string) => {
+    const m = AR ?? (AR = await import('./area'));
+    await m.card(root, lang, { kind: k, s, ...(head ? { head } : {}), ...(badge ? { badge } : {}) }, (t) => { toast.textContent = t; toast.hidden = false; win.setTimeout(() => { toast.hidden = true; }, 1600); });
   };
   /* ---------- the scene for this page ---------- */
   const api = (): WApi => ({
@@ -146,17 +189,22 @@ export function start(doc: Document = document, win: Window = window) {
     pick: (k) => onPick(k), swipe: () => { /* the drag orbits */ },
     dot: (ax, az, bx, by) => { root.dataset.dot = (ax * bx + az * by).toFixed(1); },
     say: (s) => { labSay = s; caption(); },
-    done: () => { if (labOK) return; labOK = true; root.dataset.lab = 'done'; chrome(); teach(); },
+    done: () => { if (labOK) return; labOK = true; { const id = st(); if (id) recDo((r, t) => RC.lab(r, id, t)); } root.dataset.lab = 'done'; chrome(); teach(); },
     note: (k, v) => { root.dataset[k] = String(v); },
   });
   const free = () => { freeNotes(); closeCard(); if (view) { try { view.dispose(); } catch (e) { console.error('[w3 dispose]', e); } view = null; vkey = ''; } };
-  const sceneKey = () => (R.v === 'home' || R.v === 'welcome' ? 'home' : R.v === 'map' ? 'map' : R.v === 'zone' ? `z${R.z}` : `${R.s}/${R.p}`) + ':' + lang;
+  const sceneKey = () => (R.v === 'home' || R.v === 'welcome' ? 'home' : R.v === 'map' ? 'map' : R.v === 'zone' ? `z${R.z}` : isArea(R) ? 'tree' : `${R.s}/${R.p}`) + ':' + lang;
   const quizOpts = () => { const q = C!.quiz[qi]!; qo = order(q.o.length, STATIONS.indexOf(st()) * 7 + qi + 1); return qo.map((j) => T(q.o[j]!)); };
   const make = async (): Promise<View> => {
     const d = done();
     if (R.v === 'home' || R.v === 'welcome') return (await SC.hall!()).make(stg, api(), { emb: ZEMB, names: ZONES.map((z) => T(z.name)), done: ZONES.map((_, k) => zDone(k) === ZONES[k]!.st.length), color: '#8b5cf6', sky: ZSKY, seed: 11 });
     if (R.v === 'map') return (await SC.map!()).make(stg, api(), { names: ZONES.map((z) => T(z.name)), cols: ZONES.map((z) => z.color), done: ZONES.map((z) => z.st.map((s) => d.has(s))), sky: ZSKY });
+    if (isArea(R)) {
+      const t = await tree(), r = rec(), ord = t.LV.flatMap((_, k) => t.onLevel(k, STATIONS));
+      return (await SC.tree!()).make(stg, api(), { lv: t.LV.map((l, k) => ({ n: `L${k} ${T(l.n)}`, c: l.c })), nodes: ord.map((s) => ({ lv: t.NODES[s]!.lv, up: ord.indexOf(t.NODES[s]!.up), st: RC.status(r, s, d) })), sky: ZSKY });
+    }
     if (R.v === 'zone') { const z = ZONES[R.z - 1]!; return (await SC.hall!()).make(stg, api(), { emb: z.st.map((s) => EMBLEM[s] ?? 'orb'), names: z.st.map((s) => stName(s, lang)), done: z.st.map((s) => d.has(s)), color: z.color, sky: z.sky, seed: R.z }); }
+    if (R.v !== 'st') throw new Error('route');
     const z = zoneOf(R.s), c = C!, k = kindOf(c, R.p), base = { color: z.color, sky: z.sky };
     if (k === 'ideas') return (await SC.stand!()).make(stg, api(), { ...base, things: c.ideas[R.p]!.things.map((t) => ({ p: t.p, n: T(t.n) })), seed: R.p + 1 });
     if (k === 'lab') { const { labMod } = await import('./lab'); return (await labMod(c.lab.k)).make(stg, api(), { ...base, opt: c.lab.opt }); }
@@ -186,20 +234,29 @@ export function start(doc: Document = document, win: Window = window) {
   const enterPage = () => { foc = R.v === 'zone' && R.i ? R.i - 1 : null; why = false; labOK = false; labSay = ''; qi = 0; qBusy = false; qWrong = 0; root.dataset.lab = ''; root.dataset.q = ''; tapSeen.clear(); ideaSeen.clear(); };
   const go = (r: Route, push = true) => {
     const stChanged = r.v !== 'st' || R.v !== 'st' || r.s !== R.s;
-    const sameScene = R.v === 'zone' && r.v === 'zone' && r.z === R.z;
+    const sameScene = (R.v === 'zone' && r.v === 'zone' && r.z === R.z) || (isArea(R) && isArea(r));
     if (stChanged) C = r.v === 'st' ? peek(r.s) ?? null : null;
     R = r; enterPage();
     if (r.v === 'welcome') ls.set(HI, 1);
     if (push) try { const h = routeHash(r); win.history.pushState({ w3: 1 }, '', win.location.pathname + win.location.search + (h || '#')); } catch { /* file: */ }
     useApp.setState({ station: routeSt(r) });
-    markSeen(); chrome(); caption();
+    markSeen(); chrome(); caption(); win.document.querySelector('.w3-sc')?.remove(); root.dataset.sc = '';
     if (sameScene && view) focusNow(); else { root.dataset.ready = ''; void build(); } // not ready until the new page is built
   };
   const up = () => go(R.v === 'st' ? { v: 'zone', z: zoneOf(R.s).n, i: zoneOf(R.s).st.indexOf(R.s) + 1 } : { v: 'home' });
+  /** R37: an area's next: the first station (level by level) not yet mastered; practice: the first seen but not mastered */
+  const areaNext = (): Route => {
+    if (R.v === 'share') return { v: 'home' };
+    const d = done(), r = rec(), ord = TR ? TR.LV.flatMap((_, k) => TR!.onLevel(k, STATIONS)) : STATIONS;
+    const s = (R.v === 'practice' ? ord.find((x) => { const v = RC.status(r, x, d); return v === 1 || v === 2; }) : undefined) ?? ord.find((x) => RC.status(r, x, d) < (R.v === 'practice' ? 3 : 1)) ?? ord.find((x) => !d.has(x)) ?? ord[0]!;
+    return { v: 'st', s, p: 0 };
+  };
   const nextOf = (): Route => {
     if (R.v === 'home' || R.v === 'welcome') return { v: 'zone', z: foc !== null ? foc + 1 : 1, i: 0 };
     if (R.v === 'map') return { v: 'home' };
+    if (isArea(R)) return areaNext();
     if (R.v === 'zone') { const z = ZONES[R.z - 1]!, d = done(); const s = R.i ? z.st[R.i - 1]! : z.st.find((x) => !d.has(x)) ?? z.st[0]!; return { v: 'st', s, p: 0 }; }
+    if (R.v !== 'st') return { v: 'home' };
     if (C && R.p + 1 < pagesOf(C)) return { v: 'st', s: R.s, p: R.p + 1 };
     return { v: 'st', s: nextSt(R.s), p: 0 };
   };
@@ -224,8 +281,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (R.v === 'home' || R.v === 'welcome') list = [...ZONES.map((z, i) => ({ at: `a${i}`, b: `${z.icon} ${T(z.name)}`, s: T(x(N.ZONE_S[i]!)), pick: i, el: lb(i) })), cook(N.HOME_N)];
     else if (R.v === 'zone') { const z = ZONES[R.z - 1]!; list = [...z.st.map((s, i) => { const c = peek(s); return { at: `a${i}`, b: `${stIcon(s)} ${stName(s, lang)}`, s: c ? T(c.ideas[0]!.say) : '', pick: i, el: lb(i) }; }), cook(N.zoneNote(R.z - 1, z.st.length))]; }
     else if (R.v === 'map') list = N.MAP_N.map(cook);
-    else if (C && k === 'ideas') list = C.ideas[R.p]!.things.map((t, i) => ({ at: `a${i}`, b: T(t.n), s: T(t.s), pick: i, el: lb(i) }));
-    else if (C && k === 'lab') list = N.labNotes(R.s).map(cook);
+    else if (C && R.v === 'st' && k === 'ideas') list = C.ideas[R.p]!.things.map((t, i) => ({ at: `a${i}`, b: T(t.n), s: T(t.s), pick: i, el: lb(i) }));
+    else if (C && R.v === 'st' && k === 'lab') list = N.labNotes(R.s).map(cook);
     else if (k === 'quiz') list = Te.QUIZ_N.map(cook);
     else if (C && R.v === 'st' && k === 'reward') list = Te.MEDAL_N(Te.TEACH[R.s]?.[1] ?? '|').map(cook);
     /* R36: every station on the carousel gets a short tag while its own name is hidden (at the sides), so all of them can be tapped and read */
@@ -245,6 +302,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (kd === 'quiz') { answer(k); return; }
     if (kd === 'reward') return;
     if (R.v === 'map') { if (k >= 0) go({ v: 'zone', z: k + 1, i: 0 }); return; }
+    if (isArea(R)) { foc = k >= 0 ? k : null; view?.focus(foc); AR?.level(ap, foc); return; } // a level of the tree: bring it close, light its list
     if (k < 0) { foc = null; why = false; if (R.v !== 'zone') view?.focus(null); showBubble(); return; }
     if (R.v === 'zone') { if (R.i !== k + 1) go({ v: 'zone', z: R.z, i: k + 1 }); else showBubble(); return; }
     foc = k; why = false; if (view) view.focus(k); showBubble();
@@ -267,8 +325,9 @@ export function start(doc: Document = document, win: Window = window) {
   }, true);
   const answer = (k: number) => {
     if (!C || qBusy || k < 0 || k >= qo.length) return;
-    const q = C.quiz[qi]!;
-    if (qo[k] === q.a) {
+    const q = C.quiz[qi]!, ok = qo[k] === q.a, id = st(), qn = qi;
+    recDo((r, t) => RC.answer(r, id, qn, ok, t));
+    if (ok) {
       qBusy = true; why = false; root.dataset.q = 'ok';
       view?.set?.({ ok: k }); say.textContent = '⭐ ' + T(W.right) + ' ' + T(q.why);
       if (!view) drawFlat();
@@ -320,9 +379,9 @@ export function start(doc: Document = document, win: Window = window) {
   const progress = () => {
     const d = done(), n = STATIONS.filter((s) => d.has(s)).length;
     openSheet('prog', `<h2>${T(W.progress)} · ${n} / ${STATIONS.length}${n === STATIONS.length ? ' · ' + T(W.allDone) : ''}</h2><div class="p3-bar"><i style="width:${Math.round((n / STATIONS.length) * 100)}%"></i></div>
-<button type="button" class="p3-btn" data-act="map">${T(W.mapb)}</button><div class="p3-list">${ZONES.map((z) => `<h3>${z.icon} ${T(z.name)}</h3>` + z.st.map((s) => stRow(s, d)).join('')).join('')}</div>`);
+<div class="p3-two w3-pa"><button type="button" class="p3-btn" data-act="goto" data-h="#learn">${T(W.learnA)}</button><button type="button" class="p3-btn" data-act="goto" data-h="#practice">${T(W.practiceA)}</button></div><button type="button" class="p3-btn" data-act="map">${T(W.mapb)}</button><div class="p3-list">${ZONES.map((z) => `<h3>${z.icon} ${T(z.name)}</h3>` + z.st.map((s) => stRow(s, d)).join('')).join('')}</div>`);
   };
-  const menu = () => openSheet('menu', `<h2>${T(W.menu)}</h2><div class="p3-list">${ZONES.map((z) => `<button type="button" class="p3-row" data-act="goto" data-h="#${z.id}"><span aria-hidden="true">${z.icon}</span>${T(z.name)}</button>`).join('')}
+  const menu = () => openSheet('menu', `<h2>${T(W.menu)}</h2><div class="p3-list">${(['learn', 'practice', 'share'] as const).map((a, i) => `<button type="button" class="p3-row w3-ar a${i}" data-act="goto" data-h="#${a}"><span aria-hidden="true">${['🌳', '🔬', '🎴'][i]}</span>${T(W[`${a}A`])}</button>`).join('')}${ZONES.map((z) => `<button type="button" class="p3-row" data-act="goto" data-h="#${z.id}"><span aria-hidden="true">${z.icon}</span>${T(z.name)}</button>`).join('')}
 <button type="button" class="p3-row" data-act="goto" data-h="#map"><span aria-hidden="true">🗺️</span>${T(W.mapN)}</button><button type="button" class="p3-row" data-act="goto" data-h="#welcome"><span aria-hidden="true">👋</span>${T(W.start)}</button></div>
 <div class="p3-two"><button type="button" class="p3-btn" data-act="lang">${T(W.lang)}</button><button type="button" class="p3-btn" data-act="classic">${T(W.classic)}</button></div>`);
   const search = () => {
@@ -372,7 +431,10 @@ export function start(doc: Document = document, win: Window = window) {
     else if (a === 'prog') progress();
     else if (a === 'menu') menu();
     else if (a === 'search') search();
-    else if (a === 'share') void share();
+    else if (a === 'share') { if (R.v === 'st') void openShare('node', R.s); else if (R.v === 'share') void share(); else go({ v: 'share' }); }
+    else if (a === 'card') { if (el.dataset.s) void openShare(el.dataset.k ?? 'node', el.dataset.s, el.dataset.head, el.dataset.badge); }
+    else if (a === 'learn') { closeSheet(); go({ v: 'learn' }); }
+    else if (a === 'coop') coop();
     else if (a === 'sclose') closeSheet();
     else if (a === 'dot') { if (R.v === 'st') go({ v: 'st', s: R.s, p: +(el.dataset.i ?? 0) }); }
     else if (a === 'goto') { closeSheet(); go(parseRoute(el.dataset.h ?? '')); }
@@ -386,10 +448,12 @@ export function start(doc: Document = document, win: Window = window) {
   doc.addEventListener('visibilitychange', () => { if (doc.visibilityState === 'hidden') free(); else if (!view && !flat) void build(); });
   (win as unknown as { __w3?: unknown }).__w3 = {
     state: () => ({ r: R, kind: kind(), foc, why, live: !!view, qi, right: C && kind() === 'quiz' ? qo.indexOf(C.quiz[qi]!.a) : -1, lab: labOK, wrong: qWrong }),
+    rec: () => rec(), share: (k: string, s: string, head?: string) => openShare(k, s, head),
     near: (nx: number, ny: number) => nt?.near(nx, ny)?.card.t ?? null,
     where: (i: number) => view?.where(i) ?? null, orbit: () => view?.orbit() ?? null, go, view: () => view,
   };
   if (R.v === 'welcome') ls.set(HI, 1);
   useApp.setState({ station: routeSt(R) });
   icons(); markSeen(); chrome(); caption(); void build();
+  void tree().then(() => { chrome(); footH(); }).catch(() => { /* offline: no tree */ });
 }

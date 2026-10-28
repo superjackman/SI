@@ -27,4 +27,9 @@ export const W = {
   loading: ['正在搭建 3D 场景…', 'Building the 3D scene…'],
   lookIdea: ['看这几样：{n}。点一下，它会告诉你它是什么。', 'Look at: {n}. Tap one and it tells you what it is.'],
   learned: ['学到了：', 'You learned: '],
+  /* R37: the three areas and the drill bar */
+  learnA: ['学 · 知识树', 'Learn · idea tree'], practiceA: ['练 · 实验和测验', 'Practice'], shareA: ['享 · 分享卡片', 'Share cards'], treeN: ['知识树', 'Idea tree'],
+  dUp: ['⬆ 上一层', '⬆ Up a level'], dDeep: ['⬇ 往深处钻', '⬇ Go deeper'], dCo: ['🔗 怎么配合', '🔗 How they fit'], dCoB: ['为什么要一起', 'Why together'],
+  dBack: ['📖 回到知识点', '📖 Back to the idea'], dFloor: ['🌳 已到数学底层', '🌳 The math floor'], dTree: ['看知识树', 'See the tree'],
+  dHow: ['它们怎么配合', 'How they work together'], dWhy: ['为什么要这样配合', 'Why they must work together'],
 } satisfies Record<string, Tx>;

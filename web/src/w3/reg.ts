@@ -31,6 +31,8 @@ export const EMBLEM: Record<string, string> = {
 /* ---------- routes ---------- */
 export type Route =
   | { v: 'home' } | { v: 'welcome' } | { v: 'map' }
+  /** R37: the three areas: learn (the knowledge tree), practice (experiments, quizzes, the record), share (cards) */
+  | { v: 'learn' } | { v: 'practice' } | { v: 'share'; s?: string }
   | { v: 'zone'; z: number; i: number }
   | { v: 'st'; s: string; p: number };
 /** '#T1', '#T1/3', '#z2', '#z2/4', '#map', '#welcome', '' (also the classic forms '#T3/llm', '#T2&lang=en', '#/T3') */
@@ -39,6 +41,8 @@ export function parseRoute(hash: string, search = ''): Route {
   const [a = '', b = ''] = h.split('/');
   if (a === 'map') return { v: 'map' };
   if (a === 'welcome') return { v: 'welcome' };
+  if (a === 'learn' || a === 'practice') return { v: a };
+  if (a === 'share') return isSt(b) ? { v: 'share', s: b } : { v: 'share' };
   const z = /^z([1-5])$/.exec(a);
   if (z) return { v: 'zone', z: +z[1]!, i: Math.max(0, Math.min(40, Number(b) || 0)) };
   if (isSt(a)) return { v: 'st', s: a, p: /^\d+$/.test(b) ? Math.min(+b, 20) : 0 };
@@ -51,7 +55,8 @@ export function parseRoute(hash: string, search = ''): Route {
 }
 export function routeHash(r: Route): string {
   if (r.v === 'home') return '';
-  if (r.v === 'map' || r.v === 'welcome') return `#${r.v}`;
+  if (r.v === 'map' || r.v === 'welcome' || r.v === 'learn' || r.v === 'practice') return `#${r.v}`;
+  if (r.v === 'share') return r.s ? `#share/${r.s}` : '#share';
   if (r.v === 'zone') return `#z${r.z}${r.i ? '/' + r.i : ''}`;
   return `#${r.s}${r.p ? '/' + r.p : ''}`;
 }
