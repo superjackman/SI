@@ -28,6 +28,8 @@ export const NODE_K: Record<Nd, string> = { in: 'K15', tok: 'K02', emb: 'K03', a
 export const K_MATH: Record<string, string> = {
   K01: 'KM03', K02: 'KM01', K03: 'KM01', K04: 'KM01', K05: 'KM11', K06: 'KM03', K07: 'KM02', K08: 'KM04', K09: 'KM11',
   K10: 'KM03', K11: 'KM03', K12: 'KM04', K13: 'KM07', K14: 'KM09', K15: 'KM06',
+  /* layer 3 (R39): only the cards whose idea rests on one maths card */
+  KC01: 'KM06', KC04: 'KM07', KC05: 'KM05', KC08: 'KM03', KC09: 'KM04', KC10: 'KM02', KC11: 'KM04',
 };
 export type Info = readonly [Tx, Tx, Tx, Tx];
 export const NODE_INFO: Record<Nd, Info> = {
@@ -48,7 +50,7 @@ export const UI = {
   lv: [['第1层', 'Layer 1'], ['第2层', 'Layer 2'], ['第3层', 'Layer 3'], ['第4层', 'Layer 4'], ['第5层', 'Layer 5']] as Tx[],
   lvN: [['我怎么用 AI', 'How I use AI'], ['AI 助手怎么工作', 'How an AI assistant works'], ['大模型怎么得来', 'How a big model is made'], ['Transformer 内部', 'Inside a Transformer'], ['背后的数学', 'The maths behind it']] as Tx[],
   learn: ['学', 'Learn'], record: ['记', 'Record'],
-  learnS: ['从第4层开始', 'Start at layer 4'], recordS: ['学习记录', 'Your record'],
+  learnS: ['从第1层开始', 'Start at layer 1'], recordS: ['学习记录', 'Your record'],
   map: ['地图', 'Map'], prog: ['进度', 'Progress'], next: ['下一步', 'Next'], back: ['返回', 'Back'], home: ['首页', 'Home'],
   math: ['看数学 ›', 'See the maths ›'], kc: ['知识卡', 'Card'], kcT: ['知识卡', 'Knowledge card'], cont: ['（续）›', '(cont.) ›'], prev: ['‹ 上页', '‹ Page 1'],
   shareB: ['分享', 'Share'], close: ['关闭', 'Close'], rot: ['竖着看更清楚', 'Best in portrait'], rotS: ['请把手机转回竖屏', 'Please turn your phone upright'],

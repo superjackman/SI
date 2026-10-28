@@ -2,11 +2,14 @@
    One screen: thin top bar, crumbs, the stage (three.js, or SVG without WebGL), the info card, hint, dots, and the
    round 地图 / 进度 / 下一步 buttons. Tapping a "+" box opens it in place; tapping the original box closes it. */
 import './l4.css';
+import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
 import { FRAME, LAB, LAB_S, NODES, NODE_INFO, NODE_K, PLUS, RES, K_MATH, STEPN, UI, tx, type L, type Nd, type Tx } from './txt';
 import { MY_DEFAULT, ORDER, Q, X_ORDER, hashOf, page, parse, validX, xHash, type Ans, type Ctx, type My, type Page } from './pages';
 import type { Stage } from './scene3d';
+import { LIVE, LX, LX_N, LX_SEL, isLx, layerOf, lxFrom, lxHash, lxPrev } from '../lx/ids';
+import type { LxPg } from '../lx/types';
 import type { Demo } from './tf/core';
 import type { Trace } from './tf/model';
 
@@ -35,6 +38,8 @@ export function start(doc: Document = document, win: Window = window) {
   let cur = 'home', pg: Page | null = null, sel: Nd | null = null, back = '#L4', S: Stage | null = null, stP: Promise<Stage> | null = null, lay: Lay | null = null;
   const seen = new Set<string>(LS.get<string[]>('si.l4.seen', [])), opened = new Set<string>(LS.get<string[]>('si.l4.cards', []));
   const flat = /[?&]fb=1/.test(win.location.search);
+  let lp: LxPg | null = null, lxTok = 0;
+  const H = (id: string) => (isLx(id) ? lxHash(id) : hashOf(id)), lxOn = (id: string) => isLx(id) && LIVE.includes(layerOf(id));
   const ctx = (): Ctx => ({ l: lang, d, u, a, my });
 
   /* ---------- the model (a lazy worker) ---------- */
@@ -78,7 +83,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (!pg) return; const v = sel ? NODE_INFO[sel].map((t) => tx(t, lang)) : pg.info, k = sel ? NODE_K[sel] : pg.k;
     const ls: (keyof typeof UI)[] = ['what', 'parts', 'how', 'why'];
     info.innerHTML = `<div class="l4-ih"><b>${sel ? tx(LAB[sel], lang) : esc(pg.crumb[pg.crumb.length - 1]![0])}</b><button type="button" class="l4-kb" data-k="${k}">${T('kc')} ${k}</button></div><dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(v[i]!)}</dd></div>`).join('')}</dl>`;
-    const m = pg.math ?? K_MATH[k] ?? null; mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? '';
+    const m = pg.math ?? K_MATH[k] ?? null; mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? ''; delete mp.dataset.go;
   }
   function drawLabels() {
     if (!pg || !lay) return; const L = lay;
@@ -106,13 +111,14 @@ export function start(doc: Document = document, win: Window = window) {
     if (pg.notes) { add('l4-note', tx0, L.box.out.y, tw, null, esc(pg.notes[0])); add('l4-note', tx0, L.box.tok.y, tw, null, esc(pg.notes[1])); }
   }
   async function drawStage() {
-    if (!pg) return; const r = stg.getBoundingClientRect(); lay = layout(Math.round(r.width), Math.round(r.height), pg.mode);
+    if (!pg) return; stg.querySelectorAll(LX_SEL).forEach((e) => e.remove()); stg.querySelectorAll<HTMLElement>('.lx-gl').forEach((e) => { e.style.display = 'none'; }); if (S) S.el.style.display = '';
+    const r = stg.getBoundingClientRect(); lay = layout(Math.round(r.width), Math.round(r.height), pg.mode);
     drawLabels(); const D: Desc = { lay, st: { ...pg.st, ...(sel && pg.kind !== 'x' ? { [sel]: 'sel' } : {}) }, back: pg.back, resOn: pg.resOn, frameLit: pg.frameLit, sel: pg.sel, flow: pg.flow };
     const s = await stage(); s.set(D);
   }
   function drawHome() {
-    const lv = [0, 1, 2, 3, 4].map((i) => `<button type="button" class="l4-lv${i === 3 ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="s">${i === 3 ? T('live') : T('soon')}</span></button>`).join('');
-    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb"><button type="button" class="l4-hr pri" data-go="#L4"><b>${T('learn')}</b><span>${T('learnS')}</span></button><button type="button" class="l4-hr" data-a="prog"><b>${T('record')}</b><span>${T('recordS')}</span></button></div>`;
+    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="s">${on ? T('live') : T('soon')}</span></button>`; }).join('');
+    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb"><button type="button" class="l4-hr pri" data-go="#L1"><b>${T('learn')}</b><span>${T('learnS')}</span></button><button type="button" class="l4-hr" data-a="prog"><b>${T('record')}</b><span>${T('recordS')}</span></button></div>`;
   }
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
@@ -122,8 +128,10 @@ export function start(doc: Document = document, win: Window = window) {
     $('[data-a="back"]').textContent = '‹'; $('[data-a="back"]').setAttribute('aria-label', T('back'));
     $('[data-a="map"]').innerHTML = `<b><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5z M5.5 2v10.5 M10.5 3.5V14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></b><span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<b><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 8V2a6 6 0 0 1 5.2 9z" fill="currentColor"/></svg></b><span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<b>›</b><span>${T('next')}</span>`;
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
-    const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur);
-    root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home'; root.dataset.page = cur;
+    const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
+    root.dataset.page = cur;
+    if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; home.hidden = true; stg.hidden = false; void renderLx(); return; }
+    lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
     home.hidden = isL4; stg.hidden = !isL4;
     if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon ? '' : T('sub'); dots.innerHTML = '';
       if (soon) drawSoon(Number(cur[1]) - 1); else drawHome(); return; }
@@ -134,40 +142,60 @@ export function start(doc: Document = document, win: Window = window) {
     hint.textContent = pg.hint; dots.innerHTML = pg.dots ? Array.from({ length: pg.dots[0] }, (_, i) => `<i class="${i === pg!.dots![1] ? 'on' : i < pg!.dots![1] ? 'done' : ''}"></i>`).join('') : '';
     drawInfo(); void drawStage();
   }
+  /* ---------- layers 1, 2, 3 and 5 (lazy, one chunk per layer) ---------- */
+  const crumbs = (c: [string, string | null][], up: string | null = null) => c.map(([t, h], i) => (h ? `<a href="${h}">${esc(t)}</a>` : `<span${i === c.length - 1 ? ' class="cur"' : ''}>${esc(t)}</span>`)).join('<span class="sep">›</span>') + (up ? ` <a class="l4-up" href="${up}">${T('up')}</a>` : '');
+  async function renderLx() {
+    const id = cur, l = lang, tok = ++lxTok, v = await import('../lx/view'), p = await v.lxPage(id, l);
+    if (tok !== lxTok) return; lp = p; delete root.dataset.lx; delete root.dataset.cmp;
+    txt.innerHTML = p.top; crumb.innerHTML = crumbs(p.crumb);
+    ent.hidden = !p.ent; ent.innerHTML = (p.ent ?? []).map(([t, h, g]) => `<button type="button" class="l4-b${g ? ' gold' : ''}" data-go="${h}">${esc(t)}</button>`).join('');
+    hint.textContent = p.hint; dots.innerHTML = p.dots ? Array.from({ length: p.dots[0] }, (_, i) => `<i class="${i === p.dots![1] ? 'on' : i < p.dots![1] ? 'done' : ''}"></i>`).join('') : '';
+    const ls: (keyof typeof UI)[] = ['what', 'parts', 'how', 'why'];
+    info.innerHTML = `<div class="l4-ih"><b>${esc(p.ttl)}</b><button type="button" class="l4-kb" data-k="${p.k}">${T('kc')} ${p.k}</button></div><dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(p.info[i]!)}</dd></div>`).join('')}</dl>`;
+    const m = p.math ?? K_MATH[p.k] ?? null;
+    if (p.mg) { mp.hidden = false; mp.textContent = p.mg[0]; mp.dataset.go = p.mg[1]; mp.dataset.k = ''; } else { mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? ''; delete mp.dataset.go; }
+    stg.querySelectorAll('.l4-lb,.l4-fl,.l4-rl,.l4-pn,.l4-tag,.l4-note').forEach((e) => e.remove()); if (S) S.el.style.display = 'none';
+    await v.lxDraw(root, stg, p, l, flat, (n) => { const h = lp?.go[n]; if (h) go(h); });
+    if (tok === lxTok) root.dataset.lx = `${id}.${l}`;
+  }
   /* ---------- sheets: card, map, progress ---------- */
   let cardFor = '';
   async function card(id: string | null) {
     root.querySelector('.l4-sheet')?.remove(); if (!id) { cardFor = ''; return; }
     const [k, p] = id.split('.') as [string, string | undefined]; opened.add(k); LS.set('si.l4.cards', [...opened]);
     const m = await import('./sheet'); cardFor = id;
-    await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(hashOf(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${hashOf(cur)}`);
+    await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(H(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${H(cur)}`);
   }
   function list(title: string, body: string) {
     root.querySelector('.l4-sheet')?.remove(); const e = doc.createElement('div'); e.className = 'l4-sheet l4-ms'; e.setAttribute('role', 'dialog'); e.setAttribute('aria-label', title);
     e.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${title}</b></header><div class="l4-sbody">${body}</div><footer class="l4-sf"><button type="button" class="l4-b" data-s="x">${T('close')}</button></footer></div>`;
     e.addEventListener('click', (ev) => { const t = ev.target as HTMLElement; if (t === e || t.closest('[data-s="x"]') || t.closest('a,[data-go]')) e.remove(); }); root.appendChild(e);
   }
-  const li = (id: string, label: string) => `<a href="${hashOf(id)}" class="${id === cur ? 'here' : seen.has(id) ? 'seen' : ''}">${esc(label)}${id === cur ? ` <em>${T('here')}</em>` : ''}</a>`;
+  const li = (id: string, label: string) => `<a href="${H(id)}" class="${id === cur ? 'here' : seen.has(id) ? 'seen' : ''}">${esc(label)}${id === cur ? ` <em>${T('here')}</em>` : ''}</a>`;
   function mapSheet() {
     const sec = (t: string, ids: string[], ns: Tx[]) => `<h4>${esc(t)}</h4><div class="l4-ml">${ids.map((id, i) => li(id, tx(ns[i]!, lang))).join('')}</div>`;
     const xs = X_ORDER.map((p) => 'X:' + p), xn: Tx[] = [LAB.att, ['Q·K 打分', 'Q·K scores'], ['一个数', 'One number'], ['多头', 'Heads'], ['遮罩', 'Mask'], LAB.ffn, LAB.an1];
-    list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${[0, 1, 2, 4].map((i) => `<a href="#L${i + 1}">${tx(UI.lv[i]!, lang)} ${tx(UI.lvN[i]!, lang)} <em>${T('soon')}</em></a>`).join('')}</div>`
-      + sec(T('L4'), ['L4'], [UI.whole as Tx]) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn));
+    const lxs = (n: 1 | 2 | 3 | 5) => LIVE.includes(n) ? sec(`${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)}`, LX[n], LX[n].map((id) => LX_N[id]!)) : '';
+    const soonL = [1, 2, 3, 5].filter((n) => !LIVE.includes(n)).map((n) => `<a href="#L${n}">${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)} <em>${T('soon')}</em></a>`).join('');
+    list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
+      + sec(T('L4'), ['L4'], [UI.whole as Tx]) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5));
   }
   function progSheet() {
-    const all = [...ORDER, ...X_ORDER.map((p) => 'X:' + p)], n = all.filter((x) => seen.has(x)).length;
-    list(T('progT'), `<p class="l4-pg"><b>${n}</b> / ${all.length} ${T('seen')}</p><div class="l4-pbar"><i style="width:${Math.round((n / all.length) * 100)}%"></i></div><p class="l4-pg"><b>${[...opened].filter((k) => /^K\d/.test(k)).length}</b> / 15 ${T('cards')}</p>`);
+    const lxa = ([1, 2, 3, 5] as const).filter((q) => LIVE.includes(q)).flatMap((q) => LX[q]), all = [...lxa, ...ORDER, ...X_ORDER.map((p) => 'X:' + p)], n = all.filter((x) => seen.has(x)).length;
+    const cre = new RegExp(`^K(${['\\d', LIVE.includes(1) ? '[AB]' : '', LIVE.includes(3) ? 'C' : '', LIVE.includes(5) ? 'M' : ''].filter(Boolean).join('|')})`), ctot = 15 + (LIVE.includes(1) ? 14 : 0) + (LIVE.includes(3) ? 12 : 0) + (LIVE.includes(5) ? 12 : 0);
+    list(T('progT'), `<p class="l4-pg"><b>${n}</b> / ${all.length} ${T('seen')}</p><div class="l4-pbar"><i style="width:${Math.round((n / all.length) * 100)}%"></i></div><p class="l4-pg"><b>${[...opened].filter((k) => cre.test(k)).length}</b> / ${ctot} ${T('cards')}</p>`);
   }
   /* ---------- routing ---------- */
   function route() {
-    const r = parse(win.location.hash); let id = r.id;
+    const r = parse(win.location.hash); let id = r.id; const lid = lxFrom(id);
+    if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
-    if (!(id === 'home' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id))) id = 'home';
-    if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = hashOf(id); }
+    if (!(lid || id === 'home' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id))) id = 'home';
+    if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = H(id); }
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     cur = id; seen.add(id); LS.set('si.l4.seen', [...seen]); root.querySelector('.l4-ms')?.remove();
     render();
-    const want = r.card && /^KM?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);
+    const want = r.card && /^K[MABC]?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);
     doc.documentElement.dataset.l4 = `${cur}.${lang}`;
   }
   /* ---------- events ---------- */
@@ -175,16 +203,17 @@ export function start(doc: Document = document, win: Window = window) {
     const t = e.target as HTMLElement, b = t.closest<HTMLElement>('button,[data-go]'); if (!b || !root.contains(b)) return;
     if (b.closest('.l4-sheet:not(.l4-ms)')) return;
     if (b.dataset.nd) { pick(b.dataset.nd as Nd); return; }
+    if (b.dataset.lx) { const h = lp?.go[b.dataset.lx]; if (h) go(h); return; }
     if (b.dataset.go) { go(b.dataset.go); return; }
-    if (b.dataset.k) { go(hashOf(cur) + '~' + b.dataset.k); return; }
+    if (b.dataset.k) { go(H(cur) + '~' + b.dataset.k); return; }
     if (b.dataset.act) { void act(b.dataset.act); return; }
     switch (b.dataset.a) {
-      case 'back': if (cur.startsWith('X:') && pg?.up) go(pg.up); else if (cur.startsWith('X:')) go(back); else if (cur === 'L4' || /^L\d$/.test(cur)) go('#home'); else if (cur === 'home') go('#home'); else { const i = ORDER.indexOf(cur); go(i > 0 ? hashOf(ORDER[i - 1]!) : '#L4'); } break;
+      case 'back': if (lxOn(cur)) go(lxPrev(cur)); else if (cur.startsWith('X:') && pg?.up) go(pg.up); else if (cur.startsWith('X:')) go(back); else if (cur === 'L4' || /^L\d$/.test(cur)) go('#home'); else if (cur === 'home') go('#home'); else { const i = ORDER.indexOf(cur); go(i > 0 ? hashOf(ORDER[i - 1]!) : '#L4'); } break;
       case 'lang': lang = lang === 'zh' ? 'en' : 'zh'; useApp.getState().setLang(lang); route(); break;
-      case 'math': if (mp.dataset.k) go(hashOf(cur) + '~' + mp.dataset.k); break;
+      case 'math': if (mp.dataset.k) go(H(cur) + '~' + mp.dataset.k); break;
       case 'map': mapSheet(); break;
       case 'prog': progSheet(); break;
-      case 'next': go(cur === 'home' || /^L[1235]$/.test(cur) ? '#L4' : pg?.next ?? '#L4'); break;
+      case 'next': go(cur === 'home' ? '#L1' : lxOn(cur) ? lp?.next ?? '#L4' : /^L[1235]$/.test(cur) ? '#L4' : pg?.next ?? '#L4'); break;
     }
   });
   root.addEventListener('input', (e) => {
@@ -207,7 +236,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (x === 'my-test') { if (!my.ready) { render(); return; } my.ans = await c.tf.answer(my.q, 'my'); render(); }
   }
   win.addEventListener('hashchange', route);
-  let rz = 0; win.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (pg) void drawStage(); }); });
+  let rz = 0; win.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); }); });
   useApp.subscribe((s) => { const l: L = s.lang === 'en' ? 'en' : 'zh'; if (l !== lang) { lang = l; route(); } });
   route();
 }

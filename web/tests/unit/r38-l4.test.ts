@@ -51,7 +51,7 @@ describe('R38 explorer routing', () => {
 });
 
 describe('R38 knowledge cards', () => {
-  const zh = JSON.parse(fs.readFileSync('src/l4/c/k-zh.json', 'utf8')), en = JSON.parse(fs.readFileSync('src/l4/c/k-en.json', 'utf8'));
+  const zh = { ...JSON.parse(fs.readFileSync('src/l4/c/k-zh.json', 'utf8')), ...JSON.parse(fs.readFileSync('src/l4/c/k3-zh.json', 'utf8')) }, en = { ...JSON.parse(fs.readFileSync('src/l4/c/k-en.json', 'utf8')), ...JSON.parse(fs.readFileSync('src/l4/c/k3-en.json', 'utf8')) };
   it('zh and en have the same cards, each with five parts', () => {
     expect(Object.keys(en).sort()).toEqual(Object.keys(zh).sort());
     for (const c of [zh, en]) for (const [k, v] of Object.entries<{ n: string; s: string[] }>(c)) { expect(v.n, k).toBeTruthy(); expect(v.s.length, k).toBe(5); for (const s of v.s) expect(s.trim().length, k).toBeGreaterThan(10); }

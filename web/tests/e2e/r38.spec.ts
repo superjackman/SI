@@ -39,14 +39,14 @@ async function layoutOk(p: Page) {
 }
 
 test.describe('R38 explorer', () => {
-  test('the default page is the explorer home: 5 layers, L4 live, the others coming soon; only 学 and 记 below', async ({ page }) => {
+  test('the default page is the explorer home: 5 layers, all live (R39: L1–L5); only 学 and 记 below', async ({ page }) => {
     const errs = await open(page, './?lang=zh', false);
     await expect(page.locator('#l4')).toHaveAttribute('data-v', 'home');
     await expect(page.locator('.l4-lv')).toHaveCount(5);
-    await expect(page.locator('.l4-lv.live')).toHaveCount(1);
-    await expect(page.locator('.l4-lv.live')).toContainText('Transformer');
-    await page.locator('.l4-lv').first().click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'soon'); await expect(page.locator('.l4-soon')).toContainText('即将上线');
-    await page.goto('./?lang=zh#home'); await page.locator('.l4-hr.pri').click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'l4');
+    await expect(page.locator('.l4-lv.live')).toHaveCount(5);
+    await expect(page.locator('.l4-lv.live').filter({ hasText: 'Transformer' })).toHaveCount(1);
+    await page.locator('.l4-lv.live').nth(4).click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L5$/);
+    await page.goto('./?lang=zh#home'); await page.locator('.l4-hr.pri').click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
     await page.goto('./?lang=zh#home');
     await expect(page.locator('.l4-home .l4-hr')).toHaveCount(2); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
     await page.locator('.l4-home [data-a="prog"]').click(); await expect(page.locator('.l4-ms .l4-pg').first()).toBeVisible();
