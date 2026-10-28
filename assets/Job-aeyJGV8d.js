@@ -1,1 +1,0 @@
-import{p}from"./pick-CSUC0fSl.js";import"./kit-CTEvRUMj.js";const b=[{ids:["labJob","pkJob","pkJobOut"],hooks:[]}];function k(o){return{labs:[()=>p(o,"pkJob","pkJobOut")],eager:()=>{}}}export{b as LABS,k as mount};

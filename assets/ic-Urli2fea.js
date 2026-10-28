@@ -1,0 +1,1 @@
+const n={"site.title":{zh:"大白话拆解 AI",en:"AI, explained plainly"},"upd.banner":{zh:"有新版本，点此刷新",en:"A new version is available, tap to refresh"},"ui.close":{zh:"关闭",en:"Close"}},t=(e,a)=>n[e][a],s=e=>`<svg viewBox="0 0 24 24" aria-hidden="true" class="ic"><path d="${e}"/></svg>`,i={x:s("M6 6l12 12M18 6L6 18"),re:s("M20 12a8 8 0 1 1-2.3-5.7L20 8.6M20 4v4.6h-4.6")};export{i as I,t};

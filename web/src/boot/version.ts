@@ -10,7 +10,7 @@
 import { tx } from '../i18n/L';
 import { useApp } from '../store/app';
 import { BUST, reloadTo } from './stale';
-import { IC } from '../shell/common';
+import { IC } from './ic';
 
 export const VKEY = 'si.vreload';
 export const VQ = 'v';

@@ -4,9 +4,9 @@ AI 学习地图 · AI Learning Map — <https://superjackman.github.io/SI/>
 
 | 路径 Path | 内容 Content |
 |---|---|
-| `index.html` | 现行单文件版（生产）· current single-file page (production) |
-| `next/` | React 新版构建产物（迁移中预览，<https://superjackman.github.io/SI/next/>）· React rewrite build output (migration preview) |
-| `web/` | React 新版源码 · React source (Vite 5 + React 18 + TypeScript strict + Zustand) |
+| `index.html`, `assets/` | 系统探索器（生产构建）· the system explorer (production build) |
+| `next/` | 旧预览地址，跳转到 `/SI/` · old preview address, redirects to `/SI/` |
+| `web/` | 源码 · source (Vite 5 + TypeScript strict + three.js + Zustand) |
 | `.nojekyll` | 让 Pages 原样发布所有文件 · tells Pages to serve files as-is (no Jekyll) |
 
 ## 开发与发布 · Develop & publish
@@ -28,8 +28,6 @@ git add -A && git commit -m "site: …" && git push
   Base path is `/SI/next/` during the migration and `/SI/` after cutover, defined once in `web/base.config.mjs` (override with `SI_BASE`).
 - **任何一步失败都不会复制文件**。没有 Chrome 时可设 `CHROME_PATH=…`，或 `npx playwright install chromium` 后加 `PW_BUNDLED=1`。
   Nothing is copied if any step fails. Without Chrome set `CHROME_PATH`, or install Playwright's Chromium and set `PW_BUNDLED=1`.
-- **切换（R5）**：`npm run deploy:cutover` 以 base `/SI/` 构建到仓库根目录，旧 `index.html` 自动改名为 `legacy.html` 保留。
-  Cutover (R5): `npm run deploy:cutover` builds with base `/SI/` into the repo root and renames the old `index.html` to `legacy.html`.
   切换后 `npm run deploy` 默认部署到根目录（/SI/），`next/` 只是跳转到 `/SI/` 的小页面（保留 ?query 和 #hash），不再接受 `--target next`。
   After the cutover `npm run deploy` deploys the root (/SI/); `next/` is only a redirect to `/SI/` (query + hash kept) and `--target next` is refused.
 - **统计**：GoatCounter 像素只在 `/SI/` 正式版计数，`/SI/next/`、localhost 不计数；统计在页面 load 之后单独加载，永远不阻塞内容。

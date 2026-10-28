@@ -23,12 +23,12 @@ export default defineConfig({
   ...(process.env.SI_E2E_WORKERS ? { workers: Number(process.env.SI_E2E_WORKERS) } : {}),
   reporter: [['list']],
   retries: 0,
-  // older specs start as returning visitors (R21 welcome card, coach marks and tips already seen); r21.spec.ts starts empty
+  // specs start from a saved storage state (tests/e2e/onb-done.json)
   use: { baseURL: `http://localhost:${port}${base}`, locale: 'zh-CN', trace: 'off', storageState: 'tests/e2e/onb-done.json' },
   projects: [phone('m360', 360, 740), phone('m390', 390, 844), phone('m430', 430, 932)],
   webServer: {
     // serves the *built* dist under the real base, like GitHub Pages does; SI_E2E_SERVE=repo serves the committed
-    // repo files instead (root build, legacy.html, next/ redirect) with a Pages-like static server (R5 cutover checks);
+    // repo files instead (root build, next/ redirect) with a Pages-like static server (R5 cutover checks);
     // SI_E2E_ROOT=<dir> serves another directory with the same layout (a staged copy, before deploying)
     command: process.env.SI_E2E_SERVE === 'repo' ? `node scripts/pages-serve.mjs --port ${port} --prefix ${base}${process.env.SI_E2E_ROOT ? ` --root ${process.env.SI_E2E_ROOT}` : ''}` : `npx vite preview --port ${port} --strictPort`,
     url: `http://localhost:${port}${base}`,

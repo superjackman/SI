@@ -1,8 +1,6 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import { resolveBase } from './base.config.mjs';
 import { buildId, versionJson } from './scripts/build-id.mjs';
-import { buildSeo, ORIGIN } from './scripts/seo.mjs';
 import type { Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
 
@@ -15,14 +13,9 @@ const versionFile = (): Plugin => ({
   configureServer(s) { s.middlewares.use((q, r, next) => { if ((q.url ?? '').split('?')[0] === base + 'version.json') { r.setHeader('content-type', 'application/json'); r.setHeader('cache-control', 'no-store'); r.end(versionJson(BUILD)); } else next(); }); },
 });
 
-/** R25 SEO: static per-stop pages (s/<S>/, en/s/<S>/), catalogues, sitemap.xml, robots.txt, 404.html — built from the
-    same generated stop HTML on every build (scripts/seo.mjs); none of it is loaded by the app */
-const seoFiles = (): Plugin => ({
-  name: 'si-seo', apply: 'build',
-  // the home canonical / JSON-LD url follow the build base, so a /SI/next/ preview build is self-consistent with its sitemap
-  transformIndexHtml: (html) => html.split(`${ORIGIN}/SI/"`).join(`${ORIGIN}${base}"`),
-  generateBundle() { for (const [fileName, source] of buildSeo({ web: fileURLToPath(new URL('.', import.meta.url)), base })) this.emitFile({ type: 'asset', fileName, source }); },
-});
+/** the home canonical / JSON-LD url follow the build base (a /SI/next/ preview build stays self-consistent) */
+const ORIGIN = 'https://superjackman.github.io';
+const canonical = (): Plugin => ({ name: 'si-canonical', apply: 'build', transformIndexHtml: (html) => html.split(`${ORIGIN}/SI/"`).join(`${ORIGIN}${base}"`) });
 
 /** R16: the built index.html loses its source comments (HTML comments and whole-line block comments in the inline
     <script>/<style>) — they are for readers of web/index.html, and every first-load byte counts */
@@ -35,7 +28,7 @@ function stripHtmlComments(): Plugin {
 
 export default defineConfig({
   base,
-  plugins: [react(), versionFile(), seoFiles(), stripHtmlComments()],
+  plugins: [versionFile(), canonical(), stripHtmlComments()],
   define: {
     __SI_BUILD__: JSON.stringify(BUILD),
     // analytics only counts on the production root (/SI/) unless forced; /SI/next/ never pollutes the dashboard
@@ -49,9 +42,9 @@ export default defineConfig({
     assetsInlineLimit: 2048,
     cssCodeSplit: true,
     sourcemap: false,
-    // R30: three.js (+ the shared 3D stage) is one lazy chunk named three-*.js, fetched only when a 3D scene box is on
-    // screen (src/m2/s3d.ts → import('../../three3d/<scene>')); nothing on the first screen imports it
-    rollupOptions: { output: { manualChunks: (id: string) => (/[\\/]node_modules[\\/]three[\\/]|[\\/]src[\\/]three3d[\\/]core\.ts$/.test(id) ? 'three' : undefined) } },
+    // three.js is one lazy chunk named three-*.js, fetched with the explorer's 3D stage (src/l4/scene3d.ts); nothing on
+    // the first screen imports it
+    rollupOptions: { output: { manualChunks: (id: string) => (/[\\/]node_modules[\\/]three[\\/]/.test(id) ? 'three' : undefined) } },
   },
   preview: { port: 4173, strictPort: true },
   server: { port: 5173 },

@@ -35,7 +35,7 @@ describe('R16 version.json stale-cache check', () => {
     vi.stubGlobal('fetch', vi.fn(async () => { throw new TypeError('offline'); })); expect(await remoteId('/SI/')).toBe('');
   });
   it('mismatch: ONE reload (hash + lang kept, v=<id>), the next mismatch shows the banner instead', async () => {
-    useApp.getState().set({ lang: 'zh' });
+    useApp.setState({ lang: 'zh' });
     vi.stubGlobal('fetch', okJson('new1'));
     vi.spyOn(performance, 'now').mockReturnValue(1500);
     const rep = vi.fn(); mockLoc(rep);
@@ -74,17 +74,17 @@ describe('R16 version.json stale-cache check', () => {
   });
   it('banner: zh/en text follows the language; tap → reload to the new version; × closes', () => {
     const rep = vi.fn(); mockLoc(rep);
-    useApp.getState().set({ lang: 'zh' });
+    useApp.setState({ lang: 'zh' });
     banner('id9');
     const go = document.querySelector<HTMLButtonElement>('#siUpd .upd-go');
     expect(go?.textContent).toBe('有新版本，点此刷新');
-    useApp.getState().set({ lang: 'en' });
+    useApp.setState({ lang: 'en' });
     expect(go?.textContent).toBe('A new version is available, tap to refresh');
     banner('id9'); expect(document.querySelectorAll('#siUpd')).toHaveLength(1);
     go?.click(); expect(rep.mock.calls[0]?.[0]).toMatch(/v=id9/);
     document.querySelector<HTMLButtonElement>('#siUpd .upd-x')?.click();
     expect(document.getElementById('siUpd')).toBeNull();
-    useApp.getState().set({ lang: 'zh' });
+    useApp.setState({ lang: 'zh' });
   });
   it('build id: stable, 12 hex, depends on the base; version.json = {"id":…}', () => {
     const web = process.cwd();

@@ -1,4 +1,0 @@
-import{b as c,w as u,s as e,f as n,n as f,t as m}from"./kit-BAdo-hK7.js";import{l as p}from"./ymath-CI_IJtHr.js";const g=[{ids:["labLora","loR","loOut"],hooks:[]}];function R(t){const r=m(t);return{labs:[()=>{const l=c(t,"loOut");if(!l)return;const o=u(t,["loD","loK","loR"],s);function s(){const i=o("loD"),b=o("loK"),d=o("loR"),a=p(i,b,d);e(t,"loRv",String(d)),l.innerHTML=`<table><tbody><tr><td>${r("全量微调","Full fine-tuning")} d × k</td><td class="n"><b data-k="full">${n(t,a.full)}</b></td></tr>
-<tr><td>LoRA r × (d + k)</td><td class="n"><b data-k="lora">${n(t,a.lora)}</b></td></tr>
-<tr><td>${r("占比","Share")}</td><td class="n"><b data-k="pct">${f(a.pct,4)}%</b></td></tr></tbody></table>
-<div class="lo-bar" aria-hidden="true"><span style="width:${Math.max(.5,Math.min(100,a.pct)).toFixed(2)}%"></span></div>`}s()}],eager:()=>{}}}export{g as LABS,R as mount};

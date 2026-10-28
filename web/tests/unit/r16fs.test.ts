@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { atEdge, EDGE, installEdgeGuard, isIOSUA } from '../../src/boot/edge';
-import { CODES } from '../../src/i18n/codes';
 
 const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 const ANDROID = 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Mobile Safari/537.36';
@@ -129,10 +128,7 @@ describe('R16 full screen + add-to-home-screen tip', () => {
     await vi.advanceTimersByTimeAsync(5000);
     expect(localStorage.getItem('si.a2hs')).toBeNull();
   });
-  it('strings in codes.ts', () => {
-    expect(CODES['pfs.enter']).toEqual({ zh: '全屏', en: 'Full screen' });
-    expect(CODES['pfs.exit']?.zh).toBe('退出全屏');
-  });
+
 });
 
 describe('R16 PWA manifest + meta', () => {

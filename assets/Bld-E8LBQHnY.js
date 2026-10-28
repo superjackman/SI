@@ -1,1 +1,0 @@
-import{p}from"./pick-CSUC0fSl.js";import"./kit-CTEvRUMj.js";const l=[{ids:["labBld","pkBld","pkBldOut"],hooks:[]}];function d(o){return{labs:[()=>p(o,"pkBld","pkBldOut")],eager:()=>{}}}export{l as LABS,d as mount};

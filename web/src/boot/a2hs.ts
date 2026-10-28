@@ -2,7 +2,7 @@
 import { useApp } from '../store/app';
 import { tx } from '../i18n/L';
 import type { Bi } from '../i18n/types';
-import { IC } from '../shell/common';
+import { IC } from './ic';
 
 /* only this chunk shows it, so it lives here (codes.ts holds the strings shared across the app) */
 const TIP: Bi = { zh: '添加到主屏幕后可全屏打开', en: 'Add to Home Screen to open it full screen' };

@@ -14,32 +14,20 @@
     "size": "node scripts/size.mjs",
     "test": "npm run typecheck && npm run test:unit && npm run build && npm run test:e2e && npm run size",
     "deploy": "node scripts/deploy.mjs",
-    "deploy:cutover": "node scripts/deploy.mjs --target root --confirm-cutover",
-    "m2": "vite-node m2/build.ts"
+    "deploy:cutover": "node scripts/deploy.mjs --target root --confirm-cutover"
   },
   "engines": {
     "node": ">=18.18"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "three": "^0.186.1",
-    "uqr": "^0.1.3",
     "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "@types/node": "^20.19.43",
-    "@types/react": "^18.3.31",
-    "@types/react-dom": "^18.3.7",
     "@types/three": "^0.186.0",
-    "@vitejs/plugin-react": "^4.7.0",
-    "acorn": "^8.19.0",
-    "acorn-walk": "^8.3.5",
-    "eslint-scope": "^8.4.0",
     "jsdom": "^25.0.1",
-    "jsqr": "^1.4.0",
-    "katex": "^0.19.0",
     "typescript": "~5.6.3",
     "vite": "^5.4.21",
     "vitest": "^2.1.9"
