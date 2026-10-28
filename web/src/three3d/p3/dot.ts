@@ -147,6 +147,7 @@ export function make(box: HTMLElement, api: SApi): P3 {
       cam: CAM, view: () => CAM,
       look: { sky: ['#c9bcf2', '#d9cef8', '#ebe4fd'], exposure: 0.88, fog: [2, 10], shadow: 3.2, key: [-3, 7, 4] },
       lim: { az: [-0.35, 0.35], el: [0.1, 0.7], z: [0.85, 1.2] },
+      marks: { pa: O.clone().add(a), pb: tip.position, o: O },
       at: [tip.position], top: [V(0, 3.6, 0)], names: [],
       hold: (x, y) => { const [sx, sy] = st.toScreen(tip.position); grabbed = Math.hypot(sx - x, sy - y) < 60; if (grabbed) { tipG.scale.setScalar(1.8); hint.visible = false; } return grabbed; },
       drag: (x, y) => { if (grabbed) onWall(x, y); },

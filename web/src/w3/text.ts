@@ -22,5 +22,7 @@ export const W = {
   find: ['找一个想法…', 'Find an idea…'], pages: ['第 {i} / {n} 页', 'Page {i} of {n}'],
   fallback: ['这台设备不能显示 3D，下面是平面版。', 'This device can’t show 3D; here is the flat version.'],
   noLab: ['这个实验需要 3D。读一读它在讲什么：', 'This experiment needs 3D. Here is what it shows:'],
+  info: ['点开看讲解', 'tap to learn more'], tryLab: ['到实验页试试：', 'Try it in the Lab: '],
+  tIdea: ['想法 {i}', 'Idea {i}'], tLab: ['实验', 'Lab'], tQuiz: ['测验', 'Quiz'], tMedal: ['奖牌', 'Medal'],
   loading: ['正在搭建 3D 场景…', 'Building the 3D scene…'],
 } satisfies Record<string, Tx>;

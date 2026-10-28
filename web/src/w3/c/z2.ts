@@ -17,8 +17,8 @@ export const Z: Record<string, RawSt> = {
     lab: ['tokens', '点骰子，让模型猜下一个词，看句子一点点长出来。|Tap the dice: the model guesses the next word and the sentence grows.', '分高的词更常被选中，但不一定每次都选它。|High-scoring words are picked more often, but not every time.',
       { start: '今天 天气|The weather today', next: [['真好|is lovely', 60], ['很冷|is cold', 30], ['紫色|is purple', 10]], more: [['，我们|, so we', 70], ['！|!', 30]], end: [['去公园|go to the park', 80], ['睡觉|nap', 20]] }],
     q: [
-      ['大模型最核心的本事是什么？|What is the core skill of a language model?', ['猜下一个词|Guess the next word', '画画|Draw pictures', '记住你的名字|Remember your name'], 0, '一个词一个词地猜。|It guesses one word at a time.'],
-      ['为什么同一个问题，答案会不同？|Why can the same question get different answers?', ['挑词时有一点随机|Picking words is a bit random', '它生气了|It is angry', '电脑坏了|The computer broke'], 0, '想想掷骰子。|Think of rolling dice.'],
+      ['大模型最核心的本事是什么？|What is the core skill of a language model?', ['猜下一个词|Guess the next word', '画画|Draw pictures', '记住你的名字|Remember your name'], 0, '一个词一个词地猜。|It guesses one word at a time.', '它看着前面的词，猜下一个最可能的词，一个接一个，就写出了整段话。|It looks at the words so far and guesses the most likely next one; word after word, that writes whole paragraphs.'],
+      ['为什么同一个问题，答案会不同？|Why can the same question get different answers?', ['挑词时有一点随机|Picking words is a bit random', '它生气了|It is angry', '电脑坏了|The computer broke'], 0, '想想掷骰子。|Think of rolling dice.', '挑词像掷一颗有偏向的骰子：分高的词更常被选中，但不是每次都选它，所以答案会不同。|Picking a word is like rolling a loaded die: high scores win more often, but not every time, so answers vary.'],
     ],
     d: '你学会了模型的猜词游戏！|You learned the model’s word game!',
   },

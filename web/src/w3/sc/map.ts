@@ -33,6 +33,7 @@ export function make(box: HTMLElement, api: WApi, o: MapOpt): View {
       lim: { az: [-0.5, 0.5], el: [0.35, 1.1], z: [0.8, 1.3] },
       cam: { look: V3(0, 0.1, 0), dir: V3(0, 0.95, 1), r: 2.35 },
       view: (k) => ({ look: V3(SPOT[k]![0], SPOT[k]![1] + 0.2, SPOT[k]![2]), dir: V3(0, 0.8, 1), r: 0.9 }),
+      marks: { pil: V3(SPOT[0]![0], SPOT[0]![1] + 0.22, SPOT[0]![2]), br: V3((SPOT[0]![0] + SPOT[1]![0]) / 2, SPOT[1]![1] + 0.33, (SPOT[0]![2] + SPOT[1]![2]) / 2) },
       at: SPOT.map(([x, y, z]) => V3(x, y + 0.15, z)), top: SPOT.map(([x, y, z], k) => V3(x, y + (k === 2 ? 0.98 : 0.62), z)),
       names: o.names, hits,
       busy: () => true, sway: () => true,

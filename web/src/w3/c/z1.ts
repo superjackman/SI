@@ -18,7 +18,7 @@ export const Z: Record<string, RawSt> = {
       { l: ['算力|Computing', '训练|Training', '内部零件|Inside parts', '大模型|Model', 'Agent|Agent', 'App|App'] }],
     q: [
       ['你在 App 里说一句话，真正“想答案”的是谁？|You type in an app. Who actually thinks up the answer?', ['大模型|The model', '手机屏幕|The phone screen', '键盘|The keyboard'], 0, 'App 只是门面，答案来自它背后的模型。|The app is the front door; the answer comes from the model behind it.'],
-      ['模型是怎么学会说话的？|How did the model learn to talk?', ['做很多题、改很多错|Lots of practice and fixing mistakes', '有人一句句教它背答案|Someone made it memorise every answer', '它天生就会|It was born knowing'], 0, '想想“训练”那一层：猜错了就调一点点。|Think of the training floor: each wrong guess nudges it a little.'],
+      ['模型是怎么学会说话的？|How did the model learn to talk?', ['做很多题、改很多错|Lots of practice and fixing mistakes', '有人一句句教它背答案|Someone made it memorise every answer', '它天生就会|It was born knowing'], 0, '想想“训练”那一层：猜错了就调一点点。|Think of the training floor: each wrong guess nudges it a little.', '模型读了海量文字，一遍遍猜下一个词；猜错就把里面的数字调一点点，练多了就会说话了。|It read huge amounts of text and kept guessing the next word; each miss nudged its numbers a little, and with lots of practice it learned to talk.'],
     ],
     d: '你看完了 AI 的六层楼！|You toured all six floors of AI!',
   },
@@ -80,7 +80,7 @@ export const Z: Record<string, RawSt> = {
     lab: ['sort', '哪些事适合让它自己干？把它们放进盒子。|Which jobs suit working alone? Put them in the boxes.', '步骤清楚、能自动检查的事，最适合放手。|Clear jobs that can be checked automatically are best to hand off.',
       { bins: ['陪着它|Stay with it', '放手给它|Hand it off'], items: [['calendar', '每天整理邮件|Tidy email daily', 1], ['house', '决定买哪套房|Choose a house to buy', 0], ['clipboard', '给代码补测试|Add tests to code', 1], ['chat', '回复好朋友|Reply to a best friend', 0]] }],
     q: [
-      ['它在后台干完活，你怎么知道它做得好？|It finished in the background. How do you know it did well?', ['看它交的“改了什么”和测试结果|Read its change note and test results', '猜一猜|Guess', '不用管|Don’t bother'], 0, '想想“交作业”。|Think of the hand-in note.'],
+      ['它在后台干完活，你怎么知道它做得好？|It finished in the background. How do you know it did well?', ['看它交的“改了什么”和测试结果|Read its change note and test results', '猜一猜|Guess', '不用管|Don’t bother'], 0, '想想“交作业”。|Think of the hand-in note.', '它交的改动说明和测试结果，能让你检查它到底改了什么、有没有弄坏东西。|Its change note and test results let you check what it actually changed and whether anything broke.'],
       ['什么事最适合定时交给它？|What is best to hand off on a schedule?', ['每天重复的小事|A small job repeated daily', '一辈子只做一次的大事|A once-in-a-lifetime decision', '没想清楚的事|Something you have not thought through'], 0, '重复、清楚的事最适合。|Repeating, clear jobs fit best.'],
     ],
     d: '你会放手让 AI 干活了！|You can let AI work on its own!',
@@ -122,7 +122,7 @@ export const Z: Record<string, RawSt> = {
     lab: ['meter', '拖动滑块：你说清楚了几件事？看看结果的星星有多亮。|Drag the slider: how many of the four things did you say? Watch the star.', '说得越清楚，它做得越好。|The clearer you are, the better it works.',
       { m: 'star', items: ['要做什么|the goal', '给材料|the material', '怎样算好|what good looks like', '不要什么|what to avoid'] }],
     q: [
-      ['让 AI 写通知，你只说“写个通知”。少了什么？|You only say “write a notice”. What is missing?', ['给谁看、写什么、多长|Who reads it, what it says, how long', '什么也不少|Nothing', '要更大声说|Say it louder'], 0, '想想那四件事。|Think of the four things.'],
+      ['让 AI 写通知，你只说“写个通知”。少了什么？|You only say “write a notice”. What is missing?', ['给谁看、写什么、多长|Who reads it, what it says, how long', '什么也不少|Nothing', '要更大声说|Say it louder'], 0, '想想那四件事。|Think of the four things.', '说清给谁看、写什么、多长，它才知道往哪儿写；只说“写个通知”，它只能乱猜。|Saying who reads it, what it says and how long tells it where to aim; with just “write a notice” it has to guess.'],
       ['AI 给了一个数字，你该？|AI gives you a number. You should…', ['查一查对不对|Check if it is right', '直接相信|Just believe it', '删掉电脑|Delete the computer'], 0, 'AI 会说得很像真的，但可能错。|AI can sound sure and still be wrong.'],
     ],
     d: '你会把话说清楚了！|You can give clear instructions!',
@@ -144,7 +144,7 @@ export const Z: Record<string, RawSt> = {
       { bins: ['聊天出主意|Chat & ideas', '动手干活|Does the work'], items: [['chat', '问作业题|Ask a homework question', 0], ['globe', '替你订车票|Book a train ticket', 1], ['laptop', '改好代码再测试|Fix code and test it', 1], ['bulb', '想生日派对点子|Party ideas', 0]] }],
     q: [
       ['挑 AI 产品前最好先？|Before choosing an AI product, best to…', ['用自己的真事试一试|Try it on a real task of yours', '看它图标漂不漂亮|Judge the icon', '买最贵的|Buy the priciest'], 0, '能不能做你的事，最重要。|Whether it does your job matters most.'],
-      ['重要资料交给 AI 前要想什么？|Before giving it important files, think about…', ['数据会去哪里|Where the data goes', '今天几号|Today’s date', '天气|The weather'], 0, '想想“数据去哪”。|Think “where data goes”.'],
+      ['重要资料交给 AI 前要想什么？|Before giving it important files, think about…', ['数据会去哪里|Where the data goes', '今天几号|Today’s date', '天气|The weather'], 0, '想想“数据去哪”。|Think “where data goes”.', '交出去的资料可能被送到别人的电脑（服务器）上处理，所以先想清楚它会去哪、谁能看到。|Files you hand over may be sent to someone else’s computer (a server), so first think where they go and who can see them.'],
     ],
     d: '你会挑 AI 产品了！|You can choose AI products!',
   },
@@ -205,7 +205,7 @@ export const Z: Record<string, RawSt> = {
       { bins: ['聊天助手|Chat assistant', 'Agent|Agent'], items: [['book', '解释一个词|Explain a word', 0], ['folder', '把 100 个文件改名|Rename 100 files', 1], ['globe', '比价并下单|Compare prices and order', 1], ['bulb', '取个队名|Name a team', 0]] }],
     q: [
       ['要它把 100 张照片按日期整理，选谁？|Sort 100 photos by date: who?', ['会动手的 Agent|An agent that acts', '只聊天的助手|A chat-only assistant', '计算器|A calculator'], 0, '要动手的事交给 Agent。|Jobs that need doing go to an agent.'],
-      ['哪件事一定要它先问你？|Which must it always ask you first?', ['花钱|Spending money', '读一篇文章|Reading an article', '算 1+1|Adding 1+1'], 0, '想想三条底线。|Think of the three rules.'],
+      ['哪件事一定要它先问你？|Which must it always ask you first?', ['花钱|Spending money', '读一篇文章|Reading an article', '算 1+1|Adding 1+1'], 0, '想想三条底线。|Think of the three rules.', '花出去的钱收不回来，所以一定要你点头；读文章、算 1+1 不会造成损失。|Spent money can’t be taken back, so you must say yes first; reading or adding 1+1 does no harm.'],
     ],
     d: '你会给 AI 派活了！|You can hand jobs to AI!',
   },

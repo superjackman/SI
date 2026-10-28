@@ -18,7 +18,7 @@ export const Z: Record<string, RawSt> = {
       { in: ['下雨|Rain', '有云|Clouds', '刮风|Wind'], out: '带伞|Take an umbrella' }],
     q: [
       ['一个神经元做的事是？|What does one neuron do?', ['把数字加起来，够大就亮|Adds numbers; lights if big enough', '画一幅画|Draws a picture', '上网聊天|Chats online'], 0, '加起来，看够不够。|Add up and see if it is enough.'],
-      ['网络猜错了怎么办？|What happens when the network is wrong?', ['往回找原因，调旋钮|Trace back and turn the knobs', '什么也不做|Nothing', '删掉自己|Deletes itself'], 0, '想想往回传和往低处走。|Think of passing back and walking downhill.'],
+      ['网络猜错了怎么办？|What happens when the network is wrong?', ['往回找原因，调旋钮|Trace back and turn the knobs', '什么也不做|Nothing', '删掉自己|Deletes itself'], 0, '想想往回传和往低处走。|Think of passing back and walking downhill.', '它把错误往回传，算出每个旋钮该往哪边拧，再往“错误更小”的低处挪一小步。|It passes the error back, works out which way each knob should turn, then steps a little downhill toward less error.'],
     ],
     d: '你懂了神经网络怎么学习！|You know how neural networks learn!',
   },

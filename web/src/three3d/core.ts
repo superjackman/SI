@@ -33,6 +33,8 @@ export interface StageOpt {
   yaw?: number;
   /** R33 pilot: take every pointer gesture instead of the turntable (canvas pixels; tap = moved less than 8 px) */
   grab?: { down(x: number, y: number): void; move(x: number, y: number): void; up(x: number, y: number, tap: boolean): void };
+  /** R35: called after each frame, once the labels are placed (the callouts lay themselves out here) */
+  after?: () => void;
 }
 /** an HTML label pinned to a point of the pivot; cls picks the look (see .s3t in s3d.css) */
 export interface Tag { el: HTMLElement; at: Vector3; show(on: boolean): void; set(html: string): void }
@@ -85,12 +87,18 @@ export function stage(box: HTMLElement, o: StageOpt): Stage {
     return [(v.x + 1) / 2 * W, (1 - v.y) / 2 * H];
   };
   const place = () => {
+    const took: [number, number, number, number][] = []; // R35: name labels side by side step up (or down) instead of overlapping
     for (const t of tags) {
       if (t.el.hidden) continue;
       let [x, y] = toScreen(t.at);
       if (t.el.dataset.clamp !== undefined) { // R33 v2: keep a bubble on the screen; its arrow still points at the thing
         const c = t.el.firstElementChild as HTMLElement, hw = c.offsetWidth / 2, nx = Math.max(hw + 8, Math.min(W - hw - 8, x));
-        if (t.el.dataset.clamp === 'x') { if (x > -hw && x < W + hw) x = Math.max(hw + 4, Math.min(W - hw - 4, x)); } // a label: nudge it in only while its thing is on screen
+        if (t.el.dataset.clamp === 'x') { // a label: nudge it in only while its thing is on screen
+          if (x > -hw && x < W + hw) x = Math.max(hw + 4, Math.min(W - hw - 4, x));
+          const h = c.offsetHeight, top = (Number(box.dataset.padt) || 0) + h, bump = (yy: number) => took.some((r) => Math.abs(r[0] - x) < r[2] + hw + 2 && Math.abs(r[1] - yy) < Math.max(r[3], h) + 2);
+          if (hw > 0 && bump(y)) { for (const d of [-1, 1, -2, 2]) { const yy = y + d * (h + 4); if (yy > top && yy < H - 4 && !bump(yy)) { y = yy; break; } } }
+          if (hw > 0) took.push([x, y, hw, h]);
+        }
         else { t.el.style.setProperty('--ax', `${(x - nx).toFixed(1)}px`); x = nx; y = Math.max(c.offsetHeight + 18 + (Number(box.dataset.padt) || 0), y); } // v3: the stage runs under a top bar this tall
       }
       t.el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
@@ -105,7 +113,7 @@ export function stage(box: HTMLElement, o: StageOpt): Stage {
     const run = drag || !!o.busy?.();
     if (run && drawn && ts - drawn < MIN_DT) { raf = o.raf(frame); return; } // too soon: wait for the next screen frame
     const dt = last ? Math.min(0.1, (ts - last) / 1000) : 0; last = ts; drawn = ts;
-    size(); o.tick?.(dt); renderer.render(scene, cam); place(); if (S) S.frames = (S.frames ?? 0) + 1;
+    size(); o.tick?.(dt); renderer.render(scene, cam); place(); o.after?.(); if (S) S.frames = (S.frames ?? 0) + 1;
     if (drag || o.busy?.()) raf = o.raf(frame); else { last = 0; drawn = 0; }
   };
   const draw = () => { if (!raf && !dead) raf = o.raf(frame); };

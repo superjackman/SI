@@ -25,6 +25,7 @@ export const layers: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let i = -1; const tgt = V3(0.95, 0.2 + path[0]! * H, 0.35); ball.position.copy(tgt);
   return {
     cam: { look: V3(0, 0.95, 0), dir: V3(0.25, 0.35, 1), r: 2.1 },
+    marks: { ball: ball.position, top: V3(-0.55, 0.2 + (n - 1) * H, 0.5), bot: V3(-0.55, 0.2, 0.5) },
     at: [V3(0.95, 0.4, 0.35)], top: [V3(0.95, 0.9, 0.35)], names: [], hits: [ball, ...slabs.map((s) => s.g)],
     pick() {
       i = (i + 1) % (path.length + 1);
@@ -75,6 +76,7 @@ export const sort: Mk = (box, api, o) => lab(box, api, o, (c) => {
   };
   return {
     cam: { look: V3(0, 0.35, 0.2), dir: V3(0, 0.75, 1), r: 2.0 },
+    marks: { item: its[0]!.pos, b0: V3(BX[0]!, 0.62, BZ), b1: V3(BX[1]!, 0.62, BZ) },
     at: its.map((t) => V3(t.home.x, 0.35, IZ)), top: its.map((t) => V3(t.home.x, 0.82, IZ)), names: items.map((t) => c.t(t[1])), hits,
     pick(k) {
       if (k >= items.length && k < items.length + 2) { if (sel >= 0) judge(sel, k - items.length); else c.say(c.t('先点一件事，再点盒子。|Tap a job first, then a box.')); return; }
@@ -117,6 +119,7 @@ export const loop: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let i = -1, rounds = 0, t = 1; const from = V3(0, 0.33, 0), to = pos[0]!.clone().setY(0.33); ball.position.copy(to);
   return {
     cam: { look: V3(0, 0.3, 0), dir: V3(0, 0.8, 1), r: 1.9 },
+    marks: { ball: ball.position, flag: V3(0, 0.45, -0.05), ...Object.fromEntries(pos.map((p, k) => [`s${k}`, p.clone().setY(0.5)])) },
     at: [V3(0, 0.3, 0)], top: [V3(0, 0.9, 0)], names: [], hits: [ball, flag, ...stones.map((s) => s.g)],
     pick() {
       i = (i + 1) % n; if (i === 0 && t >= 1 && from.y > 0) rounds++;
@@ -148,6 +151,7 @@ export const plug: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let n = 0;
   return {
     cam: { look: V3(0, 0.55, 0.1), dir: V3(0, 0.35, 1), r: 1.9 },
+    marks: { bot: V3(0, 0.95, -0.4), sock: V3(0, 0.55, -0.1), card: cs[0]!.g.position },
     at: cs.map((s) => s.home.clone()), top: cs.map((s) => s.home.clone().setY(0.82)), names: cards.map((x) => c.t(x[1])), hits: cs.map((s) => s.g),
     pick(k) {
       const s = cs[k]; if (!s) return;
@@ -187,6 +191,7 @@ const star: Mk = (box, api, o) => lab(box, api, o, (c) => {
   };
   return {
     cam: { look: V3(0, 0.55, 0.15), dir: V3(0, 0.4, 1), r: 1.9 },
+    marks: { star: V3(0, 0.75, -0.3), pads: V3(XS[0]!, 0.3, 0.6) },
     at: [V3(0, 0.6, -0.3)], top: [V3(0, 1.2, -0.3)], names: [], hits: [st],
     slider: { min: 0, max: items.length, val: 0, step: 1, label: c.lang === 'en' ? 'Things said' : '说清了几件' },
     input: (x) => set(Math.round(x)),
@@ -213,6 +218,7 @@ const coin: Mk = (box, api, o) => lab(box, api, o, (c) => {
   set(1000);
   return {
     cam: { look: V3(0, 0.55, 0.2), dir: V3(0, 0.45, 1), r: 1.9 },
+    marks: { big: V3(-0.6, 0.35, 0), small: V3(0.6, 0.3, 0), book: V3(0, 0.2, 0.9) },
     at: [V3(-0.6, 0.6, 0), V3(0.6, 0.4, 0)], top: [V3(-0.6, 1.4, 0), V3(0.6, 1.0, 0)], names: [], hits: [big, small],
     slider: { min: 500, max: 10000, val: 1000, step: 500, label: c.lang === 'en' ? 'Words' : '字数' },
     input: (x) => set(Math.round(x)),
@@ -238,6 +244,7 @@ const ram: Mk = (box, api, o) => lab(box, api, o, (c) => {
   set(8);
   return {
     cam: { look: V3(-0.2, 0.6, 0.1), dir: V3(0.15, 0.4, 1), r: 2.0 },
+    marks: { box: V3(0, 0.75, -0.1), sign: V3(0, 1.12, 0.21), lap: V3(-1.15, 0.3, 0.4) },
     at: [V3(0, 0.6, -0.1)], top: [V3(0, 1.4, -0.1)], names: [], hits: [boxG],
     slider: { min: 1, max: 70, val: 8, step: 1, label: c.lang === 'en' ? 'Model size (billions)' : '模型大小（10 亿）' },
     input: (x) => set(Math.round(x)),

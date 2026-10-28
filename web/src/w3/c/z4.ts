@@ -16,7 +16,7 @@ export const Z: Record<string, RawSt> = {
     ],
     lab: ['patch', '点这幅画，看它被切成小方块，再排成一行给模型读。|Tap the picture: it is cut into squares and lined up for the model to read.', '图片的小方块和文字的词块一样，模型都能读。|Picture squares work like word tokens; the model reads both.'],
     q: [
-      ['模型怎么“看”一张图？|How does a model “see” a picture?', ['把图切成小方块来读|Cuts it into squares and reads them', '用真的眼睛|With real eyes', '闻一闻|Smells it'], 0, '想想图片切块。|Think of picture patches.'],
+      ['模型怎么“看”一张图？|How does a model “see” a picture?', ['把图切成小方块来读|Cuts it into squares and reads them', '用真的眼睛|With real eyes', '闻一闻|Smells it'], 0, '想想图片切块。|Think of picture patches.', '模型把图切成小方块，每块变成一串数字，再像读词块一样一块块地读。|The model cuts the picture into small squares, turns each into numbers, and reads them like word tokens.'],
       ['画图 AI 一开始是什么？|What does picture-making AI start from?', ['一团乱乱的雪花点|Random fuzzy dots', '一张照片|A photo', '一本书|A book'], 0, '它从雪花里擦出画。|It wipes a picture out of the snow.'],
     ],
     d: '你知道 AI 怎么看图听声了！|You know how AI sees and hears!',

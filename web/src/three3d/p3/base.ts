@@ -32,6 +32,13 @@ export interface P3 {
   input(v: number): void;
   /** v4 test / debug handle: the orbit now (azimuth, elevation, zoom) */
   orbit(): [number, number, number];
+  /** R35: where a point of the scene lands on the canvas (CSS px) and whether it is in front of the camera */
+  proj(p: Vector3): [number, number, boolean];
+  /** R35: a named point to pin a callout to: the scene's own marks, else t<i> (thing i's label point) or a<i> (its pick point) */
+  mark(name: string): Vector3 | null;
+  /** R35: run f after every frame (null stops it); redraw asks for one frame */
+  onDraw(f: (() => void) | null): void;
+  redraw(): void;
 }
 export interface Spec {
   cam: { look: Vector3; dir: Vector3; r: number };
@@ -53,6 +60,8 @@ export interface Spec {
   bye?(): void;
   /** a value from the shell (the dot page's length slider) */
   input?(v: number): void;
+  /** R35: named points (live vectors are fine) that the teaching callouts point at */
+  marks?: Record<string, Vector3>;
 }
 export type Build = (st: Stage, P: Group, api: SApi) => Spec;
 
@@ -64,7 +73,7 @@ export function scene(box: HTMLElement, api: SApi, build: Build): P3 {
      slower than ~12 a second, step down (two steps when far slower) and say so on the box (data-q): 1 = draw at 1x and
      the glass pass at half size, 2 = the shadow map is drawn once and then kept, 3 = the idle sway stops (only real
      motion draws), 4 = no shadow map, draw at 0.75x. A fast GPU never leaves level 0; a software renderer starts at 4. ?p3q=<n> pins level n (0 = full quality, for screenshots). */
-  let q = 0, gt = 0, gn = 0, gs = 0, pin = false;
+  let q = 0, gt = 0, gn = 0, gs = 0, pin = false, after: (() => void) | null = null;
   const setQ = (n: number) => {
     const r = st.renderer;
     if (n >= 1 && q < 1) { r.setPixelRatio(1); r.transmissionResolutionScale = 0.5; }
@@ -82,7 +91,7 @@ export function scene(box: HTMLElement, api: SApi, build: Build): P3 {
     if (avg > 85) setQ(q + (avg > 250 ? 2 : 1));
   };
   const st = stage(box, {
-    raf: api.raf, caf: api.caf, cam: [0, 4, 8], fov: 34,
+    raf: api.raf, caf: api.caf, cam: [0, 4, 8], fov: 34, after: () => after?.(),
     busy: () => !!F?.busy() || (!!spec?.busy?.() && !(q >= 3 && spec.sway?.())),
     tick: (dt) => {
       gov(dt);
@@ -136,7 +145,7 @@ export function scene(box: HTMLElement, api: SApi, build: Build): P3 {
   });
   const bub = st.tag('', 'p3b'); bub.show(false); bub.el.removeAttribute('aria-hidden'); bub.el.setAttribute('role', 'dialog'); bub.el.dataset.clamp = '';
   let cur: number | null = null;
-  const ray = new Raycaster(), nd = new Vector2();
+  const ray = new Raycaster(), nd = new Vector2(), cd = new Vector3(), wp = new Vector3();
   function pick(x: number, y: number) {
     if (spec?.hits?.length) {
       nd.set((x / c.clientWidth) * 2 - 1, -(y / c.clientHeight) * 2 + 1); ray.setFromCamera(nd, st.cam);
@@ -170,8 +179,19 @@ export function scene(box: HTMLElement, api: SApi, build: Build): P3 {
     },
     input: (v) => spec?.input?.(v),
     orbit: () => F?.now() ?? [0, 0, 1],
+    proj(p) {
+      const [x, y] = st.toScreen(p); st.cam.getWorldDirection(cd);
+      return [x, y, wp.copy(p).applyMatrix4(st.pivot.matrixWorld).sub(st.cam.position).dot(cd) > 0.05];
+    },
+    mark(name) {
+      const m = spec?.marks?.[name]; if (m) return m;
+      const k = /^([at])(\d+)$/.exec(name); if (!k || !spec) return null;
+      return (k[1] === 't' ? spec.top : spec.at)[+k[2]!] ?? null;
+    },
+    onDraw(f) { after = f; st.draw(); },
+    redraw: () => st.draw(),
     dispose() {
-      spec?.bye?.(); box.classList.remove('p3-on');
+      spec?.bye?.(); after = null; box.classList.remove('p3-on');
       c.removeEventListener('pointerdown', pd); c.removeEventListener('pointermove', pm); c.removeEventListener('pointerup', pu); c.removeEventListener('pointercancel', pu);
       c.removeEventListener('wheel', wheel);
       st.scene.background = null; st.scene.environment = null; LK.free(); st.dispose(); freeGlow(); spec = null; F = null;

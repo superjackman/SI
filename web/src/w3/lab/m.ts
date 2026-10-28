@@ -28,6 +28,7 @@ export const valley: Mk = (box, api, o) => lab(box, api, o, (c) => {
   put(x);
   return {
     cam: { look: V3(0, 0.85, 0), dir: V3(0, 0.15, 1), r: 2.2 },
+    marks: { ball: ball.position, bot: V3(0, 0.27, 0), left: V3(-1.7, 0.25 + 0.32 * 2.89, 0) },
     at: [ball.position], top: [V3(0, 1.8, 0)], names: [], hits: [ball, v],
     slider: { min: 0.1, max: 2.2, val: 0.3, step: 0.1, label: c.lang === 'en' ? 'Step size' : '步子大小' },
     input: (val) => { lr = Math.round(val * 10) / 10; reset(); put(x); c.say(`${c.lang === 'en' ? 'Step size' : '步子'} = ${lr.toFixed(1)}`); c.poke(); },
@@ -60,6 +61,7 @@ export const slope: Mk = (box, api, o) => lab(box, api, o, (c) => {
   put(x);
   return {
     cam: { look: V3(0, 0.85, 0), dir: V3(0, 0.15, 1), r: 2.2 },
+    marks: { ball: ball.position, bot: V3(0, 0.27, 0) },
     at: [ball.position], top: [V3(0, 1.8, 0)], names: [], hits: [ball, v],
     hold(px, py) { held = rayPick(c.st, [ball, v], px, py) >= 0; return held; },
     drag(px, py) { if (!held) return; const r = c.st.canvas.getBoundingClientRect(); const p = V3((px / r.width) * 2 - 1, -(py / r.height) * 2 + 1, 0.5).unproject(c.st.cam); const d = p.sub(c.st.cam.position).normalize(); const k = -c.st.cam.position.z / d.z; put(c.st.cam.position.x + d.x * k); },
@@ -90,6 +92,7 @@ export const grid: Mk = (box, api, o) => lab(box, api, o, (c) => {
   fill(ghost.geometry.attributes.position!.array as Float32Array, 0); set(0);
   return {
     cam: { look: V3(0, 1.0, 0), dir: V3(0, 0.1, 1), r: 2.1 },
+    marks: { red: V3(0.28, 1.0, -0.2), grn: V3(0, 1.28, -0.2), grid: V3(-0.56, 0.72, -0.2) },
     at: [V3(0, 1, -0.2)], top: [V3(0, 2, -0.2)], names: [], hits: [g],
     slider: { min: -1, max: 1, val: 0, step: 0.1, label: c.lang === 'en' ? 'Slant k' : '斜度 k' },
     input: (v) => set(Math.round(v * 10) / 10),
@@ -109,6 +112,7 @@ export const dice: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let n = 0, spin = 0;
   return {
     cam: { look: V3(-0.1, 0.5, 0.1), dir: V3(0, 0.45, 1), r: 2.1 },
+    marks: { dice: V3(-1.3, 0.3, 0.6), b7: V3(0.4, 0.25, -0.3), b2: V3(-0.9, 0.15, -0.3) },
     at: d.map((m) => m.position.clone().setY(0.25)), top: d.map((m) => m.position.clone().setY(0.7)), names: [c.lang === 'en' ? 'Roll' : '掷', ''], hits: d,
     pick() {
       for (let r = 0; r < (n >= 10 ? 10 : 1); r++) { const a = 1 + Math.floor(Math.random() * 6), b = 1 + Math.floor(Math.random() * 6); H[a + b]!++; n++; if (r === 0) c.say(`🎲 ${a} + ${b} = ${a + b} · ${c.lang === 'en' ? 'rolls' : '次数'} ${n}${n >= 10 ? (c.lang === 'en' ? ' (now 10 at a time)' : '（现在一次扔 10 下）') : ''}`); }
@@ -141,6 +145,7 @@ export const steps: Mk = (box, api, o) => lab(box, api, o, (c) => {
   };
   return {
     cam: { look: V3(0, 0.6, 0), dir: V3(0, 0.3, 1), r: 2.1 },
+    marks: { fwd: V3(0.5, 1.2, 0.2), back: V3(-0.5, 1.2, 0.2), s0: V3(X[0]!, 0.35, 0), m0: V3((X[0]! + X[1]!) / 2, 0.45, 0.1) },
     at: [V3(0.5, 1.2, 0.2), V3(-0.5, 1.2, 0.2)], top: [V3(0.5, 1.5, 0.2), V3(-0.5, 1.5, 0.2)], names: [], hits: [fwd, back],
     pick: (k) => go(k === 1 ? -1 : 1),
     busy: () => t < 1,

@@ -46,6 +46,7 @@ export function make(box: HTMLElement, api: WApi, o: HallOpt): View {
       lim: { az: [-0.35, 0.35], el: [0.15, 0.8], z: [0.75, 1.3] },
       cam: { look: V3(0, 0.85, -0.2), dir: V3(0, 0.38, 1), r: n === 1 ? 1.2 : 1.75 },
       view: () => ({ look: V3(0, H + 0.45, 0), dir: V3(0, 0.3, 1), r: 0.95 }),
+      marks: { base: V3(0, 0.12, 0.45) },
       at, top, tip, names: [], hits,
       onFocus(i) { cur = i; if (i !== null) { const t = front(i); aim = turn + (((t - turn + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI; } tags.forEach((t, k) => t.el.classList.toggle('on', k === i)); place(); poke(); },
       /* a sideways drag turns the carousel; a tap picks what is under the finger */

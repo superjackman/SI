@@ -93,6 +93,7 @@ export function make(box: HTMLElement, api: SApi): P3 {
       look: { sky: ['#ddd6f5', '#ece8fa', '#f8f6fe'], exposure: 0.95, shadow: 2.8, key: [2, 7, 5] },
       lim: { az: [-0.45, 0.45], el: [0.15, 0.9], z: [0.8, 1.25] },
       cam, view: () => cam,
+      marks: { arc: V(0, Y + H + 0.55, 0), w0: V(B[0]!.x, Y + H, 0) },
       at: B.map((b) => V(b.x, Y + H / 2, 0)), top: B.map((b) => V(b.x, Y + H + 0.2, 0)), names: [], hits: blk.map((b) => b.g),
       onFocus(i) { if (i !== null) light(i); },
       busy: () => grow < 1 || idle < 20, sway: () => grow >= 1,

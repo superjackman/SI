@@ -54,9 +54,8 @@ test.describe('R34 all-3D site', () => {
     await expect(page.locator('.p3-dot')).toHaveCount(5);
     await page.locator('.p3l[data-pick="0"]').click();
     const bub = page.locator('.p3b:not([hidden]) .p3b-in'); await expect(bub).toBeVisible();
-    const say0 = await bub.locator('p').textContent();
-    await bub.locator('[data-act=why]').click(); expect((await W3(page)).why).toBe(true);
-    expect(await page.locator('.p3b:not([hidden]) .p3b-in p').textContent()).not.toBe(say0);
+    /* R35: the bubble teaches in one go: the idea, why it matters, and what to try in the lab (no separate why button) */
+    await expect(bub.locator('p.w3-w')).toBeVisible(); await expect(bub.locator('p.w3-try')).toContainText('🔬');
     await page.locator('.p3b:not([hidden]) [data-act=deep]').click(); await ready(page);
     s = await W3(page); expect(s.kind).toBe('lab'); expect(page.url()).toContain('#T1/2');
     await expect(page.locator('.w3-bulb')).toBeVisible();
@@ -71,7 +70,7 @@ test.describe('R34 all-3D site', () => {
     expect((await W3(page)).why).toBe(true); await expect(page.locator('.p3-say')).toContainText('💡');
     for (let g = 0; g < 4 && (await W3(page)).kind === 'quiz'; g++) {
       await page.locator(`.p3l[data-pick="${(await W3(page)).right}"]`).click();
-      await page.waitForTimeout(1700);
+      await page.waitForTimeout(2900); // R35: the right answer's why stays up a little longer
     }
     await ready(page); s = await W3(page); expect(s.kind).toBe('reward');
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('si.w3.done') ?? '[]'))).toContain('T1');

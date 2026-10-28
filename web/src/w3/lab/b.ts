@@ -50,6 +50,7 @@ export const tokens: Mk = (box, api, o) => lab(box, api, o, (c) => {
   };
   return {
     cam: { look: V3(0, 0.75, 0), dir: V3(0, 0.38, 1), r: 2.2 },
+    marks: { dice: V3(-1.3, 0.3, 0.5), row: V3(0, 1.25, -0.4), bars: V3(0.3, 0.3, 0.3) },
     at: [V3(-1.3, 0.3, 0.5)], top: [V3(-1.3, 0.85, 0.5)], names: [c.lang === 'en' ? 'Roll' : '掷骰子'], hits: [dice],
     pick: () => roll(),
     busy: () => spin > 0,
@@ -85,6 +86,7 @@ export const nn: Mk = (box, api, o) => lab(box, api, o, (c) => {
   set(0);
   return {
     cam: { look: V3(0, 0.7, 0), dir: V3(0, 0.25, 1), r: 2.0 },
+    marks: { in: pos[0]!.clone(), n: N.clone(), bulb: BULB.clone() },
     at: nodes.map((n) => n.position.clone()), top: nodes.map((n) => n.position.clone().setY(n.position.y + 0.4)), names: [], hits: [...nodes, bulb],
     slider: { min: 0, max: 1, val: 0, step: 0.1, label: c.lang === 'en' ? `Weight of ${ins[0]}` : `${ins[0]}的重要程度` },
     input: (v) => set(Math.round(v * 10) / 10),
@@ -114,6 +116,7 @@ export const moe: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let cur = -1, t = 1; const seen = new Set<number>();
   return {
     cam: { look: V3(0, 0.3, 0), dir: V3(0, 0.75, 1), r: 2.3 },
+    marks: { tok: TP[0]!.clone().setY(0.35), gate: GATE.clone().setY(0.45), ex: EP[0]!.clone().setY(0.4) },
     at: TP.map((p) => p.clone()), top: TP.map((p) => p.clone().setY(0.9)), names: [], hits: toks,
     pick(k) {
       if (k < 0 || k >= tok.length) return; cur = k; t = 0; seen.add(k);
@@ -149,6 +152,7 @@ export const patch: Mk = (box, api, o) => lab(box, api, o, (c) => {
   let open = false, t = 1;
   return {
     cam: { look: V3(0, 0.75, 0), dir: V3(0, 0.3, 1), r: 2.0 },
+    marks: { pic: V3(-0.3, 1.2, -0.4), row: V3(0.9, 0.25, 0.3) },
     at: [V3(0, 0.95, -0.4)], top: [V3(0, 1.6, -0.4)], names: [], hits: [pic, frame],
     pick() {
       open = !open; t = 0; nums.forEach((n) => (n.visible = false));
