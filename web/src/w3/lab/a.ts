@@ -77,7 +77,7 @@ export const sort: Mk = (box, api, o) => lab(box, api, o, (c) => {
   return {
     cam: { look: V3(0, 0.35, 0.2), dir: V3(0, 0.75, 1), r: 2.0 },
     marks: { item: its[0]!.pos, b0: V3(BX[0]!, 0.62, BZ), b1: V3(BX[1]!, 0.62, BZ) },
-    at: its.map((t) => V3(t.home.x, 0.35, IZ)), top: its.map((t) => V3(t.home.x, 0.82, IZ)), names: items.map((t) => c.t(t[1])), hits,
+    at: its.map((t) => V3(t.home.x, 0.35, IZ)), top: its.map((t) => V3(t.home.x, 0, IZ + 0.4)), names: items.map((t) => c.t(t[1])), hits,
     pick(k) {
       if (k >= items.length && k < items.length + 2) { if (sel >= 0) judge(sel, k - items.length); else c.say(c.t('先点一件事，再点盒子。|Tap a job first, then a box.')); return; }
       choose(k);

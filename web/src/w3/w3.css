@@ -79,3 +79,12 @@
 .w3 .w3-card .p3x{position:absolute;right:8px;top:8px}
 .w3 .w3-try{margin:8px 0 2px!important;padding:6px 10px;border-radius:12px;background:#f3e8ff;color:#4c1d95!important;font-size:14px!important;font-weight:700;text-align:left}
 .w3 .p3b-in p.w3-w{color:#4c1d95}
+/* R36: the look / learned line under the top bar (taps pass through to the scene) */
+.w3 .w3-lk{position:absolute;left:50%;top:calc(58px + env(safe-area-inset-top));transform:translateX(-50%);width:max-content;max-width:min(380px,calc(100vw - 20px));box-sizing:border-box;margin:0;
+  padding:5px 12px;border-radius:14px;z-index:5;pointer-events:none;font-size:14px;line-height:1.35;font-weight:700;text-align:left;color:#3b0764;background:rgba(255,255,255,.95);
+  box-shadow:0 3px 12px rgba(76,29,149,.18),inset 0 0 0 1.5px #c4b5fd}
+.w3 .w3-lk.ok{color:#064e3b;background:rgba(236,253,245,.97);box-shadow:0 3px 12px rgba(6,78,59,.18),inset 0 0 0 1.5px #6ee7b7}
+.w3 .w3-lk[hidden]{display:none}
+/* R36: in a lab the card lets taps through to the 3D parts (only its close button takes taps) */
+.w3[data-kind=lab] .w3-card{pointer-events:none}
+.w3[data-kind=lab] .w3-card .p3x{pointer-events:auto}

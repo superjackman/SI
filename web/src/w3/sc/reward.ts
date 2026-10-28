@@ -30,6 +30,7 @@ export function make(box: HTMLElement, api: WApi, o: RewardOpt): View {
       lim: { az: [-0.5, 0.5], el: [0.15, 0.85], z: [0.8, 1.3] },
       cam: { look: V3(0, 0.85, 0), dir: V3(0, 0.4, 1), r: 2.1 },
       view: () => ({ look: V3(0, 0.85, 0), dir: V3(0, 0.4, 1), r: 2.1 }),
+      marks: { medal: V3(0, 1.25, 0), now: pil[o.now] ? V3(pil[o.now]!.m.position.x, pil[o.now]!.h + 0.05, pil[o.now]!.m.position.z) : V3(0, 0.5, -1.8) },
       at: [], top: [], names: [],
       busy: () => tt < 4 || !!fx, sway: () => !fx,
       tick(dt) {

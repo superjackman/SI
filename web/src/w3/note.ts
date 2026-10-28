@@ -2,7 +2,8 @@
    each with a thin leader line to its part and a pulsing ring on the part itself (the "tap me" sign). Every frame they
    are laid out again: above their part if there is room, else pushed up, else below, else shrunk to the title, else
    hidden, never over each other, over a label, under the top bar or into the bottom bar. A note either opens the shell's
-   info card (lab, map) or picks its thing (idea stands, zones), which opens that thing's bubble. Loaded lazily. */
+   info card (lab, map) or picks its thing (idea stands, zones), which opens that thing's bubble. Loaded lazily.
+   R36: near() finds the note of the part a finger tapped, so a tap on the 3D part itself opens the same card. */
 import type { P3 } from '../three3d/p3/base';
 
 export interface Card { t: string; p: string; tr?: string }
@@ -103,6 +104,16 @@ export function notes(box: HTMLElement, v: P3, list: Note[], o: { open(c: Card, 
   };
   v.onDraw(lay); v.redraw();
   return {
+    /** R36: the card of the note whose part is nearest stage point x, y (within r px), so a tap on a 3D part can say what it is */
+    near(x: number, y: number, r = 70): { k: number; card: Card } | null {
+      let best: { k: number; card: Card } | null = null, bd = r;
+      live.forEach((l, k) => {
+        const at = l.n.card && v.mark(l.n.at); if (!at) return;
+        const [ax, ay, front] = v.proj(at), d = Math.hypot(ax - x, ay - y);
+        if (front && d < bd) { bd = d; best = { k, card: l.n.card! }; }
+      });
+      return best;
+    },
     /** lay out again (the bubble or the card opened or closed) */
     redo() { v.redraw(); },
     free() { v.onDraw(null); layer.remove(); live.forEach((l) => { if (l.n.el) { l.el.classList.remove('w3n', 'w3n-off', 'w3n-s'); l.el.style.transform = ''; } }); },

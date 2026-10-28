@@ -51,6 +51,7 @@ export function make(box: HTMLElement, api: WApi, o: QuizOpt): View {
       lim: { az: [-0.4, 0.4], el: [0.2, 0.9], z: [0.85, 1.25] },
       cam: { look: V3(0, 0.55, 0.15), dir: V3(0, 0.55, 1), r: 1.85 },
       view: () => ({ look: V3(0, 0.55, 0.15), dir: V3(0, 0.55, 1), r: 1.85 }),
+      marks: { plate: V3(PLATE.x, 0.5, PLATE.z) },
       at: home, top: home.map((h) => V3(h.x, h.y + 0.62, h.z)), names: o.opts, hits,
       /* drag a block onto the plate (a tap on a block answers too) */
       hold(x, y) { held = won >= 0 ? -1 : rayPick(st, hits, x, y); x0 = x; y0 = y; moved = false; return held >= 0; },

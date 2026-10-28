@@ -52,6 +52,9 @@ export function start(doc: Document = document, win: Window = window) {
   let lang: L = (useApp.getState().lang === 'en' ? 'en' : 'zh'), R: Route = parseRoute(win.location.hash, qs), view: View | null = null, vkey = '';
   let foc: number | null = null, why = false, seq = 0, C: StC | null = null, labOK = false, labSay = '';
   let qi = 0, qo: number[] = [], qBusy = false, qWrong = 0;
+  /* R36: what the finger last pressed (stage px), which parts a tap already explained, which things this idea page has shown */
+  let px = -1, py = -1, cardAt = -1, tapN = 0, TE: typeof import('./c/t') | null = null;
+  const tapSeen = new Set<number>(), ideaSeen = new Set<number>();
   const ls = { get: <T>(k: string, d: T): T => { try { const v = win.localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { win.localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } } };
   if (R.v === 'home' && !ls.get(HI, 0) && !win.location.hash) R = { v: 'welcome' };
   const T = (x: Tx) => tx(x, lang);
@@ -84,6 +87,7 @@ export function start(doc: Document = document, win: Window = window) {
     root.dataset.bub = html ? (why ? 'why' : 'on') : '';
     if (view) view.bubble(html);
     else { let fb = stg.querySelector<HTMLElement>('.p3b.flat'); if (!html) fb?.remove(); else { if (!fb) { fb = doc.createElement('div'); fb.className = 'p3b flat'; fb.setAttribute('role', 'dialog'); stg.appendChild(fb); } fb.innerHTML = html; } }
+    if (foc !== null && kind() === 'ideas') ideaSeen.add(foc);
     caption(); nt?.redo();
   };
   const caption = () => {
@@ -100,7 +104,21 @@ export function start(doc: Document = document, win: Window = window) {
     say.textContent = s;
     say.classList.remove('dim'); // R35: the hint stays fully readable while a bubble is open (it was faded to 45%)
     bulb.hidden = !(k === 'lab' || k === 'quiz'); bulb.classList.toggle('on', why); bulb.setAttribute('aria-pressed', String(why));
+    teach();
   };
+  /* R36: the look / learned line under the top bar: what to look at first, then (once every thing was opened, or the lab works) one line of what was learned */
+  const look = doc.createElement('p'); look.className = 'w3-lk'; look.setAttribute('aria-live', 'polite'); look.hidden = true; root.appendChild(look);
+  function teach() {
+    const k = kind(), t = TE && R.v === 'st' && !flat ? TE.TEACH[R.s] : undefined;
+    let s = '';
+    if (t && C && R.v === 'st' && k === 'ideas') {
+      const th = C.ideas[R.p]!.things, got = th.every((_, i) => ideaSeen.has(i));
+      s = got ? '✅ ' + T(W.learned) + T(x(t[R.p === 0 ? 2 : 3])) : '👀 ' + T(W.lookIdea).replace('{n}', th.map((h) => T(h.n)).join(lang === 'en' ? ', ' : '、'));
+    } else if (t && k === 'lab') s = labOK ? '✅ ' + T(W.learned) + T(x(t[1])) : '👀 ' + T(x(t[0]));
+    if (look.textContent !== s) { look.textContent = s; look.hidden = !s; look.classList.toggle('ok', s.startsWith('✅')); }
+    const pt = String(s ? Math.max(62, Math.round(look.getBoundingClientRect().bottom + 4 - stg.getBoundingClientRect().top)) : 62);
+    if (stg.dataset.padt !== pt) { stg.dataset.padt = pt; nt?.redo(); }
+  }
   /* ---------- chrome: the crumb, the dots, the slider, the next button ---------- */
   const chrome = () => {
     const depth = R.v === 'home' || R.v === 'welcome' ? 0 : R.v === 'map' || R.v === 'zone' ? 1 : 2;
@@ -128,7 +146,7 @@ export function start(doc: Document = document, win: Window = window) {
     pick: (k) => onPick(k), swipe: () => { /* the drag orbits */ },
     dot: (ax, az, bx, by) => { root.dataset.dot = (ax * bx + az * by).toFixed(1); },
     say: (s) => { labSay = s; caption(); },
-    done: () => { if (labOK) return; labOK = true; root.dataset.lab = 'done'; chrome(); },
+    done: () => { if (labOK) return; labOK = true; root.dataset.lab = 'done'; chrome(); teach(); },
     note: (k, v) => { root.dataset[k] = String(v); },
   });
   const free = () => { freeNotes(); closeCard(); if (view) { try { view.dispose(); } catch (e) { console.error('[w3 dispose]', e); } view = null; vkey = ''; } };
@@ -165,7 +183,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (view) { if (R.v === 'zone') view.focus(R.i ? R.i - 1 : null, now); else view.focus(foc, now); }
     showBubble();
   };
-  const enterPage = () => { foc = R.v === 'zone' && R.i ? R.i - 1 : null; why = false; labOK = false; labSay = ''; qi = 0; qBusy = false; qWrong = 0; root.dataset.lab = ''; root.dataset.q = ''; };
+  const enterPage = () => { foc = R.v === 'zone' && R.i ? R.i - 1 : null; why = false; labOK = false; labSay = ''; qi = 0; qBusy = false; qWrong = 0; root.dataset.lab = ''; root.dataset.q = ''; tapSeen.clear(); ideaSeen.clear(); };
   const go = (r: Route, push = true) => {
     const stChanged = r.v !== 'st' || R.v !== 'st' || r.s !== R.s;
     const sameScene = R.v === 'zone' && r.v === 'zone' && r.z === R.z;
@@ -186,20 +204,20 @@ export function start(doc: Document = document, win: Window = window) {
     return { v: 'st', s: nextSt(R.s), p: 0 };
   };
   /* ---------- R35: teaching callouts and the info card ---------- */
-  let nt: { redo(): void; free(): void } | null = null;
+  let nt: { redo(): void; free(): void; near(x: number, y: number): { k: number; card: { t: string; p: string; tr?: string } } | null } | null = null;
   const card = doc.createElement('div'); card.className = 'w3-card'; card.setAttribute('role', 'dialog'); card.hidden = true; root.appendChild(card);
   function freeNotes() { nt?.free(); nt = null; }
   function closeCard() { if (card.hidden) return; card.hidden = true; root.dataset.card = ''; nt?.redo(); }
   const openCard = (c: { t: string; p: string; tr?: string }) => {
     card.innerHTML = `<button type="button" class="p3x" data-act="cclose" aria-label="${T(W.close)}">${IC.close}</button><b>${c.t}</b><p>${c.p}</p>${c.tr ? `<p class="w3-try">👉 ${c.tr}</p>` : ''}`;
-    card.hidden = false; root.dataset.card = '1'; nt?.redo();
+    card.hidden = false; root.dataset.card = '1'; cardAt = tapN; nt?.redo();
   };
   const mountNotes = async (my: number) => {
     const v = view as unknown as P3 | null; if (!v || typeof v.proj !== 'function') return;
     const k = kind();
-    if (k === 'quiz' || k === 'reward') return;
-    const [{ notes }, N] = await Promise.all([import('./note'), import('./c/n'), R.v === 'zone' ? content(ZONES[R.z - 1]!.st[0]!).catch(() => null) : null]);
+    const [{ notes }, N, Te] = await Promise.all([import('./note'), import('./c/n'), import('./c/t'), R.v === 'zone' ? content(ZONES[R.z - 1]!.st[0]!).catch(() => null) : null]);
     if (my !== seq || view !== (v as unknown as View)) return;
+    TE = Te; teach();
     const lb = (i: number) => stg.querySelector<HTMLElement>(`.p3l[data-pick="${i}"]`) ?? undefined;
     const cook = (r: [string, string, string, string, string]) => ({ at: r[0], b: T(x(r[1])), s: T(x(r[2])), card: { t: T(x(r[1])), p: T(x(r[3])), tr: T(x(r[4])) } });
     let list: Note[] = [];
@@ -208,6 +226,11 @@ export function start(doc: Document = document, win: Window = window) {
     else if (R.v === 'map') list = N.MAP_N.map(cook);
     else if (C && k === 'ideas') list = C.ideas[R.p]!.things.map((t, i) => ({ at: `a${i}`, b: T(t.n), s: T(t.s), pick: i, el: lb(i) }));
     else if (C && k === 'lab') list = N.labNotes(R.s).map(cook);
+    else if (k === 'quiz') list = Te.QUIZ_N.map(cook);
+    else if (C && R.v === 'st' && k === 'reward') list = Te.MEDAL_N(Te.TEACH[R.s]?.[1] ?? '|').map(cook);
+    /* R36: every station on the carousel gets a short tag while its own name is hidden (at the sides), so all of them can be tapped and read */
+    if (R.v === 'home' || R.v === 'welcome') list.push(...ZONES.map((z, i) => ({ at: `s${i}`, b: `${z.icon} ${T(z.name)}`, s: '', pick: i })));
+    else if (R.v === 'zone') list.push(...ZONES[R.z - 1]!.st.map((s, i) => ({ at: `s${i}`, b: `${stIcon(s)} ${stName(s, lang)}`, s: '', pick: i })));
     list = list.filter((n) => !('el' in n) || n.el);
     if (!list.length) return;
     const foot = $('.p3-foot');
@@ -216,9 +239,9 @@ export function start(doc: Document = document, win: Window = window) {
   /* ---------- taps ---------- */
   const onPick = (k: number) => {
     closeSheet();
-    if (root.dataset.card === '1') { closeCard(); return; } // a tap anywhere closes the info card first
     const kd = kind();
-    if (kd === 'lab') { view?.set?.({ pick: k }); return; }
+    if (root.dataset.card === '1') { if (cardAt === tapN) return; closeCard(); if (kd !== 'lab') return; } // a tap anywhere closes the info card first
+    if (kd === 'lab') { view?.set?.({ pick: k }); tapInfo(); return; } // a label tap (canvas taps reach tapInfo from pointerup)
     if (kd === 'quiz') { answer(k); return; }
     if (kd === 'reward') return;
     if (R.v === 'map') { if (k >= 0) go({ v: 'zone', z: k + 1, i: 0 }); return; }
@@ -226,6 +249,22 @@ export function start(doc: Document = document, win: Window = window) {
     if (R.v === 'zone') { if (R.i !== k + 1) go({ v: 'zone', z: R.z, i: k + 1 }); else showBubble(); return; }
     foc = k; why = false; if (view) view.focus(k); showBubble();
   };
+  /* R36: in a lab, a tap on a 3D part also opens that part's card the first time (what is this?); the ⓘ dot keeps working after */
+  const tapInfo = () => {
+    if (!nt || px < 0 || kind() !== 'lab') return;
+    if (root.dataset.card === '1') { if (cardAt === tapN) return; closeCard(); }
+    if (wasOpen) return; // a tap that closed a card only closes it
+    const h = nt.near(px, py); if (!h || tapSeen.has(h.k)) return;
+    tapSeen.add(h.k); openCard(h.card);
+  };
+  let pt0 = 0, wasOpen = false;
+  root.addEventListener('pointerdown', () => { tapN++; }, true); // the tap that opens a card does not also close it
+  stg.addEventListener('pointerdown', (e) => { wasOpen = root.dataset.card === '1'; const b = stg.getBoundingClientRect(); px = e.clientX - b.left; py = e.clientY - b.top; pt0 = win.performance.now(); }, true);
+  stg.addEventListener('pointerup', (e) => { // a short tap on the canvas (not a drag, not a label) in a lab
+    if ((e.target as HTMLElement).tagName !== 'CANVAS') return;
+    const b = stg.getBoundingClientRect();
+    if (Math.hypot(e.clientX - b.left - px, e.clientY - b.top - py) < 10 && win.performance.now() - pt0 < 600) win.setTimeout(tapInfo, 0);
+  }, true);
   const answer = (k: number) => {
     if (!C || qBusy || k < 0 || k >= qo.length) return;
     const q = C.quiz[qi]!;
@@ -313,7 +352,10 @@ export function start(doc: Document = document, win: Window = window) {
   };
   /* ---------- one click handler for everything ---------- */
   root.addEventListener('click', (e) => {
-    if (root.dataset.card === '1' && !(e.target as HTMLElement).closest('.w3-card')) { closeCard(); return; }
+    if (root.dataset.card === '1' && !(e.target as HTMLElement).closest('.w3-card')) {
+      if (cardAt === tapN) return; // the tap that just opened it
+      closeCard(); if (kind() !== 'lab') return; // in a lab the same tap still works the experiment
+    }
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-act],[data-pick]'); if (!el) return;
     if (el.dataset.pick !== undefined && !el.dataset.act) { onPick(+el.dataset.pick); return; }
     const a = el.dataset.act;
@@ -344,6 +386,7 @@ export function start(doc: Document = document, win: Window = window) {
   doc.addEventListener('visibilitychange', () => { if (doc.visibilityState === 'hidden') free(); else if (!view && !flat) void build(); });
   (win as unknown as { __w3?: unknown }).__w3 = {
     state: () => ({ r: R, kind: kind(), foc, why, live: !!view, qi, right: C && kind() === 'quiz' ? qo.indexOf(C.quiz[qi]!.a) : -1, lab: labOK, wrong: qWrong }),
+    near: (nx: number, ny: number) => nt?.near(nx, ny)?.card.t ?? null,
     where: (i: number) => view?.where(i) ?? null, orbit: () => view?.orbit() ?? null, go, view: () => view,
   };
   if (R.v === 'welcome') ls.set(HI, 1);

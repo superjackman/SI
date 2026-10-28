@@ -25,4 +25,6 @@ export const W = {
   info: ['点开看讲解', 'tap to learn more'], tryLab: ['到实验页试试：', 'Try it in the Lab: '],
   tIdea: ['想法 {i}', 'Idea {i}'], tLab: ['实验', 'Lab'], tQuiz: ['测验', 'Quiz'], tMedal: ['奖牌', 'Medal'],
   loading: ['正在搭建 3D 场景…', 'Building the 3D scene…'],
+  lookIdea: ['看这几样：{n}。点一下，它会告诉你它是什么。', 'Look at: {n}. Tap one and it tells you what it is.'],
+  learned: ['学到了：', 'You learned: '],
 } satisfies Record<string, Tx>;

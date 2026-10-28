@@ -30,12 +30,16 @@ export function make(box: HTMLElement, api: WApi, o: HallOpt): View {
     const nearest = () => { const k = Math.round(-turn / step); return ((k % n) + n) % n; };
     const tags: Tag[] = o.names.map((s, k) => label(st, s, k, V3(0, 0, 0)));
     const at = o.emb.map(() => new Vector3()), top = o.emb.map(() => new Vector3()), tip = o.emb.map(() => V3(0, H + 1.1, 0));
+    /* R36: s<k> is where a side station's short tag points (while its name label is hidden); far below the floor otherwise */
+    const side: Record<string, Vector3> = { base: V3(0, 0.12, 0.45) }; o.emb.forEach((_, k) => { side[`s${k}`] = new Vector3(0, -99, 0); });
     const place = () => {
       ring.rotation.y = turn;
       o.emb.forEach((_, k) => {
         const a = k * step + turn, x = Math.sin(a) * R, z = Math.cos(a) * R - R;
         at[k]!.set(x, H + 0.35, z); top[k]!.set(x, H + 1.05, z); tags[k]!.at.copy(top[k]!);
-        tags[k]!.show(cur === null && Math.cos(a) > (n > 6 ? 0.8 : 0.5));
+        const c = Math.cos(a), on = cur === null && c > (n > 6 ? 0.8 : 0.5);
+        tags[k]!.show(on);
+        if (!on && cur === null) side[`s${k}`]!.set(x, H + 0.55, z); else side[`s${k}`]!.set(0, -99, 0);
       });
     };
     const poke = () => { quiet = 0; st.draw(); };
@@ -46,7 +50,7 @@ export function make(box: HTMLElement, api: WApi, o: HallOpt): View {
       lim: { az: [-0.35, 0.35], el: [0.15, 0.8], z: [0.75, 1.3] },
       cam: { look: V3(0, 0.85, -0.2), dir: V3(0, 0.38, 1), r: n === 1 ? 1.2 : 1.75 },
       view: () => ({ look: V3(0, H + 0.45, 0), dir: V3(0, 0.3, 1), r: 0.95 }),
-      marks: { base: V3(0, 0.12, 0.45) },
+      marks: side,
       at, top, tip, names: [], hits,
       onFocus(i) { cur = i; if (i !== null) { const t = front(i); aim = turn + (((t - turn + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI; } tags.forEach((t, k) => t.el.classList.toggle('on', k === i)); place(); poke(); },
       /* a sideways drag turns the carousel; a tap picks what is under the finger */
