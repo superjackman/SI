@@ -195,3 +195,26 @@ button.l4-fb { border-color: #8fb4f0; font-weight: 700; } button.l4-fb span { fo
 .l4-pipe { display: flex; flex-wrap: wrap; gap: 3px; margin: 2px 0 5px; }
 .l4-pipe span { font-size: 12px; line-height: 18px; padding: 0 3px; border-radius: 4px; border: 1px solid #34509a; color: #9fb3dc; }
 .l4-pipe span.on { border-color: #8fe3ff; background: #1c3f9e; color: #fff; font-weight: 700; }
+/* R41b: 设置 (reference G4) — a centred dialog over the page */
+.l4-set { align-items: center; justify-content: center; padding: 0 14px; }
+.l4-set .l4-sin { max-width: 400px; border-bottom: 1px solid #3a63d0; border-radius: 16px; }
+.l4-sth { justify-content: center; } .l4-sth .l4-kn { font-size: 17px; }
+.l4-set .l4-sbody { padding: 4px 14px 8px; }
+.l4-srow { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 48px; border-bottom: 1px solid #1b2a55; font-size: 14px; color: #dbe6ff; }
+.l4-srow > span:first-child { display: flex; flex-direction: column; gap: 2px; }
+.l4-srow small { font-size: 12px; color: #7586b0; }
+.l4-seg { display: inline-flex; flex: none; border: 1px solid #3a63d0; border-radius: 8px; overflow: hidden; }
+.l4-seg button { min-height: 32px; padding: 0 12px; border: 0; background: #0c1a3d; color: #b7c6ea; font-size: 13px; }
+.l4-seg button.on { background: #2f6ee8; color: #fff; font-weight: 700; }
+.l4-sw { flex: none; position: relative; width: 48px; height: 28px; border-radius: 14px; border: 1px solid #3a4f86; background: #26324f; padding: 0; }
+.l4-sw i { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #c9d3ea; transition: left .15s; }
+.l4-sw.on { background: #7b4ff0; border-color: #a58bff; } .l4-sw.on i { left: 23px; background: #fff; }
+.l4-clr { flex: none; min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #ff6b6b; background: #2a0d14; color: #ff9b9b; font-size: 13px; }
+.l4-cfm { margin: 10px 0 2px; padding: 10px 12px; border: 1px solid #ff6b6b88; border-radius: 10px; background: #1c0a12; font-size: 13px; color: #f3d6d6; }
+.l4-cfm p { margin: 4px 0 8px; line-height: 1.5; }
+.l4-cfm div { display: flex; justify-content: flex-end; gap: 8px; }
+.l4-b.l4-red { border-color: #ff6b6b; background: #8a1f2b; color: #fff; }
+.l4-sok { margin: 8px 0 0; font-size: 13px; color: #8fe3a8; }
+.l4-done { flex: 1 1 100%; min-height: 40px; border-radius: 12px; background: linear-gradient(#7b4ff0, #5a35c8); border-color: #a58bff; color: #fff; font-size: 15px !important; }
+.l4-set .l4-sf { padding-bottom: 12px; }
+html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

@@ -1,4 +1,5 @@
 /* R39: the 2D fallback (no WebGL): the same geometry as SVG. */
+import { animOn } from '../store/prefs';
 import { ACOL, STY, type G } from './geo';
 import type { LxStage } from './scene';
 
@@ -23,7 +24,7 @@ export function lxFlat(host: HTMLElement): LxStage {
         if (n.plus) s += `<circle cx="${n.x + n.w - 11}" cy="${n.y + n.h / 2}" r="7" fill="${n.st === 'dim' ? '#1a2850' : '#2a56d6'}"/>`;
       }
       if (D.conn) s += `<line x1="${D.conn.x1}" y1="${D.conn.y}" x2="${D.conn.x2}" y2="${D.conn.y}" stroke="#8fe3ff" stroke-width="3" style="filter:drop-shadow(0 0 4px #8fe3ff)"/><circle cx="${D.conn.x2}" cy="${D.conn.y}" r="4" fill="#d6f6ff"/>`;
-      for (const p of D.flow) s += `<circle r="5" fill="#bfe6ff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M${p.map((q) => q.map((v) => v.toFixed(1)).join(' ')).join('L')}"/></circle>`;
+      for (const p of D.flow) s += animOn() ? `<circle r="5" fill="#bfe6ff"><animateMotion dur="2.2s" repeatCount="indefinite" path="M${p.map((q) => q.map((v) => v.toFixed(1)).join(' ')).join('L')}"/></circle>` : `<circle r="5" cx="${p[0]![0].toFixed(1)}" cy="${p[0]![1].toFixed(1)}" fill="#bfe6ff"/>`;
       svg.innerHTML = s;
     },
     dispose() { svg.remove(); },

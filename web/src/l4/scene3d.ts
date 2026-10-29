@@ -5,6 +5,7 @@
 import * as THREE from 'three';
 import { flowPath, STY, type Desc } from './layout';
 import { NODES, PLUS, type Nd } from './txt';
+import { animOn } from '../store/prefs';
 
 export interface Stage { set(d: Desc): void; dispose(): void; el: HTMLCanvasElement }
 export function webgl(): boolean {
@@ -34,7 +35,8 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
   R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); R.setClearColor(0x000000, 0);
   const el = R.domElement; el.className = 'l4-gl'; host.prepend(el);
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 1, 5000), root = new THREE.Group(); scene.add(root);
-  const gTex = glowTex(), dTex = dotTex(), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const gTex = glowTex(), dTex = dotTex(), onA = () => { still = !animOn(); dirty = true; };
+  let still = !animOn(), dirty = true; addEventListener('si-anim', onA);
   let D: Desc | null = null, W = 1, H = 1, plates: THREE.Mesh[] = [], halos: { m: THREE.MeshBasicMaterial; base: number; pulse: boolean }[] = [];
   let lights: { s: THREE.Sprite; path: [number, number][]; off: number }[] = [];
   let tx = 0, ty = 0, rx = 0, ry = 0, raf = 0, last = 0, t0 = performance.now();
@@ -122,11 +124,12 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
   };
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame); if (document.hidden || now - last < 32) return; last = now; const t = (now - t0) / 1000;
-    const sway = reduce ? 0 : Math.sin(t * 0.6) * 0.012;
+    if (still) { if (!dirty) return; dirty = false; rx = 0; ry = 0; } // animation off: one still frame, no tilt / sway / pulse / moving lights
+    const sway = still ? 0 : Math.sin(t * 0.6) * 0.012;
     rx += (ty * 0.035 - rx) * 0.08; ry += (tx * 0.035 + sway - ry) * 0.08; root.rotation.set(rx, ry, 0);
-    for (const h of halos) h.m.opacity = h.pulse && !reduce ? h.base * (0.75 + 0.25 * Math.sin(t * 3)) : h.base;
+    for (const h of halos) h.m.opacity = h.pulse && !still ? h.base * (0.75 + 0.25 * Math.sin(t * 3)) : h.base;
     for (const l of lights) {
-      const k = reduce ? l.off : (t * 0.45 + l.off) % 1, [a, b] = [l.path[0]!, l.path[l.path.length - 1]!];
+      const k = still ? l.off : (t * 0.45 + l.off) % 1, [a, b] = [l.path[0]!, l.path[l.path.length - 1]!];
       l.s.position.x = X(a[0] + (b[0] - a[0]) * k); l.s.position.y = Y(a[1] + (b[1] - a[1]) * k); (l.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI);
     }
     R.render(scene, cam);
@@ -141,7 +144,7 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
   raf = requestAnimationFrame(frame);
   return {
     el,
-    set(d) { D = d; resize(d.lay.W, d.lay.H); build(); R.render(scene, cam); },
-    dispose() { cancelAnimationFrame(raf); disposeAll(); gTex.dispose(); dTex.dispose(); R.dispose(); el.remove(); },
+    set(d) { D = d; resize(d.lay.W, d.lay.H); build(); R.render(scene, cam); dirty = true; },
+    dispose() { cancelAnimationFrame(raf); removeEventListener('si-anim', onA); disposeAll(); gTex.dispose(); dTex.dispose(); R.dispose(); el.remove(); },
   };
 }

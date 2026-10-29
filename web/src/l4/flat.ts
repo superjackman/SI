@@ -1,4 +1,5 @@
 /* R38: 2D fallback used only when the browser has no WebGL. Same geometry as the 3D stage, drawn as SVG. */
+import { animOn } from '../store/prefs';
 import { flowPath, STY, type Desc } from './layout';
 import { NODES, PLUS } from './txt';
 import type { Stage } from './scene3d';
@@ -28,7 +29,7 @@ export function stageFlat(host: HTMLElement): Stage {
       if (D.sel && L.panel) { const b = L.box[D.sel], y = b.y + b.h / 2;
         s += `<line x1="${b.x + b.w}" y1="${y}" x2="${L.panel.x}" y2="${y}" stroke="#8fe3ff" stroke-width="3" style="filter:drop-shadow(0 0 4px #8fe3ff)"/><circle cx="${L.panel.x}" cy="${y}" r="4" fill="#d6f6ff"/>`; }
       if (D.flow) { const p = flowPath(L, D.flow.a, D.flow.b), [a, b] = D.flow.back ? [p[1]!, p[0]!] : [p[0]!, p[1]!];
-        s += `<circle r="5" fill="${D.flow.back ? '#ffb060' : '#bfe6ff'}"><animateMotion dur="2.2s" repeatCount="indefinite" path="M${a[0]} ${a[1]}L${b[0]} ${b[1]}"/></circle>`; }
+        s += animOn() ? `<circle r="5" fill="${D.flow.back ? '#ffb060' : '#bfe6ff'}"><animateMotion dur="2.2s" repeatCount="indefinite" path="M${a[0]} ${a[1]}L${b[0]} ${b[1]}"/></circle>` : `<circle r="5" cx="${(a[0] + b[0]) / 2}" cy="${(a[1] + b[1]) / 2}" fill="${D.flow.back ? '#ffb060' : '#bfe6ff'}"/>`; }
       svg.innerHTML = s;
     },
     dispose() { svg.remove(); },

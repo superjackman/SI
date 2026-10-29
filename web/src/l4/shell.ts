@@ -14,6 +14,7 @@ import type { Demo } from './tf/core';
 import type { Trace } from './tf/model';
 import { PATH, plan, QKEY, type QState } from '../px/qpath';
 import { bump } from '../px/rec';
+import { applyAnim } from '../store/prefs';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id);
@@ -23,8 +24,8 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 export function start(doc: Document = document, win: Window = window) {
   if (doc.getElementById('l4')) return;
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
-  doc.documentElement.classList.add('l4-mode');
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><div class="l4-tx" aria-live="polite"></div><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
+  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><div class="l4-tx" aria-live="polite"></div><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div>
 <main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
 <div class="l4-ent" hidden></div>
@@ -131,7 +132,7 @@ export function start(doc: Document = document, win: Window = window) {
   }
   function render() {
     root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
-    $('[data-a="back"]').textContent = '‹'; $('[data-a="back"]').setAttribute('aria-label', T('back'));
+    $('[data-a="set"]').textContent = '⚙'; $('[data-a="set"]').setAttribute('aria-label', tx(['设置', 'Settings'], lang)); $('[data-a="back"]').textContent = '‹'; $('[data-a="back"]').setAttribute('aria-label', T('back'));
     $('[data-a="map"]').innerHTML = `<span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<span>${T('next')}</span>`;
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
@@ -181,13 +182,13 @@ export function start(doc: Document = document, win: Window = window) {
   /* ---------- sheets: card, map, progress ---------- */
   let cardFor = '';
   async function card(id: string | null) {
-    root.querySelector('.l4-sheet')?.remove(); if (!id) { cardFor = ''; return; }
+    root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!id) { cardFor = ''; return; }
     const [k, p] = id.split('.') as [string, string | undefined]; opened.add(k); LS.set('si.l4.cards', [...opened]);
     const m = await import('./sheet'); cardFor = id;
     await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(H(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${H(cur)}`);
   }
   function list(title: string, body: string) {
-    root.querySelector('.l4-sheet')?.remove(); const e = doc.createElement('div'); e.className = 'l4-sheet l4-ms'; e.setAttribute('role', 'dialog'); e.setAttribute('aria-label', title);
+    root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); const e = doc.createElement('div'); e.className = 'l4-sheet l4-ms'; e.setAttribute('role', 'dialog'); e.setAttribute('aria-label', title);
     e.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${title}</b></header><div class="l4-sbody">${body}</div><footer class="l4-sf"><button type="button" class="l4-b" data-s="x">${T('close')}</button></footer></div>`;
     e.addEventListener('click', (ev) => { const t = ev.target as HTMLElement; if (t === e || t.closest('[data-s="x"]') || t.closest('a,[data-go]')) e.remove(); }); root.appendChild(e);
   }
@@ -229,6 +230,8 @@ export function start(doc: Document = document, win: Window = window) {
       case 'lang': lang = lang === 'zh' ? 'en' : 'zh'; useApp.getState().setLang(lang); route(); break;
       case 'math': if (mp.dataset.k) go(H(cur) + '~' + mp.dataset.k); break;
       case 'map': mapSheet(); break;
+      case 'set': void import('./settings').then((m) => { const s = m.openSettings(root, { lang: () => lang, setLang: (l) => { lang = l; useApp.getState().setLang(l); route(); s.redraw(); }, anim: () => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); },
+        cleared: () => { seen.clear(); opened.clear(); render(); } }); }); break;
       case 'prog': go('#R'); break;
       case 'qx': { const q = qGet(); if (q) LS.set(QKEY, { ...q, on: false }); drawQp(); break; }
       case 'next': { const q = qGet(); if (q?.on && !isPx(cur)) { const j = PATH.findIndex(([h]) => stopOf(h) === cur), n = j < 0 ? q.i : j + 1; if (n >= PATH.length) { go('#Q/done'); break; } const [h, c] = PATH[n]!; go(h + (c ? '~' + c : '')); break; } }

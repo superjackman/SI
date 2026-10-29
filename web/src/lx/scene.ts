@@ -3,6 +3,7 @@
    connector into an opened box's panel and a travelling light. z = 0 maps 1:1 to CSS px so DOM labels sit on top. */
 import * as THREE from 'three';
 import { ACOL, STY, type G } from './geo';
+import { animOn } from '../store/prefs';
 
 export interface LxStage { set(g: G): void; dispose(): void; el: HTMLElement }
 export function webgl(): boolean {
@@ -26,7 +27,8 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
   R.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2)); R.setClearColor(0x000000, 0);
   const el = R.domElement; el.className = 'l4-gl lx-gl'; host.prepend(el);
   const scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 1, 1, 5000), root = new THREE.Group(); scene.add(root);
-  const gTex = tex('glow'), dTex = tex('dot'), reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const gTex = tex('glow'), dTex = tex('dot'), onA = () => { still = !animOn(); dirty = true; };
+  let still = !animOn(), dirty = true; addEventListener('si-anim', onA);
   let D: G | null = null, W = 1, H = 1, plates: THREE.Mesh[] = [], halos: { m: THREE.MeshBasicMaterial; base: number }[] = [], lights: { s: THREE.Sprite; p: [number, number][]; len: number[]; off: number }[] = [];
   let tx = 0, ty = 0, rx = 0, ry = 0, raf = 0, last = 0; const t0 = performance.now();
   const X = (x: number) => x - W / 2, Y = (y: number) => H / 2 - y;
@@ -96,10 +98,11 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
   };
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame); if (document.hidden || now - last < 32) return; last = now; const t = (now - t0) / 1000;
-    const sway = reduce ? 0 : Math.sin(t * 0.6) * 0.012;
+    if (still) { if (!dirty) return; dirty = false; rx = 0; ry = 0; } // animation off: one still frame, no tilt / sway / pulse / moving lights
+    const sway = still ? 0 : Math.sin(t * 0.6) * 0.012;
     rx += (ty * 0.035 - rx) * 0.08; ry += (tx * 0.035 + sway - ry) * 0.08; root.rotation.set(rx, ry, 0);
-    for (const h of halos) h.m.opacity = reduce ? h.base : h.base * (0.75 + 0.25 * Math.sin(t * 3));
-    for (const l of lights) { const k = reduce ? 0.5 : (t * 0.45 + l.off) % 1, [x, y] = at(l, k); l.s.position.x = X(x); l.s.position.y = Y(y); (l.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI); }
+    for (const h of halos) h.m.opacity = still ? h.base : h.base * (0.75 + 0.25 * Math.sin(t * 3));
+    for (const l of lights) { const k = still ? 0.5 : (t * 0.45 + l.off) % 1, [x, y] = at(l, k); l.s.position.x = X(x); l.s.position.y = Y(y); (l.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI); }
     R.render(scene, cam);
   };
   const ray = new THREE.Raycaster(), v = new THREE.Vector2();
@@ -112,7 +115,7 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
   raf = requestAnimationFrame(frame);
   return {
     el,
-    set(g) { D = g; resize(g.W, g.H); build(); R.render(scene, cam); },
-    dispose() { cancelAnimationFrame(raf); clear(); gTex.dispose(); dTex.dispose(); R.dispose(); el.remove(); },
+    set(g) { D = g; resize(g.W, g.H); build(); R.render(scene, cam); dirty = true; },
+    dispose() { cancelAnimationFrame(raf); removeEventListener('si-anim', onA); clear(); gTex.dispose(); dTex.dispose(); R.dispose(); el.remove(); },
   };
 }

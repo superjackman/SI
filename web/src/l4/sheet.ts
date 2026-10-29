@@ -28,7 +28,7 @@ const KM_USE: Record<string, string> = { KM01: 'M1a', KM02: 'M2a', KM03: 'M3a', 
 export interface SheetApi { close(): void }
 /** open card `id` (page p) inside `host`; `go` changes the hash */
 export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go: (suffix: string | null) => void, pageUrl: string): Promise<void> {
-  const all = await cards(l, id), c = all[id]; host.querySelector('.l4-sheet')?.remove(); if (!c) return;
+  const all = await cards(l, id), c = all[id]; host.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!c) return;
   const T = (k: keyof typeof UI) => tx(UI[k] as readonly [string, string], l), km = id.startsWith('KM'), math = km ? null : K_MATH[id] ?? null, LV = lvOf(id);
   const jg: [readonly [string, string], string] | undefined = K_GO[id] ?? (KM_USE[id] ? [['看它在哪用 ›', 'Where it is used ›'], '#L5/' + KM_USE[id]] : undefined), mu = KM_USE[id] ? KM_USE[id]!.slice(0, 2) : '';
   const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p);
