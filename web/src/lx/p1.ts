@@ -56,7 +56,7 @@ function l2(mode: 'full' | 'left'): Dia {
 const pill = (t: string, go?: string, c = '') => go ? `<button type="button" class="lx-pl${c}" data-go="${go}">${t}</button>` : `<span class="lx-pl${c}">${t}</span>`;
 export function page(id: string, l: L): LxPg {
   const z = (a: string, b: string) => (l === 'zh' ? a : b), EX = `<span class="l4-ex">${z('示例数字', 'example')}</span>`, EXD = `<span class="l4-ex">${z('示例数据', 'example data')}</span>`;
-  const one = id.startsWith('L1'), hint0 = z('点带 + 的块可就地展开', 'Tap a box with + to open it here'), hintX = z('点带 + 的块可就地展开；点左侧原图收起', 'Tap + to open; tap the left diagram to close');
+  const one = id.startsWith('L1'), hint0 = z('› 进入下一层 · ⓘ 当前页看说明 · 底部切换上一步/下一步', '› new page · ⓘ shown here · Back/Next below'), hintX = z('› 进入下一层 · ⓘ 当前页看说明 · 点左侧原图收起', '› new page · ⓘ shown here · tap left diagram to close');
   const crumb: [string, string | null][] = [[z('首页', 'Home'), '#home'], one ? [z('第1层 我怎么用 AI', 'Layer 1 How I use AI'), id === 'L1' ? null : '#L1'] : [z('第2层 AI 助手怎么工作', 'Layer 2 How an AI assistant works'), id === 'L2' ? null : '#L2']];
   const p: LxPg = { id, mode: 'full', v: null, top: `<b class="lx-tt">${z('你：「帮我订明天去上海的高铁」', 'You: “Book me a fast train to Shanghai tomorrow”')}</b>`, crumb, ttl: '', info: ['', '', '', ''],
     k: 'KA01', math: null, hint: hint0, dots: null, next: lxNext(id), panel: '', xl: true, go: {} };

@@ -69,3 +69,4 @@ button.lx-pl { margin-top: 4px; }
 .lx-pn sub, .lx-pn sup { font-size: max(12px, .75em); line-height: 0; }
 /* R42b: a chart page that cannot fit without shrinking labels under 12 px scrolls instead */
 .l4-stg[data-scr] { overflow-y: auto; overscroll-behavior: contain; } .lx-sp { position: absolute; visibility: hidden; pointer-events: none; }
+.l4-tx .lx-cps { gap: 1px; } .l4-tx .lx-cps .c { min-width: 16px; padding: 0; } .l4-tx .lx-cps .c.out { min-width: 18px; } .l4-tx .lx-cps > i { margin: 0 1px; }

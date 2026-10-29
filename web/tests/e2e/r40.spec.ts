@@ -69,12 +69,19 @@ test.describe('R40 练记享', () => {
     await at(page, 'P/q1', 'zh'); const set = QUIZ[1];
     for (let i = 0; i < set.length; i++) {
       await expect(page.locator('.px-qh b')).toContainText(`第 ${i + 1} 题`);
+      await expect(page.locator('.l4-nav [data-a="next"]')).toBeDisabled(); // R44: next waits for an answer
+      await expect(page.locator('.l4-nav [data-a="prev"]')).toBeEnabled({ enabled: i > 0 });
       const pick = i === 0 ? (set[i]!.a + 1) % 4 : set[i]!.a; // one wrong, the rest right
       await page.locator(`[data-px="pick:${pick}"]`).click();
       await expect(page.locator('.px-ex')).toContainText(/「.+」卡 ⑤/); // R42 C5: the card by name, no internal id
       await expect(page.locator('.px-o.ok')).toHaveCount(1);
       await expect(page.locator(`.px-ex [data-k="${set[i]!.k}.2"], .px-row [data-k="${set[i]!.k}.2"]`)).toHaveCount(1);
-      await page.locator('[data-px="next"]').click();
+      await expect(page.locator('.l4-nav [data-a="next"]')).toBeEnabled();
+      if (i === 1) { // R44: back one question keeps its answer, forward again
+        await page.locator('.l4-nav [data-a="prev"]').click(); await expect(page.locator('.px-qh b')).toContainText('第 1 题');
+        await expect(page.locator('.px-o.ok')).toHaveCount(1); await page.locator('.l4-nav [data-a="next"]').click(); await expect(page.locator('.px-qh b')).toContainText('第 2 题');
+      }
+      await page.locator('.l4-nav [data-a="next"]').click();
     }
     await expect(page.locator('.px-big')).toContainText(new RegExp(`${set.length - 1} ?/ ?${set.length}`));
     await page.locator('.px-r [data-go="#R"]').click(); await page.waitForFunction(() => document.getElementById('l4')?.dataset.px === 'R.zh');
@@ -104,7 +111,7 @@ test.describe('R40 练记享', () => {
     for (const k of ['q', 'p']) { await page.locator(`[data-px="kind:${k}"]`).click(); await expect(box).toHaveAttribute('data-kind', k); await expect(box.locator('img')).toBeVisible(); }
     // R42 S2: no real achievement yet, so the progress card shows the three small goals and cannot be saved
     await page.locator('[data-px="kind:m"]').click(); await expect(page.locator('.px-goal .px-gr')).toHaveCount(3);
-    await expect(page.locator('[data-px="save"]')).toBeDisabled(); await expect(page.locator('.px-prev')).toHaveCount(0);
+    await expect(page.locator('[data-px="save"]')).toBeDisabled(); await expect(page.locator('.px-prev img')).toHaveCount(0); await expect(page.locator('.px-prev .g-emt')).toBeVisible();
     await page.locator('[data-px="kind:k"]').click(); await expect(box.locator('img')).toBeVisible();
     await page.locator('[data-px="copy"]').click(); await expect(page.locator('.px-cp')).toContainText('c/KA04.html?lang=zh');
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/share-ach-post.png` });

@@ -23,13 +23,13 @@ for (const lang of ['zh', 'en']) {
     test(`sheets, drawer, share picker, quiz`, async ({ page }) => {
       test.setTimeout(180_000); const bad: string[] = [];
       const C = (sel: string) => async (p: Page) => { await p.waitForSelector(sel, { state: 'attached', timeout: 10000 }); await p.evaluate((s) => (document.querySelector(s) as HTMLElement).click(), sel); await p.waitForTimeout(600); };
-      bad.push(...(await check(page, '#L2~KB01', lang, C('.l4-sheet [data-s="flip"]'))));
+      bad.push(...(await check(page, '#L2~KB01', lang, C('.l4-sheet .g-next[data-s="flip"]'))));
       bad.push(...(await check(page, '#home', lang, C('[data-a="set"]'))));
-      bad.push(...(await check(page, '#L4', lang, C('[data-a="map"]'))));
-      for (const n of [2, 9]) bad.push(...(await check(page, '#Q', lang, async (p) => { await C('[data-px="qgo"]')(p); for (let i = 1; i < n; i++) await C('[data-a="next"]')(p); })));
-      bad.push(...(await check(page, '#P/q1', lang, async (p) => { for (const k of [1, 3, 0, 2]) { await C(`[data-px="pick:${k}"]`)(p); await C('[data-px="next"]')(p); } })));
+      bad.push(...(await check(page, '#L4', lang, C('[data-a="menu"]'))));
+      for (const n of [2, 9]) bad.push(...(await check(page, '#Q', lang, async (p) => { await C('[data-px="qgo"]')(p); for (let i = 1; i < n; i++) await C('.l4-nav [data-a="next"]')(p); })));
+      bad.push(...(await check(page, '#P/q1', lang, async (p) => { for (const k of [1, 3, 0, 2]) { await C(`[data-px="pick:${k}"]`)(p); await C('.l4-nav [data-a="next"]')(p); } })));
       bad.push(...(await check(page, '#S', lang, C('[data-px="pk"]'))));
-      bad.push(...(await check(page, '#home', lang, C('[data-a="map"]'))));
+      bad.push(...(await check(page, '#home', lang, C('[data-a="menu"]'))));
       expect(bad).toEqual([]);
     });
   });

@@ -84,7 +84,7 @@ test.describe('R39 layers', () => {
       await page.evaluate((x) => { location.hash = x; }, `${base}~${k}`);
       const sh = page.locator(`.l4-sheet[data-card="${k}"]`); await expect(sh).toBeVisible();
       await expect(sh.locator('.l4-ks')).toHaveCount(4); await expect(sh.locator('.l4-kh.c1')).toBeVisible();
-      await sh.locator('[data-s="flip"]').click();
+      await sh.locator('.g-next[data-s="flip"]').click();
       await expect(page.locator(`.l4-sheet[data-card="${k}"][data-p="2"] .l4-kh.c5`)).toBeVisible();
       await expect(page.locator('.l4-sheet .l4-ks')).toHaveCount(1);
       await page.locator('.l4-sheet [data-s="close"]').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0);

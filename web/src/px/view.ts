@@ -8,13 +8,16 @@ import { steps, retrieve, softmax, sample, sqrtD } from './exp';
 import { PATH, plan, QKEY, ZH_CPM, EN_WPM, LOOK, STOP_N, STOP_CARD, stopLayer, type QState } from './qpath';
 import { cards, type Card } from '../l4/c/kc';
 import { cardData, lvOf } from '../l4/share/card';
+import { dlgHtml, download, shareOut } from '../l4/share/modal';
 import { LX_N, lxFrom, lxHash, isLx } from '../lx/ids';
 import { cardLayer, layerStats, lastPage, pageLayer, pageName, pbar, recent } from '../l4/progress';
 import { hashOf, parse, pickHead, Q } from '../l4/pages';
 import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
 
+export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null }
 export interface PxApi {
+  step: (s: Step | null) => void;
   root: HTMLElement; host: HTMLElement; l: L; go: (h: string) => void; top: (html: string) => void; crumb: (c: [string, string | null][]) => void;
   tf: () => Promise<typeof import('../l4/tf/client')>; seen: Set<string>; opened: Set<string>; still: () => boolean;
 }
@@ -23,12 +26,15 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const pct = (p: number, d = 1) => (p * 100).toFixed(d) + '%';
 const W: Record<string, Tx> = {
+  pickL: ['选卡片：{n}', 'Card: {n}'], shT2: ['分享', 'Share'], emptyS: ['还没有可分享的内容：你真实做到的事。完成一个小目标后就能生成。', 'Nothing to share yet — only what you really did. Reach one small goal to make one.'], emptyM: ['你真实做到的事。完成一个小目标后就能生成。', 'Only what you really did. Reach one small goal to make one.'],
+  pvQ: ['上一题', 'Prev'], nxQ: ['下一题', 'Next'], nxR: ['看结果', 'Results'], pvS: ['上一套', 'Prev quiz'], nxS: ['下一套小测', 'Next quiz'], nxP: ['看进度', 'Progress'],
+  pvX: ['上个实验', 'Prev'], nxX: ['下个实验', 'Next'], nxXq: ['去小测', 'To quiz'], labQ: ['第 ', 'Q '], labS: ['小测 ', 'Quiz '], labX: ['实验 ', 'Lab '],
   practice: ['练', 'Practice'], record: ['记', 'Record'], share: ['享', 'Share'], quick: ['10 分钟快速路径', '10-minute quick path'],
   pSub: ['动手试一试：小实验都是真实计算；每层 4 道小测，答完就讲为什么。', 'Try it: the experiments compute for real; 4 questions per layer, each explained.'],
   exps: ['实验', 'Experiments'], tests: ['测试题', 'Quizzes'], mine: ['我的训练题', 'My training set'], mineB: ['自己出题，训练小模型', 'Write questions, train the tiny model'],
   trained: ['已训练过', 'trained'], notYet: ['没做过', 'not yet'], doneY: ['做过 ✓', 'done ✓'], bestS: ['最好 {r}/{n}', 'best {r}/{n}'], nqNo: ['4 题 · 没做', '4 Qs · not yet'], qz: ['小测', 'quiz'], last: ['上次', 'last'], nq: ['4 题', '4 Qs'], done: ['做过', 'done'],
   qn: ['第 {i} 题 / {n}', 'Question {i} / {n}'], right: ['答对了！', 'Right!'], wrong: ['不对，正确答案是 {a}。', 'Not quite — the answer is {a}.'],
-  src: ['依据：「{n}」卡 ⑤ 为什么', 'From the “{n}” card, ⑤ why'], backK: ['回到「{n}」卡', 'Back to the “{n}” card'], nextQ: ['下一题', 'Next question'], seeR: ['看结果', 'See result'],
+  src: ['依据：「{n}」卡 ⑤ 为什么', 'From the “{n}” card, ⑤ why'], backK: ['回看「{n}」卡', 'Review the “{n}” card'], nextQ: ['下一题', 'Next question'], seeR: ['看结果', 'See result'],
   res: ['答对 {r} / {n}', '{r} / {n} right'], allR: ['全部答对', 'All right'], again: ['再练一次', 'Try again'], toR: ['去记录', 'Go to record'], mkShare: ['生成分享卡', 'Make a share card'],
   resP: ['每题的知识点：点开能看 ⑤ 为什么。', 'Each question’s card — open it to see ⑤ why.'],
   why: ['为什么：{n}（卡片）›', 'Why: {n} (card) ›'], shareC: ['分享这个结论', 'Share this'], kcN: ['知识卡 · {n}', 'Card · {n}'],
@@ -89,11 +95,13 @@ let qs: { lv: N; i: number; pick: (number | null)[] } | null = null;
 const xs = { p: 90, n: 8, q: 0, qtxt: '', T: 1, draws: 0, j: -1, dl: 0, d: 16, rec: '' };
 let sh: { cid: string; kind: 'k' | 'q' | 'p' | 'm'; fmt: 'story' | 'post'; auto?: boolean } = { cid: '', kind: 'k', fmt: 'story' };
 let model: { tr: Trace; chars: string[]; a: Ans } | null = null;
-let wired: HTMLElement | null = null, api: PxApi | null = null, curId = '';
+let escOn = false, wired: HTMLElement | null = null, api: PxApi | null = null, curId = '';
 
 export async function px(id: string, A: PxApi) {
   api = A; L_ = A.l; curId = id; const h = A.host;
   if (wired !== h) { wired = h; h.addEventListener('click', onClick); h.addEventListener('input', onInput); h.addEventListener('change', onInput); }
+  if (!escOn) { escOn = true; addEventListener('keydown', (e) => { const a = api; if (e.key !== 'Escape' || !a || !(curId === 'S' || curId.startsWith('S/')) || !a.host.querySelector('.px-s.g-modal')) return;
+    if (pk.open) { pk = { open: false, q: '' }; void share(a, ''); } else if (history.length > 1) history.back(); else a.go('#home'); }); }
   if (!id.startsWith('P/x')) xs.rec = '';
   if (id === 'P') return list(A);
   if (/^P\/q[1-5]$/.test(id)) return quiz(A, Number(id[3]) as N);
@@ -131,17 +139,20 @@ async function quiz(A: PxApi, n: N) {
     A.host.innerHTML = hi
       ? `<div class="px px-r"><div class="px-medal" aria-hidden="true">${r === set.length ? '★' : r}</div><h2 class="px-big">${r === set.length ? t('allR') + ' · ' : ''}${t('res', { r, n: set.length })}</h2>
 <p class="px-sub">${t('resP')}</p><div class="px-rl">${set.map(row).join('')}</div>
-<div class="px-col"><button type="button" class="l4-b" data-px="again">${t('again')}</button><button type="button" class="l4-b" data-go="#R">${t('toR')}</button><button type="button" class="l4-b gold" data-go="#S/${firstR.k}.p">${t('mkShare')}</button></div></div>`
+<div class="px-col"><button type="button" class="l4-b" data-px="again">${t('again')}</button><button type="button" class="l4-b" data-go="#R">${t('toR')}</button><button type="button" class="l4-b g-act" data-go="#S/${firstR.k}.p">⤴ ${t('mkShare')}</button></div></div>`
       : `<div class="px px-r px-lo"><div class="px-ring" style="--p:${(r / set.length) * 100}%" aria-hidden="true"><b>${r}/${set.length}</b></div><h2 class="px-big">${t('lowT')}</h2>
 <p class="px-sub">${t('lowS', { w: w.length })}</p><div class="px-rl">${set.map(row).join('')}</div>
-<div class="px-col"><button type="button" class="l4-b gold" data-k="${w[0]!.k}.2">${esc(t('firstW', { n: C[w[0]!.k]!.n }))}</button><div class="px-row"><button type="button" class="l4-b" data-px="again">${t('again')}</button><button type="button" class="l4-b" data-go="#R">${t('toR')}</button></div></div></div>`;
+<div class="px-col"><button type="button" class="l4-b g-info" data-k="${w[0]!.k}.2">${esc(t('firstW', { n: C[w[0]!.k]!.n }))}</button><div class="px-row"><button type="button" class="l4-b" data-px="again">${t('again')}</button><button type="button" class="l4-b" data-go="#R">${t('toR')}</button></div></div></div>`;
+    A.step({ n: 5, i: n - 1, lab: t('labS'), pv: t('pvS'), nx: n < 5 ? t('nxS') : t('nxP'), prev: n > 1 ? `#P/q${n - 1}` : null, next: n < 5 ? `#P/q${n + 1}` : '#R', dot: (k) => A.go(`#P/q${k + 1}`) });
     return done(A, 'P/q' + n);
   }
   const q = set[qs.i]!, p = qs.pick[qs.i], L = 'ABCD';
   A.host.innerHTML = `<div class="px px-q"><div class="px-qh"><b>${t('qn', { i: qs.i + 1, n: set.length })}</b>${lvT(n, L_)}</div><div class="l4-pbar px-pb"><i style="width:${(qs.i / set.length) * 100}%"></i></div>
 <p class="px-qq">${esc(tx(q.q, L_))}</p><div class="px-opts">${q.o.map((o, i) => `<button type="button" class="px-o${p == null ? '' : i === q.a ? ' ok' : i === p ? ' bad' : ' dim'}" data-px="pick:${i}"${p == null ? '' : ' aria-disabled="true"'}><b>${L[i]}</b><span>${esc(tx(o, L_))}</span>${p != null && i === q.a ? '<em>✓</em>' : p === i ? '<em>✗</em>' : ''}</button>`).join('')}</div>
 ${p == null ? '' : `<div class="px-ex ${p === q.a ? 'ok' : 'bad'}"><b>${p === q.a ? t('right') : t('wrong', { a: L[q.a]! })}</b> ${esc(tx(q.e, L_))}<span class="px-src">${esc(t('src', { n: C[q.k]!.n }))}</span></div>
-<div class="px-row"><button type="button" class="l4-b" data-k="${q.k}.2">${esc(t('backK', { n: C[q.k]!.n }))}</button><button type="button" class="l4-b gold" data-px="next">${qs.i + 1 < set.length ? t('nextQ') : t('seeR')}</button></div>`}</div>`;
+<div class="px-row"><button type="button" class="l4-b g-info" data-k="${q.k}.2">${esc(t('backK', { n: C[q.k]!.n }))}</button></div>`}</div>`;
+  const Q0 = qs, go = (i: number) => { Q0.i = i; void quiz(A, n); };
+  A.step({ n: set.length, i: qs.i, lab: t('labQ'), pv: t('pvQ'), nx: qs.i + 1 < set.length ? t('nxQ') : t('nxR'), prev: qs.i > 0 ? () => go(Q0.i - 1) : null, next: p == null ? null : () => go(Q0.i + 1), dot: (k) => { if (k === 0 || Q0.pick[k - 1] != null) go(k); } });
   done(A, 'P/q' + n);
 }
 
@@ -149,6 +160,8 @@ ${p == null ? '' : `<div class="px-ex ${p === q.a ? 'ok' : 'bad'}"><b>${p === q.
 async function exp(A: PxApi, x: string) {
   const m = EXP.find((e) => e.id === x)!;
   A.top(`<b class="l4-tt">${esc(tx(m.t, L_))}</b>`); crumbs(A, [t('practice'), '#P'], [tx(m.t, L_), null]);
+  const xi = EXP.indexOf(m), XN = EXP.length;
+  A.step({ n: XN, i: xi, lab: t('labX'), pv: t('pvX'), nx: xi + 1 < XN ? t('nxX') : t('nxXq'), prev: xi > 0 ? `#P/${EXP[xi - 1]!.id}` : null, next: xi + 1 < XN ? `#P/${EXP[xi + 1]!.id}` : '#P/q1', dot: (k) => A.go(`#P/${EXP[k]!.id}`) });
   const C = await allCards(A.l); if (!A.still()) return;
   const intro: Record<string, Tx> = {
     x1: ['一个任务要做好几步。拖动看看：每步成功率和步数怎么影响整体成功率，每步检查、错了重做一次又能好多少。', 'A task takes several steps. Drag to see how per-step success and the number of steps change the whole, and how much checking each step (redo once if wrong) helps.'],
@@ -158,7 +171,7 @@ async function exp(A: PxApi, x: string) {
     x5: ['随机生成 q、k（每个数平均 0、方差 1）。选维数 d，看点积有多大、softmax 有多「尖」，以及除以 √d 之后。', 'Random q and k (each number mean 0, variance 1). Pick d and see how big q·k gets and how peaked softmax is — with and without ÷√d.'],
   };
   A.host.innerHTML = `<div class="px px-x" data-x="${x}"><p class="px-sub">${esc(tx(intro[x]!, L_))}</p><div class="px-ctl"></div><div class="px-res"></div>
-<div class="px-row"><span class="px-tag">⚙ ${t('real')}</span><button type="button" class="l4-b" data-k="${m.k}.2">${esc(t('why', { n: C[m.k]!.n }))}</button></div><div class="px-row"><button type="button" class="l4-b gold" data-go="#S/${m.k}">${t('shareC')}</button></div><p class="px-k">${esc(t('kcN', { n: C[m.k]!.n }))}</p></div>`;
+<div class="px-row"><span class="px-tag">⚙ ${t('real')}</span><button type="button" class="l4-b" data-k="${m.k}.2">${esc(t('why', { n: C[m.k]!.n }))}</button></div><div class="px-row"><button type="button" class="l4-b g-act" data-go="#S/${m.k}">⤴ ${t('shareC')}</button></div><p class="px-k">${esc(t('kcN', { n: C[m.k]!.n }))}</p></div>`;
   const ctl = A.host.querySelector<HTMLElement>('.px-ctl')!;
   if (x === 'x1') ctl.innerHTML = slider('p', tx(['每步成功率', 'Per-step success'], L_), 80, 99, 1, xs.p, '%') + slider('n', tx(['步数', 'Steps'], L_), 1, 20, 1, xs.n, '');
   if (x === 'x2') ctl.innerHTML = `<div class="px-chips">${QRY.map((q, i) => `<button type="button" class="l4-b${!xs.qtxt && xs.q === i ? ' on' : ''}" data-px="qry:${i}">${esc(tx(q, L_))}</button>`).join('')}</div><input class="px-in" data-xin="q" maxlength="30" placeholder="${esc(tx(['或者自己输入一句', 'or type your own'], L_))}" value="${esc(xs.qtxt)}">`;
@@ -268,29 +281,30 @@ async function share(A: PxApi, arg: string) {
   if (!sh.cid || !C[sh.cid]) { sh.cid = op[0] ?? 'K06'; sh.auto = !!op[0]; }
   A.top(`<b class="l4-tt">${t('share')}</b>`); crumbs(A, [t('share'), null]);
   const kinds: ['k' | 'q' | 'p' | 'm', keyof typeof W][] = [['k', 'kK'], ['q', 'kQ'], ['p', 'kP'], ['m', 'kM']];
-  const subK: Record<string, keyof typeof W> = { k: 'kKs', q: 'kQs', p: 'kPs', m: 'kMs2' };
   const ach = achs(A), [w, h] = sh.fmt === 'story' ? [1080, 1920] : [1080, 1350], m = sh.kind === 'm';
-  const fmtB = `<button type="button" class="l4-b${sh.fmt === 'story' ? ' on' : ''}" data-px="fmt:story">${t('story')}</button><button type="button" class="l4-b${sh.fmt === 'post' ? ' on' : ''}" data-px="fmt:post">${t('post')}</button>`;
-  const pick = m ? '' : `<button type="button" class="px-pick" data-px="pk" aria-haspopup="listbox" aria-expanded="${pk.open}" aria-label="${t('card')}"><span>${sh.auto ? `<i>${esc(t('pkRec', { n: '' }))}</i>${esc(C[sh.cid]!.n)}` : esc(C[sh.cid]!.n)}</span><b>▾</b></button>`;
-  const acts = (off: boolean) => `<button type="button" class="l4-b gold" data-px="save"${off ? ' disabled' : ''}>${t('save')}</button><button type="button" class="l4-b" data-px="copy"${off ? ' disabled' : ''}>${t('copy')}</button><button type="button" class="l4-b" data-px="close">${t('close')}</button>`;
-  let body: string;
-  if (m && !ach.length) {
+  const pick = m ? '' : `<button type="button" class="l4-b g-info g-pick px-pick" data-px="pk" aria-haspopup="listbox" aria-expanded="${pk.open}" aria-label="${t('card')}"><span>${sh.auto ? `<i>${esc(t('pkRec', { n: '' }))}</i>` : ''}${esc(t('pickL', { n: C[sh.cid]!.n }))}</span><b aria-hidden="true">▾</b></button>`;
+  const top = `<div class="g-chips" role="radiogroup">${kinds.map(([k, n]) => `<button type="button" role="radio" aria-checked="${sh.kind === k}" class="${sh.kind === k ? 'on' : ''}" data-px="kind:${k}">${t(n)}</button>`).join('')}</div>${pick}`;
+  const empty = m && !ach.length;
+  let eh = '';
+  if (empty) {
     /* S2: no real achievement yet — three small goals with real progress, saving greyed out */
     const qsx = qGet(), pathN = R.log().some((e) => e.k === 'path') ? PATH.length : qsx ? Math.min(PATH.length, Math.max(qsx.i, qsx.max ?? 0)) : 0;
     let bq: Extract<R.Ev, { k: 'quiz' }> | null = null; for (const n of LAYERS) { const b = bestOf(n as N); if (b && (!bq || b.right / b.total > bq.right / bq.total)) bq = b; }
     const st = layerStats(A.seen, A.opened), bl = st.reduce((a, x) => (x.t && x.s / x.t > a.s / Math.max(1, a.t) ? x : a), st[0]!);
     const row = (n: string, v: string, f: number) => `<div class="px-gr"><div><span>${esc(n)}</span><i>${esc(v)}</i></div><span class="px-gb"><i style="width:${Math.round(Math.min(1, f) * 100)}%"></i></span></div>`;
-    body = `<div class="px-goal"><div class="px-med">🏅</div><b>${t('gT')}</b><p class="px-sub">${t('gS')}</p>
+    eh = `<p class="g-emt">${t('emptyS')}</p><div class="px-goal"><b>${t('gT')}</b>
 ${row(t('g1'), t('g1v', { i: pathN, n: PATH.length }), pathN / PATH.length)}${row(t('g2'), bq ? t('g2v', { r: bq.right, n: bq.total }) : t('noQz'), bq ? bq.right / (bq.total * 0.75) : 0)}${row(t('g3'), t('g3v', { n: bl.n, s: bl.s, t: bl.t }), bl.t ? bl.s / bl.t : 0)}
-<button type="button" class="l4-b gold" data-px="${qsx?.on ? 'qcont' : 'qgo'}">${t(qsx?.on ? 'gGo' : 'gStart')}</button></div><div class="px-row">${acts(true)}</div><p class="px-f px-cp" aria-live="polite"></p>`;
-  } else {
-    body = `<div class="px-sv"><div class="px-prev"></div><div class="px-sa"><p class="px-f">${t('expo', { w, h })}<br>${t(m ? 'scanS' : 'scanK')}</p>${acts(false)}<p class="px-f px-cp" aria-live="polite"></p></div></div>`;
+<button type="button" class="l4-b g-jump" data-px="${qsx?.on ? 'qcont' : 'qgo'}">${t(qsx?.on ? 'gGo' : 'gStart').replace(/\s*›\s*$/, '')}</button></div>`;
   }
-  A.host.innerHTML = `<div class="px px-s"><div class="px-chips">${kinds.map(([k, n]) => `<button type="button" class="l4-b${sh.kind === k ? ' on' : ''}" data-px="kind:${k}">${t(n)}</button>`).join('')}</div>
-<p class="px-sub">${t(subK[sh.kind]!)}</p><div class="px-chips px-sr">${pick}${m && !ach.length ? '' : fmtB}</div>${body}${pk.open && !m ? pkPanel(A, C, op) : ''}</div>`;
+  const meta = empty ? t('emptyM') : `${t('expo', { w, h })} · ${t(m ? 'scanS' : 'scanK')}`;
+  A.host.innerHTML = `<div class="px px-s g-modal">${dlgHtml({ l: L_, k: 'px', title: t('shT2'), top, fmt: sh.fmt, meta, off: empty, empty: eh, extra: pk.open && !m ? pkPanel(A, C, op) : '' })}</div>`;
   if (pk.open) {
-    const pp = A.host.querySelector<HTMLElement>('.px-pk'), pb = A.host.querySelector<HTMLElement>('.px-pick'), hs = A.host.querySelector<HTMLElement>('.px-s');
-    if (pp && pb && hs) pp.style.top = `${pb.getBoundingClientRect().bottom - hs.getBoundingClientRect().top + 6}px`;
+    const pp = A.host.querySelector<HTMLElement>('.px-pk'), pb = A.host.querySelector<HTMLElement>('.px-pick'), hs = A.host.querySelector<HTMLElement>('.px-s .g-dlg');
+    if (pp && pb && hs) {
+      /* R44 S1b: the list opens under 选卡 and ends above 竖版/方版, inside the dialog, so the actions stay in view */
+      const sg = hs.querySelector<HTMLElement>('.g-seg'), r = hs.getBoundingClientRect(), top = pb.getBoundingClientRect().bottom + 6, sb = sg ? sg.getBoundingClientRect().top - 8 : innerHeight - 8;
+      Object.assign(pp.style, { top: `${top}px`, left: `${r.left + 12}px`, right: `${innerWidth - r.right + 12}px`, maxWidth: 'none', bottom: `${Math.max(8, innerHeight - Math.max(sb, top + 96))}px` });
+    }
     A.host.querySelector<HTMLInputElement>('.px-pq')?.focus({ preventScroll: true });
   }
   if (!m || ach.length) await preview(A, C, ach);
@@ -327,13 +341,9 @@ async function preview(A: PxApi, C: Record<string, Card>, ach: string[]) {
   Object.assign(box.dataset, { w: String(cv.width), h: String(cv.height), bytes: String(blob.size), text: words, url: shareUrl(), kind: sh.kind });
   box.innerHTML = `<img alt="${esc(words.split('\n')[0] ?? '')}" src="${bUrl}">`;
 }
-async function save() {
-  if (!blob) return; const f = new File([blob], `ai-explained-${sh.kind === 'm' ? 'progress' : sh.cid}-${sh.fmt}.png`, { type: 'image/png' });
-  R.add({ k: 'share', t: Date.now(), id: sh.kind === 'm' ? 'progress' : sh.cid });
-  const nav = navigator as Navigator & { canShare?: (d: object) => boolean; share?: (d: object) => Promise<void> };
-  try { if (nav.canShare?.({ files: [f] }) && nav.share) { await nav.share({ files: [f], url: shareUrl() }); return; } } catch { return; }
-  const a = document.createElement('a'); a.href = bUrl; a.download = f.name; document.body.appendChild(a); a.click(); a.remove();
-}
+const shName = () => `ai-explained-${sh.kind === 'm' ? 'progress' : sh.cid}-${sh.fmt}.png`;
+function save() { if (!blob) return; R.add({ k: 'share', t: Date.now(), id: sh.kind === 'm' ? 'progress' : sh.cid }); download(blob, bUrl, shName()); }
+async function shareSys() { if (!blob) return; R.add({ k: 'share', t: Date.now(), id: sh.kind === 'm' ? 'progress' : sh.cid }); await shareOut(blob, shName(), shareUrl(), t('shT2'), api!.host.querySelector<HTMLElement>('.px-cp'), L_); }
 async function copy() {
   const u = shareUrl(), out = api!.host.querySelector<HTMLElement>('.px-cp'); let ok = false;
   try { await navigator.clipboard.writeText(u); ok = true; } catch { /* no clipboard */ }
@@ -356,7 +366,7 @@ function qLand(A: PxApi) {
   }).join('');
   A.host.innerHTML = `<div class="px px-ql"><p class="px-sub">${t('qSub', { n: PATH.length })}</p>${lay}
 <details class="px-how"><summary><span>${tx(['合计约 ', 'About '], A.l)}${mmss(p.total)}${tx([' · 怎么算的', ' in all · how'], A.l)}</span></summary><p class="px-f">${t('qHow', { z: ZH_CPM, e: EN_WPM, s: LOOK })}</p></details>
-<div class="px-row">${on ? `<button type="button" class="l4-b gold" data-px="qcont">${t('qCont', { i: s!.i + 1 })}</button><button type="button" class="l4-b" data-px="qgo">${t('qRe')}</button>` : `<button type="button" class="l4-b gold big" data-px="qgo">${t('qGo')}</button>`}</div></div>`;
+<div class="px-row">${on ? `<button type="button" class="l4-b g-jump px-qb" data-px="qcont">${t('qCont', { i: s!.i + 1 })}</button><button type="button" class="l4-b" data-px="qgo">${t('qRe')}</button>` : `<button type="button" class="l4-b g-jump big px-qb" data-px="qgo">${t('qGo')}</button>`}</div></div>`;
   done(A, 'Q');
 }
 function qDone(A: PxApi) {
@@ -370,17 +380,17 @@ function qDone(A: PxApi) {
   A.host.innerHTML = `<div class="px px-qd"><h2 class="px-big">🎉 ${tx(['走完了快速路径', 'Quick path done'], A.l)}</h2>${sec != null ? `<p class="px-sub">${tx(['用时 ', 'Took '], A.l)}${mmss(sec)}${tx(['（预计 ', ' (estimate '], A.l)}${mmss(p.total)}${tx(['）', ')'], A.l)}</p>` : `<p class="px-sub">${t('qPlan', { t: mmss(p.total) })}</p>`}
 <div class="px-card"><b>${tx(['走过的 5 层', 'The 5 layers'], A.l)}</b>${lv}</div>
 ${cs.length ? `<div class="px-card"><b>${tx([`打开过的 ${cs.length} 张知识卡`, `${cs.length} card${cs.length > 1 ? 's' : ''} opened`], A.l)}</b><div class="px-row l">${cs.map(([h, c]) => `<button type="button" class="l4-b" data-go="${h}~${c}">${esc(tx(STOP_CARD[c!]!, A.l))}</button>`).join('')}</div></div>` : ''}
-<div class="px-col"><button type="button" class="l4-b gold big" data-go="#P/q1">${tx([`做第1层小测（${QUIZ[1].length} 题）`, `Layer 1 quiz (${QUIZ[1].length} questions)`], A.l)}</button><button type="button" class="l4-b big" data-go="#S/K06.p">${tx(['生成知识点卡', 'Make a card picture'], A.l)}</button></div></div>`;
+<div class="px-col"><button type="button" class="l4-b g-jump big" data-go="#P/q1">${tx([`做第1层小测（${QUIZ[1].length} 题）`, `Layer 1 quiz (${QUIZ[1].length} questions)`], A.l)}</button><button type="button" class="l4-b big" data-go="#S/K06.p">${tx(['生成知识点卡', 'Make a card picture'], A.l)}</button></div></div>`;
   done(A, 'Q/done');
 }
 export function qStart(go: (h: string) => void) { LS.set(QKEY, { on: true, i: 0, t0: Date.now(), max: 0 } satisfies QState); const [h, c] = PATH[0]!; go(h + (c ? '~' + c : '')); }
 
 /* ---------- events ---------- */
 function onClick(e: Event) {
+  if (api && (e.target as HTMLElement).matches('.px-s.g-modal')) { if (history.length > 1) history.back(); else api.go('#home'); return; }
   const b = (e.target as HTMLElement).closest<HTMLElement>('[data-px]'); if (!b || !api) return; const [k, v] = (b.dataset.px ?? '').split(':') as [string, string | undefined]; const A = api;
   if (k === 'pick' && qs && qs.pick[qs.i] == null) { const q = QUIZ[qs.lv][qs.i]!, p = Number(v); qs.pick[qs.i] = p; R.add({ k: 'ans', t: Date.now(), id: q.id, ok: p === q.a });
     if (qs.pick.every((x) => x != null)) R.add({ k: 'quiz', t: Date.now(), lv: qs.lv, right: QUIZ[qs.lv].filter((z, i) => qs!.pick[i] === z.a).length, total: QUIZ[qs.lv].length }); void quiz(A, qs.lv); return; }
-  if (k === 'next' && qs) { qs.i++; void quiz(A, qs.lv); return; }
   if (k === 'again' && qs) { qs = { lv: qs.lv, i: 0, pick: QUIZ[qs.lv].map(() => null) }; void quiz(A, qs.lv); return; }
   const x = curId.slice(2);
   if (k === 'qry') { xs.q = Number(v); xs.qtxt = ''; A.host.querySelectorAll('[data-px^="qry:"]').forEach((n) => n.classList.toggle('on', n === b)); const inp = A.host.querySelector<HTMLInputElement>('[data-xin="q"]'); if (inp) inp.value = ''; res(x); ranExp(x, tx(QRY[xs.q]!, 'zh')); return; }
@@ -391,7 +401,8 @@ function onClick(e: Event) {
   if (k === 'pk') { pk = { open: !pk.open, q: '' }; void share(A, ''); return; }
   if (k === 'pc' && v) { sh.cid = v; sh.auto = false; pk = { open: false, q: '' }; void share(A, ''); return; }
   if (k === 'fmt') { sh.fmt = v as typeof sh.fmt; void share(A, ''); return; }
-  if (k === 'save') { void save(); return; }
+  if (k === 'save') { save(); return; }
+  if (k === 'share') { void shareSys(); return; }
   if (k === 'copy') { void copy(); return; }
   if (k === 'close') { if (history.length > 1) history.back(); else A.go('#home'); return; }
   if (k === 'qgo') { qStart(A.go); return; }

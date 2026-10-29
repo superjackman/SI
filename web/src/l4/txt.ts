@@ -58,7 +58,7 @@ export const UI = {
   s1: ['① 名字', '① Name'], s2: ['② 用来做什么', '② What it is for'], s3: ['③ 内部由哪些部分构成', '③ What it is made of'], s4: ['④ 运行原理', '④ How it works'], s5: ['⑤ 为什么这么设计', '⑤ Why it is designed so'],
   litNote: ['亮的＝本卡讲的部分', 'Lit = what this card covers'],
   entTr: ['看它怎么训练', 'Watch it train'], entUs: ['看它怎么使用', 'Watch it answer'], entMy: ['我的训练题', 'Train your own'],
-  hint0: ['点带 + 的块可就地展开', 'Tap a box with + to open it here'], hintX: ['点带 + 的块可就地展开；点左侧原图收起', 'Tap + to open; tap the left diagram to close'],
+  hint0: ['› 进入下一层 · ⓘ 当前页看说明 · 底部切换上一步/下一步', '› new page · ⓘ shown here · Back/Next below'], hintX: ['› 进入下一层 · ⓘ 当前页看说明 · 点左侧原图收起', '› new page · ⓘ shown here · tap left diagram to close'],
   hintX3: ['已到最底层；点「看数学」进第5层', 'The bottom; tap “See the maths” for layer 5'], hintX2: ['点黄框格子继续展开', 'Tap the gold cell to go deeper'],
   hintS: ['点「下一步」继续', 'Tap Next to go on'], up: ['‹ 上一级', '‹ Up'],
   ex: ['真实数字', 'Real numbers'], exN: ['本站模型现算', 'computed live by this site’s model'],

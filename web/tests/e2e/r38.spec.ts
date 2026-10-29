@@ -96,11 +96,15 @@ test.describe('R38 explorer', () => {
     await page.locator('.l4-kb').click(); const sh = page.locator('.l4-sheet');
     await expect(sh).toHaveAttribute('data-card', 'K06'); await expect(sh).toHaveAttribute('data-p', '1');
     await expect(sh.locator('.l4-kh')).toHaveText([/①/, /②/, /③/, /④/]);
-    await sh.locator('[data-s="flip"]').click(); await expect(sh).toHaveAttribute('data-p', '2'); await expect(sh.locator('.l4-kh')).toHaveText([/⑤/]);
+    await expect(sh.locator('.g-prev[data-s="flip"]')).toBeDisabled();
+    await sh.locator('.g-next[data-s="flip"]').click(); await expect(sh).toHaveAttribute('data-p', '2'); await expect(sh.locator('.l4-kh')).toHaveText([/⑤/]);
+    await expect(sh.locator('.g-next[data-s="flip"]')).toBeDisabled(); await expect(sh.locator('.g-prev[data-s="flip"]')).toBeEnabled();
     await expect(sh.locator('.t5').first()).toBeVisible();
-    await sh.locator('[data-s="share"]').click(); const img = page.locator('.l4-shr');
+    await sh.locator('[data-s="share"]').click(); const dlg = page.locator('.l4-shm'), img = dlg.locator('.g-pv');
+    await expect(dlg.locator('.g-dlg')).toBeVisible();
     await expect(img).toHaveAttribute('data-w', '1080'); await expect(img).toHaveAttribute('data-h', '1920');
-    await page.locator('[data-f="post"]').click(); await expect(img).toHaveAttribute('data-h', '1350');
+    await dlg.locator('[data-m="fmt:post"]').click(); await expect(dlg.locator('[data-m="fmt:post"]')).toHaveAttribute('aria-checked', 'true'); await expect(img).toHaveAttribute('data-h', '1350');
+    await dlg.locator('.g-x').click(); await expect(dlg).toHaveCount(0); await expect(sh).toBeVisible();
     await sh.locator('[data-s="math"]').click(); await expect(page.locator('.l4-sheet')).toHaveAttribute('data-card', /^KM/);
     await page.locator('.l4-sheet [data-s="close"]').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0);
   });
@@ -115,7 +119,7 @@ test.describe('R38 explorer', () => {
   });
   test('see it answer: 9 steps through the real forward pass, ending with 蓝', async ({ page }) => {
     await open(page, './?lang=zh#L4/us/1');
-    for (let i = 2; i <= 9; i++) { await page.locator('[data-a="next"]').click(); await expect(page).toHaveURL(new RegExp(`us/${i}$`)); await expect(page.locator('.l4-dots i.on')).toHaveCount(1); }
+    for (let i = 2; i <= 9; i++) { await page.locator('[data-a="next"]').click(); await expect(page).toHaveURL(new RegExp(`us/${i}$`)); await expect(page.locator('.l4-nav .g-dots .on')).toHaveCount(1); await expect(page.locator('.l4-nav .g-n')).toHaveText(`${i} / 9`); }
     await expect(page.locator('.l4-pn')).toContainText('蓝'); await expect(page.locator('.l4-chips')).toContainText('蓝');
   });
   test('my training: write lines, train 300 real steps (pause/resume), then ask it', async ({ page }) => {
@@ -143,11 +147,12 @@ test.describe('R38 explorer', () => {
   test('map lists every page and marks seen ones; progress counts them; language switch keeps the page', async ({ page }) => {
     const go = async (hs: string) => { await page.evaluate(() => document.querySelectorAll('.l4-ms').forEach((e) => e.remove())); await page.evaluate((x) => { location.hash = x; }, hs); await expect(page).toHaveURL(new RegExp(hs.replace(/\//g, '\\/') + '$')); };
     await open(page, './?lang=zh#L4/us/2');
-    await page.locator('[data-a="map"]').click(); expect(await page.locator('.l4-ms a').count()).toBeGreaterThanOrEqual(19);
+    await page.locator('[data-a="menu"]').click(); expect(await page.locator('.l4-ms a').count()).toBeGreaterThanOrEqual(19);
     await expect(page.locator('.l4-ms a.here')).toHaveCount(1);
     await page.locator('.l4-ms a[href$="#L4/tr/2"]').click(); await expect(page).toHaveURL(/tr\/2$/);
-    await go('#L4/tr/3'); await page.locator('[data-a="map"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
-    await go('#L4/tr/2'); await page.locator('[data-a="prog"]').click(); await expect(page).toHaveURL(/#R$/);
+    await go('#L4/tr/3'); await page.locator('[data-a="menu"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
+    await go('#L4/tr/2'); await page.locator('[data-a="menu"]').click(); await page.locator('.l4-ms [data-t="prog"]').click();
+    await expect(page.locator('.l4-ms .l4-mpg .rw')).toHaveCount(5); await page.locator('.l4-ms .l4-mpg [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/);
     await expect.poll(async () => Number(/\d+/.exec((await page.locator('.px-lvr[data-go="#L4"] i').first().textContent()) ?? '')?.[0] ?? 0)).toBeGreaterThanOrEqual(2); /* R42: per-layer seen count */
     await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
     await go('#L4/tr/2');

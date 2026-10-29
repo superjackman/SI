@@ -6,6 +6,7 @@ import { geo, type G } from './geo';
 import { LX_SEL, layerOf } from './ids';
 import type { LxStage } from './scene';
 import type { LxPg } from './types';
+import { gram } from '../l4/gram';
 
 export async function lxPage(id: string, l: L): Promise<LxPg> {
   const n = layerOf(id), m = n <= 2 ? await import('./p1') : n === 3 ? await import('./p3') : await import('./p5');
@@ -52,7 +53,7 @@ export async function lxDraw(root: HTMLElement, stg: HTMLElement, pg: LxPg, l: L
   if (pg.mode === 'chart' || !pg.v) {
     const s = await stage(stg, flat, pick, root); s.el.style.display = 'none';
     const ch = add('l4-pn xl lx-pn lx-ch', 6, 4, W - 12, null, pg.chart ?? ''); ch.dataset.page = pg.id;
-    const tp = add('l4-pn lx-pn', 6, 0, W - 12, null, pg.panel); tp.dataset.page = pg.id;
+    const tp = add('l4-pn lx-pn', 6, 0, W - 12, null, pg.panel); tp.dataset.page = pg.id; gram(ch); gram(tp);
     /* the text keeps its natural height; the picture gets the rest and scales down as a whole (never below 0.6) */
     let max = Math.max(Math.round(H * 0.45), H - tp.offsetHeight - 14);
     /* short screens: the text first goes to its tightest readable setting, then the pictures shrink */
@@ -115,8 +116,8 @@ function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (
   for (const n of g.nodes) {
     const d = D.nodes.find((q) => q.id === n.id)!, two = !!d.s || !!d.lines;
     const html = d.lines ? d.lines.map((t, i) => `<span class="${i ? 's' : 't'}">${esc(T(t))}</span>`).join('') : `<span class="t">${esc(T(d.t))}</span>${d.s ? `<span class="s">${esc(T(d.s))}</span>` : ''}`;
-    const st = d.tag ? 'tag' : n.st, e = add(`l4-lb lx-lb st-${st}${n.plus ? ' plus' : ''}${two ? ' two' : ''}${d.pill ? ' pill' : ''}`, n.x, n.y, n.w, n.h, html + (n.plus ? `<i aria-hidden="true">${d.minus ? '−' : '+'}</i>` : ''), 'button');
-    (e as HTMLButtonElement).type = 'button'; e.dataset.lx = n.id; e.setAttribute('aria-label', T(d.t) + (d.s ? ' ' + T(d.s) : '') + (n.plus ? ' +' : ''));
+    const st = d.tag ? 'tag' : n.st, e = add(`l4-lb lx-lb st-${st}${n.plus ? ' plus' : ''}${two ? ' two' : ''}${d.pill ? ' pill' : ''}`, n.x, n.y, n.w, n.h, html + (n.plus ? '<i class="g-bdg" aria-hidden="true">›</i>' : ''), 'button');
+    (e as HTMLButtonElement).type = 'button'; e.dataset.lx = n.id; e.setAttribute('aria-label', T(d.t) + (d.s ? ' ' + T(d.s) : '') + (n.plus ? (d.minus ? T(['，收起', ', closes']) : T(['，进入细节页', ', opens its page'])) : ''));
     if (d.tag) e.style.setProperty('--tc', d.tag);
     if (n.plus) e.setAttribute('aria-expanded', String(n.st === 'sel'));
     if (n.h * 1 < 22) e.style.fontSize = '12px';
@@ -127,12 +128,13 @@ function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (
       if (over()) { e.dataset.tight = '1'; tight = true; }
     });
   }
+  const fl = (s: string) => (/\s*\+$/.test(s) ? esc(s.replace(/\s*\+$/, '')) + ' <i class="g-bdg" aria-hidden="true">›</i>' : esc(s));
   for (const f of D.frames) {
     const gf = g.frames.find((q) => q.id === f.id)!, on = gf.st === 'lit' || gf.st === 'sel', go = pg.go[f.id];
-    const e = add(`lx-fl${on ? ' on' : ''}${f.tl ? '' : ' c'}`, f.tl ? gf.x + (f.tl === 2 ? 4 : 8) : gf.x, gf.y + 2, f.tl ? null : gf.w, null, esc(T(f.t)), go ? 'button' : 'div');
+    const e = add(`lx-fl${on ? ' on' : ''}${f.tl ? '' : ' c'}`, f.tl ? gf.x + (f.tl === 2 ? 4 : 8) : gf.x, gf.y + 2, f.tl ? null : gf.w, null, fl(T(f.t)), go ? 'button' : 'div');
     if (go) { (e as HTMLButtonElement).type = 'button'; e.dataset.lx = f.id; }
     if (e.scrollHeight > e.clientHeight + 1) e.style.lineHeight = e.scrollHeight + 'px'; /* a fallback glyph (×) can sit taller than the line */
-    if (f.tl && e.offsetWidth > gf.w - 14) { if (f.ts) e.textContent = T(f.ts); if (e.offsetWidth > gf.w - 14) e.style.letterSpacing = '-0.06em'; if (e.offsetWidth > gf.w - 4) e.dataset.over = '1'; }
+    if (f.tl && e.offsetWidth > gf.w - 14) { if (f.ts) e.innerHTML = fl(T(f.ts)); if (e.offsetWidth > gf.w - 14) e.style.letterSpacing = '-0.06em'; if (e.offsetWidth > gf.w - 4) e.dataset.over = '1'; }
   }
   for (const b of g.labels) {
     const e = add(`lx-el st-${b.st}${b.c ? ' ' + b.c : ''}${b.v ? ' v' : ''}`, b.x, b.y, null, null, esc(T(b.t)));
@@ -141,6 +143,7 @@ function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (
   if (g.panel) {
     const P = g.panel, e = add(`l4-pn lx-pn${pg.xl ? ' xl' : ''}`, P.x, P.y, P.w, P.h, pg.panel); e.dataset.page = pg.id;
     if (pg.mode === 'full') { e.style.height = 'auto'; e.style.maxHeight = `${P.h}px`; }
+    gram(e); /* R44: give "… ›" links their jump badge before measuring, so the fit sees the final size */
     ok = fit(e);
   }
   return { g, ok, tight };
