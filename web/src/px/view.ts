@@ -45,7 +45,7 @@ const W: Record<string, Tx> = {
   kKs: ['一张卡只讲一个知识点：3 个要点 + 二维码，不放题目。', 'One knowledge point per card: 3 points + a QR code, no quiz questions.'],
   kMs2: ['你真实做到的事。完成一个小目标后就能生成。', 'Only what you really did. Reach one small goal to make it.'],
   expo: ['导出 {w}×{h} 图片', 'Exports a {w}×{h} image'], scanK: ['扫码直达这张卡', 'The QR opens this card'], scanS: ['扫码打开这个网站', 'The QR opens this site'],
-  pkS: ['🔍 搜索卡片，如「注意力」', '🔍 Search cards, e.g. “attention”'], pkSeen: ['我看过的', 'Ones I opened'], pkRec: ['最近看过 · {n}', 'Recent · {n}'], pkNo: ['没有找到', 'Nothing found'],
+  pkS: ['🔍 搜索卡片，如「注意力」', '🔍 Search cards, e.g. “attention”'], pkSeen: ['我看过的', 'Ones I opened'], pkRec: ['最近看过{n}', 'Recently opened{n}'], pkNo: ['没有找到', 'Nothing found'],
   gT: ['先完成一个小目标', 'Reach one small goal first'], gS: ['成就卡只写真实做到的事', 'A progress card only shows what you really did'],
   g1: ['走完 10 分钟快速路径', 'Finish the 10-minute quick path'], g1v: ['{i}/{n} 站', '{i}/{n} stops'],
   g2: ['任一层小测答对 ≥3/4', 'Score ≥3/4 on any layer quiz'], g2v: ['最好 {r}/{n}', 'best {r}/{n}'],

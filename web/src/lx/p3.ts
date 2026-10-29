@@ -29,7 +29,7 @@ const SUB: Record<'par' | 'u3', [string, Tx, Tx][]> = {
   u3: [['x1', ['查词向量 ⊕ 位置', 'Embed ⊕ position'], ['词向量 ⊕ 位置', 'Embed ⊕ pos.']], ['x2', ['解码块 × N 层', 'Decoder × N'], ['解码块 × N', 'Decoder × N']], ['x3', ['线性层 + Softmax', 'Linear + Softmax'], ['线性 + Softmax', 'Lin. + Softmax']]],
 };
 const FR: Record<'t' | 'u', Tx> = { t: ['训练：只做一次，很贵', 'Training: done once, costly'], u: ['使用：每次提问都走一遍', 'Use: runs for every question'] };
-const FRS: Record<'t' | 'u', Tx> = { t: ['训练：只做一次，很贵', 'Training: once, costly'], u: ['使用：每次提问都走一遍', 'Use: every question'] };
+const FRS: Record<'t' | 'u', Tx> = { t: ['训练：一次，很贵', 'Training: once, costly'], u: ['使用：每次提问', 'Use: every question'] };
 type M3 = 'full' | 'left' | 'cmp';
 const LAY: Record<M3, { x1: number; x2: number; y0: number; bh: number; g: number; hdr: number; mid: number }> = {
   full: { x1: 64, x2: 296, y0: 68, bh: 21, g: 4, hdr: 21, mid: 4 },

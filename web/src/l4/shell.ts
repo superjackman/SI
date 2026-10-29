@@ -127,7 +127,7 @@ export function start(doc: Document = document, win: Window = window) {
   function drawHome() {
     const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}</button>`; }).join('');
     const hr = (go: string, k: string, s: string, pri = false) => `<button type="button" class="l4-hr${pri ? ' pri' : ''}" data-go="${go}"><b>${k}</b><span>${s}</span></button>`;
-    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make a card'], lang))}</div>${goCard()}`;
+    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make cards'], lang))}</div>${goCard()}`;
   }
   /* R42 G1 / G1b: a first visit gets the quick path; a returning reader gets 继续上次 with that layer's progress */
   function goCard() {

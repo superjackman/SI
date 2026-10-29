@@ -30,9 +30,9 @@ export function lxMini(c: MiniSpec, l: L): string {
     H = 208;
   } else if (c.mk === 'l2') {
     const n = (k: string) => tx(N2[k]!, l);
-    s.push(b(34, 2, 60, 22, n('per'), on('per')), b(80, 34, 46, 22, n('pla'), on('pla')), b(2, 34, 46, 22, n('mem'), on('mem')), b(30, 64, 68, 34, n('llm'), on('llm')), b(2, 106, 46, 22, n('obs'), on('obs')), b(72, 106, 54, 22, n('too'), on('too')));
-    s.push(a('M94 13 Q103 13 103 31', ao('r1')), a('M103 56 V103', ao('r2')), a('M72 117 H51', ao('r3')), a('M25 106 V59', ao('r4')), a('M25 34 Q25 13 31 13', ao('r5')));
-    for (const d of ['M64 24 V62', 'M80 49 L84 62', 'M48 49 L44 62', 'M48 106 L52 98', 'M80 106 L76 98']) s.push(`<path d="${d}" stroke="#4a6ab8" stroke-width="1" stroke-dasharray="2 2"/>`);
+    s.push(b(34, 2, 60, 22, n('per'), on('per')), b(80, 34, 46, 22, n('pla'), on('pla')), b(2, 34, 50, 22, n('mem'), on('mem')), b(30, 64, 68, 34, n('llm'), on('llm')), b(2, 106, 58, 22, n('obs'), on('obs')), b(72, 106, 54, 22, n('too'), on('too')));
+    s.push(a('M94 13 Q103 13 103 31', ao('r1')), a('M103 56 V103', ao('r2')), a('M72 117 H63', ao('r3')), a('M25 106 V59', ao('r4')), a('M25 34 Q25 13 31 13', ao('r5')));
+    for (const d of ['M64 24 V62', 'M80 49 L84 62', 'M50 49 L46 62', 'M52 106 L54 98', 'M80 106 L76 98']) s.push(`<path d="${d}" stroke="#4a6ab8" stroke-width="1" stroke-dasharray="2 2"/>`);
     if (on('loop')) s.push(`<text x="64" y="146" text-anchor="middle" font-size="12" fill="#ffd77a">${tx(['↺ 转到完成', '↺ until done'], l)}</text>`);
     H = on('loop') ? 150 : 132;
   } else {

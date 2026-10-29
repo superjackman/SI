@@ -63,7 +63,7 @@
 .px-s > .px-chips:first-child .l4-b { flex: 1 1 auto; min-height: 40px; padding: 0 10px; }
 .px-sr { flex-wrap: nowrap; } .px-sr .l4-b { flex: none; min-height: 44px; padding: 0 10px; }
 .px-pick { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 10px; border: 1px solid #3a63d0; border-radius: 12px; background: #0c1a3d; color: #e6eeff; font: inherit; font-size: 14px; text-align: left; }
-.px-pick span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .px-pick i { font-style: normal; color: #9fb2dc; font-size: 13px; } .px-pick b { flex: none; font-size: 12px; }
+.px-pick span { flex: 1; min-width: 0; padding: 4px 0; line-height: 1.25; overflow-wrap: anywhere; } .px-pick i { display: block; font-style: normal; color: #9fb2dc; font-size: 12px; } .px-pick b { flex: none; font-size: 12px; }
 .px-sv { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 46%) minmax(0, 1fr); gap: 12px; align-items: start; padding-top: 6px; }
 .px-prev { min-height: 120px; display: flex; justify-content: center; align-items: flex-start; overflow: hidden; }
 .px-prev img { width: 100%; height: auto; border-radius: 12px; border: 1px solid #3a63d0; box-shadow: 0 6px 24px #0008; }
@@ -76,7 +76,7 @@
 .px-gb { display: block; height: 6px; border-radius: 3px; background: #1b2a55; overflow: hidden; } .px-gb i { display: block; height: 100%; border-radius: 3px; background: #ffd34d; }
 .px-goal .l4-b.gold { min-height: 44px; margin-top: 4px; }
 .px-s .l4-b[disabled] { opacity: .45; pointer-events: none; }
-.px-pk { position: absolute; z-index: 5; left: 0; right: 0; top: 76px; bottom: 4px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid #3a63d0; border-radius: 14px; background: #0a1430; box-shadow: 0 10px 30px #000a; }
+.px-pk { position: absolute; z-index: 12; left: 0; right: 0; top: 76px; bottom: 4px; display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid #3a63d0; border-radius: 14px; background: #0a1430; box-shadow: 0 10px 30px #000a; }
 .px-pq { min-height: 44px; border-radius: 10px; border: 1px solid #3a63d0; background: #0c1a3d; color: #e6eeff; font: inherit; font-size: 15px; padding: 0 12px; }
 .px-pl { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .px-pg h4 { margin: 8px 0 2px; font-size: 13px; color: #9cc8ff; } .px-pg h4:first-child { margin-top: 0; }
@@ -107,3 +107,7 @@ html:lang(en) .px-it { flex-wrap: wrap; row-gap: 2px; padding: 6px 8px; }
 html:lang(en) .px-it i { margin-left: auto; }
 html:lang(en) .px-it b { order: 3; flex: 1 1 100%; overflow-wrap: normal; }
 html:lang(en) .px-it b::first-letter { text-transform: uppercase; }
+/* R42b: a long layer name keeps one line; the page/card count drops under it instead of squeezing it */
+.px-lvr .px-row.l { flex-wrap: wrap; row-gap: 1px; } .px-lvr .px-row.l b { flex: 1 0 auto; max-width: 100%; } .px-lvr .px-row.l i { margin-left: auto; }
+/* R42b: narrow zh tiles: the name gets its own line too (as in en), never split mid-name */
+@media (max-width: 480px) { html:lang(zh) .px-it { flex-wrap: wrap; row-gap: 2px; padding: 6px 8px; } html:lang(zh) .px-it i { margin-left: auto; } html:lang(zh) .px-it b { order: 3; flex: 1 1 100%; } }

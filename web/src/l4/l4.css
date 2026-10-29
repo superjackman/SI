@@ -1,5 +1,6 @@
 /* R38 L4 explorer — portrait phone, 360×640 … 430×932. All text ≥ 12px. */
 html.l4-mode, html.l4-mode body { margin: 0; height: 100%; background: #050a1a; overflow: hidden; overscroll-behavior: none; }
+html.l4-mode body { text-wrap: pretty; } /* R42b: no one-glyph last lines */
 html.l4-mode #root { display: none; }
 .l4 { position: fixed; inset: 0; display: flex; flex-direction: column; color: #e6eeff; font: 14px/1.4 system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   background: #050a1a linear-gradient(rgba(63,111,255,.07) 1px, transparent 1px) 0 0/20px 20px, linear-gradient(90deg, rgba(63,111,255,.07) 1px, transparent 1px) 0 0/20px 20px;
@@ -15,8 +16,8 @@ html.l4-mode #root { display: none; }
 .l4-tt.l4-brand { display: block; padding: 0 3px; white-space: nowrap; line-height: 1.25; }
 .l4-tt.l4-brand .l4-bsub { line-height: 1.3; }
 .l4-bsub { display: block; font-size: 12px; font-weight: 400; color: #9fb3e6; line-height: 1.1; margin-top: 1px; }
-.l4-chips { display: flex; gap: 2px; align-items: center; flex-wrap: nowrap; }
-.l4-chips .ch { display: inline-grid; place-items: center; min-width: 22px; height: 24px; padding: 0 2px; border-radius: 6px; border: 1px solid #3a63d0; background: #0c1a3d; font-size: 14px; }
+.l4-chips { display: flex; gap: 2px; align-items: center; flex-wrap: nowrap; min-width: 0; max-width: 100%; }
+.l4-chips .ch { display: inline-grid; place-items: center; flex: 0 1 22px; min-width: 18px; height: 24px; padding: 0 2px; border-radius: 6px; border: 1px solid #3a63d0; background: #0c1a3d; font-size: 14px; }
 .l4-chips .ch.g { border-color: #ffd77a; color: #ffe08a; box-shadow: 0 0 8px #ffc86080; }
 .l4-chips .arr { color: #9cc8ff; padding: 0 2px; font-size: 13px; }
 .l4-cr { flex: none; display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 3px 8px; }
@@ -129,7 +130,7 @@ html.l4-mode #root { display: none; }
 .l4-lv.live { background: linear-gradient(#2a5ae0, #1c3f9e); color: #fff; filter: drop-shadow(0 0 10px #3f6fff); }
 .l4-lv.live .s { color: #ffe08a; font-weight: 700; }
 .l4-hb { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
-.l4-hr { width: 76px; height: 72px; border-radius: 36px; border: 1px solid #3a63d0; background: #0c1a3d; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #e6eeff !important; padding: 0 4px; text-align: center; }
+.l4-hr { width: 76px; height: 72px; border-radius: 36px; border: 1px solid #3a63d0; background: #0c1a3d; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #e6eeff !important; padding: 0 2px; text-align: center; }
 .l4-hr b { font-size: 20px; line-height: 1.3; } [data-lang="en"] .l4-hr b { font-size: 15px; } .l4-hr span { font-size: 12px; color: #b7c6ea; line-height: 1.2; }
 .l4-hr.pri { background: #2350c8; border-color: #9cc8ff; box-shadow: 0 0 14px #3f6fffaa; } .l4-hr.pri span { color: #e6eeff; }
 .l4-soon { margin: auto; text-align: center; max-width: 300px; } .l4-soon h2 { margin: 4px 0; font-size: 20px; } .l4-soon .n { margin: 0; color: #9cc8ff; } .l4-soon .tag { display: inline-block; border: 1px solid #ffd77a; color: #ffd77a; border-radius: 10px; padding: 0 10px; font-size: 12px; }

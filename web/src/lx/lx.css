@@ -41,12 +41,12 @@ button.lx-pl { margin-top: 4px; }
 /* layer 3 */
 .lx-el.v { writing-mode: vertical-rl; letter-spacing: 1px; line-height: 1.3; }
 .lx-el.gd { color: #ffe08a; } .lx-el.gd0 { color: #a08a50; }
-.lx-cps { display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: nowrap; }
-.lx-cps .c { display: inline-flex; align-items: center; justify-content: center; min-width: 21px; height: 24px; padding: 0 2px; border-radius: 6px; border: 1px solid #34509a; background: #0b1636; font-size: 14px; font-weight: 700; color: #c4d2f2; }
+.lx-cps { display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: nowrap; min-width: 0; max-width: 100%; }
+.lx-cps .c { display: inline-flex; align-items: center; justify-content: center; flex: 0 1 21px; min-width: 18px; height: 24px; padding: 0 2px; border-radius: 6px; border: 1px solid #34509a; background: #0b1636; font-size: 14px; font-weight: 700; color: #c4d2f2; }
 .lx-cps .c.on { border-color: #9cc8ff; background: #1c3f9e; color: #fff; }
 .lx-cps .c.g { border-color: #ffc860; background: #3a2a0a; color: #ffe08a; }
-.lx-cps .c.out { border-color: #ffc860; color: #ffe08a; min-width: 24px; }
-.lx-cps > i { font-style: normal; color: #8fe3ff; margin: 0 3px; font-weight: 700; }
+.lx-cps .c.out { border-color: #ffc860; color: #ffe08a; flex-basis: 24px; min-width: 20px; }
+.lx-cps > i { font-style: normal; color: #8fe3ff; margin: 0 2px; font-weight: 700; }
 .lx-pn .bars { display: grid; grid-template-columns: auto 60px auto; gap: 1px 6px; align-items: center; margin: 2px 0; }
 .lx-pn .bars > span { display: block; height: 8px; } .lx-pn .bars > span > i { display: block; height: 100%; min-width: 2px; border-radius: 4px; background: linear-gradient(90deg, #3f6fff, #8fe3ff); }
 .lx-pn .tks { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; margin: 3px 0; align-items: center; }
@@ -67,3 +67,5 @@ button.lx-pl { margin-top: 4px; }
 .lx-pn .fx { font-family: 'Noto Sans Mono CJK SC', ui-monospace, monospace; color: #ffe9b0; }
 .lx-pn .mono { font-family: 'Noto Sans Mono CJK SC', ui-monospace, monospace; }
 .lx-pn sub, .lx-pn sup { font-size: max(12px, .75em); line-height: 0; }
+/* R42b: a chart page that cannot fit without shrinking labels under 12 px scrolls instead */
+.l4-stg[data-scr] { overflow-y: auto; overscroll-behavior: contain; } .lx-sp { position: absolute; visibility: hidden; pointer-events: none; }

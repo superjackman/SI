@@ -31,8 +31,19 @@ export function fit(e: HTMLElement, from = 12.5) {
   return !over();
 }
 
+/** the scale at which this picture's smallest label is just 12 px, relative to its current size */
+function svgFloor(v: SVGSVGElement): number {
+  const w = v.getBoundingClientRect().width, vb = v.viewBox.baseVal, fs = Math.min(...[...v.querySelectorAll('text')].map((t) => parseFloat(getComputedStyle(t).fontSize)));
+  return vb && vb.width && w && isFinite(fs) ? 12.05 * vb.width / (fs * w) : 0.6;
+}
+/** whatever the final size, no label of this picture is drawn under 12 px */
+export function svgMin12(v: SVGSVGElement): void {
+  const m = v.getScreenCTM(), s = m ? Math.sqrt(Math.abs(m.a * m.d - m.b * m.c)) : 1; if (!s) return;
+  v.querySelectorAll<SVGTextElement>('text').forEach((t) => { const f = parseFloat(getComputedStyle(t).fontSize); if (f * s < 12) t.style.fontSize = (12.05 / s).toFixed(2) + 'px'; });
+}
+
 export async function lxDraw(root: HTMLElement, stg: HTMLElement, pg: LxPg, l: L, flat: boolean, pick: (id: string) => void): Promise<void> {
-  stg.querySelectorAll(LX_SEL).forEach((e) => e.remove());
+  stg.querySelectorAll(LX_SEL).forEach((e) => e.remove()); delete stg.dataset.scr; stg.scrollTop = 0;
   const bb = stg.getBoundingClientRect(), W = Math.round(bb.width), H = Math.round(bb.height), T = (t: Tx) => t[l === 'zh' ? 0 : 1];
   const add = (cls: string, x: number, y: number, w: number | null, h: number | null, html: string, tag = 'div') => {
     const e = document.createElement(tag); e.className = cls; Object.assign(e.style, { left: x + 'px', top: y + 'px', ...(w != null ? { width: w + 'px' } : {}), ...(h != null ? { height: h + 'px' } : {}) });
@@ -47,32 +58,57 @@ export async function lxDraw(root: HTMLElement, stg: HTMLElement, pg: LxPg, l: L
     /* short screens: the text first goes to its tightest readable setting, then the pictures shrink */
     if (ch.offsetHeight > max) { Object.assign(tp.style, { fontSize: '12px', lineHeight: '1.3' }); max = Math.max(Math.round(H * 0.45), H - tp.offsetHeight - 14); }
     const svs = [...ch.querySelectorAll<SVGSVGElement>('svg.lx-svg')], exs = [...ch.children].filter((e): e is HTMLElement => e instanceof HTMLElement && !e.querySelector('svg') && !!e.querySelector('table, .ib'));
-    if (ch.offsetHeight > max && svs.length + exs.length) {
-      const sh = [...svs, ...exs].reduce((a, v) => a + v.getBoundingClientRect().height, 0), k = Math.max(0.6, (sh - (ch.offsetHeight - max)) / sh);
-      svs.forEach((v) => { v.style.width = v.getBoundingClientRect().width * k + 'px'; });
-      exs.forEach((e) => { e.style.zoom = String(k); });
+    /* R42b: pictures shrink only while their smallest label stays at 12 px or more (tables and boxes never shrink: their text is 12 px already) */
+    if (ch.offsetHeight > max && svs.length) {
+      const sh = svs.reduce((a, v) => a + v.getBoundingClientRect().height, 0), fl = Math.min(1, Math.max(0.6, ...svs.map(svgFloor)));
+      const k = Math.max(fl, (sh - (ch.offsetHeight - max)) / sh);
+      if (k < 1) svs.forEach((v) => { v.style.width = v.getBoundingClientRect().width * k + 'px'; });
     }
-    if (ch.offsetHeight > max && !root.dataset.cmp) { root.dataset.cmp = '1'; return lxDraw(root, stg, pg, l, flat, pick); } /* last resort: a tighter info box gives the stage more room */
-    if (ch.offsetHeight > max) { ch.style.height = max + 'px'; fit(ch); }
-    const y = Math.min(Math.round(ch.offsetHeight), max) + 10;
-    tp.style.top = y + 'px'; /* the text box hugs its text; it only gets a fixed height (and fitting) when room is short */
-    if (tp.offsetHeight > H - y - 4) { tp.style.height = H - y - 4 + 'px'; fit(tp); }
+    svs.forEach(svgMin12);
+    if (ch.offsetHeight > max && !root.dataset.cmp) { root.dataset.cmp = '1'; return lxDraw(root, stg, pg, l, flat, pick); } /* a tighter info box gives the stage more room */
+    void exs;
+    const y = Math.round(ch.offsetHeight) + 10;
+    tp.style.top = y + 'px';
+    /* still too tall: nothing gets squeezed below 12 px — the stage scrolls instead (picture first, text under it) */
+    if (y + tp.offsetHeight > H - 4) { stg.dataset.scr = '1'; add('lx-pn lx-sp', 0, y + tp.offsetHeight, 1, 8, ''); }
     return;
   }
-  const draw = (k: number, dy = 0) => drawK(stg, pg, W, H, k, T, add, dy);
+  let Hd = H; const draw = (k: number, dy = 0) => drawK(stg, pg, W, Hd, k, T, add, dy);
   const clear = () => stg.querySelectorAll(LX_SEL).forEach((e) => e.remove());
   let k = 1, r = draw(1);
-  while (!r.ok && k > 0.75) { const r2 = (clear(), draw(k - 0.06)); if (r2.tight && !r.tight) { clear(); r = draw(k); break; } k -= 0.06; r = r2; }
+  /* R42b: a box too small for its 12 px text first gets a tighter info box, then a taller, scrolling stage — never clipped or squeezed labels */
+  if (cramped(stg) && !root.dataset.cmp) { root.dataset.cmp = '1'; return lxDraw(root, stg, pg, l, flat, pick); }
+  for (let i = 0; i < 12 && cramped(stg); i++) { const w0 = r.g.nodes[0]?.w; const H0 = Hd; Hd = Math.round(Hd * 1.08); clear(); r = draw(1); if (r.g.nodes[0]?.w === w0) { Hd = H0; clear(); r = draw(1); break; } }
+  while (!r.ok && k > 0.75 && Hd === H) { const r2 = (clear(), draw(k - 0.06)); if ((r2.tight && !r.tight) || cramped(stg)) { clear(); r = draw(k); break; } k -= 0.06; r = r2; }
+  /* R42b: text still too long for its box — a taller, scrolling stage rather than a box that scrolls inside */
+  for (let i = 0; i < 6 && !r.ok; i++) { Hd = Math.round(Hd * 1.06); clear(); r = draw(k); }
+  if (Hd > H) { stg.dataset.scr = '1'; add('lx-pn lx-sp', 0, Hd, 1, 4, ''); }
   if (!r.ok) stg.querySelectorAll<HTMLElement>('.lx-pn[data-tight]').forEach((e) => { e.style.overflowY = 'auto'; });
   /* R42 L*-0: the overview panel hugs its text, so the slack it leaves goes half above and half below the diagram
      and the panel sits on the bottom edge, right over the info box (no dead gap) */
   if (pg.mode === 'full' && r.g.panel && r.ok) {
     const pe = stg.querySelector<HTMLElement>('.lx-pn'), slack = pe ? r.g.panel.h - pe.offsetHeight : 0;
     if (slack > 8) { clear(); const r2 = draw(k, Math.round(slack / 2)); const p2 = stg.querySelector<HTMLElement>('.lx-pn');
-      if (r2.ok && p2) { r = r2; p2.style.top = Math.round(H - 4 - p2.offsetHeight) + 'px'; } else { clear(); r = draw(k); } }
+      if (r2.ok && p2) { r = r2; p2.style.top = Math.round(Hd - 4 - p2.offsetHeight) + 'px'; } else { clear(); r = draw(k); } }
   }
   const g = r.g;
   const s = await stage(stg, flat, pick, root); s.el.style.display = ''; s.set(g);
+}
+/** a diagram label whose 12 px text no longer fits its box (too short or too narrow) */
+function cramped(stg: HTMLElement): boolean {
+  return [...stg.querySelectorAll<HTMLElement>('.lx-lb')].some((e) => {
+    const sp = [...e.querySelectorAll<HTMLElement>('.t,.s')], need = e.classList.contains('two') ? sp.reduce((a, t) => a + t.offsetHeight, 0) : Math.max(0, ...sp.map((t) => t.offsetHeight));
+    return need > e.clientHeight + 1 || sp.some((t) => t.scrollWidth > t.clientWidth + 0.5);
+  }) || !!stg.querySelector('.lx-fl[data-over]') || clash(stg);
+}
+/** two diagram texts (box, frame title, edge label) drawn over each other */
+function clash(stg: HTMLElement): boolean {
+  const ink = (e: HTMLElement) => { if (e.classList.contains('lx-lb')) return e.getBoundingClientRect(); const r = document.createRange(); r.selectNodeContents(e); return r.getBoundingClientRect(); };
+  const R = [...stg.querySelectorAll<HTMLElement>('.lx-lb,.lx-fl,.lx-el')].map(ink);
+  for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) {
+    const a = R[i]!, b = R[j]!; if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2) return true;
+  }
+  return false;
 }
 function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (t: Tx) => string, add: (cls: string, x: number, y: number, w: number | null, h: number | null, html: string, tag?: string) => HTMLElement, dy = 0): { g: G; ok: boolean; tight: boolean } {
   const g: G = geo(pg.v!, W, H, pg.mode, pg.px ?? 170, k, dy), D = pg.v!.dia; let tight = false, ok = true; void stg;
@@ -96,7 +132,7 @@ function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (
     const e = add(`lx-fl${on ? ' on' : ''}${f.tl ? '' : ' c'}`, f.tl ? gf.x + (f.tl === 2 ? 4 : 8) : gf.x, gf.y + 2, f.tl ? null : gf.w, null, esc(T(f.t)), go ? 'button' : 'div');
     if (go) { (e as HTMLButtonElement).type = 'button'; e.dataset.lx = f.id; }
     if (e.scrollHeight > e.clientHeight + 1) e.style.lineHeight = e.scrollHeight + 'px'; /* a fallback glyph (×) can sit taller than the line */
-    if (f.tl && e.offsetWidth > gf.w - 8) { if (f.ts) e.textContent = T(f.ts); if (e.offsetWidth > gf.w - 8) e.style.letterSpacing = '-0.06em'; }
+    if (f.tl && e.offsetWidth > gf.w - 14) { if (f.ts) e.textContent = T(f.ts); if (e.offsetWidth > gf.w - 14) e.style.letterSpacing = '-0.06em'; if (e.offsetWidth > gf.w - 4) e.dataset.over = '1'; }
   }
   for (const b of g.labels) {
     const e = add(`lx-el st-${b.st}${b.c ? ' ' + b.c : ''}${b.v ? ' v' : ''}`, b.x, b.y, null, null, esc(T(b.t)));

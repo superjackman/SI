@@ -177,7 +177,7 @@ function page0(id: string, c: Ctx): Page {
     p.panel = h(tx(['每行一题：问题？→答案', 'One per line: question？→answer'], l)) + `<textarea class="l4-ta" data-my="lines" rows="5" aria-label="${tx(['我的训练题', 'My lines'], l)}">${esc(m.lines.join('\n'))}</textarea>`
       + `<p class="l4-ok" data-my="fix"${m.fix ? '' : ' hidden'}>${esc(m.fix ?? '')}</p>`
       + `<div class="l4-row l4-my1"><button type="button" class="l4-b" data-act="my-arrow">${tx(['插入 →', 'Insert →'], l)}</button><span class="l4-mute">${tx(['格式：问题→答案', 'Format: question→answer'], l)}</span></div>`
-      + `<button type="button" class="l4-b l4-exb" data-act="my-ex">${tx(['＋ 例子：太阳是什么颜色？→红', '＋ Example: 太阳是什么颜色？→红'], l)}</button>`
+      + `<button type="button" class="l4-b l4-exb" data-act="my-ex">${tx(['＋ 加一行例子', '＋ Add example'], l)}</button>`
       + `<div class="l4-row"><button type="button" class="l4-b" data-act="my-add">${tx(['添加一题', 'Add a line'], l)}</button><button type="button" class="l4-b gold" data-act="my-train">${tx(['开始训练', 'Train'], l)}</button></div>` + (m.err ? `<p class="l4-err">${esc(m.err)}<br>${tx(['正确示例：天空是什么颜色？→蓝', 'Correct example: 天空是什么颜色？→蓝'], l)}</p>` : '') + sub(tx(['1–8 题，每题 24 字以内。', '1–8 lines, up to 24 chars each.'], l)); }
   if (n === 2) { const g = m.prog; p.flow = g && !g.done ? { a: 'in', b: 'out', back: g.step % 2 === 1 } : null;
     p.st = g && !g.done ? all(g.step % 2 ? 'back' : 'lit') : all('pass'); p.back = !!(g && !g.done && g.step % 2);
@@ -261,8 +261,8 @@ export function fixLines(text: string): { text: string; fixed: number[] } {
 function unseen(a: Ans, n: number, l: L): string {
   const t = a.steps[0]?.top[0]; const ch = t ? a.chars[t[0]]! : ''; const p = t ? pc(t[1]) : '';
   const u = a.unknown.map((x) => `「${esc(x)}」`).join('');
-  const lead = t && t[0] === 0 ? tx([`它干脆选了「结束」（${p}），等于没答出来。`, `It simply picked END (${p}): no answer at all.`], l)
-    : tx([`最高的「${esc(ch)}」${p}看着很笃定，其实是蒙的。`, `The top pick “${esc(ch)}” at ${p} looks sure, but it is a guess.`], l);
+  const lead = t && t[0] === 0 ? tx([`它干脆选了「结束」（${p}），等于没答出来。`, `It simply picked END (${p}): no answer at all. `], l)
+    : tx([`最高的「${esc(ch)}」${p}看着很笃定，其实是蒙的。`, `The top pick “${esc(ch)}” at ${p} looks sure, but it is a guess. `], l);
   return `<div class="l4-warn"><b>${tx([`⚠ ${u}它没学过，上面是在瞎猜`, `⚠ It never saw ${u}: the above is a guess`], l)}</b><br>${lead}${tx([`只背了 ${n} 句的模型就是这样；大模型要海量数据，正是为此。`, `A model that memorised ${n} lines does this; big models need mass data for exactly this reason.`], l)}`
     + `<div class="l4-row"><button type="button" class="l4-b" data-go="#L4/my/3~KC05">${tx(['规模定律 ›', 'Scaling laws ›'], l)}</button><button type="button" class="l4-b" data-go="#L4/my/3~KC12">${tx(['幻觉 ›', 'Hallucination ›'], l)}</button></div></div>`;
 }
