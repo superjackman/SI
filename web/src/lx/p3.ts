@@ -95,7 +95,7 @@ export function page(id: string, l: L): LxPg {
   const tr = /^T\d$/.test(id), us = /^U\d$/.test(id);
   const L3c: [string, string | null] = [z('第3层 大模型原理', 'Layer 3 How an LLM works'), '#L3'];
   const crumb: [string, string | null][] = id === 'L3' ? [[z('首页', 'Home'), '#home'], [L3c[0], null]]
-    : tr ? [L3c, [z('看它怎么训练', 'Training'), id === 'T1' ? null : '#L3/T1']] : us ? [L3c, [z('看它怎么使用', 'Use'), id === 'U1' ? null : '#L3/U1']] : [L3c];
+    : tr ? [[z('第3层', 'Layer 3'), '#L3'], [z('看它怎么训练', 'Training'), id === 'T1' ? null : '#L3/T1']] : us ? [[z('第3层', 'Layer 3'), '#L3'], [z('看它怎么使用', 'Use'), id === 'U1' ? null : '#L3/U1']] : [[z('第3层', 'Layer 3'), '#L3']];
   const p: LxPg = { id, mode: 'left', v: null, top: TT, crumb, ttl: '', info: ['', '', '', ''], k: 'KC01', math: null, hint: z('点带 + 的块可就地展开', 'Tap a box with + to open it here'),
     dots: null, next: lxNext(id), panel: '', xl: true, px: 194, go: {} };
   const set = (name: string, v: View, k: string, info: [string, string, string, string], panel: string, dots: [number, number] | null) => {

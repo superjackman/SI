@@ -65,7 +65,7 @@ test.describe('R38 explorer', () => {
     expect(ys.map((x) => x[0]).join(' ')).toBe('in tok emb att an1 ffn an2 lin sm out');
     for (let i = 1; i < ys.length; i++) expect(ys[i]![1]).toBeLessThan(ys[i - 1]![1]);
     await expect(box(page, 'att')).toContainText('带遮罩的多头注意力');
-    await expect(page.locator('.l4-chips')).toContainText('天空是什么颜色');
+    await expect(page.locator('.l4-tt')).toContainText('Transformer'); await expect(page.locator('.l4-crumb')).toContainText('全貌');
     await expect(page.locator('.l4-fl')).toContainText('解码块 × 2');
     await expect(page.locator('.l4-rl')).toHaveCount(2);
     await expect(page.locator('.l4-info dt')).toHaveCount(4);

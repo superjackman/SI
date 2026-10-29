@@ -15,36 +15,36 @@ export interface Page {
 }
 export const Q = '天空是什么颜色？';
 export const X_ORDER = ['att', 'att.dot', 'att.dot.one', 'att.heads', 'att.mask', 'ffn', 'an1'];
-const XN: Record<string, Tx> = { att: LAB.att, 'att.dot': ['Q·K 打分', 'Q·K scores'], 'att.dot.one': ['一个数', 'One number'], 'att.heads': ['多头', 'Heads'], 'att.mask': ['遮罩', 'Mask'] };
+const XN: Record<string, Tx> = { att: ['多头注意力', 'Attention'], 'att.dot': ['点积', 'Dot product'], 'att.dot.one': ['一个数', 'One number'], 'att.heads': ['多个头', 'Heads'], 'att.mask': ['遮罩', 'Mask'] };
 const XI: Record<string, Info> = {
-  att: NODE_INFO.att,
-  'att.dot': [['每两个字之间打个分', 'Scores every pair of chars'], ['每个头一张 8 × 8 分数表', 'An 8 × 8 table per head'], ['每格 = Q · K ÷ √8', 'Each cell = Q · K ÷ √8'], ['分数越高，越该关注', 'Higher score, more attention']],
-  'att.dot.one': [['一个分数是怎么算出来的', 'How one score is made'], ['Q 的 8 个数、K 的 8 个数', '8 numbers of Q, 8 of K'], ['对应相乘、相加，再 ÷ √8', 'Multiply pairs, add, ÷ √8'], ['÷ √8 防止分数太大', '÷ √8 keeps scores from blowing up']],
-  'att.heads': [['同时从几个角度去看', 'Looks from several angles at once'], ['2 个头，每头 8 维', '2 heads, 8 numbers each'], ['各算各的，再拼成 16 个数', 'Each works alone, then they join'], ['不同的头抓不同的关系', 'Heads catch different relations']],
-  'att.mask': [['不许偷看后面的字', 'No peeking at later chars'], ['一张遮罩表', 'A mask table'], ['后面的格子分数设为 −∞', 'Later cells get −∞'], ['训练和使用时条件一致', 'Training matches real use']],
+  att: [['算出每个字该从谁拿多少信息', 'How much each char takes from which'], ['Q/K/V、点积、遮罩、百分比、混合', 'Q/K/V, dot product, mask, shares, mix'], ['从下往上 6 步，每个头各算一遍', '6 steps bottom → top, once per head'], ['多个头能同时看不同的关系', 'Several heads see different relations']],
+  'att.dot': [['给每两个字的相关度打分', 'Scores how related each pair is'], ['两串数字：Q 和 K', 'Two rows of numbers: Q and K'], ['对应相乘再相加，排成 {T}×{T} 表', 'Multiply pairs, add: a {T}×{T} table'], ['两串数方向越一致，分数越高', 'The more they point alike, the higher']],
+  'att.dot.one': [['最底层的一步：算出一个分数', 'The very bottom: one score'], ['几次乘法 + 一次加法', 'A few multiplies + one sum'], ['乘加后除以 √d，再进 Softmax', 'Multiply-add, ÷ √d, then Softmax'], ['不除的话数太大，概率走极端', 'Without ÷ √d the odds go extreme']],
+  'att.heads': [['同时从几个角度找信息', 'Looks from several angles at once'], ['2 个头，各自一套 Q/K/V', '2 heads, each its own Q/K/V'], ['各头结果拼起来，再合成一串', 'Join the heads, merge into one row'], ['一个头只看一种关系，多个才全面', 'One head, one relation; more see more']],
+  'att.mask': [['让每个字只看自己和前面的字', 'Each char sees only itself and earlier'], ['一张遮挡表：右上角全挡住', 'A mask table: top-right all blocked'], ['被挡住的分数变成 0%', 'Blocked scores become 0%'], ['生成时看不到后面，训练要一致', 'No future when writing; train the same']],
 };
 const XK: Record<string, string> = { att: 'K06', 'att.dot': 'K07', 'att.dot.one': 'K07', 'att.heads': 'K06', 'att.mask': 'K08' };
 const XM: Record<string, string> = { 'att.dot.one': 'KM02' };
 const PI: Record<string, Info> = {
-  L4: [['读一段字，猜下一个字', 'Reads text, guesses the next char'], ['分词、词向量、2 个解码块、输出层', 'Tokenize, embed, 2 decoder blocks, output'], ['从下往上一层层加工', 'Processed layer by layer, bottom up'], ['一次一个字，循环写成整段', 'One char at a time, looped into text']],
-  TR1: [['准备「问题 → 答案」例题', 'Prepare question → answer examples'], ['3 道颜色题', '3 colour questions'], ['每题拆成「看前面 → 猜下一个」', 'Each becomes “see before → guess next”'], ['模型只能从例子里学', 'It can only learn from examples']],
-  TR2: [['把字换成编号', 'Turns chars into numbers'], ['字典：{V} 个字（含结束符）', 'Dictionary: {V} chars (with END)'], ['每个字查字典得编号', 'Each char looks up its number'], ['计算机只会算数字', 'Computers only do numbers']],
-  TR3: [['看模型一开始猜成什么样', 'See the first, random guess'], ['随机的初始参数', 'Random starting parameters'], ['输入一路往上算到概率', 'Input goes up to the odds'], ['先有猜测，才能谈改进', 'A guess first, then improve it']],
-  TR4: [['量出猜得有多错', 'Measures how wrong it is'], ['误差 = −ln(正确字的概率)', 'Error = −ln(odds of the right char)'], ['概率越小，误差越大', 'Lower odds, bigger error'], ['一个数就能指明改进方向', 'One number points the way']],
-  TR5: [['算出每个参数该改多少', 'Works out each parameter’s change'], ['反向传播（链式法则）', 'Backpropagation (chain rule)'], ['误差从顶上一层层往回传', 'The error flows back down'], ['一次算出所有参数的方向', 'All directions in one pass']],
-  TR6: [['改参数，再来一遍', 'Update, and go again'], ['AdamW 优化器，学习率 {lr}', 'AdamW optimiser, rate {lr}'], ['重复 {n} 步，误差越来越小', '{n} steps, the error shrinks'], ['小步多次，稳定地变好', 'Many small steps, steady gains']],
-  US1: [['把问题交给模型', 'Hand the question over'], ['8 个字：天空是什么颜色？', '8 chars: 天空是什么颜色？'], ['从最底下进入', 'It enters at the bottom'], ['模型只会接着往下写', 'It can only continue text']],
-  US2: [['字 → 编号', 'Chars → numbers'], ['和训练时同一本字典', 'The same dictionary as training'], ['8 个字 → 8 个编号', '8 chars → 8 numbers'], ['编号才能去查表', 'Numbers can look up tables']],
-  US3: [['编号 → 一串数字', 'Number → a row of numbers'], ['词向量表 {V} × 16', 'Embedding table {V} × 16'], ['每个编号取出 16 个数', 'Each number fetches 16 values'], ['意思相近的字，数字也相近', 'Similar chars get similar rows']],
-  US4: [['告诉模型字的先后', 'Tells the model the order'], ['位置向量表 24 × 16', 'Position table 24 × 16'], ['字的 16 个数 + 位置的 16 个数', 'Char row + position row'], ['注意力本身不分先后', 'Attention alone ignores order']],
+  L4: [['把一段字变成「下一个字」的概率', 'Turns text into odds for the next char'], ['分词、词向量、2个解码块、输出打分', 'Tokenize, embed, 2 decoder blocks, scoring'], ['从下往上依次加工，最后打分', 'Bottom → top, then score'], ['可并行，远处的字也能直接相连', 'Parallel; far chars connect directly']],
+  TR1: [['给模型提供「题目→答案」来学', 'Gives the model question → answer to learn'], ['问题文字 + 正确答案（3 道题）', 'Question + right answer (3 lines)'], ['先只用到最底下的「输入文字」', 'Only the bottom “Input text” is used'], ['没有例子，模型就无从学起', 'No examples, nothing to learn from']],
+  TR2: [['把文字变成电脑能算的编号', 'Turns text into numbers a computer can use'], ['字典（字↔编号）+ 分词规则', 'Dictionary (char ↔ number) + split rule'], ['统计题里所有字，逐个编号', 'Collect every char, number each'], ['模型只会算数字，不认识字', 'The model does numbers, not chars']],
+  TR3: [['得到模型现在的猜测（前向）', 'Gets the model’s current guess (forward)'], ['所有块从下往上依次参与', 'Every box takes part, bottom → top'], ['每块加工完交给上一块，最后打分', 'Each box hands up; the top scores'], ['参数还是随机的，所以猜得很平均', 'Random parameters, so the guess is flat']],
+  TR4: [['用一个数说清猜错了多少', 'One number says how wrong it was'], ['模型给的概率 + 正确答案「蓝」', 'The model’s odds + the right answer 蓝'], ['只看「蓝」：−ln({pb})≈{lo}', 'Only 蓝 counts: −ln({pb}) ≈ {lo}'], ['交叉熵＝最大似然，标准统一', 'Cross-entropy = max likelihood, one rule']],
+  TR5: [['算出每个参数该改多少', 'Works out each parameter’s change'], ['误差从顶部出发，经过每一块', 'The error starts at the top, through every box'], ['上一块的改动量决定下一块的', 'Each box’s change sets the next one down'], ['链式法则：倒推一遍就算出全部', 'Chain rule: one pass back gets them all']],
+  TR6: [['把参数往误差变小的方向挪', 'Moves parameters to shrink the error'], ['梯度 × 学习率 ＝ 这一步改多少', 'Gradient × rate = this step’s change'], ['前向→算误差→传回→改，循环', 'Forward → error → back → update, loop'], ['每次一小步，{n} 步后就学会', 'Small steps; learned after {n}']],
+  US1: [['交给模型接着往下写的起点', 'Where the model starts writing from'], ['一段字：天空是什么颜色？', 'Text: 天空是什么颜色？'], ['从最底下进入，一路往上走', 'Enters at the bottom, goes up'], ['模型只做一件事：猜下一个字', 'It only guesses the next char']],
+  US2: [['把字切开，换成字典编号', 'Splits text into dictionary numbers'], ['字典 + 切分规则（大模型用BPE）', 'Dictionary + split rule (BPE in big models)'], ['编号拿去「词向量表」里查', 'The numbers look up the embedding table'], ['和训练时同一本字典，前后一致', 'Same dictionary as in training']],
+  US3: [['用一串数字表示一个字的意思', 'A row of numbers for a char’s meaning'], ['词向量表：每个编号一行数字', 'Embedding table: one row per number'], ['按编号查表，每个字取一行', 'Look up by number, one row per char'], ['意思相近的字，学出来也相近', 'Similar chars learn similar rows']],
+  US4: [['告诉模型每个字排第几', 'Tells the model each char’s place'], ['位置向量：每个位置一串数字', 'Position vectors: a row per place'], ['词向量和位置向量逐个相加', 'Char row + position row, number by number'], ['注意力本身不分先后，要补顺序', 'Attention ignores order; add it']],
   US5: NODE_INFO.att,
-  US6: [['每个字自己再加工一遍', 'Each char is refined alone'], ['16 → 64 → 16', '16 → 64 → 16'], ['放大，ReLU 去掉负数，缩回', 'Widen, ReLU drops negatives, shrink'], ['能学更复杂的规律', 'Can learn more complex rules']],
-  US7: [['同样的结构再来一遍', 'The same structure again'], ['第2个解码块，参数不同', 'Block 2, its own parameters'], ['输入是第1块的输出', 'Its input is block 1’s output'], ['叠得越多，理解越深', 'More blocks, deeper reading']],
-  US8: [['给每个字打分，变成概率', 'Scores every char, makes odds'], ['线性层 16 × {V} + Softmax', 'Linear 16 × {V} + Softmax'], ['最后一个字的 16 个数 → {V} 个概率', 'Last char’s 16 numbers → {V} odds'], ['概率才能比较、能挑选', 'Odds can be compared and picked']],
-  US9: [['选出下一个字', 'Picks the next char'], ['取概率最高的字', 'Take the most likely char'], ['接到后面再猜，直到「结束」', 'Append and repeat until END'], ['一次一个字地写', 'Writes one char at a time']],
-  MY1: [['出你自己的题', 'Write your own questions'], ['每行「问题？→答案」', 'One “question？→answer” per line'], ['只认识题里出现过的字', 'Knows only chars in your lines'], ['模型只认识见过的字', 'It only knows what it has seen']],
-  MY2: [['看你的模型学起来', 'Watch your model learn'], ['同一个模型，新的参数', 'Same model, fresh parameters'], ['前向算误差，反向改参数', 'Forward for error, back to update'], ['误差下降说明在学', 'A falling error means learning']],
-  MY3: [['考考你的模型', 'Test your model'], ['你刚训练的参数', 'The parameters you just trained'], ['输入问题，看它选的字', 'Ask, see which chars it picks'], ['没见过的问法容易答错', 'Unseen wording often fails']],
+  US6: [['把拿到的信息逐字再加工一遍', 'Refines what each char gathered'], ['放大层、激活函数、缩回层', 'Expand, activation, shrink'], ['注意力管交流，前馈管消化', 'Attention talks, feed-forward digests'], ['只有加权平均不够，要非线性', 'Weighted averages are not enough']],
+  US7: [['再深加工一遍，理解得更深', 'Another pass, deeper reading'], ['同样的结构，参数不同', 'Same structure, other parameters'], ['残差带着原信息，每块只加改进', 'The residual carries the input; boxes add'], ['层多了信息不丢，训练也稳', 'Deep stacks lose nothing, train stably']],
+  US8: [['给字典里每个字打分、变概率', 'Scores every char, makes odds'], ['线性层（打分）+ Softmax', 'Linear (scores) + Softmax'], ['只用最后一个字「？」来打分', 'Only the last char ？ is scored'], ['分数换成加起来 100% 的概率', 'Scores become odds summing to 100%']],
+  US9: [['选出下一个字「蓝」', 'Picks the next char 蓝'], ['概率表 + 选字规则（温度等）', 'The odds + a pick rule (temperature…)'], ['把「蓝」接到末尾，再猜下一个', 'Append 蓝, guess the next'], ['一次一个字，循环写成整段', 'One char at a time, looped into text']],
+  MY1: [['写你想让模型学的题和答案', 'Write what you want it to learn'], ['问题 + 答案，若干道', 'Questions + answers, a few lines'], ['开始训练时自动建字典', 'The dictionary is built when training starts'], ['亲手训练一次，最容易弄懂', 'Training one yourself makes it click']],
+  MY2: [['在你手机里真的训练模型', 'Really trains a model on your phone'], ['前向、算误差、传回去、改参数', 'Forward, error, back, update'], ['亮蓝＝往上算，橙色＝往回传', 'Blue = going up, orange = going back'], ['误差往下掉，就是它在学会', 'A falling error means it is learning']],
+  MY3: [['检验模型到底学会了没有', 'Checks whether it really learned'], ['你训练出的参数 + 你的问题', 'Your trained parameters + your question'], ['只往上走一遍，不再改参数', 'One pass up, no more updates'], ['换个没教过的问法，看能否变通', 'Try an untaught wording']],
 };
 const PK: Record<string, string> = { L4: 'K01', TR1: 'K13', TR2: 'K02', TR3: 'K12', TR4: 'K13', TR5: 'K14', TR6: 'K14', US1: 'K15', US2: 'K02', US3: 'K03', US4: 'K04', US5: 'K06', US6: 'K10', US7: 'K05', US8: 'K11', US9: 'K15', MY1: 'K14', MY2: 'K14', MY3: 'K15' };
 
@@ -93,7 +93,9 @@ export function dot(tr: Trace, hh: number, qi: number, kj: number) {
   return { pr, sum: s, score: s / Math.sqrt(dh) };
 }
 
-const fill = (s: string, d: Demo | null) => s.replace('{V}', String(d?.chars.length ?? 14)).replace('{lr}', d ? String(+d.lr.toFixed(4)) : '0.004').replace('{n}', String(d?.steps ?? 200));
+const pb0 = (d: Demo | null) => (d ? d.before.probs[7 * d.chars.length + d.chars.indexOf('蓝')]! : 0);
+const fill = (s: string, d: Demo | null) => s.replace('{V}', String(d?.chars.length ?? 14)).replace('{lr}', d ? String(+d.lr.toFixed(4)) : '0.004').replace('{n}', String(d?.steps ?? 200)).replace(/\{T\}/g, '8')
+  .replace('{pb}', d ? pc(pb0(d)) : '…').replace('{lo}', d ? (-Math.log(pb0(d))).toFixed(1) : '…');
 const inf = (x: Info, c: Ctx) => x.map((t) => fill(tx(t, c.l), c.d)) as [string, string, string, string];
 
 /* ---------- routing ---------- */
@@ -111,18 +113,18 @@ export const xHash = (p: string) => `#L4/x/${p}`;
 /* ---------- pages ---------- */
 const base = (c: Ctx, id: string, kind: Page['kind']): Page => ({
   id, kind, crumb: [['Transformer', '#L4']], top: '', mode: 'left', st: all('pass'), back: false, resOn: false, frameLit: false, frameTag: null, sel: null, flow: null,
-  info: inf(PI[id] ?? PI.L4!, c), k: PK[id] ?? 'K01', math: null, hint: tx(UI.hintS, c.l), dots: null, panel: null, tags: [], notes: null, ent: false, next: '#L4', up: null,
+  info: inf(PI[id] ?? PI.L4!, c), k: PK[id] ?? 'K01', math: null, hint: tx(UI.hint0, c.l), dots: null, panel: null, tags: [], notes: null, ent: false, next: '#L4', up: null,
 });
 const wait = (c: Ctx) => `<p class="l4-wait">${tx(UI.load, c.l)}</p>`;
 
-export function page(id: string, c: Ctx): Page {
+function page0(id: string, c: Ctx): Page {
   const l = c.l, T = (k: keyof typeof UI) => tx(UI[k] as Tx, l), d = c.d;
-  if (id === 'L4') { const p = base(c, 'L4', 'l4'); p.mode = 'full'; p.st = all('calm'); p.crumb = [['Transformer', null], [T('whole'), null]]; p.hint = T('hint0'); p.ent = true; p.next = '#L4/tr/1'; return p; }
+  if (id === 'L4') { const p = base(c, 'L4', 'l4'); p.mode = 'full'; p.st = all('calm'); p.crumb = [[T('home'), '#home'], [T('L4'), null], [T('whole'), null]]; p.hint = T('hint0'); p.ent = true; p.next = '#L4/tr/1'; return p; }
   if (id.startsWith('X:')) return xpage(id.slice(2), c);
   const kind = id.slice(0, 2).toLowerCase() as 'tr' | 'us' | 'my', n = Number(id.slice(2)), p = base(c, id, kind);
   const ix = ORDER.indexOf(id); p.next = ix >= 0 && ix < ORDER.length - 1 ? hashOf(ORDER[ix + 1]!) : '#L4';
   const steps = STEPN[kind]; p.dots = [steps.length, n - 1];
-  p.crumb = [['Transformer', '#L4'], [tx(kind === 'tr' ? UI.trN : kind === 'us' ? UI.usN : UI.myN, l), null], [tx(steps[n - 1]!, l), null]];
+  p.crumb = [[tx(UI.lv[3]!, l), '#L4'], [tx(kind === 'tr' ? UI.trN : kind === 'us' ? UI.usN : UI.myN, l), null], [tx(steps[n - 1]!, l), null]];
   if (kind === 'tr') {
     p.top = 'tr';
     if (!d) { p.panel = wait(c); p.st = all('dim'); return p; }
@@ -184,6 +186,18 @@ export function page(id: string, c: Ctx): Page {
       + (a ? `<p class="l4-big">${tx(['回答', 'Answer'], l)}：<b class="l4-gold">${esc(a.out) || '—'}</b></p>` + bars(a.steps[0]!.top.slice(0, 3).map(([i, q]) => [chn(a.chars[i]!, l), q] as [string, number]), l, 0) + (a.unknown.length ? `<p class="l4-err">${tx(['没见过的字：', 'Unknown chars: '], l)}${esc(a.unknown.join(' '))}</p>` : '') : ''); }
   return p;
 }
+/** the panel opens with the step's title, as in the reference; a first heading that carries a real number stays below it */
+export function page(id: string, c: Ctx): Page {
+  const p = page0(id, c); if (p.kind !== 'tr' && p.kind !== 'us' && p.kind !== 'my') return p;
+  const ph = PH[p.kind][Number(id.slice(2)) - 1]; const m0 = p.panel ? /^<h4 class="l4-ph">(.*?)<\/h4>/.exec(p.panel) : null;
+  if (ph && m0) p.panel = h(tx(ph, c.l)) + (/\d/.test(m0[1]!) ? `<p class="l4-stp">${m0[1]}</p>` : '') + p.panel!.slice(m0[0].length);
+  return p;
+}
+const PH: Record<'tr' | 'us' | 'my', Tx[]> = {
+  tr: [['① 准备例题', '① Examples'], ['② 建字典、分词', '② Dictionary, tokens'], ['③ 先随机猜一次', '③ A first random guess'], ['④ 算误差', '④ The error'], ['⑤ 把误差传回去', '⑤ Pass the error back'], ['⑥ 改参数、重复很多遍', '⑥ Update, repeat many times']],
+  us: [['① 输入一段字', '① Some text in'], ['② 分词', '② Tokenize'], ['③ 查词向量表', '③ Embedding lookup'], ['④ 加位置编码', '④ Add position'], ['⑤ 注意力：向前要信息', '⑤ Attention: ask earlier chars'], ['⑥ 前馈网络：各自加工', '⑥ Feed-forward: each alone'], ['⑦ 第二个解码块', '⑦ The second block'], ['⑧ 线性层 + Softmax', '⑧ Linear + Softmax'], ['⑨ 选出下一个字，接回输入', '⑨ Pick a char, append it']],
+  my: [['① 写自己的训练题', '① Write your own lines'], ['② 训练中', '② Training'], ['③ 自己测一测', '③ Test it yourself']],
+};
 
 function xpage(path: string, c: Ctx): Page {
   const l = c.l, nd = path.split('.')[0] as Nd, p = base(c, 'X:' + path, 'x'); p.mode = 'xl'; p.sel = nd; p.st = { ...all('pass'), [nd]: 'sel' };
@@ -204,7 +218,7 @@ function xpage(path: string, c: Ctx): Page {
         const st = on ? `background:${v >= 0 ? `rgba(80,150,255,${(0.15 + 0.85 * a).toFixed(2)})` : `rgba(255,140,60,${(0.15 + 0.7 * a).toFixed(2)})`}` : '';
         g += i === qi && j === kj ? `<button type="button" class="cell gold" data-go="${xHash('att.dot.one')}" style="${st}" aria-label="${f2(v)}">+</button>` : `<span class="cell${on ? '' : ' m'}" style="${st}"></span>`; } }
       g += '</div>';
-      p.panel = H(tx([`分数表（第 1 块，头 ${hh + 1}）`, `Scores (block 1, head ${hh + 1})`], l)) + g + sub(tx([`蓝＝正分，橙＝负分，灰＝被遮住。黄框：「？」问「${esc(ch[tr.ids[kj]!]!)}」= <b>${f2(S[qi * T + kj]!)}</b>`, `Blue = positive, orange = negative, grey = masked. Gold: ？ asks ${esc(ch[tr.ids[kj]!]!)} = <b>${f2(S[qi * T + kj]!)}</b>`], l)); p.hint = tx(UI.hintX2, l); break; }
+      p.panel = H(tx(['点积：两两打分', 'Dot: score pairs'], l)) + `<div class="l4-pipe">${(['Q', 'K', 'V', ['点积', 'Dot'], ['遮罩', 'Mask'], ['百分比', '%'], ['混合', 'Mix'], ['拼接', 'Join']] as (string | Tx)[]).map((t, i) => `<span${i === 3 ? ' class="on"' : ''}>${typeof t === 'string' ? t : tx(t, l)}</span>`).join('')}</div>` + sub(tx([`第 1 块头 ${hh + 1} 里：行＝提问的字，列＝被问的字`, `Block 1, head ${hh + 1}: rows ask, columns are asked`], l)) + g + sub(tx([`蓝＝正分，橙＝负分，右上灰色＝遮罩挡住的。黄框：「？」问「${esc(ch[tr.ids[kj]!]!)}」= <b>${f2(S[qi * T + kj]!)}</b>`, `Blue +, orange −, grey top-right = masked. Gold: ？ asks ${esc(ch[tr.ids[kj]!]!)} = <b>${f2(S[qi * T + kj]!)}</b>`], l)); p.hint = tx(UI.hintX2, l); break; }
     case 'att.dot.one': { const r = dot(tr, hh, qi, kj), W = L0.W[hh]![qi * tr.T + kj]!;
       p.panel = H(tx([`「？」的 Q · 「${esc(ch[tr.ids[kj]!]!)}」的 K`, `Q of ？ · K of ${esc(ch[tr.ids[kj]!]!)}`], l)) + `<table class="l4-tb"><tbody>${r.pr.map(([a, b, x]) => `<tr><td>${f2(a)}</td><td>×</td><td>${f2(b)}</td><td>=</td><td>${f2(x)}</td></tr>`).join('')}</tbody></table>`
         + `<p class="l4-f">${tx(['相加', 'sum'], l)} ${f2(r.sum)} ÷ √8 = <b class="l4-gold">${f2(r.score)}</b></p>` + sub(tx([`这一行 Softmax 后，「${esc(ch[tr.ids[kj]!]!)}」分到 ${pc(W)}。`, `After Softmax over the row, ${esc(ch[tr.ids[kj]!]!)} gets ${pc(W)}.`], l)); p.hint = tx(UI.hintX3, l); break; }

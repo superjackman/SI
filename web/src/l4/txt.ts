@@ -68,7 +68,7 @@ export const UI = {
   trN: ['看它怎么训练', 'How it trains'], usN: ['看它怎么使用', 'How it answers'], myN: ['我的训练题', 'Train your own'], xN: ['就地下钻', 'Look inside'],
   soonP: ['这一层正在制作，先去看第4层吧。', 'This layer is being built. Try layer 4 first.'], goL4: ['去第4层', 'Go to layer 4'],
   L4: ['第4层 Transformer', 'Layer 4 Transformer'], whole: ['全貌', 'Overview'],
-  topL4: ['Transformer：一堆字变成下一个字', 'Transformer: text in, next char out'], topTr: ['例题：天空是什么颜色？ → 蓝', 'Example: 天空是什么颜色？ → 蓝'], topMy: ['我的训练题：自己出题、训练、测试', 'Your own: write, train, test'],
+  topL4: ['Transformer：一堆字变成下一个字', 'Transformer: text → next char'], topTr: ['例题：天空是什么颜色？ → 蓝', 'Example: 天空是什么颜色？ → 蓝'], topMy: ['我的训练题：自己出题、训练、测试', 'Your own: write, train, test'],
   lang: ['EN', '中'], langL: ['Switch to English', '切换到中文'], end: ['结束', 'END'], other: ['其他字', 'Others'],
 } satisfies Record<string, Tx | Tx[]>;
 export const STEPN = {

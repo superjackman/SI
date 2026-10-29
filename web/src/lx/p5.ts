@@ -61,7 +61,7 @@ export function dia5(l: L): Dia {
 export async function page(id: string, l: L): Promise<LxPg> {
   const z = (a: string, b: string) => (l === 'zh' ? a : b);
   const L5c: [string, string | null] = [z('第5层 数学', 'Layer 5 Maths'), '#L5'];
-  const chips = `<div class="lx-cps">${Array.from('天空是什么颜色？').map((c) => `<span class="c on">${c}</span>`).join('')}</div>`;
+  const chips = `<div class="lx-cps">${Array.from('天空是什么颜色？').map((c) => `<span class="c on">${c}</span>`).join('')}<i>→</i><span class="c out">?</span></div>`;
   if (id === 'L5') {
     const D = dia5(l), go: Record<string, string> = { trn: '#L5/M5a', in: '#L4', tok: '#L4', emb: '#L5/M1a', att: '#L5/M2a', an1: '#L5/M8', an2: '#L5/M8', ffn: '#L5/M3b', lin: '#L5/M3b', sm: '#L5/M4a', out: '#L5/M5a' };
     for (const [t, , , p] of TAG) go[t] = '#L5/' + p;

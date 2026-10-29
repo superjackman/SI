@@ -75,19 +75,21 @@ export function start(doc: Document = document, win: Window = window) {
   const go = (h: string) => { if (win.location.hash === h) route(); else win.location.hash = h; };
 
   /* ---------- rendering ---------- */
+  /* the info box like the reference: four rows, a tall gold 知识卡 button on the right (the card id is in its label) */
+  const infoHtml = (v: readonly string[], k: string, ls: (keyof typeof UI)[]) => `<dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(v[i]!)}</dd></div>`).join('')}</dl><button type="button" class="l4-kb" data-k="${k}" aria-label="${T('kcT')} ${k}"><span>${T('kc')}</span></button>`;
   function drawTop(p: Page | null) {
     if (!p) { txt.innerHTML = `<b class="l4-tt">${T('title')}</b>`; return; }
-    let s = Q, extra = '';
-    if (p.top === 'tr') extra = '<span class="arr">→</span><span class="ch g">蓝</span>';
-    else if (p.top.startsWith('us9:')) extra = `<span class="arr">→</span><span class="ch g">${esc(p.top.slice(4) || '?')}</span>`;
-    else if (p.top === 'my') { const f = my.lines[0] ?? ''; s = f.split('→')[0] ?? f; }
-    txt.innerHTML = `<span class="l4-chips">${Array.from(s).map((c) => `<span class="ch">${esc(c)}</span>`).join('')}${extra}</span>`;
+    /* like the reference: a title on the overview, the worked example while training, the live question (→ ?) elsewhere */
+    const tt = p.kind === 'l4' ? T('topL4') : p.kind === 'tr' ? T('topTr') : p.kind === 'my' ? T('topMy') : '';
+    if (tt) { txt.innerHTML = `<b class="l4-tt">${esc(tt)}</b>`; return; }
+    const out = p.top.startsWith('us9:') ? p.top.slice(4) || '?' : '?';
+    txt.innerHTML = `<span class="l4-chips">${Array.from(Q).map((c) => `<span class="ch">${esc(c)}</span>`).join('')}<span class="arr">→</span><span class="ch g">${esc(out)}</span></span>`;
   }
   function drawInfo() {
     if (!pg) return; const v = sel ? NODE_INFO[sel].map((t) => tx(t, lang)) : pg.info, k = sel ? NODE_K[sel] : pg.k;
     const ls: (keyof typeof UI)[] = ['what', 'parts', 'how', 'why'];
-    info.innerHTML = `<div class="l4-ih"><b>${sel ? tx(LAB[sel], lang) : esc(pg.crumb[pg.crumb.length - 1]![0])}</b><button type="button" class="l4-kb" data-k="${k}">${T('kc')} ${k}</button></div><dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(v[i]!)}</dd></div>`).join('')}</dl>`;
-    const m = pg.math ?? K_MATH[k] ?? null; mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? ''; delete mp.dataset.go;
+    info.innerHTML = infoHtml(v, k, ls);
+    const m = pg.kind === 'l4' || pg.kind === 'my' ? null : pg.math ?? K_MATH[k] ?? null; mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? ''; delete mp.dataset.go;
   }
   function drawLabels() {
     if (!pg || !lay) return; const L = lay;
@@ -100,12 +102,11 @@ export function start(doc: Document = document, win: Window = window) {
       const e = add(`l4-lb st-${st}${PLUS.has(n) ? ' plus' : ''}`, b.x, b.y, b.w, b.h, `<span class="t">${tx(LAB[n], lang)}</span>${PLUS.has(n) ? '<i aria-hidden="true">+</i>' : ''}`, 'button');
       (e as HTMLButtonElement).type = 'button'; e.dataset.nd = n; e.setAttribute('aria-label', tx(LAB[n], lang) + (PLUS.has(n) ? ' +' : ''));
       if (PLUS.has(n)) e.setAttribute('aria-expanded', String(pg.sel === n));
-      // never truncate: first a shorter name, then 12px (the floor), then tighter letters
+      // never truncate: keep the full name if 12px (the floor) with tighter letters fits, as the reference does; else a shorter name
       const t = e.querySelector<HTMLElement>('.t')!, over = () => t.scrollWidth > t.clientWidth + 0.5;
-      if (over() && LAB_S[n]) t.textContent = tx(LAB_S[n]!, lang);
       if (over()) e.style.fontSize = '12px';
-      if (over()) t.style.letterSpacing = '-0.04em';
-      if (over()) e.dataset.tight = '1';
+      if (over()) { t.style.letterSpacing = '-0.04em'; e.dataset.tight = '1'; }
+      if (over() && LAB_S[n]) { t.textContent = tx(LAB_S[n]!, lang); t.style.letterSpacing = ''; if (over()) t.style.letterSpacing = '-0.04em'; }
     }
     add(`l4-fl${pg.frameLit ? ' on' : ''}`, L.frame.x + 8, L.frame.y + 2, null, null, esc(pg.frameTag ?? tx(FRAME, lang)));
     if (L.mode === 'full') for (const r of L.res) { const e = add('l4-rl', L.xR + 3, (r[1]![1] + r[2]![1]) / 2, null, null, tx(RES, lang)); e.style.transform = 'translateY(-50%)'; }
@@ -131,7 +132,7 @@ export function start(doc: Document = document, win: Window = window) {
   function render() {
     root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
     $('[data-a="back"]').textContent = '‹'; $('[data-a="back"]').setAttribute('aria-label', T('back'));
-    $('[data-a="map"]').innerHTML = `<b><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5z M5.5 2v10.5 M10.5 3.5V14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></b><span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<b><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 8V2a6 6 0 0 1 5.2 9z" fill="currentColor"/></svg></b><span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<b>›</b><span>${T('next')}</span>`;
+    $('[data-a="map"]').innerHTML = `<span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<span>${T('next')}</span>`;
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
     root.dataset.page = cur;
@@ -144,7 +145,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);
     crumb.innerHTML = pg.crumb.map(([t, h], i) => (h ? `<a href="${h}">${esc(t)}</a>` : `<span${i === pg!.crumb.length - 1 ? ' class="cur"' : ''}>${esc(t)}</span>`)).join('<span class="sep">›</span>') + (pg.up ? ` <a class="l4-up" href="${pg.up}">${T('up')}</a>` : '');
-    ent.hidden = !pg.ent; ent.innerHTML = pg.ent ? `<button type="button" class="l4-b" data-go="#L4/tr/1">${T('entTr')}</button><button type="button" class="l4-b" data-go="#L4/us/1">${T('entUs')}</button><button type="button" class="l4-b gold" data-go="#L4/my/1">${T('entMy')}</button>` : '';
+    ent.hidden = !pg.ent; ent.innerHTML = pg.ent ? `<button type="button" class="l4-b" data-go="#L4/tr/1">${T('entTr')}</button><button type="button" class="l4-b" data-go="#L4/us/1">${T('entUs')}</button><button type="button" class="l4-b" data-go="#L4/my/1">${T('entMy')}</button>` : '';
     hint.textContent = pg.hint; dots.innerHTML = pg.dots ? Array.from({ length: pg.dots[0] }, (_, i) => `<i class="${i === pg!.dots![1] ? 'on' : i < pg!.dots![1] ? 'done' : ''}"></i>`).join('') : '';
     drawInfo(); void drawStage();
   }
@@ -157,7 +158,7 @@ export function start(doc: Document = document, win: Window = window) {
     ent.hidden = !p.ent; ent.innerHTML = (p.ent ?? []).map(([t, h, g]) => `<button type="button" class="l4-b${g ? ' gold' : ''}" data-go="${h}">${esc(t)}</button>`).join('');
     hint.textContent = p.hint; dots.innerHTML = p.dots ? Array.from({ length: p.dots[0] }, (_, i) => `<i class="${i === p.dots![1] ? 'on' : i < p.dots![1] ? 'done' : ''}"></i>`).join('') : '';
     const ls: (keyof typeof UI)[] = ['what', 'parts', 'how', 'why'];
-    info.innerHTML = `<div class="l4-ih"><b>${esc(p.ttl)}</b><button type="button" class="l4-kb" data-k="${p.k}">${T('kc')} ${p.k}</button></div><dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(p.info[i]!)}</dd></div>`).join('')}</dl>`;
+    info.innerHTML = infoHtml(p.info, p.k, ls);
     const m = p.math ?? K_MATH[p.k] ?? null;
     if (p.mg) { mp.hidden = false; mp.textContent = p.mg[0]; mp.dataset.go = p.mg[1]; mp.dataset.k = ''; } else { mp.hidden = !m; mp.textContent = T('math'); mp.dataset.k = m ?? ''; delete mp.dataset.go; }
     stg.querySelectorAll('.l4-lb,.l4-fl,.l4-rl,.l4-pn,.l4-tag,.l4-note').forEach((e) => e.remove()); if (S) S.el.style.display = 'none';
