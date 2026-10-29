@@ -59,16 +59,23 @@ export async function lxDraw(root: HTMLElement, stg: HTMLElement, pg: LxPg, l: L
     if (tp.offsetHeight > H - y - 4) { tp.style.height = H - y - 4 + 'px'; fit(tp); }
     return;
   }
-  const draw = (k: number) => drawK(stg, pg, W, H, k, T, add);
+  const draw = (k: number, dy = 0) => drawK(stg, pg, W, H, k, T, add, dy);
   const clear = () => stg.querySelectorAll(LX_SEL).forEach((e) => e.remove());
   let k = 1, r = draw(1);
   while (!r.ok && k > 0.75) { const r2 = (clear(), draw(k - 0.06)); if (r2.tight && !r.tight) { clear(); r = draw(k); break; } k -= 0.06; r = r2; }
   if (!r.ok) stg.querySelectorAll<HTMLElement>('.lx-pn[data-tight]').forEach((e) => { e.style.overflowY = 'auto'; });
+  /* R42 L*-0: the overview panel hugs its text, so the slack it leaves goes half above and half below the diagram
+     and the panel sits on the bottom edge, right over the info box (no dead gap) */
+  if (pg.mode === 'full' && r.g.panel && r.ok) {
+    const pe = stg.querySelector<HTMLElement>('.lx-pn'), slack = pe ? r.g.panel.h - pe.offsetHeight : 0;
+    if (slack > 8) { clear(); const r2 = draw(k, Math.round(slack / 2)); const p2 = stg.querySelector<HTMLElement>('.lx-pn');
+      if (r2.ok && p2) { r = r2; p2.style.top = Math.round(H - 4 - p2.offsetHeight) + 'px'; } else { clear(); r = draw(k); } }
+  }
   const g = r.g;
   const s = await stage(stg, flat, pick, root); s.el.style.display = ''; s.set(g);
 }
-function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (t: Tx) => string, add: (cls: string, x: number, y: number, w: number | null, h: number | null, html: string, tag?: string) => HTMLElement): { g: G; ok: boolean; tight: boolean } {
-  const g: G = geo(pg.v!, W, H, pg.mode, pg.px ?? 170, k), D = pg.v!.dia; let tight = false, ok = true; void stg;
+function drawK(stg: HTMLElement, pg: LxPg, W: number, H: number, k: number, T: (t: Tx) => string, add: (cls: string, x: number, y: number, w: number | null, h: number | null, html: string, tag?: string) => HTMLElement, dy = 0): { g: G; ok: boolean; tight: boolean } {
+  const g: G = geo(pg.v!, W, H, pg.mode, pg.px ?? 170, k, dy), D = pg.v!.dia; let tight = false, ok = true; void stg;
   for (const n of g.nodes) {
     const d = D.nodes.find((q) => q.id === n.id)!, two = !!d.s || !!d.lines;
     const html = d.lines ? d.lines.map((t, i) => `<span class="${i ? 's' : 't'}">${esc(T(t))}</span>`).join('') : `<span class="t">${esc(T(d.t))}</span>${d.s ? `<span class="s">${esc(T(d.s))}</span>` : ''}`;

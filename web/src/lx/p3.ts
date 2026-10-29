@@ -85,7 +85,7 @@ function view(dia: Dia, st: Record<string, St>, o: { flow?: B[]; read?: boolean;
 }
 
 export function page(id: string, l: L): LxPg {
-  const z = (a: string, b: string) => (l === 'zh' ? a : b), EX = `<span class="l4-ex">${z('示例数字', 'example')}</span>`;
+  const z = (a: string, b: string) => (l === 'zh' ? a : b), EX = `<span class="l4-ex">${z('示例数字', 'example')}</span>`, REAL = `<span class="l4-ex real">${z('本站真实模型', 'this site’s real model')}</span>`;
   const pill = (t: string, go: string, c = '') => `<button type="button" class="lx-pl${c}" data-go="${go}">${t}</button>`, L4 = pill(z('进入第4层 ›', 'Go to layer 4 ›'), '#L4', ' gold');
   const lk = (t: string, go: string) => `<button type="button" class="lk" data-go="${go}">${t}</button>`;
   const bars = (a: [string, number][]) => `<div class="bars">${a.map(([k, v]) => `<b>${k}</b><span><i style="width:${v}%"></i></span><em>${v}%</em>`).join('')}</div>`;
@@ -93,7 +93,7 @@ export function page(id: string, l: L): LxPg {
   const chips = (out = '？', extra = '') => `<div class="lx-cps">${Array.from('天空是什么颜色？').map((c) => `<span class="c on">${c}</span>`).join('')}${extra}<i>→</i><span class="c out">${out}</span></div>`;
   const TT = `<b class="lx-tt">${z('训练例句：天空是蓝色的。', 'Training sentence: 天空是蓝色的。 (The sky is blue.)')}</b>`;
   const tr = /^T\d$/.test(id), us = /^U\d$/.test(id);
-  const L3c: [string, string | null] = [z('第3层 大模型原理', 'Layer 3 How an LLM works'), '#L3'];
+  const L3c: [string, string | null] = [z('第3层 大模型怎么得来', 'Layer 3 How a big model is made'), '#L3'];
   const crumb: [string, string | null][] = id === 'L3' ? [[z('首页', 'Home'), '#home'], [L3c[0], null]]
     : tr ? [[z('第3层', 'Layer 3'), '#L3'], [z('看它怎么训练', 'Training'), id === 'T1' ? null : '#L3/T1']] : us ? [[z('第3层', 'Layer 3'), '#L3'], [z('看它怎么使用', 'Use'), id === 'U1' ? null : '#L3/U1']] : [[z('第3层', 'Layer 3'), '#L3']];
   const p: LxPg = { id, mode: 'left', v: null, top: TT, crumb, ttl: '', info: ['', '', '', ''], k: 'KC01', math: null, hint: z('点带 + 的块可就地展开', 'Tap a box with + to open it here'),
@@ -119,7 +119,7 @@ export function page(id: string, l: L): LxPg {
         + `<div class="ib mono">天空是蓝色的<br>→ 天空|是|蓝色|的<br>→ 812 15 3301 9</div>${EX}${dv(z('GPT-2 的字典约 5 万个。', 'GPT-2’s dictionary has about 50 thousand.'))}${sub(z('训练和使用必须用同一本字典。', 'Training and use must share one dictionary.'))}${dv(lk(z('细节见第4层 ›', 'Details in layer 4 ›'), '#L4/tr/2'))}`, [5, 1]); break;
     case 'T3':
       set(z('③预训练：猜下一个字', '③ Pre-training'), view(Lf, { ...lit('t3'), par: 'lit' }, { fr: 't', conn: 't3' }), 'KC04', [z('在海量文字里练「猜下一个字」', 'Practise “guess the next char” on mass text'), z('文字 + Transformer + 误差 + 改参数', 'Text + Transformer + error + parameter changes'), z('猜→算误差→传回去改，重复', 'Guess → error → send it back, change; repeat'), z('答案在原文里，不用人工标注', 'The answer is in the text; no labels needed')],
-        `<h4>${z('③ 预训练', '③ Pre-training')}</h4>${dv(z('遮住下一个字让它猜：', 'Hide the next char and let it guess:'))}${ib(`天空是 → ${hl('？')}`)}${sub(z('刚开始（参数随机）：', 'At first (random parameters):'))}${bars([['蓝', 3], ['红', 2]])}${sub(z('练了很多遍以后：', 'After much practice:'))}${bars([['蓝', 70], ['红', 4]])}${EX}`
+        `<h4>${z('③ 预训练', '③ Pre-training')}</h4>${dv(z('遮住下一个字让它猜：', 'Hide the next char and let it guess:'))}${ib(`天空是什么颜色？ → ${hl('？')}`)}${sub(z('刚开始（参数随机）：', 'At first (random parameters):'))}${bars([['蓝', 5.4], ['草', 22.9]])}${sub(z('练 200 步以后：', 'After 200 steps:'))}${bars([['蓝', 99.8]])}${REAL}`
         + dv(z(`答案就是原文的下一个字，${hl('不用人来标注')}。`, `The answer is the text’s own next char: ${hl('no human labels')}.`)) + dv(z('猜错 → 算误差 → 改参数，在海量文字上重复。', 'Wrong guess → error → change the parameters, repeated over mass text.')) + dv(lk(z('每一步细节见第4层 ›', 'Each step in layer 4 ›'), '#L4/tr/3')), [5, 2]); break;
     case 'T4':
       set(z('④微调：学会回答', '④ Fine-tuning'), view(Lf, { ...lit('t4'), par: 'lit' }, { fr: 't', conn: 't4' }), 'KC06', [z('让模型学会听指令、好好回答', 'Teaches it to follow instructions and answer well'), z('预训练参数 + 人写的问答样例', 'Pre-trained parameters + human-written Q&A examples'), z('用样例继续训练，参数小幅调整', 'Train on the examples; small parameter changes'), z('知识已有，只需教它怎么回答', 'The knowledge is there; it only learns to answer')],
@@ -153,7 +153,7 @@ export function page(id: string, l: L): LxPg {
         + sub(z('外面整套流程仍然可见；这里只是把一个块打开。', 'The whole flow stays in view; one box is just opened.')) + dv(z('每个部件的完整架构图在第4层：', 'The full diagram of every part is in layer 4:')) + L4, [5, 2]); break;
     case 'U4': p.top = chips('蓝');
       set(z('④得到下一个字', '④ The next char'), view(Lf, lit('u4'), { fr: 'u', flow: ['u1', 'u2', 'u3', 'u4'], conn: 'u4' }), 'KC11', [z('从所有字里选出下一个字', 'Picks the next char from all of them'), z('概率 + 选字规则（温度等）', 'Odds + a picking rule (temperature…)'), z('最高的直接选，或按概率抽', 'Take the top, or draw by the odds'), z('既要准，也要能有变化', 'Accurate, yet able to vary')],
-        `<h4>${z('④ 得到下一个字', '④ Get the next char')}</h4>${dv(z('分数变成概率：', 'Scores become odds:'))}${bars([['蓝', 84], ['绿', 10], ['红', 6]])}${EX}${dv(z('怎么选：', 'How to pick:'))}${dv(z(`· 总选最高 → ${hl('蓝')}`, `· Always the top → ${hl('蓝')} (blue)`))}${dv(z('· 按概率抽 → 偶尔选到别的', '· Draw by the odds → now and then another'))}${dv(z('· 温度越低越稳，越高越多样', '· Lower temperature steadier, higher more varied'))}`
+        `<h4>${z('④ 得到下一个字', '④ Get the next char')}</h4>${dv(z('分数变成概率：', 'Scores become odds:'))}${bars([['蓝', 99.8], ['绿', 0.05], ['红', 0.04]])}${REAL}${dv(z('怎么选：', 'How to pick:'))}${dv(z(`· 总选最高 → ${hl('蓝')}`, `· Always the top → ${hl('蓝')} (blue)`))}${dv(z('· 按概率抽 → 偶尔选到别的', '· Draw by the odds → now and then another'))}${dv(z('· 温度越低越稳，越高越多样', '· Lower temperature steadier, higher more varied'))}`
         + dv(lk(z('选法细节见第4层 ›', 'Picking in layer 4 ›'), '#L4/us/9')), [5, 3]); break;
     case 'U5': p.top = chips('？', '<span class="c g">蓝</span>');
       set(z('⑤接到末尾，再来一轮', '⑤ Append and go again'), view(Lf, lit('u5'), { fr: 'u', flow: ['u1', 'u2', 'u3', 'u4', 'u5'], loop: true, conn: 'u5' }), 'KC09', [z('一个字一个字写完整段回答', 'Writes the whole answer char by char'), z('选出的字 + 原来的文字 + 停止规则', 'The picked char + the text so far + a stop rule'), z('追加到末尾，再走①到④', 'Append it, run ① to ④ again'), z('每步都只做擅长的「猜下一个字」', 'Each step does what it is best at: the next char')],

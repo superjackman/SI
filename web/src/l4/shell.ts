@@ -6,7 +6,7 @@ import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
 import { FRAME, LAB, LAB_S, NODES, NODE_INFO, NODE_K, PLUS, RES, K_MATH, STEPN, UI, tx, type L, type Nd, type Tx } from './txt';
-import { MY_DEFAULT, ORDER, Q, X_ORDER, hashOf, page, parse, validX, xHash, type Ans, type Ctx, type My, type Page } from './pages';
+import { MY_DEFAULT, ORDER, Q, fixLines, X_ORDER, hashOf, page, parse, validX, xHash, type Ans, type Ctx, type My, type Page } from './pages';
 import type { Stage } from './scene3d';
 import { LIVE, LX, LX_N, LX_SEL, isLx, layerOf, lxFrom, lxHash, lxPrev } from '../lx/ids';
 import type { LxPg } from '../lx/types';
@@ -15,6 +15,8 @@ import type { Trace } from './tf/model';
 import { PATH, plan, QKEY, type QState } from '../px/qpath';
 import { bump } from '../px/rec';
 import { applyAnim } from '../store/prefs';
+import { normCrumb } from './crumb';
+import { lastPage, layerStats, lvTag, pageLayer, pageName, pbar, pushRecent } from './progress';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id);
@@ -26,11 +28,11 @@ export function start(doc: Document = document, win: Window = window) {
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
   root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><div class="l4-tx" aria-live="polite"></div><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
-<div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div>
+<div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
 <main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
 <div class="l4-ent" hidden></div>
 <section class="l4-info"></section>
-<p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div><div class="l4-qp" hidden></div>
+<p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div>
 <nav class="l4-nav"><button type="button" class="l4-r" data-a="map"></button><button type="button" class="l4-r" data-a="prog"></button><button type="button" class="l4-r pri" data-a="next"></button></nav>
 <div class="l4-rot" aria-hidden="true"><div><b>⟲</b><p class="t"></p><p class="s"></p></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
@@ -79,7 +81,7 @@ export function start(doc: Document = document, win: Window = window) {
   /* the info box like the reference: four rows, a tall gold 知识卡 button on the right (the card id is in its label) */
   const infoHtml = (v: readonly string[], k: string, ls: (keyof typeof UI)[]) => `<dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(v[i]!)}</dd></div>`).join('')}</dl><button type="button" class="l4-kb" data-k="${k}" aria-label="${T('kcT')} ${k}"><span>${T('kc')}</span></button>`;
   function drawTop(p: Page | null) {
-    if (!p) { txt.innerHTML = `<b class="l4-tt">${T('title')}</b>`; return; }
+    if (!p) { txt.innerHTML = `<b class="l4-tt l4-brand">${T('brand')}<span class="l4-bsub">${T('title')}</span></b>`; return; }
     /* like the reference: a title on the overview, the worked example while training, the live question (→ ?) elsewhere */
     const tt = p.kind === 'l4' ? T('topL4') : p.kind === 'tr' ? T('topTr') : p.kind === 'my' ? T('topMy') : '';
     if (tt) { txt.innerHTML = `<b class="l4-tt">${esc(tt)}</b>`; return; }
@@ -123,9 +125,20 @@ export function start(doc: Document = document, win: Window = window) {
     const s = await stage(); s.set(D);
   }
   function drawHome() {
-    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="s">${on ? T('live') : T('soon')}</span></button>`; }).join('');
+    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}</button>`; }).join('');
     const hr = (go: string, k: string, s: string, pri = false) => `<button type="button" class="l4-hr${pri ? ' pri' : ''}" data-go="${go}"><b>${k}</b><span>${s}</span></button>`;
-    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make a card'], lang))}</div><button type="button" class="l4-qk" data-go="#Q">⏱ ${tx(['10 分钟快速路径', '10-minute quick path'], lang)} · ${tx(['约 {m} 分钟', 'about {m} min'], lang).replace('{m}', String(Math.round(plan(lang).total / 60)))}</button>`;
+    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make a card'], lang))}</div>${goCard()}`;
+  }
+  /* R42 G1 / G1b: a first visit gets the quick path; a returning reader gets 继续上次 with that layer's progress */
+  function goCard() {
+    const last = lastPage();
+    if (!last) return `<div class="l4-go"><div class="r"><b>${tx(['从这里开始', 'Start here'], lang)}</b><span class="m">${tx(['第一次来？', 'First visit?'], lang)}</span></div>`
+      + `<p>⏱ ${tx(['10 分钟快速路径 · 12 站，走一遍五层，外加 2 张知识卡', '10-minute quick path · 12 stops through all five layers, plus 2 cards'], lang)}</p>`
+      + `<button type="button" class="l4-b gold big" data-go="#Q">${tx(['开始快速路径 ›', 'Start the quick path ›'], lang)}</button></div>`;
+    const n = pageLayer(last.id), st = layerStats(seen)[n - 1]!;
+    return `<div class="l4-go"><div class="r"><b>${tx(['继续上次', 'Pick up where you left off'], lang)}</b></div>`
+      + `<div class="r l">${lvTag(n, lang)}<span>${esc(pageName(last.id, lang))} · ${tx([`看过 ${st.s}/${st.t} 页`, `${st.s}/${st.t} pages seen`], lang)}</span></div>${pbar(st.s, st.t, n)}`
+      + `<div class="r"><button type="button" class="l4-b gold big" data-go="${H(last.id)}">${tx(['继续 ›', 'Continue ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#Q">${tx(['10 分钟路径', '10-min path'], lang)}</button></div></div>`;
   }
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
@@ -133,7 +146,7 @@ export function start(doc: Document = document, win: Window = window) {
   function render() {
     root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
     $('[data-a="set"]').textContent = '⚙'; $('[data-a="set"]').setAttribute('aria-label', tx(['设置', 'Settings'], lang)); $('[data-a="back"]').textContent = '‹'; $('[data-a="back"]').setAttribute('aria-label', T('back'));
-    $('[data-a="map"]').innerHTML = `<span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<span>${T('next')}</span>`;
+    $('[data-a="map"]').innerHTML = `<span>${T('map')}</span>`; $('[data-a="prog"]').innerHTML = `<span>${T('prog')}</span>`; $('[data-a="next"]').innerHTML = `<span>${qOn() ? tx(['下一站', 'Next'], lang) : T('next')}</span>`;
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
     root.dataset.page = cur;
@@ -145,19 +158,19 @@ export function start(doc: Document = document, win: Window = window) {
       if (soon) drawSoon(Number(cur[1]) - 1); else drawHome(); return; }
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);
-    crumb.innerHTML = pg.crumb.map(([t, h], i) => (h ? `<a href="${h}">${esc(t)}</a>` : `<span${i === pg!.crumb.length - 1 ? ' class="cur"' : ''}>${esc(t)}</span>`)).join('<span class="sep">›</span>') + (pg.up ? ` <a class="l4-up" href="${pg.up}">${T('up')}</a>` : '');
+    crumb.innerHTML = crumbs(pg.crumb, pg.up);
     ent.hidden = !pg.ent; ent.innerHTML = pg.ent ? `<button type="button" class="l4-b" data-go="#L4/tr/1">${T('entTr')}</button><button type="button" class="l4-b" data-go="#L4/us/1">${T('entUs')}</button><button type="button" class="l4-b" data-go="#L4/my/1">${T('entMy')}</button>` : '';
-    hint.textContent = pg.hint; dots.innerHTML = pg.dots ? Array.from({ length: pg.dots[0] }, (_, i) => `<i class="${i === pg!.dots![1] ? 'on' : i < pg!.dots![1] ? 'done' : ''}"></i>`).join('') : '';
+    hint.textContent = pg.hint; endB(); dots.innerHTML = pg.dots ? Array.from({ length: pg.dots[0] }, (_, i) => `<i class="${i === pg!.dots![1] ? 'on' : i < pg!.dots![1] ? 'done' : ''}"></i>`).join('') : '';
     drawInfo(); void drawStage();
   }
   /* ---------- layers 1, 2, 3 and 5 (lazy, one chunk per layer) ---------- */
-  const crumbs = (c: [string, string | null][], up: string | null = null) => c.map(([t, h], i) => (h ? `<a href="${h}">${esc(t)}</a>` : `<span${i === c.length - 1 ? ' class="cur"' : ''}>${esc(t)}</span>`)).join('<span class="sep">›</span>') + (up ? ` <a class="l4-up" href="${up}">${T('up')}</a>` : '');
+  function crumbs(c0: [string, string | null][], up: string | null = null) { return normCrumb(c0, lang).map(([t, h], i, c) => (h ? `<a href="${h}">${esc(t)}</a>` : `<span${i === c.length - 1 ? ' class="cur"' : ''}>${esc(t)}</span>`)).join('<span class="sep">›</span>') + (up ? ` <a class="l4-up" href="${up}">${T('up')}</a>` : ''); }
   async function renderLx() {
     const id = cur, l = lang, tok = ++lxTok, v = await import('../lx/view'), p = await v.lxPage(id, l);
     if (tok !== lxTok) return; lp = p; delete root.dataset.lx; delete root.dataset.cmp;
     txt.innerHTML = p.top; crumb.innerHTML = crumbs(p.crumb);
     ent.hidden = !p.ent; ent.innerHTML = (p.ent ?? []).map(([t, h, g]) => `<button type="button" class="l4-b${g ? ' gold' : ''}" data-go="${h}">${esc(t)}</button>`).join('');
-    hint.textContent = p.hint; dots.innerHTML = p.dots ? Array.from({ length: p.dots[0] }, (_, i) => `<i class="${i === p.dots![1] ? 'on' : i < p.dots![1] ? 'done' : ''}"></i>`).join('') : '';
+    hint.textContent = p.hint; endB(); dots.innerHTML = p.dots ? Array.from({ length: p.dots[0] }, (_, i) => `<i class="${i === p.dots![1] ? 'on' : i < p.dots![1] ? 'done' : ''}"></i>`).join('') : '';
     const ls: (keyof typeof UI)[] = ['what', 'parts', 'how', 'why'];
     info.innerHTML = infoHtml(p.info, p.k, ls);
     const m = p.math ?? K_MATH[p.k] ?? null;
@@ -174,18 +187,33 @@ export function start(doc: Document = document, win: Window = window) {
       top: (h) => { txt.innerHTML = h; }, crumb: (c) => { crumb.innerHTML = crumbs(c); } });
   }
   const qGet = () => LS.get<QState | null>(QKEY, null), stopOf = (h: string) => { const i = parse(h).id; return lxFrom(i) ?? i; };
+  /* R42 the last page of each layer ends with 「✓ 第n层「…」看完了」 + the layer quiz + the next layer (layer 5: home / progress) */
+  const END: Record<string, number> = { 'L1-6': 1, 'L2-7': 2, 'L3-X': 3, 'X:att.mask': 4, M8: 5 };
+  const endB = () => {
+    const n = END[cur]; hint.classList.toggle('l4-end', !!n); if (!n) return;
+    const nx = n < 5 ? `<button type="button" class="l4-b gold" data-go="#L${n + 1}">${tx(['去第{n}层 ›', 'On to layer {n} ›'], lang).replace('{n}', String(n + 1))}</button>`
+      : `<button type="button" class="l4-b gold" data-go="#home">${tx(['回首页 · 看看进度', 'Home · see progress'], lang)}</button>`;
+    hint.innerHTML = `<b>✓ ${tx(['第{n}层「{t}」看完了', 'Layer {n} “{t}” done'], lang).replace('{n}', String(n)).replace('{t}', tx(UI.lvN[n - 1]!, lang))}${n === 5 ? `<span> · ${tx(['五层都走完了', 'all five layers done'], lang)}</span>` : ''}</b>`
+      + `<span class="r"><button type="button" class="l4-b" data-go="#P/q${n}">${tx(['做第{n}层小测（{q} 题）', 'Layer {n} quiz ({q})'], lang).replace('{n}', String(n)).replace('{q}', '4')}</button>${nx}</span>`;
+    dots.innerHTML = '';
+  };
+  const qOn = () => !!qGet()?.on && !isPx(cur) && cur !== 'home';
   function drawQp() {
-    const q = qGet(), on = !!q?.on && !isPx(cur) && cur !== 'home'; qp.hidden = !on; hint.hidden = on; dots.hidden = on; if (!on) return;
+    const q = qGet(), on = qOn(); qp.hidden = !on; hint.hidden = on; dots.hidden = on; root.dataset.q = on ? '1' : '';
+    const nb = $('[data-a="next"] span'); if (nb) nb.textContent = on ? tx(['下一站', 'Next'], lang) : T('next'); if (!on) return;
     const p = plan(lang), j = PATH.findIndex(([h]) => stopOf(h) === cur), i = j >= 0 ? j : q!.i, left = p.sec.slice(i).reduce((a, b) => a + b, 0);
-    qp.innerHTML = `<span>${tx(['快速路径 {i}/{n} · 还剩约 {m} 分钟', 'Quick path {i}/{n} · about {m} min left'], lang).replace('{i}', String(i + 1)).replace('{n}', String(PATH.length)).replace('{m}', String(Math.max(1, Math.round(left / 60))))}${j < 0 ? tx([' · 点「下一步」回到路径', ' · tap Next to rejoin'], lang) : ''}</span><b class="bar"><i style="width:${Math.round((i / PATH.length) * 100)}%"></i></b><button type="button" data-a="qx" aria-label="${tx(['退出快速路径', 'Leave the quick path'], lang)}">×</button>`;
+    qp.innerHTML = `<b>⏱ ${tx(['快速路径', 'Quick path'], lang)}</b><span class="n">${tx(['第 {i}/{n} 站', 'Stop {i}/{n}'], lang).replace('{i}', String(i + 1)).replace('{n}', String(PATH.length))}</span><b class="bar"><i style="width:${Math.round(((i + 1) / PATH.length) * 100)}%"></i></b><span class="m">${j < 0 ? tx(['点「下一站」回到路径', 'Tap Next stop to rejoin'], lang) : tx(['还剩约 {m} 分钟', 'about {m} min left'], lang).replace('{m}', String(Math.max(1, Math.round(left / 60))))}</span><button type="button" data-a="qx" aria-label="${tx(['退出快速路径', 'Leave the quick path'], lang)}">×</button>`;
   }
+  function qNext() { const q = qGet()!, j = PATH.findIndex(([h]) => stopOf(h) === cur), n = j < 0 ? q.i : j + 1; if (n >= PATH.length) { go('#Q/done'); return; } const [h, c] = PATH[n]!; go(h + (c ? '~' + c : '')); }
+
   /* ---------- sheets: card, map, progress ---------- */
   let cardFor = '';
   async function card(id: string | null) {
     root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!id) { cardFor = ''; return; }
-    const [k, p] = id.split('.') as [string, string | undefined]; opened.add(k); LS.set('si.l4.cards', [...opened]);
+    const [k, p] = id.split('.') as [string, string | undefined]; pushRecent(k, 'c'); opened.add(k); LS.set('si.l4.cards', [...opened]);
     const m = await import('./sheet'); cardFor = id;
-    await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(H(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${H(cur)}`);
+    const j = qOn() ? PATH.findIndex(([h, c]) => c === k && stopOf(h) === cur) : -1;
+    await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(H(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${H(cur)}`, j >= 0 ? { i: j + 1, n: PATH.length, next: qNext } : undefined);
   }
   function list(title: string, body: string) {
     root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); const e = doc.createElement('div'); e.className = 'l4-sheet l4-ms'; e.setAttribute('role', 'dialog'); e.setAttribute('aria-label', title);
@@ -194,12 +222,13 @@ export function start(doc: Document = document, win: Window = window) {
   }
   const li = (id: string, label: string) => `<a href="${H(id)}" class="${id === cur ? 'here' : seen.has(id) ? 'seen' : ''}">${esc(label)}${id === cur ? ` <em>${T('here')}</em>` : ''}</a>`;
   function mapSheet() {
-    const sec = (t: string, ids: string[], ns: Tx[]) => `<h4>${esc(t)}</h4><div class="l4-ml">${ids.map((id, i) => li(id, tx(ns[i]!, lang))).join('')}</div>`;
+    const stats = layerStats(seen), lh = (n: number) => { const x = stats[n - 1]!; return `<h4 class="l4-mh">${esc(`${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)}`)}${pbar(x.s, x.t, n)}<span class="m">${x.s === x.t ? tx(['看完 ✓', 'All seen ✓'], lang) : tx([`看过 ${x.s}/${x.t}`, `${x.s}/${x.t} seen`], lang)}</span></h4>`; };
+    const sec = (t: string, ids: string[], ns: Tx[], n = 0) => `${n ? lh(n) : `<h4>${esc(t)}</h4>`}<div class="l4-ml">${ids.map((id, i) => li(id, tx(ns[i]!, lang))).join('')}</div>`;
     const xs = X_ORDER.map((p) => 'X:' + p), xn: Tx[] = [LAB.att, ['Q·K 打分', 'Q·K scores'], ['一个数', 'One number'], ['多头', 'Heads'], ['遮罩', 'Mask'], LAB.ffn, LAB.an1];
-    const lxs = (n: 1 | 2 | 3 | 5) => LIVE.includes(n) ? sec(`${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)}`, LX[n], LX[n].map((id) => LX_N[id]!)) : '';
+    const lxs = (n: 1 | 2 | 3 | 5) => LIVE.includes(n) ? sec('', LX[n], LX[n].map((id) => [tx(LX_N[id]!, 'zh').replace(/^M\d\s+/, ''), tx(LX_N[id]!, 'en').replace(/^M\d\s+/, '')] as Tx), n) : '';
     const soonL = [1, 2, 3, 5].filter((n) => !LIVE.includes(n)).map((n) => `<a href="#L${n}">${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)} <em>${T('soon')}</em></a>`).join('');
     list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
-      + sec(T('L4'), ['L4'], [UI.whole as Tx]) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5));
+      + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5));
   }
   /* ---------- routing ---------- */
   function route() {
@@ -211,6 +240,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     if (id !== cur) bump();
     const q = qGet(); if (q?.on) { const j = PATH.findIndex(([h]) => stopOf(h) === id); if (j >= 0 && j !== q.i) LS.set(QKEY, { ...q, i: j, max: Math.max(q.max, j) }); }
+    if (id !== cur && pageLayer(id)) pushRecent(id, 'p');
     cur = id; if (!isPx(id)) { seen.add(id); LS.set('si.l4.seen', [...seen]); } root.querySelector('.l4-ms')?.remove();
     render(); drawQp();
     const want = r.card && /^K[MABC]?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);
@@ -234,15 +264,30 @@ export function start(doc: Document = document, win: Window = window) {
         cleared: () => { seen.clear(); opened.clear(); render(); } }); }); break;
       case 'prog': go('#R'); break;
       case 'qx': { const q = qGet(); if (q) LS.set(QKEY, { ...q, on: false }); drawQp(); break; }
-      case 'next': { const q = qGet(); if (q?.on && !isPx(cur)) { const j = PATH.findIndex(([h]) => stopOf(h) === cur), n = j < 0 ? q.i : j + 1; if (n >= PATH.length) { go('#Q/done'); break; } const [h, c] = PATH[n]!; go(h + (c ? '~' + c : '')); break; } }
+      case 'next': { if (qGet()?.on && !isPx(cur)) { qNext(); break; } }
         if (isPx(cur)) { go(pxNext(cur)); break; }
         go(cur === 'home' ? '#L1' : lxOn(cur) ? lp?.next ?? '#L4' : /^L[1235]$/.test(cur) ? '#L4' : pg?.next ?? '#L4'); break;
     }
   });
   root.addEventListener('input', (e) => {
-    const t = e.target as HTMLInputElement; if (t.dataset.my === 'lines') my.lines = t.value.split('\n'); else if (t.dataset.my === 'q') my.q = t.value;
+    const t = e.target as HTMLInputElement; if (t.dataset.my === 'lines') { myFix(t as unknown as HTMLTextAreaElement); my.lines = t.value.split('\n'); } else if (t.dataset.my === 'q') my.q = t.value;
   });
+  /* R42: half-width ? and -> (=>, :) are fixed in place, with a one-line notice */
+  function myFix(ta: HTMLTextAreaElement) {
+    const f = fixLines(ta.value); if (!f.fixed.length) return;
+    const pos = ta.selectionStart ?? ta.value.length, d = ta.value.length - f.text.length; ta.value = f.text; const q = Math.max(0, pos - d); ta.setSelectionRange(q, q);
+    my.fix = tx([`✓ 第 ${f.fixed.join('、')} 行的半角符号已帮你改成「？」「→」`, `✓ Line ${f.fixed.join(', ')}: half-width marks changed to “？” and “→”`], lang);
+    const n = root.querySelector<HTMLElement>('[data-my="fix"]'); if (n) { n.textContent = my.fix; n.hidden = false; }
+  }
+  function myIns(txt: string, line: boolean) {
+    const ta = root.querySelector<HTMLTextAreaElement>('[data-my="lines"]'); if (!ta) return;
+    if (line) ta.value = ta.value.replace(/\n*$/, '') + (ta.value.trim() ? '\n' : '') + txt;
+    else { const a = ta.selectionStart ?? ta.value.length, b = ta.selectionEnd ?? a; ta.value = ta.value.slice(0, a) + txt + ta.value.slice(b); ta.setSelectionRange(a + txt.length, a + txt.length); }
+    my.lines = ta.value.split('\n'); ta.focus();
+  }
   async function act(x: string) {
+    if (x === 'my-arrow') { myIns('→', false); return; }
+    if (x === 'my-ex') { myIns(tx(['太阳是什么颜色？→红', '太阳是什么颜色？→红'], lang), true); return; }
     const c = await tf();
     if (x === 'my-add') { const ta = root.querySelector<HTMLTextAreaElement>('[data-my="lines"]'); if (ta) { ta.value = ta.value.replace(/\n*$/, '') + '\n'; my.lines = ta.value.split('\n'); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } return; }
     if (x === 'my-train') {
@@ -262,4 +307,9 @@ export function start(doc: Document = document, win: Window = window) {
   let rz = 0; win.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); }); });
   useApp.subscribe((s) => { const l: L = s.lang === 'en' ? 'en' : 'zh'; if (l !== lang) { lang = l; route(); } });
   route();
+  /* R42 first visit: the 3-step welcome (lazy), only when the visit starts on the home page */
+  if (cur === 'home' && !LS.get<string | null>('si.onb', null)) void import('./onb').then((m) => {
+    const o = m.showOnb(root, lang, () => void import('../px/view').then((v) => v.qStart(go)));
+    useApp.subscribe((st) => { const l: L = st.lang === 'en' ? 'en' : 'zh'; if (root.contains(root.querySelector('.l4-ob'))) o.redraw(l); });
+  }).catch(() => { /* optional */ });
 }

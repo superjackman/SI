@@ -5,7 +5,7 @@ import { test, expect, type Page } from '@playwright/test';
    L4 only in this batch (L1/2/3/5 "即将上线"); the R34–R37 3D site and the classic site are gone. All numbers come from the real
    hand-written TS Transformer in a worker. */
 const ORIGIN = 'http://localhost:4173';
-test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }] }] } });
+test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 async function open(p: Page, q: string, ready = true) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -49,7 +49,7 @@ test.describe('R38 explorer', () => {
     await page.goto('./?lang=zh#home'); await page.locator('.l4-hr.pri').click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
     await page.goto('./?lang=zh#home');
     await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
-    await page.locator('.l4-home [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-st b').first()).toBeVisible();
+    await page.locator('.l4-home [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-lvr').first()).toBeVisible(); /* R42: G3 progress page — five layer rows */
     expect(errs).toEqual([]);
   });
   test('old addresses (?w=3d, ?classic=1, #T1, #learn) land on the explorer home: the old sites are gone', async ({ page }) => {
@@ -148,7 +148,7 @@ test.describe('R38 explorer', () => {
     await page.locator('.l4-ms a[href$="#L4/tr/2"]').click(); await expect(page).toHaveURL(/tr\/2$/);
     await go('#L4/tr/3'); await page.locator('[data-a="map"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
     await go('#L4/tr/2'); await page.locator('[data-a="prog"]').click(); await expect(page).toHaveURL(/#R$/);
-    await expect.poll(async () => Number(await page.locator('.px-st b').first().textContent())).toBeGreaterThanOrEqual(2);
+    await expect.poll(async () => Number(/\d+/.exec((await page.locator('.px-lvr[data-go="#L4"] i').first().textContent()) ?? '')?.[0] ?? 0)).toBeGreaterThanOrEqual(2); /* R42: per-layer seen count */
     await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
     await go('#L4/tr/2');
     await page.locator('[data-a="lang"]').click(); await expect(page.locator('#l4')).toHaveAttribute('data-lang', 'en'); expect(await page$(page)).toBe('TR2');

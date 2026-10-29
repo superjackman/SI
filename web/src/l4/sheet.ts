@@ -25,18 +25,20 @@ const sec = (n: string, cls: string, h: string, body: string) => `<section class
 const K_GO: Record<string, [readonly [string, string], string]> = { KA06: [['进入第2层 ›', 'Go to layer 2 ›'], '#L2'], KB07: [['进入第3层 ›', 'Go to layer 3 ›'], '#L3'] };
 /** KM card → the M page that uses it (reference footer 「看它在哪用 › … 对应 Mn」) */
 const KM_USE: Record<string, string> = { KM01: 'M1a', KM02: 'M2a', KM03: 'M3a', KM04: 'M4a', KM05: 'M4b', KM06: 'M5a', KM07: 'M5a', KM08: 'M6a', KM09: 'M7a', KM10: 'M6c', KM11: 'M8', KM12: 'M2d' };
+/** reference footer 「… · 对应第5层·交叉熵」: the M group by name, never its id (C5) */
+const KM_NM: Record<string, readonly [string, string]> = { M1: ['向量', 'Vectors'], M2: ['点积', 'Dot product'], M3: ['矩阵乘法', 'Matrices'], M4: ['softmax', 'Softmax'], M5: ['交叉熵', 'Cross-entropy'], M6: ['梯度', 'Gradients'], M7: ['链式法则', 'Chain rule'], M8: ['归一化', 'Normalisation'] };
 export interface SheetApi { close(): void }
 /** open card `id` (page p) inside `host`; `go` changes the hash */
-export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go: (suffix: string | null) => void, pageUrl: string): Promise<void> {
+export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go: (suffix: string | null) => void, pageUrl: string, q?: { i: number; n: number; next: () => void }): Promise<void> {
   const all = await cards(l, id), c = all[id]; host.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!c) return;
   const T = (k: keyof typeof UI) => tx(UI[k] as readonly [string, string], l), km = id.startsWith('KM'), math = km ? null : K_MATH[id] ?? null, LV = lvOf(id);
-  const jg: [readonly [string, string], string] | undefined = K_GO[id] ?? (KM_USE[id] ? [['看它在哪用 ›', 'Where it is used ›'], '#L5/' + KM_USE[id]] : undefined), mu = KM_USE[id] ? KM_USE[id]!.slice(0, 2) : '';
-  const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p);
+  const jg: [readonly [string, string], string] | undefined = K_GO[id] ?? (KM_USE[id] ? [['看它在哪用 ›', 'Where it is used ›'], '#L5/' + KM_USE[id]] : undefined);
+  const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p); if (q) el.classList.add('q');
   const head = `<header class="l4-sh"><span class="l4-kid">${id}</span><b class="l4-kn">${c.n}</b><span class="l4-ktag">${LV.tag ? tx(LV.tag, l) : T('kcT')}${p === 2 ? ' ' + tx(['（续）', '(cont.)'], l) : ''}</span></header>`;
   const body = p === 1
     ? `<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}`
     : sec(T('s5'), 'c5', c.s[4], '');
-  el.innerHTML = `<div class="l4-sin">${head}<div class="l4-sbody">${body}</div><footer class="l4-sf">${jg ? `<button type="button" class="l4-b gold" data-s="jump">${tx(jg[0], l)}</button>` : ''}${math ? `<button type="button" class="l4-b gold" data-s="math">${T('math')}</button>` : ''}<button type="button" class="l4-b" data-s="close">${T('back')}</button><button type="button" class="l4-b" data-s="flip">${p === 1 ? T('cont') : T('prev')}</button><button type="button" class="l4-b" data-s="share">${T('shareB')}</button><small class="l4-sfh">${tx(['下滑关闭 · 左右滑看上/下一页', 'Swipe down to close · left/right to turn'], l)}${mu ? tx([' · 对应 ', ' · see '], l) + mu : ''}</small></footer><div class="l4-shr" hidden></div></div>`;
+  el.innerHTML = `<div class="l4-sin">${head}<div class="l4-sbody">${body}</div><footer class="l4-sf">${jg ? `<button type="button" class="l4-b gold" data-s="jump">${tx(jg[0], l)}</button>` : ''}${math ? `<button type="button" class="l4-b gold" data-s="math">${T('math')}</button>` : ''}<button type="button" class="l4-b" data-s="close">${T('back')}</button><button type="button" class="l4-b" data-s="flip">${p === 1 ? T('cont') : T('prev')}</button><button type="button" class="l4-b" data-s="share">${T('shareB')}</button>${q ? `<button type="button" class="l4-b gold" data-s="qnext">${tx(['下一站 ›', 'Next stop ›'], l)}</button>` : ''}<small class="l4-sfh">${q ? tx([`下滑关闭 · 快速路径第 ${q.i}/${q.n} 站`, `Swipe down to close · quick path stop ${q.i}/${q.n}`], l) : (KM_USE[id] ? tx(['下滑关闭 · 左右滑看上/下一页 · 对应第5层·' + KM_NM[KM_USE[id]!.slice(0, 2)]![0], 'Swipe down · ←/→ to turn · Layer 5 · ' + KM_NM[KM_USE[id]!.slice(0, 2)]![1]], l) : tx(['下滑关闭 · 左右滑看上/下一页', 'Swipe down to close · left/right to turn'], l))}</small></footer><div class="l4-shr" hidden></div></div>`;
   host.appendChild(el);
   const sb = el.querySelector<HTMLElement>('.l4-sbody')!, more = () => sb.classList.toggle('more', sb.scrollTop + sb.clientHeight < sb.scrollHeight - 4);
   more(); sb.addEventListener('scroll', more, { passive: true });
@@ -44,6 +46,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     const b = (e.target as HTMLElement).closest<HTMLElement>('button'); if (!b) { if (e.target === el) go(null); return; }
     e.stopPropagation(); const s = b.dataset.s;
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
+    else if (s === 'qnext' && q) { el.remove(); q.next(); }
     else if (s === 'jump' && jg) { el.remove(); window.location.hash = jg[1]; }
     else if (s === 'share') void share(el.querySelector<HTMLElement>('.l4-shr')!, l, id, c, pageUrl);
     else if (b.dataset.f) void share(el.querySelector<HTMLElement>('.l4-shr')!, l, id, c, pageUrl, b.dataset.f as 'story' | 'post');
@@ -59,7 +62,9 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
   el.querySelector<HTMLElement>('.l4-b')?.focus({ preventScroll: true });
 }
 
-async function share(box: HTMLElement, l: L, id: string, c: Card, url: string, fmt: 'story' | 'post' = 'story') {
+async function share(box: HTMLElement, l: L, id: string, c: Card, _page: string, fmt: 'story' | 'post' = 'story') {
+  /* R42: the QR and the link open the card's own landing page (/c/<id>.html), which works in any chat app's preview */
+  const url = `${location.origin}${location.pathname.replace(/[^/]*$/, '')}c/${id}.html?lang=${l}`;
   const D = await import('./share/draw'), d = cardData(l, id, c, url, tx(D.SITE_N, l));
   const cv = D.draw(d, fmt), blob = await D.png(cv), src = URL.createObjectURL(blob);
   box.hidden = false; box.dataset.w = String(cv.width); box.dataset.h = String(cv.height); box.dataset.bytes = String(blob.size); box.dataset.text = D.words(d);

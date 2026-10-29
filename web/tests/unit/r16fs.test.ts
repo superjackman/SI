@@ -139,7 +139,8 @@ describe('R16 PWA manifest + meta', () => {
     const base = 'https://superjackman.github.io/SI/manifest.webmanifest';
     expect(new URL(m.start_url, base).href).toBe('https://superjackman.github.io/SI/');
     expect(new URL(m.scope, base).href).toBe('https://superjackman.github.io/SI/');
-    expect(m.theme_color).toBe('#4f46e5');
+    expect(m.theme_color).toBe('#0b1230'); // R42: dark, matches the app and the icons
+    expect(m.background_color).toBe('#0b1230');
     for (const i of m.icons) expect(readFileSync(join(web, 'public', i.src)).subarray(1, 4).toString()).toBe('PNG');
     expect(m.icons.some((i: { purpose: string }) => i.purpose === 'maskable')).toBe(true);
     const html = readFileSync(join(web, 'index.html'), 'utf8');

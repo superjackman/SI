@@ -5,7 +5,7 @@ import { all, litUpto, type Mode, type St } from './layout';
 import { FRAME2, LAB, NODE_INFO, NODE_K, STEPN, UI, isNd, tx, type Info, type L, type Nd, type Tx } from './txt';
 
 export type Ans = { chars: string[]; q: string; out: string; steps: { top: [number, number][] }[]; unknown: string[] };
-export interface My { lines: string[]; prog: Prog | null; running: boolean; paused: boolean; ans: Ans | null; q: string; err: string; ready: boolean }
+export interface My { lines: string[]; prog: Prog | null; running: boolean; paused: boolean; ans: Ans | null; q: string; err: string; ready: boolean; fix?: string }
 export interface Ctx { l: L; d: Demo | null; u: { chars: string[]; tr: Trace } | null; a: Ans | null; my: My }
 export interface Page {
   id: string; kind: 'l4' | 'tr' | 'us' | 'my' | 'x'; crumb: [string, string | null][]; top: string; mode: Mode; st: Record<Nd, St>;
@@ -44,7 +44,7 @@ const PI: Record<string, Info> = {
   US9: [['选出下一个字「蓝」', 'Picks the next char 蓝'], ['概率表 + 选字规则（温度等）', 'The odds + a pick rule (temperature…)'], ['把「蓝」接到末尾，再猜下一个', 'Append 蓝, guess the next'], ['一次一个字，循环写成整段', 'One char at a time, looped into text']],
   MY1: [['写你想让模型学的题和答案', 'Write what you want it to learn'], ['问题 + 答案，若干道', 'Questions + answers, a few lines'], ['开始训练时自动建字典', 'The dictionary is built when training starts'], ['亲手训练一次，最容易弄懂', 'Training one yourself makes it click']],
   MY2: [['在你手机里真的训练模型', 'Really trains a model on your phone'], ['前向、算误差、传回去、改参数', 'Forward, error, back, update'], ['亮蓝＝往上算，橙色＝往回传', 'Blue = going up, orange = going back'], ['误差往下掉，就是它在学会', 'A falling error means it is learning']],
-  MY3: [['检验模型到底学会了没有', 'Checks whether it really learned'], ['你训练出的参数 + 你的问题', 'Your trained parameters + your question'], ['只往上走一遍，不再改参数', 'One pass up, no more updates'], ['换个没教过的问法，看能否变通', 'Try an untaught wording']],
+  MY3: [['检验模型到底学会了没有', 'Checks whether it really learned'], ['你训练出的参数 + 你的问题', 'Your trained parameters + your question'], ['只往上走一遍，不再改参数', 'One pass up, no more updates'], ['它只背下你给的几句，没见过的字会自信地瞎猜', 'It only memorised your lines; unseen chars get a confident guess']],
 };
 const PK: Record<string, string> = { L4: 'K01', TR1: 'K13', TR2: 'K02', TR3: 'K12', TR4: 'K13', TR5: 'K14', TR6: 'K14', US1: 'K15', US2: 'K02', US3: 'K03', US4: 'K04', US5: 'K06', US6: 'K10', US7: 'K05', US8: 'K11', US9: 'K15', MY1: 'K14', MY2: 'K14', MY3: 'K15' };
 
@@ -112,7 +112,7 @@ export const xHash = (p: string) => `#L4/x/${p}`;
 
 /* ---------- pages ---------- */
 const base = (c: Ctx, id: string, kind: Page['kind']): Page => ({
-  id, kind, crumb: [['Transformer', '#L4']], top: '', mode: 'left', st: all('pass'), back: false, resOn: false, frameLit: false, frameTag: null, sel: null, flow: null,
+  id, kind, crumb: [[tx(UI.lv[3]!, c.l), '#L4']], top: '', mode: 'left', st: all('pass'), back: false, resOn: false, frameLit: false, frameTag: null, sel: null, flow: null,
   info: inf(PI[id] ?? PI.L4!, c), k: PK[id] ?? 'K01', math: null, hint: tx(UI.hint0, c.l), dots: null, panel: null, tags: [], notes: null, ent: false, next: '#L4', up: null,
 });
 const wait = (c: Ctx) => `<p class="l4-wait">${tx(UI.load, c.l)}</p>`;
@@ -136,14 +136,16 @@ function page0(id: string, c: Ctx): Page {
       p.panel = h(tx(['看到「？」后的第一次猜测', 'First guess after ？'], l)) + EX(l) + topBars(tr, ch, qi, 3, l) + sub(tx([`正确答案「蓝」只占 <b class="l4-o">${pc(tr.probs[qi * V + blue]!)}</b>：参数还是随机的。`, `The right answer 蓝 gets only <b class="l4-o">${pc(tr.probs[qi * V + blue]!)}</b>: the parameters are random.`], l)); }
     if (n === 4) { const pb = tr.probs[qi * V + blue]!; p.st = { ...all('pass'), out: 'back' };
       p.panel = h(tx(['误差（损失）', 'The error (loss)'], l)) + EX(l) + bars([[tx(['猜「蓝」', 'guess 蓝'], l), pb], [tx(['正确', 'target'], l), 1]], l, 1)
-        + `<p class="l4-f">−ln(${pb.toFixed(4)}) = <b class="l4-o">${(-Math.log(pb)).toFixed(2)}</b></p>` + sub(tx([`概率越接近 100%，误差越接近 0。这一题（答案 + 结束符）平均误差 ${tr.loss!.toFixed(2)}。`, `Closer to 100% means closer to 0. This line’s average (answer + END) is ${tr.loss!.toFixed(2)}.`], l)); }
+        + `<p class="l4-f">${tx(['「蓝」这一格：', 'The 蓝 cell: '], l)}−ln(${pb.toFixed(4)}) = <b class="l4-o">${(-Math.log(pb)).toFixed(2)}</b></p>`
+        + `<p class="l4-f">${tx(['第 1 题的误差 = ', 'Line 1’s error = '], l)}<b class="l4-o">${tr.loss!.toFixed(2)}</b></p>` + sub(tx(['第 1 题要猜两格：「蓝」和「结束」，误差取两格的平均。概率越接近 100%，误差越接近 0。', 'Line 1 has two cells to guess, 蓝 and END; its error is their average. Closer to 100% means closer to 0.'], l)); }
     if (n === 5) { p.st = all('back'); p.back = true; p.flow = { a: 'in', b: 'out', back: true }; p.panel = null; p.resOn = false;
       const nb = d.nb0, tag = (x: number) => `${tx(['该改多少', 'change'], l)} <b>${x.toFixed(2)}</b>`;
       p.tags = ([['lin', nb.lin], ['an2', nb.an2], ['ffn', nb.ffn], ['an1', nb.an1], ['att', nb.att], ['emb', nb.emb]] as [Nd, number][]).map(([nd, v]) => ({ nd, h: tag(v) }));
       p.notes = [tx([`误差 ${tr.loss!.toFixed(2)} 从顶上出发，往回传 ↓`, `Error ${tr.loss!.toFixed(2)} starts at the top, flows back ↓`], l), tx([`第 1 步：所有参数的梯度大小 ${d.gn0.toFixed(2)}（真实数字）`, `Step 1: gradient size of all parameters ${d.gn0.toFixed(2)} (real)`], l)]; }
     if (n === 6) { const a = d.after; p.flow = { a: 'in', b: 'out' };
-      p.panel = h(tx([`误差曲线（${d.steps} 步）`, `Error curve (${d.steps} steps)`], l)) + EX(l) + curve(d.losses) + `<p class="l4-f">${d.losses[0]!.toFixed(2)} → <b>${d.losses[d.losses.length - 1]!.toFixed(3)}</b></p>`
-        + `<p class="l4-f">p(蓝) ${pc(tr.probs[qi * V + blue]!)} → <b class="l4-gold">${pc(a.probs[qi * V + blue]!)}</b></p><p class="l4-fm">${tx(['新 = 旧 − 学习率 × 该改多少', 'new = old − rate × change'], l)}</p>` + sub(tx([`共 ${d.n.toLocaleString()} 个参数，每步一起改一点。`, `${d.n.toLocaleString()} parameters, all nudged every step.`], l)); }
+      p.panel = h(tx([`误差曲线（${d.steps} 步）`, `Error curve (${d.steps} steps)`], l)) + EX(l) + curve(d.losses) + `<p class="l4-f">${tx(['3 题平均误差<br>', '3-line avg: '], l)}${d.losses[0]!.toFixed(2)} → <b>${d.losses[d.losses.length - 1]!.toFixed(3)}</b></p>`
+        + `<p class="l4-f">p(蓝) ${pc(tr.probs[qi * V + blue]!)} → <b class="l4-gold">${pc(a.probs[qi * V + blue]!)}</b></p><p class="l4-fm">${tx(['新 = 旧 − 学习率 × 该改多少', 'new = old − rate·change'], l)}</p>` + sub(tx([`共 ${d.n.toLocaleString()} 个参数，每步一起改一点。`, `${d.n.toLocaleString()} params, every step.`], l))
+        + `<p class="l4-sub l4-yel">${tx([`口径不同：这里是 3 道题一起平均；上一步「算误差」的 ${tr.loss!.toFixed(2)} 只算第 1 题。`, `(“The error” ${tr.loss!.toFixed(2)}: line 1 only)`], l)}</p>`; }
     return p;
   }
   if (kind === 'us') {
@@ -173,7 +175,10 @@ function page0(id: string, c: Ctx): Page {
   p.top = 'my'; const m = c.my;
   if (n === 1) { p.st = litUpto('in');
     p.panel = h(tx(['每行一题：问题？→答案', 'One per line: question？→answer'], l)) + `<textarea class="l4-ta" data-my="lines" rows="5" aria-label="${tx(['我的训练题', 'My lines'], l)}">${esc(m.lines.join('\n'))}</textarea>`
-      + `<div class="l4-row"><button type="button" class="l4-b" data-act="my-add">${tx(['添加一题', 'Add a line'], l)}</button><button type="button" class="l4-b gold" data-act="my-train">${tx(['开始训练', 'Train'], l)}</button></div>` + (m.err ? `<p class="l4-err">${esc(m.err)}</p>` : '') + sub(tx(['至少一题；最多 8 题，每题 24 字以内。', '1–8 lines, up to 24 chars each.'], l)); }
+      + `<p class="l4-ok" data-my="fix"${m.fix ? '' : ' hidden'}>${esc(m.fix ?? '')}</p>`
+      + `<div class="l4-row l4-my1"><button type="button" class="l4-b" data-act="my-arrow">${tx(['插入 →', 'Insert →'], l)}</button><span class="l4-mute">${tx(['格式：问题→答案', 'Format: question→answer'], l)}</span></div>`
+      + `<button type="button" class="l4-b l4-exb" data-act="my-ex">${tx(['＋ 例子：太阳是什么颜色？→红', '＋ Example: 太阳是什么颜色？→红'], l)}</button>`
+      + `<div class="l4-row"><button type="button" class="l4-b" data-act="my-add">${tx(['添加一题', 'Add a line'], l)}</button><button type="button" class="l4-b gold" data-act="my-train">${tx(['开始训练', 'Train'], l)}</button></div>` + (m.err ? `<p class="l4-err">${esc(m.err)}<br>${tx(['正确示例：天空是什么颜色？→蓝', 'Correct example: 天空是什么颜色？→蓝'], l)}</p>` : '') + sub(tx(['1–8 题，每题 24 字以内。', '1–8 lines, up to 24 chars each.'], l)); }
   if (n === 2) { const g = m.prog; p.flow = g && !g.done ? { a: 'in', b: 'out', back: g.step % 2 === 1 } : null;
     p.st = g && !g.done ? all(g.step % 2 ? 'back' : 'lit') : all('pass'); p.back = !!(g && !g.done && g.step % 2);
     p.panel = !g ? h(tx(['还没开始训练', 'Not trained yet'], l)) + `<div class="l4-row"><button type="button" class="l4-b gold" data-go="#L4/my/1">${tx(['去写题', 'Write lines'], l)}</button></div>`
@@ -183,7 +188,7 @@ function page0(id: string, c: Ctx): Page {
     const a = m.ans;
     p.panel = h(tx(['问它一个问题', 'Ask it'], l)) + `<input class="l4-in" data-my="q" value="${esc(m.q)}" aria-label="${tx(['问题', 'Question'], l)}"><div class="l4-row"><button type="button" class="l4-b gold" data-act="my-test">${tx(['测一测', 'Ask'], l)}</button></div>`
       + (!m.ready ? sub(tx(['先训练一个模型（第①步）。', 'Train a model first (step ①).'], l)) : '')
-      + (a ? `<p class="l4-big">${tx(['回答', 'Answer'], l)}：<b class="l4-gold">${esc(a.out) || '—'}</b></p>` + bars(a.steps[0]!.top.slice(0, 3).map(([i, q]) => [chn(a.chars[i]!, l), q] as [string, number]), l, 0) + (a.unknown.length ? `<p class="l4-err">${tx(['没见过的字：', 'Unknown chars: '], l)}${esc(a.unknown.join(' '))}</p>` : '') : ''); }
+      + (a ? `<p class="l4-big">${tx(['回答', 'Answer'], l)}：<b class="l4-gold">${esc(a.out) || '—'}</b></p>` + bars(a.steps[0]!.top.slice(0, 3).map(([i, q]) => [chn(a.chars[i]!, l), q] as [string, number]), l, 0) + (a.unknown.length ? unseen(a, m.lines.filter((x) => x.trim()).length, l) : '') : ''); }
   return p;
 }
 /** the panel opens with the step's title, as in the reference; a first heading that carries a real number stays below it */
@@ -203,7 +208,7 @@ function xpage(path: string, c: Ctx): Page {
   const l = c.l, nd = path.split('.')[0] as Nd, p = base(c, 'X:' + path, 'x'); p.mode = 'xl'; p.sel = nd; p.st = { ...all('pass'), [nd]: 'sel' };
   p.info = inf(XI[path] ?? NODE_INFO[nd], c); p.k = XK[path] ?? NODE_K[nd]; p.math = XM[path] ?? null; p.hint = tx(UI.hintX, l);
   const xi = X_ORDER.indexOf(path); p.dots = xi >= 0 ? [X_ORDER.length, xi] : null; p.next = xi >= 0 && xi < X_ORDER.length - 1 ? xHash(X_ORDER[xi + 1]!) : '#L4';
-  const segs = path.split('.'); p.crumb = [['Transformer', '#L4']]; if (['att', 'an1', 'ffn', 'an2'].includes(nd)) p.crumb.push([tx(['解码块', 'Decoder block'], l), null]);
+  const segs = path.split('.'); p.crumb = [[tx(UI.lv[3]!, l), '#L4']]; if (['att', 'an1', 'ffn', 'an2'].includes(nd)) p.crumb.push([tx(['解码块', 'Decoder block'], l), null]);
   segs.forEach((_, i) => { const sp = segs.slice(0, i + 1).join('.'); p.crumb.push([tx(XN[sp] ?? LAB[nd], l), i < segs.length - 1 ? xHash(sp) : null]); });
   p.up = segs.length > 1 ? xHash(segs.slice(0, -1).join('.')) : null;
   if (nd === 'an1' || nd === 'an2') p.resOn = true;
@@ -241,3 +246,23 @@ function xpage(path: string, c: Ctx): Page {
   return p;
 }
 export const MY_DEFAULT = ['天空是什么颜色？→蓝', '草地是什么颜色？→绿', '夜晚是什么颜色？→黑'];
+
+/** R42: half-width input fixed while typing — ? → ？ and ->, =>, : → → (a colon only when the line has no arrow yet) */
+export function fixLine(line: string): string {
+  let t = line.replace(/\?/g, '？').replace(/-+>|=+>/g, '→');
+  if (!t.includes('→')) t = t.replace(/[:：]/, '→');
+  return t;
+}
+export function fixLines(text: string): { text: string; fixed: number[] } {
+  const out: number[] = []; const ls = text.split('\n').map((x, i) => { const y = fixLine(x); if (y !== x) out.push(i + 1); return y; });
+  return { text: ls.join('\n'), fixed: out };
+}
+/** R42: MY3's honest warning when the question has characters the model never saw — built from the real answer */
+function unseen(a: Ans, n: number, l: L): string {
+  const t = a.steps[0]?.top[0]; const ch = t ? a.chars[t[0]]! : ''; const p = t ? pc(t[1]) : '';
+  const u = a.unknown.map((x) => `「${esc(x)}」`).join('');
+  const lead = t && t[0] === 0 ? tx([`它干脆选了「结束」（${p}），等于没答出来。`, `It simply picked END (${p}): no answer at all.`], l)
+    : tx([`最高的「${esc(ch)}」${p}看着很笃定，其实是蒙的。`, `The top pick “${esc(ch)}” at ${p} looks sure, but it is a guess.`], l);
+  return `<div class="l4-warn"><b>${tx([`⚠ ${u}它没学过，上面是在瞎猜`, `⚠ It never saw ${u}: the above is a guess`], l)}</b><br>${lead}${tx([`只背了 ${n} 句的模型就是这样；大模型要海量数据，正是为此。`, `A model that memorised ${n} lines does this; big models need mass data for exactly this reason.`], l)}`
+    + `<div class="l4-row"><button type="button" class="l4-b" data-go="#L4/my/3~KC05">${tx(['规模定律 ›', 'Scaling laws ›'], l)}</button><button type="button" class="l4-b" data-go="#L4/my/3~KC12">${tx(['幻觉 ›', 'Hallucination ›'], l)}</button></div></div>`;
+}

@@ -4,7 +4,7 @@
    - where requestFullscreen exists (Android Chrome, Samsung, Firefox, iPad Safari …) R21: a small card asks first
      ("full screen?" yes / no thanks; lazy ./a2hs) — on touch screens only, never inside WeChat / an installed app /
      an iframe, and never again after "no thanks" or once the reader has left full screen (si.fs = 0);
-   - ⛶ in the ☰ menu toggles it (or shows the tip where it cannot work). */
+   - R42: the 全屏 switch in ⚙ 设置 toggles it (or shows the tip where it cannot work). */
 type El = HTMLElement & { webkitRequestFullscreen?: () => void };
 type Doc = Document & { webkitFullscreenElement?: Element | null; webkitExitFullscreen?: () => void; webkitFullscreenEnabled?: boolean };
 const d = document as Doc, de = d.documentElement as El, ua = navigator.userAgent;

@@ -18,12 +18,12 @@ const CSS = '.si-a2{position:fixed;left:50%;bottom:calc(var(--bnh,56px) + 12px +
 /* R21: ask before going full screen (Android & co.) — the tap on "full screen" is the gesture the API needs */
 const ASK: Record<'q' | 'w' | 'y' | 'n', Bi> = {
   q: { zh: '要全屏看吗？', en: 'Go full screen?' },
-  w: { zh: '地址栏会藏起来，画面更大。随时可在 ☰ 菜单里的 ⛶ 切换。', en: 'The address bar hides and the page gets bigger. Switch any time with ⛶ in the ☰ menu.' },
+  w: { zh: '地址栏会藏起来，画面更大。以后可以在右上角 ⚙ 设置里开关全屏。', en: 'The address bar hides and the page gets bigger. You can switch it later in ⚙ Settings, top right.' },
   y: { zh: '⛶ 全屏', en: '⛶ Full screen' },
   n: { zh: '不用了', en: 'No thanks' },
 };
 /** first-visit help (welcome card on screen, coach marks, tour) goes first: ask a bit later, a few times at most */
-const busy = () => !!document.querySelector('.ob-bub,#tour') || [...document.querySelectorAll('.ob-wel')].some((e) => { const r = e.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; });
+const busy = () => !!document.querySelector('.ob-bub,#tour,.l4-ob') || [...document.querySelectorAll('.ob-wel')].some((e) => { const r = e.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; });
 export function askFS(enter: () => void, tries = 0) {
   if (document.getElementById('siA2hs') || document.getElementById('siFsAsk')) return;
   if (busy()) { if (tries < 12) setTimeout(() => askFS(enter, tries + 1), 5000); return; }

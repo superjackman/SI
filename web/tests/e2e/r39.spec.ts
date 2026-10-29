@@ -4,7 +4,7 @@ import { test, expect, type Page } from '@playwright/test';
    with + opens in place. */
 import { LX, LIVE, lxHash } from '../../src/lx/ids';
 const ORIGIN = 'http://localhost:4173';
-test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }] }] } });
+test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 const LAYERS = ([1, 2, 3, 5] as const).filter((n) => LIVE.includes(n));
 const PAGES = LAYERS.flatMap((n) => LX[n]);

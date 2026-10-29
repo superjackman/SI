@@ -3,7 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
    No 声音 row: the site has no sound or vibration, so a sound switch would do nothing. */
 const ORIGIN = 'http://localhost:4173';
 const REC = ['si.l4.seen', 'si.l4.cards', 'si.px.log', 'si.px.days', 'si.px.q'];
-test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' },
+test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   ...REC.map((name) => ({ name, value: '["x"]' })), { name: 'si.l4.my', value: '{"keep":1}' }] }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -31,7 +31,7 @@ test.describe('R41b settings sheet (G4)', () => {
     expect(small).toEqual([]);
 
     // animation off → html[data-anim=off], si.anim=0, no SMIL motion, CSS animations stopped; persists over reload
-    const sw = dlg.locator('.l4-sw[role=switch]');
+    const sw = dlg.locator('.l4-sw[role=switch][data-v="anim"]'); /* R42: G4 adds a 全屏 switch */
     const was = await sw.getAttribute('aria-checked');
     if (was === 'false') { await sw.click(); await expect(sw).toHaveAttribute('aria-checked', 'true'); }
     await sw.click();

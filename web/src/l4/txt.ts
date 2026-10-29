@@ -45,12 +45,12 @@ export const NODE_INFO: Record<Nd, Info> = {
   out: [['每个字是下一个字的可能性', 'How likely each char comes next'], ['14 个百分比，加起来 100%', '14 percentages adding to 100%'], ['选最高的，接回输入再猜', 'Pick the top one, append, repeat'], ['一次一个字，循环写成整段', 'One char at a time, looping']],
 };
 export const UI = {
-  title: ['一层层看懂 AI', 'AI, layer by layer'], sub: ['点任意一层往里看', 'Tap a layer to look inside'],
+  title: ['一层层看懂 AI', 'AI, layer by layer'], brand: ['大白话拆解 AI', 'AI, explained plainly'], sub: ['点任意一层往里看', 'Tap a layer to look inside'],
   soon: ['即将上线', 'Coming soon'], live: ['已上线', 'Live'],
   lv: [['第1层', 'Layer 1'], ['第2层', 'Layer 2'], ['第3层', 'Layer 3'], ['第4层', 'Layer 4'], ['第5层', 'Layer 5']] as Tx[],
   lvN: [['我怎么用 AI', 'How I use AI'], ['AI 助手怎么工作', 'How an AI assistant works'], ['大模型怎么得来', 'How a big model is made'], ['Transformer 内部', 'Inside a Transformer'], ['背后的数学', 'The maths behind it']] as Tx[],
   learn: ['学', 'Learn'], record: ['记', 'Record'],
-  learnS: ['从第1层开始', 'Start at layer 1'], recordS: ['学习记录', 'Your record'],
+  learnS: ['从第1层', 'Start'], recordS: ['学习记录', 'Your record'],
   map: ['地图', 'Map'], prog: ['进度', 'Progress'], next: ['下一步', 'Next'], back: ['返回', 'Back'], home: ['首页', 'Home'],
   math: ['看数学 ›', 'See the maths ›'], kc: ['知识卡', 'Card'], kcT: ['知识卡', 'Knowledge card'], cont: ['（续）›', '(cont.) ›'], prev: ['‹ 上页', '‹ Page 1'],
   shareB: ['分享', 'Share'], close: ['关闭', 'Close'], rot: ['竖着看更清楚', 'Best in portrait'], rotS: ['请把手机转回竖屏', 'Please turn your phone upright'],
@@ -67,8 +67,8 @@ export const UI = {
   mapT: ['地图', 'Map'], here: ['你在这里', 'You are here'],
   trN: ['看它怎么训练', 'How it trains'], usN: ['看它怎么使用', 'How it answers'], myN: ['我的训练题', 'Train your own'], xN: ['就地下钻', 'Look inside'],
   soonP: ['这一层正在制作，先去看第4层吧。', 'This layer is being built. Try layer 4 first.'], goL4: ['去第4层', 'Go to layer 4'],
-  L4: ['第4层 Transformer', 'Layer 4 Transformer'], whole: ['全貌', 'Overview'],
-  topL4: ['Transformer：一堆字变成下一个字', 'Transformer: text → next char'], topTr: ['例题：天空是什么颜色？ → 蓝', 'Example: 天空是什么颜色？ → 蓝'], topMy: ['我的训练题：自己出题、训练、测试', 'Your own: write, train, test'],
+  L4: ['第4层 Transformer 内部', 'Layer 4 Inside a Transformer'], whole: ['全貌', 'Overview'],
+  topL4: ['Transformer：一堆字变成下一个字', 'Transformer: text → next char'], topTr: ['例题：天空是什么颜色？ → 蓝', 'Example: 天空是什么颜色？ → 蓝'], topMy: ['自己出题，训练小模型', 'Write questions, train a small model'],
   lang: ['EN', '中'], langL: ['Switch to English', '切换到中文'], end: ['结束', 'END'], other: ['其他字', 'Others'],
 } satisfies Record<string, Tx | Tx[]>;
 export const STEPN = {

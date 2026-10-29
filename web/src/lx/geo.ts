@@ -65,10 +65,10 @@ export function sample(d: string, step = 4): [number, number][] {
 const edgeDef = (v: View): St => v.edef ?? (!v.def || v.def === 'calm' || v.def === 'pass' ? v.def ?? 'calm' : 'dim');
 
 /** k < 1 shrinks the diagram to give the panel more room */
-export function geo(v: View, W: number, H: number, mode: Mode, px = 170, k = 1): G {
+export function geo(v: View, W: number, H: number, mode: Mode, px = 170, k = 1, dy = 0): G {
   const D = v.dia, dw = D.x1 - D.x0, dh = D.y1 - D.y0;
   const s0 = mode === 'full' ? Math.min(W / 360, (H - (v.np ? 6 : 120)) / dh, 1.2) : Math.min(W / 360, (H - 6) / dh, 1.2), s = s0 * k;
-  const ox = mode === 'full' ? (W - dw * s) / 2 - D.x0 * s : 4 - D.x0 * s, oy = 4 - D.y0 * s;
+  const ox = mode === 'full' ? (W - dw * s) / 2 - D.x0 * s : 4 - D.x0 * s, oy = 4 - D.y0 * s + dy + (mode === 'full' && v.np ? Math.max(0, (H - 8 - dh * s) / 2) : 0); /* R42: a panel-less overview sits in the middle on tall screens */
   const X = (x: number) => ox + x * s, Y = (y: number) => oy + y * s, def = v.def ?? 'calm', ed = edgeDef(v);
   const nodes: GNode[] = D.nodes.map((n) => ({ id: n.id, x: X(n.x), y: Y(n.y), w: n.w * s, h: n.h * s, st: v.st?.[n.id] ?? (n.tag ? 'calm' : def), r: n.pill || n.tag ? (n.h * s) / 2 : Math.min(8, (n.h * s) / 2.4), plus: !!n.plus, tag: n.tag }));
   const edges: GEdge[] = D.edges.map((e) => ({ id: e.id, pts: sample(e.d).map(([a, b]) => [X(a), Y(b)] as [number, number]), st: v.est?.[e.id] ?? ed, dash: !!e.dash, head: e.head !== false, gold: !!e.gold }));

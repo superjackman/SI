@@ -3,7 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
    a four-row info box with a tall gold 知识卡 button on the right (no title row), round 地图 / 进度 / 下一步 buttons with
    the words inside, and the reference info rows with this site's real numbers. */
 const ORIGIN = 'http://localhost:4173';
-test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }] }] } });
+test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
   await p.goto(q); await p.waitForFunction(() => document.getElementById('l4')?.dataset.ready === '1', null, { timeout: 30000 });
@@ -15,7 +15,7 @@ test.describe('R41 reference layout', () => {
   test('overview, training, use and drill-down pages match the reference frame', async ({ page }) => {
     const errs = await open(page, './?lang=zh#L4');
     await expect(page.locator('.l4-tt')).toHaveText('Transformer：一堆字变成下一个字');
-    await expect(page.locator('.l4-crumb')).toHaveText(/首页\s*›\s*第4层 Transformer\s*›\s*全貌/);
+    await expect(page.locator('.l4-crumb')).toHaveText(/首页\s*›\s*第4层 Transformer 内部\s*›\s*全貌/);
     await expect(page.locator('.l4-mp')).toBeHidden();
     await expect(page.locator('.l4-ih')).toHaveCount(0);
     const kb = page.locator('.l4-info .l4-kb');
@@ -28,7 +28,7 @@ test.describe('R41 reference layout', () => {
     }
     await go(page, '#L4/tr/4');
     await expect(page.locator('.l4-tt')).toHaveText('例题：天空是什么颜色？ → 蓝');
-    await expect(page.locator('.l4-crumb')).toHaveText(/^第4层\s*›\s*看它怎么训练\s*›\s*④算误差$/);
+    await expect(page.locator('.l4-crumb')).toHaveText(/^首页\s*›\s*第4层\s*›\s*看它怎么训练\s*›\s*④算误差$/);
     await expect(page.locator('.l4-hint')).toHaveText('点带 + 的块可就地展开');
     // the reference's −ln(12%) ≈ 2.1 is an example; here the real first-guess odds for 蓝 and their loss
     const how = await page.locator('.l4-info dd').nth(2).textContent();
@@ -37,7 +37,7 @@ test.describe('R41 reference layout', () => {
     await go(page, '#L4/us/5');
     await expect(page.locator('.l4-chips')).toHaveText('天空是什么颜色？→?');
     await go(page, '#L4/my/1');
-    await expect(page.locator('.l4-tt')).toHaveText('我的训练题：自己出题、训练、测试');
+    await expect(page.locator('.l4-tt')).toHaveText('自己出题，训练小模型');
     await go(page, '#L4/x/att.mask');
     await expect(page.locator('.l4-crumb')).toContainText('多头注意力'); await expect(page.locator('.l4-crumb')).toContainText('遮罩');
     await expect(page.locator('.l4-info dd').first()).toHaveText('让每个字只看自己和前面的字');
@@ -56,7 +56,7 @@ test.describe('R41 reference layout', () => {
     await expect(page.locator('.l4-sheet .l4-sfh')).toHaveText('下滑关闭 · 左右滑看上/下一页');
     // maths cards: inline gold formulas and 「看它在哪用 ›」 back to the M page, like the reference
     await go(page, '#L5~KM08'); await page.waitForTimeout(500);
-    await expect(page.locator('.l4-sheet .l4-sfh')).toContainText('对应 M6');
+    await expect(page.locator('.l4-sheet .l4-sfh')).toHaveText('下滑关闭 · 左右滑看上/下一页 · 对应第5层·梯度');
     expect(await page.locator('.l4-sheet .formula').first().evaluate((e) => getComputedStyle(e).display)).toBe('inline');
     await page.locator('.l4-sheet .l4-b[data-s=jump]').click(); await expect(page).toHaveURL(/#L5\/M6a$/);
     expect(errs).toEqual([]);

@@ -2,7 +2,7 @@
    "reduce motion" setting. html[data-anim] mirrors it for CSS; the 3D scenes listen to the 'si-anim' event. */
 export const ANIM_KEY = 'si.anim';
 /** everything 「清除学习记录」 removes: pages seen, cards opened, quiz / experiment / share log, daily activity, quick path */
-export const REC_KEYS = ['si.l4.seen', 'si.l4.cards', 'si.px.log', 'si.px.days', 'si.px.q'] as const;
+export const REC_KEYS = ['si.l4.seen', 'si.l4.cards', 'si.px.log', 'si.px.days', 'si.px.q', 'si.l4.recent'] as const;
 const sys = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
 export function animOn(): boolean {
   let v: string | null = null; try { v = localStorage.getItem(ANIM_KEY); } catch { /* private mode */ }

@@ -4,7 +4,7 @@
    reading speed = IReST standard texts (Trauzettel-Klosinski et al. 2012): Chinese 255 chars/min, English 228 words/min,
    plus a fixed LOOK seconds per page to look at the diagram and tap on. */
 import QT from './qtime.json';
-import type { L } from '../l4/txt';
+import type { L, Tx } from '../l4/txt';
 export const ZH_CPM = 255, EN_WPM = 228, LOOK = 12;
 /** [hash, card shown on top (page 1) or null] */
 export const PATH: [string, string | null][] = [
@@ -22,3 +22,10 @@ export interface QTime { units: number[]; sec: number[] }
 export function plan(l: L) { const t = (QT as Record<L, QTime>)[l]; return { sec: t.sec, total: t.sec.reduce((a, b) => a + b, 0), units: t.units }; }
 export const QKEY = 'si.px.q';
 export interface QState { on: boolean; i: number; t0: number; max: number }
+/** what each stop is about, in plain words (the Q0 list) and the two cards' names */
+export const STOP_N: Tx[] = [['总览：一句话办成事', 'Overview: one sentence gets it done'], ['AI 怎么调工具', 'How AI calls tools'], ['总览：AI 助手的循环', 'Overview: the assistant loop'], ['看结果再决定下一步', 'Look at the result, then decide'],
+  ['总览：先训练，再使用', 'Overview: train first, then use'], ['预训练：猜下一个字', 'Pre-training: guess the next char'], ['得到下一个字', 'Getting the next char'], ['总览：Transformer 全图', 'Overview: the whole Transformer'],
+  ['注意力', 'Attention'], ['选出下一个字', 'Picking the next char'], ['数学地图', 'The maths map'], ['点积：对应相乘再相加', 'Dot product: multiply pairs, add']];
+export const STOP_CARD: Record<string, Tx> = { KA04: ['工具调用', 'Tool calling'], K06: ['多头注意力', 'Multi-head attention'] };
+/** the layer a stop belongs to */
+export const stopLayer = (h: string) => Number(/^#L(\d)/.exec(h)?.[1] ?? 0);
