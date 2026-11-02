@@ -37,5 +37,7 @@ export function pageName(id: string, l: L): string {
   return id;
 }
 export const LCOL = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'] as const;
-export const lvTag = (n: number, l: L) => `<span class="l4-lt" style="--c:${LCOL[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`;
+/** the layer colours as a fill under white 12px text: layers 1–2 one shade deeper so the text reads (≥ 4.5:1) */
+export const LBG = ['#0e7490', '#0f766e', '#4f46e5', '#2563eb', '#7c3aed'] as const;
+export const lvTag = (n: number, l: L) => `<span class="l4-lt" style="--c:${LCOL[n - 1]};--cb:${LBG[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`;
 export const pbar = (s: number, t: number, n: number) => `<span class="l4-pb" style="--c:${LCOL[n - 1]}"><i style="width:${t ? Math.round((100 * s) / t) : 0}%"></i></span>`;

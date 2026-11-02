@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
+import { contrastIssues } from './contrast.js';
 /* R47 自底向上 · 推导之路: home entry → the chain (#D) → each stage (#D/0–16); step bar, ↑, crumbs, cards both ways;
    no history entries; readable at 360 / 390 / 430 in zh and en. */
 const ORIGIN = 'http://localhost:4173';
@@ -78,6 +79,18 @@ test.describe('R47 derivation path', () => {
           for (const x of await page.evaluate(textIssues, 12)) bad.push(`${l} ${h}${end ? ' end' : ''} ${x.k} ${x.cls} “${x.txt}”${x.why ? ' ' + x.why : ''}`);
         }
         if (l === 'en') { const t = await page.locator('.l4-home').innerText(); if (/[\u3400-\u9fff]/.test(t)) bad.push(`en ${h} has Chinese`); }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+  test('every label, chip, badge and line in the path reads: WCAG contrast ≥ 4.5:1 (icons ≥ 3:1) on every page, zh and en', async ({ page }) => {
+    const bad: string[] = [], R = '.dv, .l4-top, .l4-crumb, .l4-nav';
+    for (const l of ['zh', 'en']) {
+      await open(page, `./?lang=${l}#D`); await px(page, `D.${l}`);
+      for (const h of ['#D', ...[...Array(17).keys()].map((i) => `#D/${i}`), '#D']) { /* the chain again at the end: every step seen (✓, .seen) */
+        await page.evaluate((x) => { location.replace(x); }, h); await px(page, `${h.slice(1)}.${l}`);
+        await page.evaluate(() => { for (const d of document.querySelectorAll('.dv details')) (d as HTMLDetailsElement).open = true; });
+        for (const x of await page.evaluate(contrastIssues, { root: R, min: 4.5, icon: 3 })) bad.push(`${l} ${h} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
       }
     }
     expect(bad).toEqual([]);

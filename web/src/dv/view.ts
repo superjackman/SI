@@ -8,9 +8,12 @@ import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
 import { DV_K, DV_LV, DV_N, DV_SEEN } from './links';
+import { LBG } from '../l4/progress';
 
 const LC = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'], GOLD = '#c99a2e';
 const col = (i: number) => { const n = DV_LV[i]!; return n ? LC[n - 1]! : GOLD; };
+/** --c the layer colour (lines), --cb / --ct a fill and ink that read ≥ 4.5:1 (white on the deeper layer shade; dark ink on gold) */
+const cv = (i: number) => { const n = DV_LV[i]!; return n ? `--c:${LC[n - 1]};--cb:${LBG[n - 1]}` : `--c:${GOLD};--cb:${GOLD};--ct:#1a1204`; };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 /** **keyword** · `formula` · {~approximate / empirical} */
 export const mk = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '<span class="formula">$1</span>').replace(/\{~([^}]+)\}/g, '<span class="dv-ap">≈ $1</span>');
@@ -18,7 +21,7 @@ const LOAD: Record<L, () => Promise<{ default: Dv }>> = { zh: () => import('./zh
 export const content = async (l: L) => (await LOAD[l]()).default;
 const seenGet = (): number[] => { try { const v = JSON.parse(localStorage.getItem(DV_SEEN) || '[]') as unknown; return Array.isArray(v) ? v.filter((x): x is number => typeof x === 'number') : []; } catch { return []; } };
 const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b))); } catch { /* private mode */ } };
-const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="--c:${col(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };
+const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="${cv(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };
 const stepNo = (i: number, l: L) => tx([`第 ${i} 步`, `Step ${i}`], l);
 
 export async function dv(id: string, A: PxApi) {
@@ -54,7 +57,7 @@ function chain(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: strin
   D.st.forEach((S, i) => {
     const n = DV_LV[i]!;
     if (n !== last) { last = n; h += `<div class="dv-gh" style="--c:${col(i)}">${lvT(i, l)}<b>${n ? esc(tx(UI.lvN[n - 1]!, l)) : z('串起全链路', 'The whole chain')}</b>${n ? `<button type="button" class="dv-gp" data-go="#L${n}">${z('金字塔 ›', 'Pyramid ›')}</button>` : ''}</div>`; }
-    h += `<button type="button" class="dv-st g-rj${seen.has(i) ? ' seen' : ''}" data-go="#D/${i}" style="--c:${col(i)}"><span class="dv-n">${i}</span><span class="dv-t"><b>${esc(S.n)}</b><i>${esc(S.s)}</i></span>${seen.has(i) ? '<em aria-label="✓">✓</em>' : ''}</button>`;
+    h += `<button type="button" class="dv-st g-rj${seen.has(i) ? ' seen' : ''}" data-go="#D/${i}" style="${cv(i)}"><span class="dv-n">${i}</span><span class="dv-t"><b>${esc(S.n)}</b><i>${esc(S.s)}</i></span>${seen.has(i) ? '<em aria-label="✓">✓</em>' : ''}</button>`;
     if (S.e) h += `<div class="dv-lk"><span>${z('遗留', 'Left open')}</span>${esc(S.e)}</div>`;
   });
   const nx = [...Array(DV_N).keys()].find((i) => !seen.has(i)), go = nx ?? 0;
