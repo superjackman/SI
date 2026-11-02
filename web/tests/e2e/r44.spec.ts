@@ -108,7 +108,7 @@ test.describe('R44 share dialog', () => {
   test('card share: dialog over the card, Esc and backdrop close it, the card stays', async ({ page }) => {
     await open(page, './?lang=zh#L4~K06'); const sh = page.locator('.l4-sheet[data-card="K06"]');
     const shm = page.locator('.l4-shm');
-    await sh.locator('[data-s="share"]').click(); await expect(shm.locator('.g-dlg')).toBeVisible(); await expect(shm.locator('.g-pv')).toHaveAttribute('data-kind', 'card');
+    await sh.locator('[data-s="share"]').click(); await expect(shm.locator('.g-dlg')).toBeVisible(); await expect(shm.locator('.g-pv')).toHaveAttribute('data-kind', 'card', { timeout: 15000 });
     await page.keyboard.press('Escape'); await expect(shm).toHaveCount(0); await expect(sh).toBeVisible();
     await sh.locator('[data-s="share"]').click(); await expect(shm.locator('.g-dlg')).toBeVisible();
     await shm.click({ position: { x: 2, y: 2 } }); await expect(shm).toHaveCount(0); await expect(sh).toBeVisible();

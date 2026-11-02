@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>反向传播与参数更新 · 大白话拆解 AI</title>
-<meta name="description" content="算出每个参数对误差「负多少责任」（梯度），再把每个参数往误差变小的方向挪一小步。">
+<meta name="description" content="算出每个参数对损失「负多少责任」（梯度），再把每个参数往损失变小的方向挪一小步。">
 <meta name="theme-color" content="#0b1230">
 <link rel="canonical" href="https://superjackman.github.io/SI/c/K14.html">
 <link rel="icon" href="../icon-192.png">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="反向传播与参数更新 · 大白话拆解 AI">
-<meta property="og:description" content="算出每个参数对误差「负多少责任」（梯度），再把每个参数往误差变小的方向挪一小步。">
+<meta property="og:description" content="算出每个参数对损失「负多少责任」（梯度），再把每个参数往损失变小的方向挪一小步。">
 <meta property="og:url" content="https://superjackman.github.io/SI/c/K14.html">
 <meta property="og:image" content="https://superjackman.github.io/SI/og/K14.jpg">
 <meta property="og:image:width" content="1200">
@@ -45,7 +45,7 @@ a.alt{display:block;text-align:center;margin-top:12px;color:#9fb3e6}
 <span class="lv">第4层 · 知识卡</span>
 <h1>反向传播与参数更新</h1>
 <p class="en">Backpropagation and parameter update</p>
-<p class="i">算出每个参数对误差「负多少责任」（梯度），再把每个参数往误差变小的方向挪一小步。</p>
+<p class="i">算出每个参数对损失「负多少责任」（梯度），再把每个参数往损失变小的方向挪一小步。</p>
 <ul><li>前向：算出预测和 loss，记下中间结果</li><li>反向：从 loss 开始，按链式法则逐层往回算</li><li>梯度：每个参数一个数——它变大一点，loss 变多少</li></ul>
 <a class="go" href="../?lang=zh#L4~K14">打开这张卡 ›</a>
 <a class="alt" href="../?lang=en#L4~K14" lang="en">Open this card in English ›</a>

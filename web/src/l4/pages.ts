@@ -31,8 +31,8 @@ const PI: Record<string, Info> = {
   TR2: [['把文字变成电脑能算的编号', 'Turns text into numbers a computer can use'], ['字典（字↔编号）+ 分词规则', 'Dictionary (char ↔ number) + split rule'], ['统计题里所有字，逐个编号', 'Collect every char, number each'], ['模型只会算数字，不认识字', 'The model does numbers, not chars']],
   TR3: [['得到模型现在的猜测（前向）', 'Gets the model’s current guess (forward)'], ['所有块从下往上依次参与', 'Every box takes part, bottom → top'], ['每块加工完交给上一块，最后打分', 'Each box hands up; the top scores'], ['参数还是随机的，所以猜得很平均', 'Random parameters, so the guess is flat']],
   TR4: [['用一个数说清猜错了多少', 'One number says how wrong it was'], ['模型给的概率 + 正确答案「蓝」', 'The model’s odds + the right answer 蓝'], ['只看「蓝」：−ln({pb})≈{lo}', 'Only 蓝 counts: −ln({pb}) ≈ {lo}'], ['交叉熵＝最大似然，标准统一', 'Cross-entropy = max likelihood, one rule']],
-  TR5: [['算出每个参数该改多少', 'Works out each parameter’s change'], ['误差从顶部出发，经过每一块', 'The error starts at the top, through every box'], ['上一块的改动量决定下一块的', 'Each box’s change sets the next one down'], ['链式法则：倒推一遍就算出全部', 'Chain rule: one pass back gets them all']],
-  TR6: [['把参数往误差变小的方向挪', 'Moves parameters to shrink the error'], ['梯度 × 学习率 ＝ 这一步改多少', 'Gradient × rate = this step’s change'], ['前向→算误差→传回→改，循环', 'Forward → error → back → update, loop'], ['每次一小步，{n} 步后就学会', 'Small steps; learned after {n}']],
+  TR5: [['算出每个参数该改多少', 'Works out each parameter’s change'], ['损失从顶部出发，经过每一块', 'The loss starts at the top, through every box'], ['上一块的改动量决定下一块的', 'Each box’s change sets the next one down'], ['链式法则：倒推一遍就算出全部', 'Chain rule: one pass back gets them all']],
+  TR6: [['把参数往损失变小的方向挪', 'Moves parameters to shrink the loss'], ['梯度 × 学习率 ＝ 这一步改多少', 'Gradient × rate = this step’s change'], ['前向→算损失→传回→改，循环', 'Forward → loss → back → update, loop'], ['每次一小步，{n} 步后就学会', 'Small steps; learned after {n}']],
   US1: [['交给模型接着往下写的起点', 'Where the model starts writing from'], ['一段字：天空是什么颜色？', 'Text: 天空是什么颜色？'], ['从最底下进入，一路往上走', 'Enters at the bottom, goes up'], ['模型只做一件事：猜下一个字', 'It only guesses the next char']],
   US2: [['把字切开，换成字典编号', 'Splits text into dictionary numbers'], ['字典 + 切分规则（大模型用BPE）', 'Dictionary + split rule (BPE in big models)'], ['编号拿去「词向量表」里查', 'The numbers look up the embedding table'], ['和训练时同一本字典，前后一致', 'Same dictionary as in training']],
   US3: [['用一串数字表示一个字的意思', 'A row of numbers for a char’s meaning'], ['词向量表：每个编号一行数字', 'Embedding table: one row per number'], ['按编号查表，每个字取一行', 'Look up by number, one row per char'], ['意思相近的字，学出来也相近', 'Similar chars learn similar rows']],
@@ -43,7 +43,7 @@ const PI: Record<string, Info> = {
   US8: [['给字典里每个字打分、变概率', 'Scores every char, makes odds'], ['线性层（打分）+ Softmax', 'Linear (scores) + Softmax'], ['只用最后一个字「？」来打分', 'Only the last char ？ is scored'], ['分数换成加起来 100% 的概率', 'Scores become odds summing to 100%']],
   US9: [['选出下一个字「蓝」', 'Picks the next char 蓝'], ['概率表 + 选字规则（温度等）', 'The odds + a pick rule (temperature…)'], ['把「蓝」接到末尾，再猜下一个', 'Append 蓝, guess the next'], ['一次一个字，循环写成整段', 'One char at a time, looped into text']],
   MY1: [['写你想让模型学的题和答案', 'Write what you want it to learn'], ['问题 + 答案，若干道', 'Questions + answers, a few lines'], ['开始训练时自动建字典', 'The dictionary is built when training starts'], ['亲手训练一次，最容易弄懂', 'Training one yourself makes it click']],
-  MY2: [['在你手机里真的训练模型', 'Really trains a model on your phone'], ['前向、算误差、传回去、改参数', 'Forward, error, back, update'], ['亮蓝＝往上算，橙色＝往回传', 'Blue = going up, orange = going back'], ['误差往下掉，就是它在学会', 'A falling error means it is learning']],
+  MY2: [['在你手机里真的训练模型', 'Really trains a model on your phone'], ['前向、算损失、传回去、改参数', 'Forward, loss, back, update'], ['亮蓝＝往上算，橙色＝往回传', 'Blue = going up, orange = going back'], ['损失往下掉，就是它在学会', 'A falling loss means it is learning']],
   MY3: [['检验模型到底学会了没有', 'Checks whether it really learned'], ['你训练出的参数 + 你的问题', 'Your trained parameters + your question'], ['只往上走一遍，不再改参数', 'One pass up, no more updates'], ['它只背下你给的几句，没见过的字会自信地瞎猜', 'It only memorised your lines; unseen chars get a confident guess']],
 };
 const PK: Record<string, string> = { L4: 'K01', TR1: 'K13', TR2: 'K02', TR3: 'K12', TR4: 'K13', TR5: 'K14', TR6: 'K14', US1: 'K15', US2: 'K02', US3: 'K03', US4: 'K04', US5: 'K06', US6: 'K10', US7: 'K05', US8: 'K11', US9: 'K15', MY1: 'K14', MY2: 'K14', MY3: 'K15' };
@@ -135,17 +135,17 @@ function page0(id: string, c: Ctx): Page {
     if (n === 3) { p.st = { ...all('pass'), out: 'lit' }; p.flow = { a: 'in', b: 'out' };
       p.panel = h(tx(['看到「？」后的第一次猜测', 'First guess after ？'], l)) + EX(l) + topBars(tr, ch, qi, 3, l) + sub(tx([`正确答案「蓝」只占 <b class="l4-o">${pc(tr.probs[qi * V + blue]!)}</b>：参数还是随机的。`, `The right answer 蓝 gets only <b class="l4-o">${pc(tr.probs[qi * V + blue]!)}</b>: the parameters are random.`], l)); }
     if (n === 4) { const pb = tr.probs[qi * V + blue]!; p.st = { ...all('pass'), out: 'back' };
-      p.panel = h(tx(['误差（损失）', 'The error (loss)'], l)) + EX(l) + bars([[tx(['猜「蓝」', 'guess 蓝'], l), pb], [tx(['正确', 'target'], l), 1]], l, 1)
+      p.panel = h(tx(['损失', 'The loss'], l)) + EX(l) + bars([[tx(['猜「蓝」', 'guess 蓝'], l), pb], [tx(['正确', 'target'], l), 1]], l, 1)
         + `<p class="l4-f">${tx(['「蓝」这一格：', 'The 蓝 cell: '], l)}−ln(${pb.toFixed(4)}) = <b class="l4-o">${(-Math.log(pb)).toFixed(2)}</b></p>`
-        + `<p class="l4-f">${tx(['第 1 题的误差 = ', 'Line 1’s error = '], l)}<b class="l4-o">${tr.loss!.toFixed(2)}</b></p>` + sub(tx(['第 1 题要猜两格：「蓝」和「结束」，误差取两格的平均。概率越接近 100%，误差越接近 0。', 'Line 1 has two cells to guess, 蓝 and END; its error is their average. Closer to 100% means closer to 0.'], l)); }
+        + `<p class="l4-f">${tx(['第 1 题的损失 = ', 'Line 1’s loss = '], l)}<b class="l4-o">${tr.loss!.toFixed(2)}</b></p>` + sub(tx(['第 1 题要猜两格：「蓝」和「结束」，损失取两格的平均。概率越接近 100%，损失越接近 0。', 'Line 1 has two cells to guess, 蓝 and END; its loss is their average. Closer to 100% means closer to 0.'], l)); }
     if (n === 5) { p.st = all('back'); p.back = true; p.flow = { a: 'in', b: 'out', back: true }; p.panel = null; p.resOn = false;
       const nb = d.nb0, tag = (x: number) => `${tx(['该改多少', 'change'], l)} <b>${x.toFixed(2)}</b>`;
       p.tags = ([['lin', nb.lin], ['an2', nb.an2], ['ffn', nb.ffn], ['an1', nb.an1], ['att', nb.att], ['emb', nb.emb]] as [Nd, number][]).map(([nd, v]) => ({ nd, h: tag(v) }));
-      p.notes = [tx([`误差 ${tr.loss!.toFixed(2)} 从顶上出发，往回传 ↓`, `Error ${tr.loss!.toFixed(2)} starts at the top, flows back ↓`], l), tx([`第 1 步：所有参数的梯度大小 ${d.gn0.toFixed(2)}（真实数字）`, `Step 1: gradient size of all parameters ${d.gn0.toFixed(2)} (real)`], l)]; }
+      p.notes = [tx([`损失 ${tr.loss!.toFixed(2)} 从顶上出发，往回传 ↓`, `Loss ${tr.loss!.toFixed(2)} starts at the top, flows back ↓`], l), tx([`第 1 步：所有参数的梯度大小 ${d.gn0.toFixed(2)}（真实数字）`, `Step 1: gradient size of all parameters ${d.gn0.toFixed(2)} (real)`], l)]; }
     if (n === 6) { const a = d.after; p.flow = { a: 'in', b: 'out' };
-      p.panel = h(tx([`误差曲线（${d.steps} 步）`, `Error curve (${d.steps} steps)`], l)) + EX(l) + curve(d.losses) + `<p class="l4-f">${tx(['3 题平均误差<br>', '3-line avg: '], l)}${d.losses[0]!.toFixed(2)} → <b>${d.losses[d.losses.length - 1]!.toFixed(3)}</b></p>`
+      p.panel = h(tx([`损失曲线（${d.steps} 步）`, `Loss curve (${d.steps} steps)`], l)) + EX(l) + curve(d.losses) + `<p class="l4-f">${tx(['3 题平均损失<br>', '3-line avg: '], l)}${d.losses[0]!.toFixed(2)} → <b>${d.losses[d.losses.length - 1]!.toFixed(3)}</b></p>`
         + `<p class="l4-f">p(蓝) ${pc(tr.probs[qi * V + blue]!)} → <b class="l4-gold">${pc(a.probs[qi * V + blue]!)}</b></p><p class="l4-fm">${tx(['新 = 旧 − 学习率 × 该改多少', 'new = old − rate·change'], l)}</p>` + sub(tx([`共 ${d.n.toLocaleString()} 个参数，每步一起改一点。`, `${d.n.toLocaleString()} params, every step.`], l))
-        + `<p class="l4-sub l4-yel">${tx([`口径不同：这里是 3 道题一起平均；上一步「算误差」的 ${tr.loss!.toFixed(2)} 只算第 1 题。`, `(“The error” ${tr.loss!.toFixed(2)}: line 1 only)`], l)}</p>`; }
+        + `<p class="l4-sub l4-yel">${tx([`口径不同：这里是 3 道题一起平均；上一步「算损失」的 ${tr.loss!.toFixed(2)} 只算第 1 题。`, `(“The loss” ${tr.loss!.toFixed(2)}: line 1 only)`], l)}</p>`; }
     return p;
   }
   if (kind === 'us') {
@@ -182,7 +182,7 @@ function page0(id: string, c: Ctx): Page {
   if (n === 2) { const g = m.prog; p.flow = g && !g.done ? { a: 'in', b: 'out', back: g.step % 2 === 1 } : null;
     p.st = g && !g.done ? all(g.step % 2 ? 'back' : 'lit') : all('pass'); p.back = !!(g && !g.done && g.step % 2);
     p.panel = !g ? h(tx(['还没开始训练', 'Not trained yet'], l)) + `<div class="l4-row"><button type="button" class="l4-b gold" data-go="#L4/my/1">${tx(['去写题', 'Write lines'], l)}</button></div>`
-      : h(tx([`第 ${g.step} / ${g.total} 步`, `Step ${g.step} / ${g.total}`], l)) + EX(l) + `<div class="l4-pbar"><i style="width:${Math.round((g.step / g.total) * 100)}%"></i></div>` + curve(g.losses) + `<p class="l4-f">${tx(['误差', 'error'], l)} ${g.losses[0]!.toFixed(2)} → <b class="l4-o">${g.loss.toFixed(3)}</b></p>`
+      : h(tx([`第 ${g.step} / ${g.total} 步`, `Step ${g.step} / ${g.total}`], l)) + EX(l) + `<div class="l4-pbar"><i style="width:${Math.round((g.step / g.total) * 100)}%"></i></div>` + curve(g.losses) + `<p class="l4-f">${tx(['损失', 'loss'], l)} ${g.losses[0]!.toFixed(2)} → <b class="l4-o">${g.loss.toFixed(3)}</b></p>`
         + `<div class="l4-row">${g.done ? `<button type="button" class="l4-b gold" data-go="#L4/my/3">${tx(['去测一测 ›', 'Test it ›'], l)}</button>` : `<button type="button" class="l4-b" data-act="${m.paused ? 'my-resume' : 'my-pause'}">${m.paused ? tx(['继续', 'Resume'], l) : tx(['暂停', 'Pause'], l)}</button>`}</div>`; }
   if (n === 3) { p.st = m.ans ? { ...all('pass'), in: 'lit', out: 'lit' } : litUpto('in'); p.next = '#L4';
     const a = m.ans;
@@ -199,7 +199,7 @@ export function page(id: string, c: Ctx): Page {
   return p;
 }
 const PH: Record<'tr' | 'us' | 'my', Tx[]> = {
-  tr: [['① 准备例题', '① Examples'], ['② 建字典、分词', '② Dictionary, tokens'], ['③ 先随机猜一次', '③ A first random guess'], ['④ 算误差', '④ The error'], ['⑤ 把误差传回去', '⑤ Pass the error back'], ['⑥ 改参数、重复很多遍', '⑥ Update, repeat many times']],
+  tr: [['① 准备例题', '① Examples'], ['② 建字典、分词', '② Dictionary, tokens'], ['③ 先随机猜一次', '③ A first random guess'], ['④ 算损失', '④ The loss'], ['⑤ 把损失传回去', '⑤ Pass the loss back'], ['⑥ 改参数、重复很多遍', '⑥ Update, repeat many times']],
   us: [['① 输入一段字', '① Some text in'], ['② 分词', '② Tokenize'], ['③ 查词向量表', '③ Embedding lookup'], ['④ 加位置编码', '④ Add position'], ['⑤ 注意力：向前要信息', '⑤ Attention: ask earlier chars'], ['⑥ 前馈网络：各自加工', '⑥ Feed-forward: each alone'], ['⑦ 第二个解码块', '⑦ The second block'], ['⑧ 线性层 + Softmax', '⑧ Linear + Softmax'], ['⑨ 选出下一个字，接回输入', '⑨ Pick a char, append it']],
   my: [['① 写自己的训练题', '① Write your own lines'], ['② 训练中', '② Training'], ['③ 自己测一测', '③ Test it yourself']],
 };

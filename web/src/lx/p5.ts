@@ -11,7 +11,7 @@ interface MD { c: [string, string]; s: string; t: string; i: [string, string, st
 /** reference page code → layer-4 hash */
 const BACK: Record<string, string> = { US3: '#L4/us/3', US8: '#L4/us/8', X1: '#L4/x/att', X2: '#L4/x/att.dot', X3: '#L4/x/att.dot.one', X5: '#L4/x/an1', TR4: '#L4/tr/4', TR5: '#L4/tr/5', TR6: '#L4/tr/6' };
 /** R42: users see the step's name, never the code */
-const BNAME: Record<string, Tx> = { US3: ['查词向量表', 'Embedding lookup'], US8: ['线性层 + Softmax', 'Linear + Softmax'], X1: ['多头注意力', 'Attention'], X2: ['点积', 'Dot product'], X3: ['一个数', 'One number'], X5: ['加 + 归一化', 'Add + norm'], TR4: ['算误差', 'The error'], TR5: ['把误差传回去', 'Pass the error back'], TR6: ['改参数', 'Update'] };
+const BNAME: Record<string, Tx> = { US3: ['查词向量表', 'Embedding lookup'], US8: ['线性层 + Softmax', 'Linear + Softmax'], X1: ['多头注意力', 'Attention'], X2: ['点积', 'Dot product'], X3: ['一个数', 'One number'], X5: ['加 + 归一化', 'Add + norm'], TR4: ['算损失', 'The loss'], TR5: ['把损失传回去', 'Pass the loss back'], TR6: ['改参数', 'Update'] };
 /** page → knowledge card (KM01 vector … KM12 √d) */
 const KM: Record<string, string> = {
   L5: 'KM01', M1a: 'KM01', M1b: 'KM01', M2a: 'KM02', M2b: 'KM02', M2c: 'KM02', M2d: 'KM12', M3a: 'KM03', M3b: 'KM03', M3c: 'KM03',
@@ -56,7 +56,7 @@ export function dia5(l: L): Dia {
     if (id !== 'g-at2') edges.push({ id: 'd-' + id, d: `M${186} ${pos[b]! + bh / 2} H${xt}`, dash: true });
   }
   const ty = pos.tok! - 6;
-  nodes.push({ id: 'trn', x: 194, y: ty, w: 162, h: 58, t: ['训练时还要（往回改）：', 'Training goes back:'], lines: [['训练时还要（往回改）：', 'Training goes back:'], ['误差 → 链式法则', 'error → chain rule'], ['→ 梯度下降改参数', '→ update params']] });
+  nodes.push({ id: 'trn', x: 194, y: ty, w: 162, h: 58, t: ['训练时还要（往回改）：', 'Training goes back:'], lines: [['训练时还要（往回改）：', 'Training goes back:'], ['损失 → 链式法则', 'loss → chain rule'], ['→ 梯度下降改参数', '→ update params']] });
   return { x0: 0, y0: 64, x1: 360, y1: pos.in! + bh + 4, nodes, edges, frames, labels };
 }
 
@@ -71,7 +71,7 @@ export async function page(id: string, l: L): Promise<LxPg> {
       id, mode: 'full', v: { dia: D, st: { trn: 'or' }, def: 'calm', edef: 'calm', np: true }, top: `<b class="lx-tt">${z('第5层：背后的数学（数学地图）', 'Layer 5: the maths behind it (map)')}</b>`,
       crumb: [[z('首页', 'Home'), '#home'], [z('第5层 背后的数学', 'Layer 5 The maths behind it'), null], [z('地图：每个数学点用在哪个块', 'Map: which maths each block uses'), null]], ttl: z('数学地图', 'Maths map'),
       info: [z('看清每个块背后用的是哪种数学', 'Shows the maths behind each block'), z('向量、矩阵、概率、导数 4 类，8 个点', 'Vectors, matrices, probability, derivatives: 4 kinds, 8 topics'),
-        z('往上算用向量到 softmax，往回改用误差到链式法则', 'Going up: vectors to softmax; going back: error to chain rule'), z('都是高中到大一的数学，够用就好', 'High-school to first-year maths: just enough')],
+        z('往上算用向量到 softmax，往回改用损失到链式法则', 'Going up: vectors to softmax; going back: loss to chain rule'), z('都是高中到大一的数学，够用就好', 'High-school to first-year maths: just enough')],
       k: KM.L5!, math: null, hint: z('点右边任一数学点进入；按顺序学点「下一步」', 'Tap any maths chip; or press Next to go in order'), dots: null, next: lxNext(id), panel: '', go,
     };
   }

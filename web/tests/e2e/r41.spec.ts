@@ -29,7 +29,7 @@ test.describe('R41 reference layout', () => {
     }
     await go(page, '#L4/tr/4');
     await expect(page.locator('.l4-tt')).toHaveText('例题：天空是什么颜色？ → 蓝');
-    await expect(page.locator('.l4-crumb')).toHaveText(/^首页\s*›\s*第4层\s*›\s*看它怎么训练\s*›\s*④算误差$/);
+    await expect(page.locator('.l4-crumb')).toHaveText(/^首页\s*›\s*第4层\s*›\s*看它怎么训练\s*›\s*④算损失$/);
     await expect(page.locator('.l4-hint')).toHaveText('› 进入下一层 · ⓘ 当前页看说明 · 底部切换上一步/下一步');
     for (const a of ['prev', 'next']) { const q = (await page.locator(`.l4-nav [data-a="${a}"]`).boundingBox())!; expect(q.height).toBeGreaterThanOrEqual(44); expect(q.width).toBeGreaterThanOrEqual(88); }
     await expect(page.locator('.l4-nav .g-n')).toHaveText('4 / 6');

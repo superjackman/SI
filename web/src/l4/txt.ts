@@ -72,7 +72,7 @@ export const UI = {
   lang: ['EN', '中'], langL: ['Switch to English', '切换到中文'], end: ['结束', 'END'], other: ['其他字', 'Others'],
 } satisfies Record<string, Tx | Tx[]>;
 export const STEPN = {
-  tr: [['①准备例题', '① Examples'], ['②建字典、分词', '② Dictionary'], ['③先随机猜一次', '③ First guess'], ['④算误差', '④ The error'], ['⑤把误差传回去', '⑤ Pass it back'], ['⑥改参数、重复很多遍', '⑥ Update, repeat']] as Tx[],
+  tr: [['①准备例题', '① Examples'], ['②建字典、分词', '② Dictionary'], ['③先随机猜一次', '③ First guess'], ['④算损失', '④ The loss'], ['⑤把损失传回去', '⑤ Pass it back'], ['⑥改参数、重复很多遍', '⑥ Update, repeat']] as Tx[],
   us: [['①输入一段字', '① Input'], ['②分词', '② Tokenize'], ['③查词向量表', '③ Embedding'], ['④加位置编码', '④ Position'], ['⑤注意力', '⑤ Attention'], ['⑥前馈网络', '⑥ Feed-forward'], ['⑦第二个解码块', '⑦ Block 2'], ['⑧线性层 + Softmax', '⑧ Linear + Softmax'], ['⑨选出下一个字', '⑨ Pick a char']] as Tx[],
   my: [['①写题', '① Write'], ['②训练中', '② Training'], ['③自己测', '③ Test']] as Tx[],
 };

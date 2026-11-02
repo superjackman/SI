@@ -50,8 +50,8 @@ export const LX_N: Record<string, Tx> = {
   M2a: ['M2 ①两个箭头有多对齐', 'M2 ① How aligned are two arrows'], M2b: ['M2 ②对应相乘再相加', 'M2 ② Multiply pairs, add'], M2c: ['M2 ③越大越相似，垂直为 0', 'M2 ③ Bigger = more alike; 0 = perpendicular'], M2d: ['M2 ④除以 √d 缩放', 'M2 ④ Divide by √d'],
   M3a: ['M3 ①向量叠成表格', 'M3 ① Vectors stacked into a table'], M3b: ['M3 ②行乘列得到一个格子', 'M3 ② Row × column = one cell'], M3c: ['M3 ③一次把所有字都算完', 'M3 ③ All chars in one go'],
   M4a: ['M4 ①原始分数，可正可负', 'M4 ① Raw scores, + or −'], M4b: ['M4 ②先变成正数 eˣ', 'M4 ② Make them positive: eˣ'], M4c: ['M4 ③除以总和变百分比', 'M4 ③ Divide by the total'],
-  M5a: ['M5 ①正确答案猜了多少', 'M5 ① Odds on the right answer'], M5b: ['M5 ②误差 ＝ −ln 概率', 'M5 ② Error = −ln odds'],
-  M6a: ['M6 ①误差像山谷', 'M6 ① The error is a valley'], M6b: ['M6 ②坡度告诉你往哪边走', 'M6 ② The slope shows the way'], M6c: ['M6 ③一步步下山', 'M6 ③ Step by step downhill'],
+  M5a: ['M5 ①正确答案猜了多少', 'M5 ① Odds on the right answer'], M5b: ['M5 ②损失 ＝ −ln 概率', 'M5 ② Loss = −ln odds'],
+  M6a: ['M6 ①损失像山谷', 'M6 ① The loss is a valley'], M6b: ['M6 ②坡度告诉你往哪边走', 'M6 ② The slope shows the way'], M6c: ['M6 ③一步步下山', 'M6 ③ Step by step downhill'],
   M7a: ['M7 ①一层层传动', 'M7 ① Layer drives layer'], M7b: ['M7 ②总影响等于各层相乘', 'M7 ② Total = product of layers'], M7c: ['M7 ③反向传播', 'M7 ③ Backpropagation'],
   M8: ['M8 均值、方差、层归一化', 'M8 Mean, variance, LayerNorm'],
 };
