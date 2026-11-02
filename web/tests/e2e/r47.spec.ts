@@ -61,7 +61,7 @@ test.describe('R47 derivation path', () => {
   test('the map sheet lists the chain and all 17 stages', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
     await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
-    await expect(ms.locator('a[href^="#D/"]')).toHaveCount(17); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
+    await expect(ms.locator('a[href^="#D/"]')).toHaveCount(18); await expect(ms.locator('a[href="#D/map"]')).toHaveCount(1); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
     await ms.locator('a[href="#D/9"]').click(); await expect(ms).toHaveCount(0); await expect(page).toHaveURL(re('#D/9')); await px(page, 'D/9.zh');
     expect(errs).toEqual([]);
   });

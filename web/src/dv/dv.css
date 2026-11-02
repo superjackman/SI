@@ -29,9 +29,28 @@ button.dv-from span::before { content: '‹ '; }
 .dv-ap { display: inline-block; margin: 0 2px; padding: 0 5px; border: 1px dashed #ffb347; border-radius: 8px; color: #ffb347; font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
 .dv-do { margin: 0; padding: 7px 10px; border: 1px solid #1f8a63; border-radius: 10px; background: #052e22; font-size: 12.5px; line-height: 1.5; color: #dbe6ff; }
 .dv-do b { display: block; color: #7ef0b0; font-size: 12.5px; }
-.dv-ks { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid #1b2a55; padding-top: 6px; }
-.dv-ks h3 { margin: 0; font-size: 13px; color: #9cc8ff; font-weight: 700; }
+.dv-ks { display: flex; flex-direction: column; gap: 6px; padding: 6px 8px 8px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; }
+.dv-ks h3 { margin: 0; font-size: 13px; color: #ffd166; font-weight: 800; }
+.dv-ks h4 { margin: 2px 0 0; font-size: 12.5px; color: #ffd77a; font-weight: 700; }
 .dv-kg { display: grid; gap: 6px; }
 .dv .dv-kb { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 4px 10px; text-align: left; white-space: normal; line-height: 1.3; font-size: 13px; }
 .dv-kid { flex: none; font-size: 12px; font-weight: 800; color: #9cc8ff; min-width: 3em; }
 .dv .dv-lv { min-height: 38px; }
+.dv .dv-kb .dv-kn { flex: 1; min-width: 0; }
+.dv .dv-kb.on { outline: 2px solid #ffd166; outline-offset: 1px; }
+.dv .dv-mp { min-height: 38px; white-space: normal; line-height: 1.35; text-align: left; }
+/* R48 知识地图 (#D/map): rows = steps, columns = layers 5 → 1; gold cell = the step's own layer */
+.dv-map .dv-mlg { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; margin: 0; font-size: 12px; color: #c4d2f2; }
+.dv-mg { display: flex; flex-direction: column; gap: 3px; }
+.dv-mr { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; align-items: stretch; scroll-margin: 60px; }
+.dv-mr + .dv-mr { margin-top: 5px; }
+.dv-mr.on .dv-ms { outline: 2px solid #ffd166; outline-offset: 1px; }
+.dv-mh { padding: 2px 0; }
+.dv-mlh { display: grid; place-items: center; min-height: 28px; padding: 0; border: 0; background: none; cursor: pointer; }
+.dv-mlh .l4-lt { padding: 1px 4px; white-space: nowrap; }
+.dv-ms { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; min-height: 32px; padding: 3px 8px; border: 1px solid var(--c); border-radius: 8px; background: #0b1430; color: #e8eeff; text-align: left; cursor: pointer; }
+.dv-ms b { min-width: 0; font-size: 12px; font-weight: 700; line-height: 1.3; }
+.dv-mx { display: flex; flex-direction: column; align-items: stretch; gap: 2px; padding: 2px; border: 1px solid #1c2a52; border-radius: 6px; background: #081028; }
+.dv-mx.own { border: 1px dashed #c99a2e; background: #1d1a10; }
+.dv .dv-mk { display: block; width: 100%; padding: 2px 0; border: 0; border-radius: 3px; background: var(--cb); color: #fff; font-size: 12px; font-weight: 800; line-height: 1.4; text-align: center; cursor: pointer; }
+.dv .dv-mlg .dv-mk { display: inline-block; width: auto; padding: 0 5px; }

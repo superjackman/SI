@@ -253,7 +253,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4-go p { margin: 0; font-size: 12.5px; line-height: 1.45; color: #dbe6ff; }
 .l4-go .l4-b.big { min-height: 40px; border-radius: 12px; font-size: 14px !important; flex: 2; width: 100%; }
 .l4-go .r .l4-b.sm { flex: 1; min-height: 40px; border-radius: 12px; white-space: nowrap; padding: 0 8px; font-size: 12.5px !important; }
-.l4-lt { flex: none; font-size: 12px; font-weight: 700; color: var(--ct, #fff); background: var(--cb, var(--c)); border-radius: 6px; padding: 1px 7px; } /* --cb: the layer colour deep enough for white text (≥ 4.5:1) */
+.l4-lt { flex: none; font-size: 12px; font-weight: 700; color: var(--ct, #fff); background: var(--cb, var(--c)); border-radius: 3px; padding: 1px 7px; } /* --cb: the layer colour deep enough for white text (≥ 4.5:1) */
 .l4-pb { display: block; height: 6px; border-radius: 3px; background: #24305e; overflow: hidden; flex: 1; min-width: 40px; } .l4-pb i { display: block; height: 100%; background: var(--c); border-radius: 3px; }
 .l4-ms h4.l4-mh { display: flex; align-items: center; gap: 8px; } .l4-mh .l4-pb { flex: 0 1 110px; } .l4-mh .m { font-size: 12px; font-weight: 400; color: #b7c6ea; white-space: nowrap; }
 .l4-go > .l4-pb { flex: none; }
@@ -385,3 +385,17 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 /* R47 card → 推导之路 back-link (page 1, after ④) */
 .l4-sheet .l4-kdv { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; margin: 2px 0 6px; padding: 4px 12px; border-color: #c99a2e; background: #13183a; color: #dbe6ff; text-align: left; border-radius: 10px; }
 .l4-sheet .l4-kdv span { flex: none; font-size: 12px; color: #ffd77a; } .l4-sheet .l4-kdv b { flex: 1; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+
+/* R48 一体两视角: square 第n层 badges (.l4-lt, 3px), round 第n步 badges (.dv-sb); the view switch; the card's gold 换个角度看 box */
+.l4 .dv-sb { flex: none; display: inline-block; padding: 0 7px; border-radius: 999px; background: #c99a2e; color: #1a1204; font-size: 12px; font-weight: 800; line-height: 1.6; white-space: nowrap; }
+.l4 .g-seg.l4-vsw, .l4 .g-seg.dv-vsw { margin: 0 0 6px; }
+.l4 .g-seg.l4-vsw button, .l4 .g-seg.dv-vsw button { min-height: 36px; padding: 0 4px; font-size: 12.5px; line-height: 1.25; white-space: normal; }
+.l4-sheet .l4-kalt { margin: 6px 0; padding: 6px 8px 8px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; display: flex; flex-direction: column; gap: 6px; }
+.l4-sheet .l4-kalt h3 { margin: 0; font-size: 13px; font-weight: 800; color: #ffd166; }
+.l4-sheet .l4-kalt .l4-kdv { margin: 0; flex-wrap: wrap; }
+.l4-sheet .l4-kalt .l4-kdv b { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.l4-sheet .l4-kwhy { margin: 0; font-size: 12.5px; line-height: 1.45; color: #dbe6ff; } .l4-sheet .l4-kwhy span { color: #ffd77a; font-weight: 700; }
+.l4-sheet .l4-kx { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; } .l4-sheet .l4-kx > span { width: 100%; font-size: 12px; color: #ffd77a; }
+.l4-sheet .l4-kst, .l4-sheet .l4-ksib { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 2px 8px; border-radius: 9px; background: #0c1a3d; color: #dbe6ff; font-size: 12.5px; text-align: left; white-space: normal; line-height: 1.3; }
+.l4-sheet .l4-ksib b { color: #9cc8ff; font-size: 12px; }
+.l4 .l4-kdv .dv-sb, .l4 .l4-kst .dv-sb { color: #1a1204; }

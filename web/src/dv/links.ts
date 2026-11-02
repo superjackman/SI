@@ -40,12 +40,14 @@ export const DV_K: readonly (readonly string[])[] = DV_BORN.map((b, i) => [...b,
 /** 仅推导: stages (not the recap) whose layer has no card born there yet — the pyramid has nothing for them so far */
 export const DV_SOLO: readonly number[] = DV_BORN.map((b, i) => (i < DV_N - 1 && !(b[0] && cardLv(b[0]) === DV_LV[i]) ? i : -1)).filter((i) => i >= 0);
 export const DV_SEEN = 'si.dv.seen';
-export const isDv = (id: string) => id === 'D' || /^D\/(\d|1[0-6])$/.test(id);
+/** the card a view switch came from: the stage page lights it up and scrolls to it once (sessionStorage) */
+export const DV_FOCUS = 'si.dv.focus';
+export const isDv = (id: string) => id === 'D' || id === 'D/map' || /^D\/(\d|1[0-6])$/.test(id);
 /** short stage names (zh, en) for the map sheet and the card back-link; the lazy content repeats them (a unit test keeps them equal) */
 export const DV_NM: readonly (readonly [string, string])[] = [
   ['用样本找函数', 'Learn a function from examples'], ['损失函数', 'Loss functions'], ['梯度下降', 'Gradient descent'], ['多层 + 非线性', 'Layers + non-linearity'],
   ['反向传播', 'Backpropagation'], ['训练工程', 'Training in practice'], ['词向量', 'Word vectors'], ['RNN + 注意力', 'RNN + attention'], ['Transformer', 'Transformer'],
-  ['预训练', 'Pre-training'], ['后训练：SFT、对齐与推理', 'Post-training: SFT, alignment + reasoning'], ['低成本适配', 'Cheap adaptation'], ['推理效率', 'Inference speed'], ['RAG', 'RAG'],
+  ['预训练', 'Pre-training'], ['后训练：SFT、对齐与推理', 'Post-training: SFT + RL'], ['低成本适配', 'Cheap adaptation'], ['推理效率', 'Inference speed'], ['RAG', 'RAG'],
   ['工具与 Agent', 'Tools + agents'], ['多模态与前沿', 'Multimodal + frontier'], ['回顾', 'Recap'],
 ];
 /** what each stage leaves open (zh, en) — the card sheet's 「它解决的问题」 is the step before its birth step; equal to the lazy content's `e` (unit test) */

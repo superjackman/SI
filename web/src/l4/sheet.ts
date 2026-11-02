@@ -5,7 +5,8 @@ import { K_MATH, NODES, UI, tx, type L, type Nd } from './txt';
 import { lxMini } from '../lx/mini';
 import { lvOf } from './share/card';
 import { navTo } from './hnav';
-import { DV_NM, DV_OF } from '../dv/links';
+import { DV_ALSO, DV_BORN, DV_E, DV_FOCUS, DV_NM, DV_OF, cardLv } from '../dv/links';
+import { LBG } from './progress';
 
 const MINI: Record<Nd, [string, string]> = { in: ['输入', 'Input'], tok: ['分词', 'Tokenize'], emb: ['词向量+位置', 'Embed+pos'], att: ['多头注意力', 'Attention'], an1: ['加+归一化', 'Add+Norm'], ffn: ['前馈网络', 'Feed-forward'], an2: ['加+归一化', 'Add+Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['概率', 'Odds'] };
 function mini(c: Card, l: L) {
@@ -29,6 +30,7 @@ const K_GO: Record<string, [readonly [string, string], string]> = { KA06: [['进
 const KM_USE: Record<string, string> = { KM01: 'M1a', KM02: 'M2a', KM03: 'M3a', KM04: 'M4a', KM05: 'M4b', KM06: 'M5a', KM07: 'M5a', KM08: 'M6a', KM09: 'M7a', KM10: 'M6c', KM11: 'M8', KM12: 'M2d' };
 /** reference footer 「… · 对应第5层·交叉熵」: the M group by name, never its id (C5) */
 const KM_NM: Record<string, readonly [string, string]> = { M1: ['向量', 'Vectors'], M2: ['点积', 'Dot product'], M3: ['矩阵乘法', 'Matrices'], M4: ['softmax', 'Softmax'], M5: ['交叉熵', 'Cross-entropy'], M6: ['梯度', 'Gradients'], M7: ['链式法则', 'Chain rule'], M8: ['归一化', 'Normalisation'] };
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 export interface SheetApi { close(): void }
 /** open card `id` (page p) inside `host`; `go` changes the hash */
 export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go: (suffix: string | null) => void, _pageUrl: string, q?: { i: number; n: number; next: () => void }): Promise<void> {
@@ -36,10 +38,22 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
   const T = (k: keyof typeof UI) => tx(UI[k] as readonly [string, string], l), km = id.startsWith('KM'), math = km ? null : K_MATH[id] ?? null, LV = lvOf(id);
   const jg: [readonly [string, string], string] | undefined = K_GO[id] ?? (KM_USE[id] ? [['看它在哪用 ›', 'Where it is used ›'], '#L5/' + KM_USE[id]] : undefined);
   const dv = DV_OF[id];
+  /* R48 换个角度看: the same card seen bottom-up — the step it is born in (round 第n步 badge), the question it answers,
+     the other steps that use it again, and the cards born with it in the same layer (square 第n层 badges) */
+  const zz = (a: string, b: string) => tx([a, b], l), st = (n: number) => `<span class="dv-sb">${zz(`第 ${n} 步`, `Step ${n}`)}</span>`;
+  const lvB = (k: string) => { const n = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`; };
+  const sib = dv == null ? [] : DV_BORN[dv]!.filter((k) => k !== id && cardLv(k) === cardLv(id) && all[k]).slice(0, 4);
+  const also = dv == null ? [] : DV_ALSO[id]!;
+  const vsw = dv == null ? '' : `<div class="g-seg l4-vsw" role="radiogroup" aria-label="${zz('换个角度看', 'Another angle')}"><button type="button" role="radio" aria-checked="true" class="on" data-s="vtop">${zz('自顶向下·看结构', 'Top-down · structure')}</button><button type="button" role="radio" aria-checked="false" data-s="dv">${zz('自底向上·看推导', 'Bottom-up · derivation')}</button></div>`;
+  const alt = dv == null ? '' : `<section class="l4-kalt"><h3>${zz('换个角度看', 'Another angle')}</h3><button type="button" class="l4-b l4-kdv" data-s="dv"><span>${zz('↑ 在推导之路里诞生于', '↑ Born on the derivation path at')}</span><b>${st(dv)}${esc(tx(DV_NM[dv]!, l))}</b></button>`
+    + (dv > 0 && DV_E[dv - 1]![0] ? `<p class="l4-kwhy"><span>${zz('它解决：', 'It answers: ')}</span>${esc(tx(DV_E[dv - 1]!, l))}</p>` : '')
+    + (also.length ? `<div class="l4-kx"><span>${zz('后面也用到：', 'Used again in: ')}</span>${also.map((n) => `<button type="button" class="l4-b l4-kst" data-s="dvx" data-n="${n}">${st(n)}${esc(tx(DV_NM[n]!, l))}</button>`).join('')}</div>` : '')
+    + (sib.length ? `<div class="l4-kx"><span>${zz('同层同步诞生：', 'Born in the same step and layer: ')}</span>${sib.map((k) => `<button type="button" class="l4-b l4-ksib" data-s="sib" data-k="${k}">${lvB(k)}<b>${k}</b>${all[k]!.n}</button>`).join('')}</div>` : '')
+    + `</section>`;
   const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p); if (q) el.classList.add('q');
   const head = `<header class="l4-sh"><span class="l4-kid">${id}</span><b class="l4-kn">${c.n}</b><span class="l4-ktag">${LV.tag ? tx(LV.tag, l) : T('kcT')}${p === 2 ? ' ' + tx(['（续）', '(cont.)'], l) : ''}</span></header>`;
   const body = p === 1
-    ? `<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}${dv == null ? '' : `<button type="button" class="l4-b l4-kdv" data-s="dv"><span>${tx(['↑ 在推导之路里', '↑ On the derivation path'], l)}</span><b>${tx([`第 ${dv} 步 · ${DV_NM[dv]![0]}`, `Step ${dv} · ${DV_NM[dv]![1]}`], l)}</b></button>`}`
+    ? `${vsw}<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}${alt}`
     : sec(T('s5'), 'c5', c.s[4], '');
   const z = (a: string, b: string) => tx([a, b], l), jt = jg ? tx(jg[0], l).replace(/\s*›$/, '') : '';
   const foot = `<footer class="l4-sf g-sf"><div class="g-l">${math ? `<button type="button" class="l4-b g-info" data-s="math">${T('math')}</button>` : ''}${jg ? `<button type="button" class="l4-b g-jump" data-s="jump">${jt}</button>` : ''}<button type="button" class="l4-b g-act" data-s="share">⤴ ${T('shareB')}</button></div>
@@ -54,7 +68,8 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     e.stopPropagation(); const s = b.dataset.s;
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
     else if (s === 'jump' && jg) { el.remove(); navTo(window, jg[1]); }
-    else if (s === 'dv' && dv != null) { el.remove(); navTo(window, `#D/${dv}`); }
+    else if ((s === 'dv' || s === 'dvx') && dv != null) { el.remove(); try { sessionStorage.setItem(DV_FOCUS, id); } catch { /* private mode */ } navTo(window, `#D/${s === 'dvx' ? b.dataset.n : dv}`); }
+    else if (s === 'sib' && b.dataset.k) go(b.dataset.k);
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });
   // the reference's gestures: swipe down to close, left / right to turn the page
