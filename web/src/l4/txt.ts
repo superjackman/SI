@@ -27,9 +27,9 @@ export const NODE_K: Record<Nd, string> = { in: 'K15', tok: 'K02', emb: 'K03', a
 /** 看数学: the L5 maths card each knowledge card leads to */
 export const K_MATH: Record<string, string> = {
   K01: 'KM03', K02: 'KM01', K03: 'KM01', K04: 'KM01', K05: 'KM11', K06: 'KM03', K07: 'KM02', K08: 'KM04', K09: 'KM11',
-  K10: 'KM03', K11: 'KM03', K12: 'KM04', K13: 'KM07', K14: 'KM09', K15: 'KM06',
+  K10: 'KM03', K11: 'KM03', K12: 'KM04', K13: 'KM07', K14: 'KM09', K15: 'KM06', K16: 'KM02',
   /* layer 3 (R39): only the cards whose idea rests on one maths card */
-  KC01: 'KM06', KC04: 'KM07', KC05: 'KM05', KC08: 'KM03', KC09: 'KM04', KC10: 'KM02', KC11: 'KM04',
+  KC01: 'KM06', KC04: 'KM07', KC05: 'KM05', KC08: 'KM03', KC09: 'KM04', KC10: 'KM02', KC11: 'KM04', KC13: 'KM02', KC14: 'KM02',
 };
 export type Info = readonly [Tx, Tx, Tx, Tx];
 export const NODE_INFO: Record<Nd, Info> = {

@@ -15,4 +15,4 @@ export function cards(l: L, id = 'K01'): Promise<Record<string, Card>> {
   const g = groupOf(id);
   return (cache[g + l] ??= LOAD[g][l]().then((m) => (m as { default: Record<string, Card> }).default));
 }
-export const isCard = (id: string) => /^K(0[1-9]|1[0-5])$|^KM(0[1-9]|1[0-2])$|^KA0[1-6]$|^KB0[1-8]$|^KC(0[1-9]|1[0-2])$/.test(id);
+export const isCard = (id: string) => /^K(0[1-9]|1[0-6])$|^KM(0[1-9]|1[0-3])$|^KA0[1-7]$|^KB0[1-8]$|^KC(0[1-9]|1[0-4])$/.test(id);

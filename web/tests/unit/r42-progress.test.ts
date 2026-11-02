@@ -15,7 +15,7 @@ describe('R42 progress', () => {
   });
   it('stats and names', () => {
     const s = layerStats(['L1', 'L1-1', 'US5', 'X:att'], ['KA01', 'K05']);
-    expect(s[0]).toMatchObject({ s: 2, t: 7, c: 1, ct: 6 }); expect(s[3]).toMatchObject({ s: 2, t: 26, c: 1 });
+    expect(s[0]).toMatchObject({ s: 2, t: 7, c: 1, ct: 7 }); expect(s[3]).toMatchObject({ s: 2, t: 26, c: 1 });
     expect(pageName('US5', 'zh')).toBe('⑤注意力'); expect(pageName('M2b', 'zh')).toBe('②对应相乘再相加'); expect(pageName('L4', 'zh')).toBe('全貌');
     for (const n of [1, 2, 3, 4, 5]) for (const p of layerPages(n)) { expect(pageName(p, 'zh')).not.toMatch(/^(X:|[A-Z]+\d)/); expect(pageName(p, 'en').length).toBeGreaterThan(1); }
   });

@@ -57,8 +57,8 @@ describe('R39 layer 1 + 2 pages', () => {
 
 describe('R39 cards KA / KB', () => {
   const zh = json('k1-zh.json'), en = json('k1-en.json');
-  it('14 cards, same ids in both languages, five parts each, en has no Chinese', () => {
-    const ids = Object.keys(zh).sort(); expect(ids).toEqual([...'123456'].map((d) => 'KA0' + d).concat([...'12345678'].map((d) => 'KB0' + d)));
+  it('15 cards, same ids in both languages, five parts each, en has no Chinese', () => {
+    const ids = Object.keys(zh).sort(); expect(ids).toEqual([...'1234567'].map((d) => 'KA0' + d).concat([...'12345678'].map((d) => 'KB0' + d)));
     expect(Object.keys(en).sort()).toEqual(ids);
     for (const id of ids) {
       expect(zh[id]!.s).toHaveLength(5); expect(en[id]!.s).toHaveLength(5);
@@ -101,8 +101,8 @@ describe('R39 layer 3 pages', () => {
 
 describe('R39 cards KC', () => {
   const zh = json('k3-zh.json'), en = json('k3-en.json');
-  it('12 cards, five parts each, en keeps only glossed example chars, KC08 uses the real demo size', () => {
-    const ids = Array.from({ length: 12 }, (_, i) => 'KC' + String(i + 1).padStart(2, '0')); expect(Object.keys(zh).sort()).toEqual(ids); expect(Object.keys(en).sort()).toEqual(ids);
+  it('14 cards, five parts each, en keeps only glossed example chars, KC08 uses the real demo size', () => {
+    const ids = Array.from({ length: 14 }, (_, i) => 'KC' + String(i + 1).padStart(2, '0')); expect(Object.keys(zh).sort()).toEqual(ids); expect(Object.keys(en).sort()).toEqual(ids);
     for (const id of ids) {
       expect(zh[id]!.s).toHaveLength(5); expect(en[id]!.s).toHaveLength(5);
       for (const s of [...zh[id]!.s, ...en[id]!.s]) expect(s.trim().length).toBeGreaterThan(0);

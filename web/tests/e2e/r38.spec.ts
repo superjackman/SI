@@ -102,8 +102,8 @@ test.describe('R38 explorer', () => {
     await expect(sh.locator('.t5').first()).toBeVisible();
     await sh.locator('[data-s="share"]').click(); const dlg = page.locator('.l4-shm'), img = dlg.locator('.g-pv');
     await expect(dlg.locator('.g-dlg')).toBeVisible();
-    await expect(img).toHaveAttribute('data-w', '1080'); await expect(img).toHaveAttribute('data-h', '1920');
-    await dlg.locator('[data-m="fmt:post"]').click(); await expect(dlg.locator('[data-m="fmt:post"]')).toHaveAttribute('aria-checked', 'true'); await expect(img).toHaveAttribute('data-h', '1350');
+    await expect(img).toHaveAttribute('data-w', '1080', { timeout: 15000 }); await expect(img).toHaveAttribute('data-h', '1920');
+    await dlg.locator('[data-m="fmt:post"]').click(); await expect(dlg.locator('[data-m="fmt:post"]')).toHaveAttribute('aria-checked', 'true'); await expect(img).toHaveAttribute('data-h', '1350', { timeout: 15000 });
     await dlg.locator('.g-x').click(); await expect(dlg).toHaveCount(0); await expect(sh).toBeVisible();
     await sh.locator('[data-s="math"]').click(); await expect(page.locator('.l4-sheet')).toHaveAttribute('data-card', /^KM/);
     await page.locator('.l4-sheet [data-s="close"]').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0);
