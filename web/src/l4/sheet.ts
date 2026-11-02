@@ -4,6 +4,7 @@ import { cards, type Card } from './c/kc';
 import { K_MATH, NODES, UI, tx, type L, type Nd } from './txt';
 import { lxMini } from '../lx/mini';
 import { lvOf } from './share/card';
+import { navTo } from './hnav';
 
 const MINI: Record<Nd, [string, string]> = { in: ['输入', 'Input'], tok: ['分词', 'Tokenize'], emb: ['词向量+位置', 'Embed+pos'], att: ['多头注意力', 'Attention'], an1: ['加+归一化', 'Add+Norm'], ffn: ['前馈网络', 'Feed-forward'], an2: ['加+归一化', 'Add+Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['概率', 'Odds'] };
 function mini(c: Card, l: L) {
@@ -50,7 +51,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     const b = (e.target as HTMLElement).closest<HTMLElement>('button'); if (!b) { if (e.target === el) go(null); return; }
     e.stopPropagation(); const s = b.dataset.s;
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
-    else if (s === 'jump' && jg) { el.remove(); window.location.hash = jg[1]; }
+    else if (s === 'jump' && jg) { el.remove(); navTo(window, jg[1]); }
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });
   // the reference's gestures: swipe down to close, left / right to turn the page

@@ -14,6 +14,7 @@ import { cardLayer, layerStats, lastPage, pageLayer, pageName, pbar, recent } fr
 import { hashOf, parse, pickHead, Q } from '../l4/pages';
 import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
+import { navBack } from '../l4/hnav';
 
 export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null }
 export interface PxApi {
@@ -101,7 +102,7 @@ export async function px(id: string, A: PxApi) {
   api = A; L_ = A.l; curId = id; const h = A.host;
   if (wired !== h) { wired = h; h.addEventListener('click', onClick); h.addEventListener('input', onInput); h.addEventListener('change', onInput); }
   if (!escOn) { escOn = true; addEventListener('keydown', (e) => { const a = api; if (e.key !== 'Escape' || !a || !(curId === 'S' || curId.startsWith('S/')) || !a.host.querySelector('.px-s.g-modal')) return;
-    if (pk.open) { pk = { open: false, q: '' }; void share(a, ''); } else if (history.length > 1) history.back(); else a.go('#home'); }); }
+    if (pk.open) { pk = { open: false, q: '' }; void share(a, ''); } else navBack(window, '#home'); }); }
   if (!id.startsWith('P/x')) xs.rec = '';
   if (id === 'P') return list(A);
   if (/^P\/q[1-5]$/.test(id)) return quiz(A, Number(id[3]) as N);
@@ -387,7 +388,7 @@ export function qStart(go: (h: string) => void) { LS.set(QKEY, { on: true, i: 0,
 
 /* ---------- events ---------- */
 function onClick(e: Event) {
-  if (api && (e.target as HTMLElement).matches('.px-s.g-modal')) { if (history.length > 1) history.back(); else api.go('#home'); return; }
+  if (api && (e.target as HTMLElement).matches('.px-s.g-modal')) { navBack(window, '#home'); return; }
   const b = (e.target as HTMLElement).closest<HTMLElement>('[data-px]'); if (!b || !api) return; const [k, v] = (b.dataset.px ?? '').split(':') as [string, string | undefined]; const A = api;
   if (k === 'pick' && qs && qs.pick[qs.i] == null) { const q = QUIZ[qs.lv][qs.i]!, p = Number(v); qs.pick[qs.i] = p; R.add({ k: 'ans', t: Date.now(), id: q.id, ok: p === q.a });
     if (qs.pick.every((x) => x != null)) R.add({ k: 'quiz', t: Date.now(), lv: qs.lv, right: QUIZ[qs.lv].filter((z, i) => qs!.pick[i] === z.a).length, total: QUIZ[qs.lv].length }); void quiz(A, qs.lv); return; }
@@ -404,7 +405,7 @@ function onClick(e: Event) {
   if (k === 'save') { save(); return; }
   if (k === 'share') { void shareSys(); return; }
   if (k === 'copy') { void copy(); return; }
-  if (k === 'close') { if (history.length > 1) history.back(); else A.go('#home'); return; }
+  if (k === 'close') { navBack(window, '#home'); return; }
   if (k === 'qgo') { qStart(A.go); return; }
   if (k === 'qcont') { const s = qGet(); if (s) { const [h, c] = PATH[Math.min(s.i, PATH.length - 1)]!; A.go(h + (c ? '~' + c : '')); } }
 }

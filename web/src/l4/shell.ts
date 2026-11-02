@@ -19,6 +19,7 @@ import { normCrumb } from './crumb';
 import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { lastPage, layerStats, lvTag, pageLayer, pageName, pbar, pushRecent } from './progress';
+import { navInit, navNote, navTo } from './hnav';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id);
@@ -77,7 +78,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (PLUS.has(n)) { back = hashOf(cur); go(xHash(n)); return; }
     sel = sel === n ? null : n; drawInfo(); drawLabels();
   };
-  const go = (h: string) => { if (win.location.hash === h) route(); else win.location.hash = h; };
+  /* R46: in-site moves rewrite the current history entry (src/l4/hnav.ts), so the system Back leaves the site */
+  const go = (h: string) => { if (!navTo(win, h)) route(); };
 
   /* ---------- rendering ---------- */
   /* the info box like the reference: four rows, a tall gold 知识卡 button on the right (the card id is in its label) */
@@ -297,6 +299,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (id !== cur) bump();
     const q = qGet(); if (q?.on) { const j = PATH.findIndex(([h]) => stopOf(h) === id); if (j >= 0 && j !== q.i) LS.set(QKEY, { ...q, i: j, max: Math.max(q.max, j) }); }
     if (id !== cur && pageLayer(id)) pushRecent(id, 'p');
+    navNote(win, win.location.hash || '#home');
     cur = id; if (!isPx(id)) { seen.add(id); LS.set('si.l4.seen', [...seen]); } root.querySelector('.l4-ms')?.remove();
     render(); drawQp();
     const want = r.card && /^K[MABC]?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);
@@ -304,7 +307,12 @@ export function start(doc: Document = document, win: Window = window) {
   }
   /* ---------- events ---------- */
   root.addEventListener('click', (e) => {
-    const t = e.target as HTMLElement, b = t.closest<HTMLElement>('button,[data-go]'); if (!b || !root.contains(b)) return;
+    const t = e.target as HTMLElement;
+    /* R46: in-site #links (crumbs, the map) also replace the history entry instead of adding one (no root.contains:
+       the map sheet removes itself before this runs; a click reaching this listener came from inside root) */
+    const an = t.closest<HTMLAnchorElement>('a[href^="#"]'), me = e as MouseEvent;
+    if (an && !an.target && !me.ctrlKey && !me.metaKey && !me.shiftKey && !me.altKey) { e.preventDefault(); go(an.getAttribute('href')!); return; }
+    const b = t.closest<HTMLElement>('button,[data-go]'); if (!b || !root.contains(b)) return;
     if (b.closest('.l4-sheet:not(.l4-ms)')) return;
     if (b.dataset.nd) { pick(b.dataset.nd as Nd); return; }
     if (b.dataset.lx) { const h = lp?.go[b.dataset.lx]; if (h) go(h); return; }
@@ -358,6 +366,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (x === 'my-resume') { my.paused = false; await c.tf.resume(); render(); return; }
     if (x === 'my-test') { if (!my.ready) { render(); return; } my.ans = await c.tf.answer(my.q, 'my'); render(); }
   }
+  const nt = (() => { try { return (win.performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined)?.type; } catch { return undefined; } })();
+  navInit(win, nt);
   win.addEventListener('hashchange', route);
   let rz = 0; win.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); }); });
   useApp.subscribe((s) => { const l: L = s.lang === 'en' ? 'en' : 'zh'; if (l !== lang) { lang = l; route(); } });
