@@ -55,3 +55,8 @@ button.dv-from span::before { content: '‹ '; }
 .dv-mx.own { border: 1px dashed #c99a2e; background: #1d1a10; }
 .dv .dv-mk { display: block; width: 100%; padding: 2px 0; border: 0; border-radius: 3px; background: var(--cb); color: #fff; font-size: 12px; font-weight: 800; line-height: 1.4; text-align: center; cursor: pointer; }
 .dv .dv-mlg .dv-mk { display: inline-block; width: auto; padding: 0 5px; }
+/* R50 自测 ticks: done/total of the self-check on each step (chain + map) */
+.dv-rd b.dv-qr { margin-left: 0; color: #ffe08a; }
+.dv-qt { flex: none; margin-left: auto; padding: 0 6px; border: 1px solid #5b8cff; border-radius: 9px; font-size: 12px; font-weight: 700; line-height: 1.5; color: #cfe0ff; white-space: nowrap; }
+.dv-qt.all { border-color: #34d399; color: #7ef0b0; }
+.dv-st .dv-qt + em { margin-left: 0; }
