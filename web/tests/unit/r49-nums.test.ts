@@ -20,7 +20,7 @@ const stageRaw = (l: Lang, n: number) => JSON.stringify(DV[l].st[n]);
 const card = (l: Lang, id: string) => deepFill(RAW[l][id]!, (s) => fillCardText(s, l)).s.join('\n');
 const stage = (l: Lang, n: number) => deepFill(DV[l].st[n]!, (s) => fillDvText(s, l));
 // every page text where a number could be hard-coded
-const FILES = ['l4/c/k-zh.json', 'l4/c/k1-zh.json', 'l4/c/k3-zh.json', 'l4/c/k-en.json', 'l4/c/k1-en.json', 'l4/c/k3-en.json', 'dv/zh.ts', 'dv/en.ts', 'px/quiz.ts'];
+const FILES = ['l4/c/k-zh.json', 'l4/c/k1-zh.json', 'l4/c/k3-zh.json', 'l4/c/k-en.json', 'l4/c/k1-en.json', 'l4/c/k3-en.json', 'dv/zh.ts', 'dv/en.ts', 'px/quiz.ts', 'vf/data.ts'];
 
 describe('R49 shared numbers (R4)', () => {
   it('every {#key} on any card or stage exists in the table', () => {
