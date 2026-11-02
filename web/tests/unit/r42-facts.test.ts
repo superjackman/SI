@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { makeDemo, handle } from '../../src/l4/tf/core';
 import { fixLine, fixLines } from '../../src/l4/pages';
+import { NUM, deepFill, fillCardText } from '../../src/dv/nums';
 
 /* R42: every real number printed on cards / T3 / U4 / TR4 / TR6 must come from the site's actual model */
 const d = makeDemo(); const V = d.chars.length, Q = 7, BLUE = d.chars.indexOf('蓝'), GREEN = d.chars.indexOf('绿'), RED = d.chars.indexOf('红');
@@ -24,7 +25,9 @@ describe('R42 real model numbers', () => {
     expect(row).toEqual(['草22.9', '什14.8', '绿12.0']);
   });
   test('cards and pages print exactly these numbers', () => {
-    const k = src('l4/c/k-zh.json'), k3 = src('l4/c/k3-zh.json'), p3 = src('lx/p3.ts');
+    const fill = (f: string) => JSON.stringify(deepFill(JSON.parse(src(f)) as unknown, (x) => fillCardText(x, 'zh')));
+    const k = fill('l4/c/k-zh.json'), k3 = fill('l4/c/k3-zh.json'), p3 = src('lx/p3.ts');
+    expect([NUM.p0.zh, NUM.p1.zh, NUM.ce0.zh, NUM.ce1.zh]).toEqual(['5.4%', '99.8%', '`−ln 0.0536 ≈ 2.93`', '≈ 0.002']);
     for (const s of ['2.93', '99.8%', '0.002']) expect(k).toContain(s);
     for (const s of ['22.9%', '99.8%']) expect(k3).toContain(s);
     expect(p3).toContain("['蓝', 5.4]"); expect(p3).toContain("['蓝', 99.8], ['绿', 0.05], ['红', 0.04]");

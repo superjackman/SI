@@ -7,7 +7,7 @@ import { UI, tx, type L } from '../l4/txt';
 import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
-import { DV_BORN, DV_FOCUS, DV_LV, DV_N, DV_OF, DV_SEEN, DV_USES, cardLv } from './links';
+import { DV_BORN, DV_EX, DV_EX_PTR, DV_FOCUS, DV_LV, DV_N, DV_OF, DV_SEEN, DV_USES, cardLv } from './links';
 import { LBG } from '../l4/progress';
 
 const LC = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'], GOLD = '#c99a2e';
@@ -47,18 +47,19 @@ export async function dv(id: string, A: PxApi) {
   const kb = (k: string, badge: string) => `<button type="button" class="l4-b g-info dv-kb" data-k="${k}">${badge}<span class="dv-kid">${k}</span><span class="dv-kn">${esc(C[k]!.n)}</span></button>`;
   const lvB = (k: string) => { const c = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[c - 1]}">${tx(UI.lv[c - 1]!, l)}</span>`; };
   const born = DV_BORN[i]!.filter((k) => C[k]).map((k) => kb(k, lvB(k))).join(''), uses = DV_USES[i]!.filter((k) => C[k]).map((k) => kb(k, `<span class="dv-sb">${z(`第 ${DV_OF[k]} 步`, `Step ${DV_OF[k]}`)}</span>`)).join('');
+  const exK = DV_EX[i]!.length ? `<p class="dv-exh">${i in DV_EX_PTR ? z('对照卡上的例子', 'Compare with the example on the card') : z('卡上同一个例子（同一组数）', 'Same example on the card (same numbers)')}</p><div class="dv-kg dv-ex">${DV_EX[i]!.filter((k) => C[k]).map((k) => kb(k, lvB(k))).join('')}</div>` : '';
   const top0 = DV_BORN[i]!.find((k) => cardLv(k) === n), tdh = n ? `#L${n}${top0 ? '~' + top0 : ''}` : '#home';
   const vsw = `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${z('换个角度看', 'Another angle')}"><button type="button" role="radio" aria-checked="false" data-go="${tdh}">${z('自顶向下·看结构', 'Top-down · structure')}</button><button type="button" role="radio" aria-checked="true" class="on" data-a="none">${z('自底向上·看推导', 'Bottom-up · derivation')}</button></div>`;
   A.host.innerHTML = `<div class="px dv dv-sp" style="--c:${col(i)}">
 ${vsw}<div class="dv-hd">${lvT(i, l)}<span class="dv-so">${esc(S.s)}</span></div>${from}
-${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x))}
+${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}
 ${sec(5, next ? z('⑤ 遗留问题 → 下一步', '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), `<p class="dv-lo">${mk(S.lo)}</p>${nxt}`)}
 <p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="dv-ks"><h3>${z('换个角度看 · 金字塔里的卡', 'Another angle · cards in the pyramid')}</h3>${born ? `<h4>${z('本步诞生的卡', 'Born in this step')}</h4><div class="dv-kg">${born}</div>` : ''}${uses ? `<h4>${z('本步也用到', 'Also used here')}</h4><div class="dv-kg">${uses}</div>` : ''}<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('在知识地图里看这一步', 'This step on the knowledge map')}</button>${n ? `<button type="button" class="l4-b dv-lv" data-go="#L${n}">${z(`↓ 去金字塔 第${n}层`, `↓ To the pyramid · layer ${n}`)}</button>` : ''}</div></div>`;
   A.host.scrollTop = 0; seenAdd(i);
   let fk: string | null = null; try { fk = sessionStorage.getItem(DV_FOCUS); sessionStorage.removeItem(DV_FOCUS); } catch { /* private mode */ }
   A.host.querySelector('.dv-ks .dv-mp')?.addEventListener('click', () => { try { sessionStorage.setItem(DV_FOCUS, `s${i}`); } catch { /* private mode */ } });
-  const fb = fk ? A.host.querySelector<HTMLElement>(`.dv-kb[data-k="${fk}"]`) : null; if (fb) { fb.classList.add('on'); fb.scrollIntoView({ block: 'center' }); }
+  const fb = fk ? A.host.querySelector<HTMLElement>(`.dv-ks .dv-kb[data-k="${fk}"]`) : null; if (fb) { fb.classList.add('on'); fb.scrollIntoView({ block: 'center' }); }
   A.step({ n: DV_N, i, pv: z('上一步', 'Back'), nx: next ? z('下一步', 'Next') : z('回链路图', 'The chain'), prev: i > 0 ? `#D/${i - 1}` : null, next: next ? `#D/${i + 1}` : '#D', dot: (k) => A.go(`#D/${k}`), z0: true });
   if (A.still()) A.root.dataset.px = `${id}.${l}`;
 }

@@ -6,6 +6,7 @@ import { NUM, NUMS, deepFill, fillCardText, fillDvText, numKeys, type Lang } fro
 import zh from '../../src/dv/zh';
 import en from '../../src/dv/en';
 import type { Card } from '../../src/l4/c/kc';
+import { DV_EX, DV_EX_PTR, DV_N } from '../../src/dv/links';
 
 const src = (p: string) => fs.readFileSync(path.join(__dirname, '../../src', p), 'utf8');
 const RAW: Record<Lang, Record<string, Card>> = {
@@ -103,5 +104,57 @@ describe('R49 shared numbers (R4)', () => {
     expect(fm(t05, [1, 1, 1])).toBe(NUM.t05.en);
     expect(fm(t2, [0, 0, 0])).toBe(NUM.t2.en);
     expect(1.4e12 / 70e9).toBe(20);
+  });
+});
+
+// C12 · one canonical example per concept: the card holds it, the stage page reuses its numbers or points to it.
+describe('R49 canonical examples (C12)', () => {
+  const keysAt = (n: number) => new Set(LS.flatMap((l) => numKeys(stageRaw(l, n))));
+  it('every stage with its own example names its canonical card(s); the recap has none', () => {
+    expect(DV_EX.length).toBe(DV_N);
+    for (let n = 0; n < DV_N - 1; n++) expect(DV_EX[n]!.length, 'D/' + n).toBeGreaterThan(0);
+    expect(DV_EX[DV_N - 1]).toEqual([]);
+    for (const ks of DV_EX) for (const k of ks) expect(RAW.zh[k], k).toBeTruthy();
+  });
+  it('a canonical card shares at least one table number with its stage, unless the stage only points to it', () => {
+    for (let n = 0; n < DV_N; n++) for (const id of DV_EX[n]!) {
+      const shared = [...keysAt(n)].filter((k) => NUMS[k]!.cards.includes(id));
+      if (n in DV_EX_PTR) expect(shared, `D/${n} ${id} is listed as pointer-only`).toEqual([]);
+      else expect(shared.length, `D/${n} ${id}: no shared {#key}`).toBeGreaterThan(0);
+    }
+  });
+  it('every shared number on a stage comes from one of that stage’s canonical cards', () => {
+    for (let n = 0; n < DV_N; n++) for (const k of keysAt(n)) expect(NUMS[k]!.cards.some((id) => DV_EX[n]!.includes(id)), `D/${n} {#${k}} not from ${DV_EX[n]}`).toBe(true);
+  });
+  it('pointer-only stages say why, and are few', () => {
+    for (const [n, why] of Object.entries(DV_EX_PTR)) { expect(why.length, n).toBeGreaterThan(20); expect(DV_EX[+n]!.length, n).toBe(1); }
+    expect(Object.keys(DV_EX_PTR).length).toBeLessThanOrEqual(4);
+  });
+  it('a stage that reuses a card example says so in its ④ text (zh + en)', () => {
+    for (let n = 0; n < DV_N; n++) {
+      if (n in DV_EX_PTR || !DV_EX[n]!.length) continue;
+      for (const l of LS) {
+        const x = DV[l].st[n]!.x.join('\n');
+        const named = DV_EX[n]!.filter((id) => x.includes(l === 'zh' ? `${id} 卡` : `card ${id}`));
+        expect(named.length, `${l} D/${n} ④ names none of ${DV_EX[n]}`).toBeGreaterThan(0);
+      }
+    }
+  });
+  it('the softmax picture (lx/m5) shows the same percentages as card KM04', () => {
+    for (const l of LS) { const m5 = src(`lx/m5-${l}.json`); for (const p of NUM.smP.en.split(' / ')) expect(m5, `${l} ${p}`).toContain(p); expect(m5).not.toMatch(/9\.3%/); }
+  });
+  it('the example numbers are right', () => {
+    const sm = (x: number[]) => { const e = x.map(Math.exp), t = e.reduce((a, b) => a + b); return e.map((v) => v / t); };
+    expect(sm([2, 1, 0.1, -0.5]).map((v) => (v * 100).toFixed(1) + '%').join(' / ')).toBe(NUM.smP.en);
+    expect((-Math.log(0.0536)).toFixed(2)).toBe('2.93');
+    expect((-Math.log(0.998)).toFixed(3)).toBe('0.002');
+    const gd = (eta: number, k: number) => { const w = [0]; for (let i = 0; i < k; i++) w.push(w[i]! - eta * 2 * (w[i]! - 2)); return w.map((v) => v.toFixed(2).replace('-', '−')).join(', '); };
+    expect('w = ' + gd(0.3, 4) + '…').toBe(NUM.gd03.en);
+    expect('w = ' + gd(1.1, 4)).toBe(NUM.gd11.en);
+    expect((0.5 - 0.1 * 0.2).toFixed(2)).toBe('0.48');
+    const v: number[] = []; let m = 0; for (let i = 0; i < 4; i++) { m = 0.9 * m + 1; v.push(+m.toFixed(2)); }
+    expect('v = ' + v.join(', ')).toBe(NUM.mom.en);
+    expect(3 * 2 + 1 * 2.5).toBe(8.5);
+    expect((1 / (1 + Math.exp(-(1.5 - 0.5)))).toFixed(2)).toBe('0.73');
   });
 });

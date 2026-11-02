@@ -54,3 +54,16 @@ export const DV_NM: readonly (readonly [string, string])[] = [
 export const DV_E: readonly (readonly [string, string])[] = [
   ['怎么判断参数好不好？', 'How do we tell good parameters from bad?'], ['怎么找到让损失最小的参数？', 'How do we find the parameters with the lowest loss?'], ['线性模型能力不够', 'A linear model is not powerful enough'], ['多层网络的梯度怎么求？', 'How do we get gradients through many layers?'], ['训练又慢又不稳，还会过拟合', 'Training is slow, unstable and overfits'], ['文字这类离散符号怎么输入？', 'How do discrete symbols like words go in?'], ['词义固定；序列怎么处理？', 'One fixed meaning per word; how to handle sequences?'], ['不能并行，长依赖仍然难', 'No parallelism; long-range links are still hard'], ['用什么数据、多大规模去训练？', 'Trained on what data, at what scale?'], ['会续写，但不听指令、不安全', 'It continues text but won’t follow instructions or stay safe'], ['定制成本太高', 'Customising it costs too much'], ['生成慢，显存占用大', 'Generation is slow and memory-hungry'], ['知识过期，会产生幻觉', 'Knowledge goes stale; it hallucinates'], ['只会说，不会做', 'It can talk but not act'], ['只能处理文字，世界不只有文字', 'Text only — the world is more than text'], ['仍在发展中', 'Still moving'], ['', ''],
 ];
+/* C12 canonical examples: the card that holds each stage's worked example. The stage page's ④ reuses its numbers
+   (shared {#key} in dv/nums.ts) and shows these cards as chips. DV_EX_PTR = stages whose own example is different
+   and only points to the card's example (no shared number). Step 16 is the recap: no example of its own. */
+export const DV_EX: readonly (readonly string[])[] = [
+  ['KC08'], ['KM07', 'K13'], ['KM10', 'K14'], ['K10'], ['KM09'], ['KM13'], ['KM02'], ['K16', 'KM04', 'KM12'],
+  ['KM12', 'KC08', 'K10'], ['KC04', 'K02', 'KC05'], ['KC07'], ['KC13'], ['K15', 'KC14', 'KC11'], ['KB06'], ['KB01'], ['KA07'], [],
+];
+export const DV_EX_PTR: Readonly<Record<number, string>> = {
+  0: 'y = 2x + 1 has two parameters; KC08 counts them in a real model',
+  3: 'hand-built XOR network; K10 is the same two-layer MLP inside a Transformer',
+  13: 'RAG retrieval example; KB06 retrieves from the user’s own notes',
+  14: 'tool-call chain with a confirm step; KB01 is the same loop stopping to ask the user',
+};

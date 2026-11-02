@@ -44,7 +44,7 @@ test.describe('R47 derivation path', () => {
   });
   test('a stage opens its cards on the same page; KM02 / KM10 / K11 / Transformer cards link back to their stage', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/2'); const n0 = await hl(page);
-    await page.locator('.dv-kb[data-k="KM10"]').click(); await expect(page).toHaveURL(re('#D/2~KM10'));
+    await page.locator('.dv-ks .dv-kb[data-k="KM10"]').click(); await expect(page).toHaveURL(re('#D/2~KM10'));
     const sh = page.locator('.l4-sheet[data-card="KM10"]'); await expect(sh).toBeVisible();
     await sh.locator('.l4-kdv').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0); await expect(page).toHaveURL(re('#D/2'));
     for (const [k, n, from] of [['KM02', 6, '#L5'], ['K11', 8, '#L4'], ['K01', 8, '#L4'], ['KM10', 2, '#L5']] as const) {
@@ -52,7 +52,7 @@ test.describe('R47 derivation path', () => {
       const s = page.locator(`.l4-sheet[data-card="${k}"]`); await expect(s).toBeVisible();
       await expect(s.locator('.l4-kdv')).toContainText(`第 ${n} 步`); await s.locator('.l4-kdv').click();
       await expect(page).toHaveURL(re(`#D/${n}`)); await px(page, `D/${n}.zh`);
-      await expect(page.locator(`.dv-kb[data-k="${k}"]`)).toHaveCount(1);
+      await expect(page.locator(`.dv-ks .dv-kb[data-k="${k}"]`)).toHaveCount(1);
     }
     await page.locator('.dv-lv').click(); await expect(page).toHaveURL(re('#L5'));
     expect(await hl(page)).toBe(n0);

@@ -144,6 +144,101 @@ export const NUM = {
     cards: ['KA07'], st: [15],
     ban: [/14\s*×\s*14\s*=\s*196/],
   },
+  // ── C12 · canonical examples: the card holds it, the stage page reuses it ──
+  // step 1 · KM07 / K13 this site's real model on 「天空是什么颜色？」
+  p0: {
+    zh: '5.4%', en: '5.4%',
+    cards: ['KM07', 'K13', 'KC04', 'KC11'], st: [1, 9],
+    ban: [/5\.4\s*%/],
+  },
+  p1: {
+    zh: '99.8%', en: '99.8%',
+    cards: ['K13', 'KC04', 'KC11', 'K12', 'KC01'], st: [1, 9, 12],
+    ban: [/99\.8\s*%/],
+  },
+  ce0: {
+    zh: '`−ln 0.0536 ≈ 2.93`', en: '`−ln 0.0536 ≈ 2.93`',
+    cards: ['KM07', 'K13'], st: [1],
+    ban: [/0\.0536|≈\s*2\.93/],
+  },
+  ce1: {
+    zh: '≈ 0.002', en: '≈ 0.002',
+    cards: ['K13'], st: [1],
+    ban: [/≈\s*0\.002\b/],
+  },
+  // step 2 · KM10 gradient descent on one curve, K14 one parameter update
+  gdL: {
+    zh: '`L(w) = (w − 2)² + 0.5`', en: '`L(w) = (w − 2)² + 0.5`',
+    cards: ['KM10', 'KM08'], st: [2],
+    ban: [/\(w\s*−\s*[23]\)²/],
+  },
+  gd03: {
+    zh: 'w = 0.00, 1.20, 1.68, 1.87, 1.95…', en: 'w = 0.00, 1.20, 1.68, 1.87, 1.95…',
+    cards: ['KM10'], st: [2],
+    ban: [/1\.20,\s*1\.68/, /w = 0\.6；|w = 0\.6;/],
+  },
+  gd11: {
+    zh: 'w = 0.00, 4.40, −0.88, 5.46, −2.15', en: 'w = 0.00, 4.40, −0.88, 5.46, −2.15',
+    cards: ['KM10'], st: [2],
+    ban: [/4\.40,\s*−0\.88/, /6\.6\s*→\s*−1\.32/],
+  },
+  upd: {
+    zh: '`0.50 − 0.1 × 0.20 = 0.48`', en: '`0.50 − 0.1 × 0.20 = 0.48`',
+    cards: ['K14'], st: [2],
+    ban: [/(新|new) w = 0\.48|0\.50\s*−\s*0\.1\s*×\s*0\.20/],
+  },
+  // step 4 · KM09 chain rule
+  bp: {
+    zh: '`dL/dx = 0.5 × 3 × 2 = 3`', en: '`dL/dx = 0.5 × 3 × 2 = 3`',
+    cards: ['KM09'], st: [4],
+    ban: [/0\.5\s*×\s*3\s*×\s*2/],
+  },
+  // step 5 · KM13 momentum
+  mom: {
+    zh: 'v = 1, 1.9, 2.71, 3.44', en: 'v = 1, 1.9, 2.71, 3.44',
+    cards: ['KM13'], st: [5],
+    ban: [/2\.71,\s*3\.44/],
+  },
+  // step 6 · KM02 dot product
+  dot: {
+    zh: '`3 × 2 + 1 × 2.5 = 8.5`', en: '`3 × 2 + 1 × 2.5 = 8.5`',
+    cards: ['KM02'], st: [6],
+    ban: [/3\s*×\s*2\s*\+\s*1\s*×\s*2\.5/],
+  },
+  // step 7 · K16 RNN fading memory, KM04 softmax
+  rnn: {
+    zh: 'h = 0.76 → 0.36 → 0.18 → 0.09', en: 'h = 0.76 → 0.36 → 0.18 → 0.09',
+    cards: ['K16'], st: [7],
+    ban: [/0\.76\s*→\s*0\.36/],
+  },
+  smS: {
+    zh: '2.0 / 1.0 / 0.1 / −0.5', en: '2.0 / 1.0 / 0.1 / −0.5',
+    cards: ['KM04'], st: [7],
+    ban: [/2\.0[、,]\s*(绿\s*)?1\.0[、,]\s*(红\s*)?0\.1/, /2\.0 \/ 1\.0 \/ 0\.1/],
+  },
+  smP: {
+    zh: '62.5% / 23.0% / 9.4% / 5.1%', en: '62.5% / 23.0% / 9.4% / 5.1%',
+    cards: ['KM04'], st: [7],
+    ban: [/62\.5\s*%|23\.0\s*%|9\.3\s*%/],
+  },
+  // step 9 · K02 BPE merges
+  bpe: {
+    zh: '语料有 low、lower、lowest：“l o”最常见，合并成“lo”；再合并“lo w”成“low”；lowest 最后切成 low + est',
+    en: 'the corpus has low, lower, lowest: “l o” is most common, merge to “lo”; then “lo w” to “low”; lowest ends up as low + est',
+    cards: ['K02'], st: [9],
+    ban: [/“lo w”/],
+  },
+  // step 10 · KC07 reward model
+  rAB: {
+    zh: 'r_A = 1.5、r_B = 0.5', en: 'r_A = 1.5, r_B = 0.5',
+    cards: ['KC07'], st: [10],
+    ban: [/r_[AB]\s*=\s*1\.5|8\.2\s*(分|points)/],
+  },
+  bt: {
+    zh: 'P(A 优于 B) = σ(1.5 − 0.5) = σ(1.0) ≈ 0.73', en: 'P(A beats B) = σ(1.5 − 0.5) = σ(1.0) ≈ 0.73',
+    cards: ['KC07'], st: [10],
+    ban: [/σ\(1\.0\)/],
+  },
 } satisfies Record<string, Num>;
 /** lookup by any string key */
 export const NUMS: Record<string, Num> = NUM;
