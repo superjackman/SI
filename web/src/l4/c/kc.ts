@@ -13,6 +13,8 @@ const LOAD: Record<G, Record<L, () => Promise<unknown>>> = {
 export const groupOf = (id: string): G => (/^K[AB]/.test(id) ? 'k1' : id.startsWith('KC') ? 'k3' : 'k');
 export function cards(l: L, id = 'K01'): Promise<Record<string, Card>> {
   const g = groupOf(id);
-  return (cache[g + l] ??= LOAD[g][l]().then((m) => (m as { default: Record<string, Card> }).default));
+  // R49: {#key} numbers come from the shared table in dv/nums.ts (loaded with the cards, not up front)
+  return (cache[g + l] ??= Promise.all([LOAD[g][l](), import('../../dv/nums')]).then(([m, N]) =>
+    N.deepFill((m as { default: Record<string, Card> }).default, (s) => N.fillCardText(s, l))));
 }
 export const isCard = (id: string) => /^K(0[1-9]|1[0-6])$|^KM(0[1-9]|1[0-3])$|^KA0[1-7]$|^KB0[1-8]$|^KC(0[1-9]|1[0-4])$/.test(id);

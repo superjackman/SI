@@ -1,6 +1,7 @@
 /* R40: 测试题 — four questions per layer. Each answer's explanation restates the ⑤ "why" of the knowledge card `k`
    (the button under it opens that card's ⑤ page). Questions live only here: share cards never carry them. */
 import type { Tx } from '../l4/txt';
+import { NUM } from '../dv/nums';
 export interface Qz { id: string; k: string; q: Tx; o: [Tx, Tx, Tx, Tx]; a: 0 | 1 | 2 | 3; e: Tx }
 export const QUIZ: Record<1 | 2 | 3 | 4 | 5, Qz[]> = {
   1: [
@@ -36,7 +37,7 @@ export const QUIZ: Record<1 | 2 | 3 | 4 | 5, Qz[]> = {
       o: [['文字本身：下一个字就是答案，不用人标', 'The text itself: the next char is the answer, no labelling needed'], ['人工逐句标注', 'People label every sentence'], ['用户给回答打分', 'Users rate answers'], ['随机生成', 'They are random']],
       a: 0, e: ['想把下一个字猜准，就得掌握语法、事实和上下文；而这种材料几乎取之不尽。', 'To guess the next char well it must learn grammar, facts and context, and such material is nearly endless.'] },
     { id: 'q3b', k: 'KC05', q: ['按 Chinchilla（2022）的规模定律，算力增加时参数和数据该怎么加？', 'By the Chinchilla (2022) scaling law, how should parameters and data grow with compute?'],
-      o: [['只加大参数', 'Only more parameters'], ['只加数据', 'Only more data'], ['大致同比例增加，约每个参数配 20 个 token', 'Roughly in proportion, about 20 tokens per parameter'], ['都不用加', 'Neither']],
+      o: [['只加大参数', 'Only more parameters'], ['只加数据', 'Only more data'], ['大致同比例增加，' + NUM.ch20.zh, 'Roughly in proportion, ' + NUM.ch20.en], ['都不用加', 'Neither']],
       a: 2, e: ['这是实验中总结出的经验规律，不是数学定理：在测过的范围内很准，外推越远越要小心。', 'It is an empirical rule, not a theorem: accurate in the tested range, less certain the further you extrapolate.'] },
     { id: 'q3c', k: 'KC11', q: ['回答事实类问题时，采样温度一般怎么设？', 'For factual questions, how is the sampling temperature usually set?'],
       o: [['设高一点，更有新意', 'Higher, for more novelty'], ['设低一点，更稳', 'Lower, for steadier answers'], ['温度和结果无关', 'Temperature does not matter'], ['越高越不会出错', 'Higher means fewer mistakes']],

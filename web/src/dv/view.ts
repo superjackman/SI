@@ -18,7 +18,11 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 /** **keyword** · `formula` · {~approximate / empirical} */
 export const mk = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '<span class="formula">$1</span>').replace(/\{~([^}]+)\}/g, '<span class="dv-ap">≈ $1</span>');
 const LOAD: Record<L, () => Promise<{ default: Dv }>> = { zh: () => import('./zh'), en: () => import('./en') };
-export const content = async (l: L) => (await LOAD[l]()).default;
+// R49: {#key} numbers come from the shared table in nums.ts, same as the cards
+export const content = async (l: L) => {
+  const [m, N] = await Promise.all([LOAD[l](), import('./nums')]);
+  return N.deepFill(m.default, (s) => N.fillDvText(s, l));
+};
 const seenGet = (): number[] => { try { const v = JSON.parse(localStorage.getItem(DV_SEEN) || '[]') as unknown; return Array.isArray(v) ? v.filter((x): x is number => typeof x === 'number') : []; } catch { return []; } };
 const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b))); } catch { /* private mode */ } };
 const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="${cv(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };

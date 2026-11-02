@@ -160,6 +160,7 @@ html.l4-mode #root { display: none; }
 .l4-ks .k { color: #9cc8ff; font-weight: 700; }
 .l4-ks .ex { display: inline-block; border: 1px solid #ffd77a; color: #ffd77a; border-radius: 8px; padding: 0 5px; font-size: 12px; }
 .l4-ks .real { display: inline-block; border: 1px solid #2fbf71; background: #123a2a; color: #7ef0b0; border-radius: 8px; padding: 0 5px; font-size: 12px; }
+.l4-ks .ap { display: inline-block; margin: 0 2px; padding: 0 5px; border: 1px dashed #ffb347; border-radius: 8px; color: #ffb347; font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
 .l4-ks .formula { display: inline; margin: 0 1px; padding: 0 4px; border: 1px solid #c9a24a; border-radius: 4px; background: #1a1608; color: #ffe7a3; -webkit-box-decoration-break: clone; box-decoration-break: clone; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .l4-ks .sub { font-size: 12px; color: #b7c6ea; margin-top: 3px; }
 .l4-ks .t5 { display: inline-block; margin-right: 5px; padding: 0 6px; border-radius: 8px; background: #2c1d55; color: #d9c6ff; font-size: 12px; font-weight: 700; }

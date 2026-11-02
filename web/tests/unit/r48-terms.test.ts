@@ -3,13 +3,16 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import zh from '../../src/dv/zh';
-import en from '../../src/dv/en';
+import zh0 from '../../src/dv/zh';
+import en0 from '../../src/dv/en';
+import { deepFill, fillCardText, fillDvText } from '../../src/dv/nums';
+// R49: pages read {#key} numbers from dv/nums.ts — test what the reader sees
+const zh = deepFill(zh0, (s) => fillDvText(s, 'zh')), en = deepFill(en0, (s) => fillDvText(s, 'en'));
 
 const W = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src');
 const rd = (f: string) => fs.readFileSync(path.join(W, f), 'utf8');
 type Card = { n: string; s: string[]; no?: string };
-const cards = (l: string): Record<string, Card> => Object.assign({}, ...['k', 'k1', 'k3'].map((g) => JSON.parse(rd(`l4/c/${g}-${l}.json`))));
+const cards = (l: 'zh' | 'en'): Record<string, Card> => deepFill(Object.assign({}, ...['k', 'k1', 'k3'].map((g) => JSON.parse(rd(`l4/c/${g}-${l}.json`)))), (s: string) => fillCardText(s, l));
 const ZH = cards('zh'), EN = cards('en');
 const txt = (c?: Card) => (c ? [c.n, c.no ?? '', ...c.s].join('\n') : '');
 const stage = (d: typeof zh, n: number) => JSON.stringify(d.st[n]);

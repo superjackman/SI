@@ -3,8 +3,11 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import zh from '../../src/dv/zh';
-import en from '../../src/dv/en';
+import zh0 from '../../src/dv/zh';
+import en0 from '../../src/dv/en';
+import { deepFill, fillDvText } from '../../src/dv/nums';
+// R49: pages read {#key} numbers from dv/nums.ts — test what the reader sees
+const zh = deepFill(zh0, (s) => fillDvText(s, 'zh')), en = deepFill(en0, (s) => fillDvText(s, 'en'));
 import { DV_K, DV_LV, DV_N, DV_NM, DV_OF, isDv } from '../../src/dv/links';
 import { mk } from '../../src/dv/view';
 import type { Card } from '../../src/l4/c/kc';
@@ -35,7 +38,7 @@ describe('R47 derivation path', () => {
   it('approximations and empirical claims stay marked {~…} in both languages (~20 tokens/param, ~16 bytes/param, FFN ~4×, scaling laws, emergence)', () => {
     const marks = (D: typeof zh, i: number) => (text(D.st[i]!).match(/\{~[^}]+\}/g) ?? []).length;
     for (const D of [zh, en]) {
-      for (const [i, n] of [[6, 1], [8, 1], [9, 4], [11, 2], [12, 1], [15, 2]] as const) expect(marks(D, i), `stage ${i}`).toBe(n);
+      for (const [i, n] of [[6, 1], [8, 2], [9, 4], [11, 3], [12, 1], [15, 2]] as const) expect(marks(D, i), `stage ${i}`).toBe(n);
       expect(text(D.st[9]!)).toMatch(/20/); expect(text(D.st[11]!)).toMatch(/16/); expect(text(D.st[8]!)).toMatch(/4/);
     }
     expect(mk('a {~经验观察} b')).toContain('<span class="dv-ap">≈ 经验观察</span>');
