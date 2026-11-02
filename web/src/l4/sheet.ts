@@ -5,6 +5,7 @@ import { K_MATH, NODES, UI, tx, type L, type Nd } from './txt';
 import { lxMini } from '../lx/mini';
 import { lvOf } from './share/card';
 import { navTo } from './hnav';
+import { DV_NM, DV_OF } from '../dv/links';
 
 const MINI: Record<Nd, [string, string]> = { in: ['输入', 'Input'], tok: ['分词', 'Tokenize'], emb: ['词向量+位置', 'Embed+pos'], att: ['多头注意力', 'Attention'], an1: ['加+归一化', 'Add+Norm'], ffn: ['前馈网络', 'Feed-forward'], an2: ['加+归一化', 'Add+Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['概率', 'Odds'] };
 function mini(c: Card, l: L) {
@@ -34,10 +35,11 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
   const all = await cards(l, id), c = all[id]; host.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!c) return;
   const T = (k: keyof typeof UI) => tx(UI[k] as readonly [string, string], l), km = id.startsWith('KM'), math = km ? null : K_MATH[id] ?? null, LV = lvOf(id);
   const jg: [readonly [string, string], string] | undefined = K_GO[id] ?? (KM_USE[id] ? [['看它在哪用 ›', 'Where it is used ›'], '#L5/' + KM_USE[id]] : undefined);
+  const dv = DV_OF[id];
   const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p); if (q) el.classList.add('q');
   const head = `<header class="l4-sh"><span class="l4-kid">${id}</span><b class="l4-kn">${c.n}</b><span class="l4-ktag">${LV.tag ? tx(LV.tag, l) : T('kcT')}${p === 2 ? ' ' + tx(['（续）', '(cont.)'], l) : ''}</span></header>`;
   const body = p === 1
-    ? `<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}`
+    ? `<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}${dv == null ? '' : `<button type="button" class="l4-b l4-kdv" data-s="dv"><span>${tx(['↑ 在推导之路里', '↑ On the derivation path'], l)}</span><b>${tx([`第 ${dv} 步 · ${DV_NM[dv]![0]}`, `Step ${dv} · ${DV_NM[dv]![1]}`], l)}</b></button>`}`
     : sec(T('s5'), 'c5', c.s[4], '');
   const z = (a: string, b: string) => tx([a, b], l), jt = jg ? tx(jg[0], l).replace(/\s*›$/, '') : '';
   const foot = `<footer class="l4-sf g-sf"><div class="g-l">${math ? `<button type="button" class="l4-b g-info" data-s="math">${T('math')}</button>` : ''}${jg ? `<button type="button" class="l4-b g-jump" data-s="jump">${jt}</button>` : ''}<button type="button" class="l4-b g-act" data-s="share">⤴ ${T('shareB')}</button></div>
@@ -52,6 +54,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     e.stopPropagation(); const s = b.dataset.s;
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
     else if (s === 'jump' && jg) { el.remove(); navTo(window, jg[1]); }
+    else if (s === 'dv' && dv != null) { el.remove(); navTo(window, `#D/${dv}`); }
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });
   // the reference's gestures: swipe down to close, left / right to turn the page

@@ -20,9 +20,10 @@ import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { lastPage, layerStats, lvTag, pageLayer, pageName, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
+import { DV_N, DV_NM, isDv } from '../dv/links';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
-const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id);
+const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function start(doc: Document = document, win: Window = window) {
@@ -131,7 +132,9 @@ export function start(doc: Document = document, win: Window = window) {
   function drawHome() {
     const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}<i class="g-bdg" aria-hidden="true">›</i></button>`; }).join('');
     const hr = (go: string, k: string, s: string, pri = false) => `<button type="button" class="l4-hr${pri ? ' pri' : ''}" data-go="${go}"><b>${k}</b><span>${s}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
-    home.innerHTML = `<div class="l4-pyr">${lv}</div><div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make cards'], lang))}</div>${goCard()}`;
+    /* R47 the bottom-up way in: the ground under layer 5 — 17 steps from one function up to an agent */
+    const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['17 步：从一个数学函数搭到 Agent', '17 steps from one function to an agent'], lang)}</span></span></button>`;
+    home.innerHTML = `<div class="l4-pyr">${lv}</div>${bu}<div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make cards'], lang))}</div>${goCard()}`;
   }
   /* R42 G1 / G1b: a first visit gets the quick path; a returning reader gets 继续上次 with that layer's progress */
   function goCard() {
@@ -187,7 +190,7 @@ export function start(doc: Document = document, win: Window = window) {
   /* ---------- 练 / 记 / 享 / 快速路径 (lazy) ---------- */
   let pxTok = 0;
   async function renderPx() {
-    const id = cur, l = lang, tok = ++pxTok; delete root.dataset.px; const v = await import('../px/view'); if (tok !== pxTok) return;
+    const id = cur, l = lang, tok = ++pxTok; delete root.dataset.px; const v = isDv(id) ? { px: (await import('../dv/view')).dv } : await import('../px/view'); if (tok !== pxTok) return;
     await v.px(id, { root, host: home, l, go, tf, seen, opened: new Set(LS.get<string[]>('si.l4.cards', [])), still: () => tok === pxTok && cur === id && lang === l,
       top: (h) => { txt.innerHTML = h; }, crumb: (c) => { crumb.innerHTML = crumbs(c); }, step: (s: Step | null) => { if (tok === pxTok) { pxStep = s; drawNav(); } } });
   }
@@ -243,14 +246,14 @@ export function start(doc: Document = document, win: Window = window) {
   }
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
-    const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8;
-    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${k + 1} 步`, `Step ${k + 1}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${esc(s.lab ?? '')}${s.i + 1} / ${s.n}</span>` : '';
+    const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
+    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${k + b} 步`, `Step ${k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${esc(s.lab ?? '')}${s.i + b} / ${s.n - 1 + b}</span>` : '';
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span><button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
   }
   const run = (f: string | (() => void) | null | undefined) => { if (typeof f === 'string') go(f); else f?.(); };
   /** ↑ goes up exactly one level */
   function upOf(): string {
-    if (isPx(cur)) return /^P\/./.test(cur) ? '#P' : cur === 'Q/done' ? '#Q' : '#home';
+    if (isPx(cur)) return /^[PD]\/./.test(cur) ? '#' + cur[0] : cur === 'Q/done' ? '#Q' : '#home';
     if (lxOn(cur)) return /^L\d$/.test(cur) ? '#home' : '#L' + layerOf(cur);
     if (cur.startsWith('X:')) return pg?.up ?? back;
     if (/^(TR|US|MY)\d$/.test(cur)) return '#L4';
@@ -286,7 +289,8 @@ export function start(doc: Document = document, win: Window = window) {
     const opened = new Set(LS.get<string[]>('si.l4.cards', [])), ps = layerStats(seen, opened);
     const prog = `<div class="l4-mpg">${ps.map((x) => `<div class="rw">${lvTag(x.n, lang)}${pbar(x.s, x.t, x.n)}<span class="m">${esc(tx([`看过 ${x.s}/${x.t} 页 · 卡 ${x.c}/${x.ct}`, `${x.s}/${x.t} pages · ${x.c}/${x.ct} cards`], lang))}</span></div>`).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
     list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
-      + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5), [['map', T('map')], ['prog', T('prog')]], prog);
+      + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
+      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${i}`, `${i} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }
   /* ---------- routing ---------- */
   function route() {

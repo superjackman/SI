@@ -130,6 +130,11 @@ html.l4-mode #root { display: none; }
 .l4-lv .s { color: #8fa4d8; }
 .l4-lv.live { background: linear-gradient(#2a5ae0, #1c3f9e); color: #fff; filter: drop-shadow(0 0 10px #3f6fff); }
 .l4-lv.live .s { color: #ffe08a; font-weight: 700; }
+/* R47 推导之路 entry: the ground under layer 5 (bottom-up), three stacked blocks in the layer 5/4/3 colours */
+.l4-bu { width: 100%; max-width: 420px; min-height: 46px; margin-top: 6px; display: flex; align-items: center; gap: 10px; padding: 4px 10px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; color: #e6eeff; text-align: left; }
+.l4-bu .ic { flex: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 2px; } .l4-bu .ic i { display: block; height: 6px; border-radius: 2px; }
+.l4-bu .ic i:nth-child(1) { width: 22px; background: #7c3aed; } .l4-bu .ic i:nth-child(2) { width: 16px; background: #2563eb; } .l4-bu .ic i:nth-child(3) { width: 10px; background: #4f46e5; }
+.l4-bu .t { flex: 1; min-width: 0; display: flex; flex-direction: column; } .l4-bu .t b { font-size: 13.5px; line-height: 1.3; color: #ffd77a; } .l4-bu .t span { font-size: 12px; line-height: 1.3; color: #dbe6ff; }
 .l4-hb { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
 .l4-hr { width: 76px; height: 72px; border-radius: 36px; border: 1px solid #3a63d0; background: #0c1a3d; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #e6eeff !important; padding: 0 2px; text-align: center; }
 .l4-hr b { font-size: 20px; line-height: 1.3; } [data-lang="en"] .l4-hr b { font-size: 15px; } .l4-hr span { font-size: 12px; color: #b7c6ea; line-height: 1.2; }
@@ -377,3 +382,6 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4[data-lang="en"] .g-chips { display: grid; grid-template-columns: 1fr 1fr; }
 /* R44 S2: on short screens the empty state keeps its goals in view; format + note return once there is a card */
 @media (max-height: 700px) { .l4 .g-dlg:has(.g-em) > .g-seg, .l4 .g-dlg:has(.g-em) > .g-meta { display: none; } .l4 .g-pv:has(.g-em) { padding: 6px; } .l4 .g-pv .g-em { padding: 4px 6px; gap: 6px; line-height: 1.45; } }
+/* R47 card → 推导之路 back-link (page 1, after ④) */
+.l4-sheet .l4-kdv { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 40px; margin: 2px 0 6px; padding: 4px 12px; border-color: #c99a2e; background: #13183a; color: #dbe6ff; text-align: left; border-radius: 10px; }
+.l4-sheet .l4-kdv span { flex: none; font-size: 12px; color: #ffd77a; } .l4-sheet .l4-kdv b { flex: 1; min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
