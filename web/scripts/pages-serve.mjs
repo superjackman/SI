@@ -20,7 +20,8 @@ createServer((req, res) => {
     if (!p.endsWith('/')) { res.writeHead(301, { Location: p + '/' + u.search }); return res.end(); }
     f = join(f, 'index.html');
   }
-  if (!existsSync(f) || !statSync(f).isFile() || f.split(sep).includes('web')) { res.writeHead(404); return res.end('not found'); }
+  /* ban a 'web/' segment in the URL path (repo source) — not in the absolute filesystem path, or --root dist under web/ would 404 everything */
+  if (!existsSync(f) || !statSync(f).isFile() || rel.split(sep).includes('web')) { res.writeHead(404); return res.end('not found'); }
   res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream', 'Cache-Control': 'max-age=600' });
   res.end(readFileSync(f));
 }).listen(port, '127.0.0.1', () => console.log(`pages-serve ${root} at http://127.0.0.1:${port}${prefix}`));
