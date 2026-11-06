@@ -111,3 +111,10 @@
 .hm-sh .l4-sf { padding-left: 14px; padding-right: 14px; }
 @media (prefers-reduced-motion: reduce) { .hm-bt i { transition: none; } }
 html[data-anim="off"] .hm-bt i { transition: none; }
+/* R56 今日复习 */
+.hm-rv { display: flex; flex-direction: column; gap: 8px; }
+.hm-rvl { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.hm-rvl li { display: flex; align-items: baseline; gap: 8px; padding: 6px 10px; border-radius: 10px; background: #08112b; }
+.hm-rvl li span { flex: none; font-size: 12.5px; color: #b7c6ea; } .hm-rvl li span.w { color: #fecaca; } .hm-rvl li b { min-width: 0; font-size: 14.5px; color: #e6eeff; font-weight: 600; }
+.hm-cta2 { min-height: 48px; border: 1px solid #ffd166; border-radius: 12px; background: #2a2208; color: #ffe08a; font-size: 15px; font-weight: 700; }
+.hm-wb { font-size: 12.5px; color: #fecaca; }

@@ -13,6 +13,7 @@ import { depthGet, depthSet, jvGet, jvSet, layerMastery, masteredSt, routeMin, s
 import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
 import { fmt, softmax } from '../vf/calc';
 import { LBG, LCOL } from './progress';
+import { rvAll, rvNext, rvPick, wrongIds } from '../px/rv';
 
 export interface HomeApi { l: L; root: HTMLElement; go: (h: string) => void; redraw: () => void }
 /** 看懂大模型 by default (it starts at 词向量) */
@@ -72,7 +73,8 @@ ${chooser}
 ${chooser}
 <div class="hm-sec"><b>${z('我的掌握', 'What I’ve mastered')}</b><a class="hm-lk" href="#R">${z('学习记录', 'Learning record')} ›</a></div>
 <section class="hm-card hm-mst"><div class="hm-rw">${ring}<p><b>${mm}</b><span>/ ${z(`${DV_N} 站`, `${DV_N} stops`)}</span></p></div><ul class="hm-lvb">${bars}</ul>
-<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握＝该站小测全对`, `${vd.size} right · ${seen.size} stops read · mastered = every quiz on the stop right`)}</p></section>
+<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握＝该站小测全对或小目标全点亮`, `${vd.size} right · ${seen.size} stops read · mastered = every quiz right or every small goal lit`)}</p></section>
+${rvCard(l)}
 <div class="hm-chf" data-hm="chf" hidden></div>`;
   }
 
@@ -115,6 +117,15 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
   void challenge(host, A, m);
 }
 
+/** R56 今日复习 on the returning home: 3 questions back on the 1 / 3 / 7-day rhythm, wrong ones first */
+const ST_OF = (() => { const o: Record<string, string> = {}; for (const [p, ids] of Object.entries(VF_Q)) if (p.startsWith('D/')) for (const id of ids) o[id] = p.slice(2); return o; })();
+export function rvCard(l: L) {
+  const z = (a: string, b: string) => tx([a, b], l), ps = rvPick(3), any = Object.keys(rvAll()).length, nx = rvNext(), wb = wrongIds().length;
+  const li = ps.map((p) => { const k = ST_OF[p.id] ?? ''; return `<li><span class="${p.why === 'w' ? 'w' : ''}">${p.why === 'w' ? z('上次错', 'Missed') : p.ago <= 0 ? z('今天学', 'Today') : z(`${p.ago} 天前学`, `${p.ago} d ago`)}</span><b>${esc(k ? stN(k, l) : p.id)}</b></li>`; }).join('');
+  const body = ps.length ? `<ol class="hm-rvl">${li}</ol><button type="button" class="hm-cta2" data-go="#R/rv">${z(`开始回想 ${ps.length} 题`, `Recall ${ps.length} now`)} ›</button>`
+    : `<p class="hm-n">${any ? (nx ? z(`今天没有到期的题，下一批 ${nx} 天后回来。`, `Nothing due today; the next ones come back in ${nx} day${nx === 1 ? '' : 's'}.`) : z('今天没有到期的题。', 'Nothing due today.')) : z('做对的题会在 1、3、7 天后回来考你，做错的会先回来。', 'Questions you get right come back after 1, 3 and 7 days; wrong ones come back first.')}</p>`;
+  return `<div class="hm-sec"><b>${z('今日复习', 'Today’s review')}</b>${wb ? `<span class="hm-wb">${z(`错题本 ${wb}`, `Wrong book ${wb}`)}</span>` : ''}</div><section class="hm-card hm-rv">${body}</section>`;
+}
 export function skyBars(p: readonly number[], l: L) {
   const lab = l === 'en' ? ['blue', 'grey', 'white'] : ['蓝', '灰', '白'];
   return p.map((v, i) => `<div class="hm-bar"><span>${lab[i]}</span><span class="hm-bt"><i style="width:${Math.max(2, Math.round(100 * v))}%"></i></span><b>${Math.round(100 * v)}%</b></div>`).join('');
