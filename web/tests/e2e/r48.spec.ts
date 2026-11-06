@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
-import { CARD_DV, DV_BORN, DV_LV, cardLv } from '../../src/dv/links';
+import { CARD_DV, DV_BORN, DV_LV, DV_N, cardLv, dvK } from '../../src/dv/links';
 /* R48 two views, one body of knowledge: every card sheet and every stage page carries the same
    「自顶向下·看结构 / 自底向上·看推导」 switch and a gold 「换个角度看」 box that links to the other view;
    jumps land on the card (focus ring), never add history entries, and read at 360 / 390 / 430 in zh and en. */
@@ -41,12 +41,12 @@ test.describe('R48 two views', () => {
     await expect(page.locator('.dv-kb.on')).toBeInViewport();
     /* stage switch → its layer, opened on the first card born here */
     await page.locator('.dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[4]!.find((k) => cardLv(k) === 5)}`));
-    /* used again: K09 → step 8 (Transformer) */
+    /* used again: K09 → step 8b (组装成 Transformer) */
     await page.evaluate((h) => { location.replace(h); }, at('K09'));
-    sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator('.l4-kst[data-n="8"]').click();
-    await expect(page).toHaveURL(re('#D/8')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
+    sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator('.l4-kst[data-n="9"]').click();
+    await expect(page).toHaveURL(re('#D/8b')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     /* the ring is one-shot: a later visit does not ring again */
-    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/8'));
+    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/8b'));
     await expect(page.locator('.dv-kb.on')).toHaveCount(0);
     expect(await hl(page)).toBe(n0);
     expect(errs).toEqual([]);
@@ -61,8 +61,8 @@ test.describe('R48 two views', () => {
       if ((await sh.locator('.l4-kalt .l4-kdv .dv-sb').count()) !== 1) bad.push(`${k} born-at`);
       const also = CARD_DV[k]!.slice(1); if ((await sh.locator('.l4-kst').count()) !== also.length) bad.push(`${k} used-again ${also}`);
     }
-    for (let i = 0; i < 17; i++) {
-      await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await px(page, `D/${i}.zh`);
+    for (let i = 0; i < DV_N; i++) {
+      await page.evaluate((h) => { location.replace(h); }, `#D/${dvK(i)}`); await px(page, `D/${dvK(i)}.zh`);
       if ((await page.locator('.dv-vsw button').count()) !== 2) bad.push(`D/${i} switch`);
       const kb = page.locator('.dv-kb'), n = await kb.count();
       for (let j = 0; j < n; j++) { const b = kb.nth(j); if ((await b.locator('.l4-lt').count()) + (await b.locator('.dv-sb').count()) !== 1) bad.push(`D/${i} badge ${j}`); }
@@ -83,7 +83,7 @@ test.describe('R48 two views', () => {
         for (const x of await page.evaluate(textIssues, 12)) bad.push(`${l} ${k} ${x.k} ${x.cls} “${x.txt}”${x.why ? ' ' + x.why : ''}`);
         if (l === 'en') { const t = await sh.locator('.l4-vsw, .l4-kalt').allInnerTexts(); if (/[\u3400-\u9fff]/.test(t.join(''))) bad.push(`en ${k} has Chinese`); }
       }
-      for (const i of [0, 4, 8, 10, 15, 16]) {
+      for (const i of [0, 4, '8a', '8b', 10, 15, 16]) {
         await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await px(page, `D/${i}.${l}`);
         for (const x of await page.evaluate(contrastIssues, { root: '.dv-vsw, .dv-ks', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
         await page.locator('.dv-ks').scrollIntoViewIfNeeded();
@@ -99,10 +99,10 @@ test.describe('R48 two views', () => {
     await page.locator('.l4-top [data-a="menu"]').click(); await page.locator('.l4-ms a[href="#D/map"]').click();
     await expect(page).toHaveURL(re('#D/map')); await px(page, 'D/map.zh');
     await expect(page.locator('.l4-top .l4-tt')).toHaveText('知识地图 · 两个坐标');
-    await expect(page.locator('.dv-mg .dv-mk')).toHaveCount(IDS.length); await expect(page.locator('.dv-mr[id]')).toHaveCount(17);
+    await expect(page.locator('.dv-mg .dv-mk')).toHaveCount(IDS.length); await expect(page.locator('.dv-mr[id]')).toHaveCount(DV_N);
     const bad: string[] = [];
-    for (let i = 0; i < 17; i++) {
-      const row = page.locator(`#s${i}`), cells = row.locator('.dv-mx');
+    for (let i = 0; i < DV_N; i++) {
+      const row = page.locator(`#s${dvK(i)}`), cells = row.locator('.dv-mx');
       for (let c = 0; c < 5; c++) {
         const n = 5 - c, ks = await cells.nth(c).locator('.dv-mk').allInnerTexts();
         const want = DV_BORN[i]!.filter((k) => cardLv(k) === n); if (ks.join() !== want.join()) bad.push(`s${i} L${n} ${ks} ≠ ${want}`);

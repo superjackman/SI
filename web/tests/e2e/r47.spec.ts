@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
+import { DV_KEY } from '../../src/dv/links';
 /* R47 自底向上 · 推导之路: home entry → the chain (#D) → each stage (#D/0–16); step bar, ↑, crumbs, cards both ways;
    no history entries; readable at 360 / 390 / 430 in zh and en. */
 const ORIGIN = 'http://localhost:4173';
@@ -21,7 +22,7 @@ test.describe('R47 derivation path', () => {
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
     await page.locator('.l4-home .l4-bu').click(); await expect(page).toHaveURL(re('#D')); await px(page, 'D.zh');
-    await expect(page.locator('.dv-st')).toHaveCount(17); await expect(page.locator('.dv-lk')).toHaveCount(16); await expect(page.locator('.dv-gh')).toHaveCount(6);
+    await expect(page.locator('.dv-st')).toHaveCount(18); await expect(page.locator('.dv-lk')).toHaveCount(17); await expect(page.locator('.dv-gh')).toHaveCount(6);
     await expect(page.locator('.l4-nav')).toBeHidden();
     await page.locator('.dv-st[data-go="#D/0"]').click(); await expect(page).toHaveURL(re('#D/0')); await px(page, 'D/0.zh');
     await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 0 步 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('0 / 16');
@@ -47,7 +48,7 @@ test.describe('R47 derivation path', () => {
     await page.locator('.dv-ks .dv-kb[data-k="KM10"]').click(); await expect(page).toHaveURL(re('#D/2~KM10'));
     const sh = page.locator('.l4-sheet[data-card="KM10"]'); await expect(sh).toBeVisible();
     await sh.locator('.l4-kdv').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0); await expect(page).toHaveURL(re('#D/2'));
-    for (const [k, n, from] of [['KM02', 6, '#L5'], ['K11', 8, '#L4'], ['K01', 8, '#L4'], ['KM10', 2, '#L5']] as const) {
+    for (const [k, n, from] of [['KM02', '6', '#L5'], ['K11', '8b', '#L4'], ['K07', '8a', '#L4'], ['K01', '8b', '#L4'], ['KM10', '2', '#L5']] as const) {
       await page.evaluate((h) => { location.replace(h); }, `${from}~${k}`);
       const s = page.locator(`.l4-sheet[data-card="${k}"]`); await expect(s).toBeVisible();
       await expect(s.locator('.l4-kdv')).toContainText(`第 ${n} 步`); await s.locator('.l4-kdv').click();
@@ -58,10 +59,10 @@ test.describe('R47 derivation path', () => {
     expect(await hl(page)).toBe(n0);
     expect(errs).toEqual([]);
   });
-  test('the map sheet lists the chain and all 17 stages', async ({ page }) => {
+  test('the map sheet lists the chain and all 18 stations', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
     await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
-    await expect(ms.locator('a[href^="#D/"]')).toHaveCount(18); await expect(ms.locator('a[href="#D/map"]')).toHaveCount(1); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
+    await expect(ms.locator('a[href^="#D/"]')).toHaveCount(19); await expect(ms.locator('a[href="#D/8a"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/8b"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/map"]')).toHaveCount(1); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
     await ms.locator('a[href="#D/9"]').click(); await expect(ms).toHaveCount(0); await expect(page).toHaveURL(re('#D/9')); await px(page, 'D/9.zh');
     expect(errs).toEqual([]);
   });
@@ -70,7 +71,7 @@ test.describe('R47 derivation path', () => {
     for (const l of ['zh', 'en']) {
       await open(page, `./?lang=${l}#home`);
       const hs = await page.evaluate(() => { const h = document.querySelector<HTMLElement>('.l4-home')!; return h.scrollHeight - h.clientHeight; }); if (hs > 2) bad.push(`${l} home scrolls ${hs}`);
-      for (const h of ['#D', '#D/0', '#D/4', '#D/8', '#D/9', '#D/11', '#D/12', '#D/14', '#D/16']) {
+      for (const h of ['#D', '#D/0', '#D/4', '#D/8a', '#D/8b', '#D/9', '#D/11', '#D/12', '#D/14', '#D/16']) {
         await page.evaluate((x) => { location.replace(x); }, h); await px(page, `${h.slice(1)}.${l}`);
         for (const end of [false, true]) {
           if (end) await page.evaluate(() => { const e = document.querySelector<HTMLElement>('.l4-home')!; e.scrollTop = e.scrollHeight; });
@@ -87,7 +88,7 @@ test.describe('R47 derivation path', () => {
     const bad: string[] = [], R = '.dv, .l4-top, .l4-crumb, .l4-nav';
     for (const l of ['zh', 'en']) {
       await open(page, `./?lang=${l}#D`); await px(page, `D.${l}`);
-      for (const h of ['#D', ...[...Array(17).keys()].map((i) => `#D/${i}`), '#D']) { /* the chain again at the end: every step seen (✓, .seen) */
+      for (const h of ['#D', ...DV_KEY.map((i) => `#D/${i}`), '#D']) { /* the chain again at the end: every step seen (✓, .seen) */
         await page.evaluate((x) => { location.replace(x); }, h); await px(page, `${h.slice(1)}.${l}`);
         await page.evaluate(() => { for (const d of document.querySelectorAll('.dv details')) (d as HTMLDetailsElement).open = true; });
         for (const x of await page.evaluate(contrastIssues, { root: R, min: 4.5, icon: 3 })) bad.push(`${l} ${h} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);

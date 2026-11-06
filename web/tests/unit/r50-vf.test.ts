@@ -4,7 +4,7 @@ import { describe, expect, it, beforeEach } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { NUM, NUMS, fillDvText, numKeys } from '../../src/dv/nums';
-import { DV_N } from '../../src/dv/links';
+import { DV_N, dvK } from '../../src/dv/links';
 import { QQ, MCS, MC_PAGES, MC_ALL, DEMO } from '../../src/vf/data';
 import { VF_Q, VF_KEY, VF_MC_ONLY, hasVf, vfAdd, vfDone, vfStat, vfStages } from '../../src/vf/ids';
 import { attW, D_ATT, D_DK, D_SM, fmt, gdKind, gdSeq, parseNum, softmax } from '../../src/vf/calc';
@@ -22,7 +22,7 @@ const EXPECT: Record<string, number> = {
   s4a: 3, s4b: 4, s4c: 6, s5a: 3906.25, s5b: 2.71, s5c: 0, s6a: 8.5, s6b: 0.88,
   s7a: Math.exp(2) / (Math.exp(2) + Math.exp(1) + 1),
   s7b: (100 * Math.exp(2)) / (Math.exp(2) + Math.exp(1) + Math.exp(0.1) + Math.exp(-0.5)),
-  s8a: 2, s8b: (12 * 4096 * 4096) / 1e6, s8c: 0, s9a: 4, s9b: -ln(0.998), s9c: 5,
+  s8a: 2, s8b: (12 * 4096 * 4096) / 1e6, s8c: 0, s8d: 64, s9a: 4, s9b: -ln(0.998), s9c: 5,
   s10a: 1 / (1 + Math.exp(-1)), s10b: 0.5, s10c: 0, s11a: 65536, s11b: 3.5, s11c: 0,
   s12a: 2 * 32 * 32 * 128 * 2, s12b: 5050, s12c: (100 * Math.exp(4.1)) / (Math.exp(4.1) + Math.exp(1.3) + Math.exp(1)),
   s13a: 0.6, s13b: 0, s14a: 0.95 ** 20, s14b: 0.99 ** 20, s15a: 196, s15b: 256, s15c: 12, s16a: 0, s16b: ln(4),
@@ -36,8 +36,9 @@ describe('R50 self-check questions', () => {
   it('page lists ↔ questions: every listed id exists, every question is listed, pages are real', () => {
     const listed = new Set(Object.values(VF_Q).flat());
     expect([...listed].sort()).toEqual(Object.keys(QQ).sort());
-    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + i]!.length, 'D/' + i).toBeGreaterThanOrEqual(1);
-    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + i]!.length, 'D/' + i).toBeLessThanOrEqual(3);
+    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]?.length, 'D/' + dvK(i)).toBeGreaterThanOrEqual(1);
+    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]!.length, 'D/' + dvK(i)).toBeLessThanOrEqual(3);
+    expect(Object.keys(VF_Q).filter((p) => p.startsWith('D/')).length, 'only real stations').toBe(DV_N);
     for (const p of Object.keys(VF_Q)) if (!p.startsWith('D/')) expect(CARDS.has(p), p).toBe(true);
     // all 13 maths cards KM01–KM13 have questions
     for (let i = 1; i <= 13; i++) expect(VF_Q['KM' + String(i).padStart(2, '0')]?.length, 'KM' + i).toBeGreaterThan(0);
@@ -89,7 +90,8 @@ describe('R50 self-check questions', () => {
 
 describe('R50 常见误解', () => {
   it('1–3 per stage, every stage has some; pages real; card-only list in ids matches', () => {
-    for (let i = 0; i < DV_N; i++) { const n = MCS('D/' + i).length; expect(n, 'D/' + i).toBeGreaterThanOrEqual(1); expect(n, 'D/' + i).toBeLessThanOrEqual(3); }
+    for (let i = 0; i < DV_N; i++) { const n = MCS('D/' + dvK(i)).length; expect(n, 'D/' + dvK(i)).toBeGreaterThanOrEqual(1); expect(n, 'D/' + dvK(i)).toBeLessThanOrEqual(3); }
+    expect(MC_PAGES.filter((p) => p.startsWith('D/')).length, 'only real stations').toBe(DV_N);
     for (const p of MC_PAGES) { if (!p.startsWith('D/')) expect(CARDS.has(p), p).toBe(true); expect(MCS(p).length, p).toBeLessThanOrEqual(3); }
     const only = MC_PAGES.filter((p) => !(p in VF_Q)).sort();
     expect(only).toEqual([...VF_MC_ONLY].sort());
@@ -137,7 +139,7 @@ describe('R50 helpers', () => {
   it('fmt: real minus, thousands, no −0', () => {
     expect(fmt(-0.38, 2)).toBe('−0.38'); expect(fmt(65536, 0)).toBe('65,536'); expect(fmt(-0.0001, 2)).toBe('0.00'); expect(fmt(4.4, 2)).toBe('4.40');
   });
-  it('progress ticks: done / total per page and over the 17 stages', () => {
+  it('progress ticks: done / total per page and over all the stations', () => {
     const t = vfStages(DV_N); expect(t.s).toBe(0); expect(t.t).toBe(Object.keys(VF_Q).filter((p) => p.startsWith('D/')).reduce((s, p) => s + VF_Q[p]!.length, 0));
     vfAdd('s2a'); vfAdd('s2a'); vfAdd('s2c');
     expect(JSON.parse(localStorage.getItem(VF_KEY)!)).toEqual(['s2a', 's2c']);

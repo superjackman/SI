@@ -86,6 +86,8 @@ export const QQ: Record<string, Q> = {
     h: ['先求 d_k 的平方根，再用第一个分数去除。', 'Take the square root of d_k first, then divide the first score by it.'], w: ['`16 ÷ 8`', '`16 ÷ 8`'] },
   s8b: { q: ['d = 4096，一个解码块有{#p12}。约多少百万（million）个参数？（取整）', 'd = 4096; one decoder block has {#p12}. About how many million parameters? (whole number)'], a: (12 * 4096 * 4096) / 1e6, d: 0, tol: 1.5, u: ['百万', 'million'],
     h: ['4096² 约 1680 万（16.8 million），再乘 12。', '4096² is about 16.8 million; times 12.'], w: ['`12 × 4096 × 4096 = 201,326,592`', '`12 × 4096 × 4096 = 201,326,592`'] },
+  s8d: { q: ['模型维度 d = 512，分成 h = 8 个头。每个头的 q、k 是多少维？', 'Model width d = 512, split into h = 8 heads. How many dimensions does each head’s q and k have?'], a: 512 / 8, d: 0,
+    h: ['多头不是多出 8 份维度，而是把 d 平均切成 h 份。', 'Multi-head does not add 8 more copies of the width; it cuts d into h equal parts.'], w: ['`512 ÷ 8`', '`512 ÷ 8`'] },
   s8c: { q: ['注意力里 Q·K 的分数高，意思是？', 'In attention, a high Q·K score means?'], a: 0, d: 0,
     o: [['这个位置要找的（Q）和那个位置能提供的（K）对得上，于是多取它的 V', 'What this position looks for (Q) matches what that position offers (K), so more of its V is taken'], ['两个词的意思一样', 'The two words mean the same'], ['K 里存着正确答案', 'K stores the right answer']],
     h: ['Q 像「需求」，K 像「供给」的标签。', 'Q is like a demand, K like the label on a supply.'],
@@ -143,7 +145,7 @@ export const QQ: Record<string, Q> = {
   // ── 16 ──
   s16a: { q: ['训练一步的正确顺序？', 'The right order of one training step?'], a: 0, d: 0,
     o: [['前向算预测 → 算损失 → 反向传播求梯度 → 更新参数', 'Forward pass → loss → backprop for gradients → update parameters'], ['算损失 → 更新参数 → 前向', 'Loss → update → forward'], ['反向传播 → 前向 → 算损失', 'Backprop → forward → loss']],
-    h: ['先有预测才有损失，先有梯度才能更新。', 'No loss without a prediction, no update without a gradient.'], w: ['前向（第 3、8 步）→ 损失（第 1 步）→ 反向传播（第 4 步）→ 更新（第 2、5 步）', 'Forward (steps 3, 8) → loss (step 1) → backprop (step 4) → update (steps 2, 5)'] },
+    h: ['先有预测才有损失，先有梯度才能更新。', 'No loss without a prediction, no update without a gradient.'], w: ['前向（第 3、8a–8b 步）→ 损失（第 1 步）→ 反向传播（第 4 步）→ 更新（第 2、5 步）', 'Forward (steps 3, 8a–8b) → loss (step 1) → backprop (step 4) → update (steps 2, 5)'] },
   s16b: { q: ['模型对 4 个候选一视同仁（各 25%），这一题的交叉熵 = ？（保留 2 位小数）', 'The model gives 4 candidates 25% each. Cross-entropy = ? (2 decimals)'], a: -ln(0.25), d: 2, tol: 0.006,
     h: ['`−ln 0.25 = ln 4`', '`−ln 0.25 = ln 4`'], w: ['`−ln 0.25 = ln 4`：“完全不会”的起点，困惑度 4', '`−ln 0.25 = ln 4`: the “knows nothing” start, perplexity 4'] },
   // ── layer-5 maths cards ──
@@ -221,6 +223,8 @@ const M: Record<string, Mc> = {
   dot: { x: ['两个向量点积大，说明意思一样。', 'A large dot product means the two mean the same.'], r: ['点积大只说明方向吻合。词向量里近义词点积大，是因为训练让常在相似上下文出现的词靠近；在注意力和输出头里，点积高是训练出来的“匹配”，不等于意思相同。', 'A large dot product only says the directions agree. Similar words get large dot products because training pulls words from similar contexts together; in attention and the output head a high score is a learned match, not equal meaning.'] },
   attw: { x: ['注意力权重是模型学到的固定参数。', 'Attention weights are fixed learned parameters.'], r: ['权重每次根据当前输入现算：先打分，再 softmax。学到的是“怎么打分”（那些矩阵），不是权重本身。', 'The weights are computed fresh for every input: score, then softmax. What is learned is how to score (the matrices), not the weights themselves.'] },
   qkv: { x: ['Q、K、V 是同一个词的三份拷贝，K 里存着答案。', 'Q, K and V are three copies of the same word, and K stores the answer.'], r: ['三者由同一个输入乘三个不同的矩阵得到，分工不同：Q＝这个位置在**找**什么（需求），K＝每个位置能**提供**什么的标签（供给），Q·K 高＝供需对上；真正按权重取走、混合起来的是 V（内容）。', 'They come from the same input times three different matrices, with different jobs: Q = what this position **looks for** (demand), K = the label of what each position **offers** (supply); high Q·K = demand meets supply. What is actually taken and mixed, by weight, is V (the content).'] },
+  pos: { x: ['注意力天生知道词的先后顺序。', 'Attention knows word order by itself.'], r: ['注意力只看 Q·K 匹配，把输入的词打乱顺序，每个词算出的结果不变，只是跟着换了位置。所以要额外加**位置信息**，如今多用 RoPE：按位置旋转 q、k。', 'Attention only looks at Q·K matches: shuffle the input words and each word gets the same result, just in a new place. So **position** has to be added; most models now use RoPE, rotating q and k by position.'] },
+  res: { x: ['残差和归一化只是可有可无的细节。', 'Residuals and normalisation are optional details.'], r: ['去掉残差，梯度要连乘穿过几十层，很容易消失，深层网络训不动；残差 `x + f(x)` 给梯度留了一条直通路。归一化让每层的数保持同一尺度，训练才稳。', 'Without residuals the gradient is multiplied through dozens of layers and easily vanishes, so deep nets stop training; the residual `x + f(x)` gives it a straight path. Normalisation keeps every layer’s numbers on one scale so training stays stable.'] },
   sqrtd: { x: ['除以 √d_k 是为了把分数变成概率。', 'Dividing by √d_k turns the scores into probabilities.'], r: ['变成概率的是 softmax。除以 √d_k 是因为维数越大点积的方差越大（约等于 d_k），不缩放 softmax 会“饱和”：几乎全给一个位置，梯度也几乎为 0。', 'Softmax makes the probabilities. The √d_k is there because the dot product’s variance grows with the dimension (about d_k); unscaled, softmax saturates: nearly all weight on one position and almost no gradient.'] },
   head: { x: ['输出头的 `h · u_i` 是在比较 h 和字 i 意思像不像。', 'The output head’s `h · u_i` compares how alike h and token i are in meaning.'], r: ['h 是最后一个位置算出的“下一个字应该是什么样”的描述，`u_i` 是字 i 的特征；`h · u_i` 高 = **这个字符合预测出的描述**，再经 softmax 变成概率。', 'h is the last position’s description of what the next token should be like, `u_i` is token i’s features; a high `h · u_i` = **this token fits the predicted description**, and softmax turns the scores into odds.'] },
   pre: { x: ['一句话训练时只练最后一个字。', 'Training on a sentence only trains its last token.'], r: ['因果遮罩让每个位置只看前面，于是每个位置都同时在猜自己的下一个字，一次前向就练了很多题。', 'The causal mask lets each position see only what comes before, so every position guesses its own next token at the same time: one forward pass, many questions.'] },
@@ -238,7 +242,7 @@ const M: Record<string, Mc> = {
 };
 const MP: Record<string, string[]> = {
   'D/0': ['param'], 'D/1': ['ce', 'mse'], 'D/2': ['coord', 'lr', 'normal'], 'D/3': ['lin', 'normal'], 'D/4': ['bp'], 'D/5': ['opt'], 'D/6': ['dot'], 'D/7': ['attw'],
-  'D/8': ['qkv', 'sqrtd', 'head'], 'D/9': ['pre', 'head'], 'D/10': ['reason', 'rlhf'], 'D/11': ['lora', 'lorai'], 'D/12': ['kv', 'temp'], 'D/13': ['rag'], 'D/14': ['agent'],
+  'D/8a': ['qkv', 'sqrtd'], 'D/8b': ['pos', 'res', 'head'], 'D/9': ['pre', 'head'], 'D/10': ['reason', 'rlhf'], 'D/11': ['lora', 'lorai'], 'D/12': ['kv', 'temp'], 'D/13': ['rag'], 'D/14': ['agent'],
   'D/15': ['vote', 'diff'], 'D/16': ['db', 'coord', 'reason'],
   KM02: ['dot', 'qkv', 'head'], KM07: ['ce'], KM08: ['coord'], KM09: ['bp'], KM10: ['coord', 'lr', 'normal'], KM12: ['sqrtd'], KM13: ['opt'],
   K06: ['attw'], K07: ['qkv', 'sqrtd'], K11: ['head'], K13: ['ce'], K14: ['bp', 'coord'], K15: ['temp'],
@@ -249,4 +253,4 @@ export const MC_PAGES = Object.keys(MP);
 export const MC_ALL = M;
 /** the three slider demos and where they sit */
 export type DemoK = 'gd' | 'sm' | 'att';
-export const DEMO: Record<string, DemoK> = { 'D/2': 'gd', KM10: 'gd', 'D/12': 'sm', K15: 'sm', KC11: 'sm', 'D/8': 'att', KM12: 'att', K07: 'att' };
+export const DEMO: Record<string, DemoK> = { 'D/2': 'gd', KM10: 'gd', 'D/12': 'sm', K15: 'sm', KC11: 'sm', 'D/8a': 'att', KM12: 'att', K07: 'att' };

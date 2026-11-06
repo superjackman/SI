@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
-import { cardLv } from '../../src/dv/links';
+import { DV_KEY, cardLv } from '../../src/dv/links';
 import { QQ } from '../../src/vf/data';
 import { VF_Q } from '../../src/vf/ids';
 /* R50 验证优化: every stage page (and the maths cards) ends with ✎ 自己算一算 (typed / picked answers → instant ✓ ✗,
@@ -57,7 +57,7 @@ test.describe('R50 self-check', () => {
   });
   test('every stage and every maths card shows its questions and misconceptions', async ({ page }) => {
     await open(page, './?lang=zh#D/0'); const bad: string[] = [];
-    for (let i = 0; i < 17; i++) {
+    for (const i of DV_KEY) {
       await go(page, `#D/${i}`); await px(page, `D/${i}.zh`);
       await expect(page.locator('.vf-qz')).toBeVisible();
       if ((await page.locator('.vf-q').count()) !== VF_Q[`D/${i}`]!.length) bad.push(`D/${i} questions`);
@@ -83,7 +83,7 @@ test.describe('R50 demos', () => {
     const sm = page.locator('.vf-dm[data-dm="sm"]'); await expect(sm).toContainText('90.4%');
     await sm.locator('input[data-vs="T"]').fill('0.5'); await expect(sm.locator('output')).toHaveText('0.5'); await expect(sm).toContainText('sharper');
     await sm.locator('input[data-vs="T"]').fill('2'); await expect(sm).toContainText('flatter');
-    await go(page, '#D/8'); await px(page, 'D/8.en');
+    await go(page, '#D/8'); await px(page, 'D/8a.en'); await expect(page).toHaveURL(/#D\/8a$/);
     const at = page.locator('.vf-dm[data-dm="att"]'); await expect(at).toContainText('66.5%'); await expect(at).toContainText('[2.00, 1.00, 0.00]');
     await at.locator('input[data-vs="dk"]').fill('0'); await expect(at.locator('output')).toHaveText('1'); await expect(at).toContainText('no scaling'); await expect(at).toContainText('100.0%');
     expect(await hl(page)).toBe(h0 + 0);
@@ -96,7 +96,7 @@ test.describe('R50 reads on this phone', () => {
     const bad: string[] = [];
     for (const l of ['zh', 'en'] as const) {
       await open(page, `./?lang=${l}#D/0`);
-      for (const i of [1, 2, 8, 10, 12, 16]) {
+      for (const i of [1, 2, '8a', '8b', 10, 12, 16]) {
         await go(page, `#D/${i}`); await px(page, `D/${i}.${l}`); await expect(page.locator('.vf-qz')).toBeVisible();
         // a wrong answer, an open working, so the hint and the working are checked too
         const q = page.locator('.vf-q').first();

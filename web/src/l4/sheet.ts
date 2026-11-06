@@ -5,7 +5,7 @@ import { K_MATH, NODES, UI, tx, type L, type Nd } from './txt';
 import { lxMini } from '../lx/mini';
 import { lvOf } from './share/card';
 import { navTo } from './hnav';
-import { DV_ALSO, DV_BORN, DV_E, DV_FOCUS, DV_NM, DV_OF, cardLv } from '../dv/links';
+import { DV_ALSO, DV_BORN, DV_E, DV_FOCUS, DV_NM, DV_OF, cardLv, dvK } from '../dv/links';
 import { LBG } from './progress';
 import { hasVf } from '../vf/ids';
 
@@ -41,7 +41,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
   const dv = DV_OF[id];
   /* R48 换个角度看: the same card seen bottom-up — the step it is born in (round 第n步 badge), the question it answers,
      the other steps that use it again, and the cards born with it in the same layer (square 第n层 badges) */
-  const zz = (a: string, b: string) => tx([a, b], l), st = (n: number) => `<span class="dv-sb">${zz(`第 ${n} 步`, `Step ${n}`)}</span>`;
+  const zz = (a: string, b: string) => tx([a, b], l), st = (n: number) => `<span class="dv-sb">${zz(`第 ${dvK(n)} 步`, `Step ${dvK(n)}`)}</span>`;
   const lvB = (k: string) => { const n = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`; };
   const sib = dv == null ? [] : DV_BORN[dv]!.filter((k) => k !== id && cardLv(k) === cardLv(id) && all[k]).slice(0, 4);
   const also = dv == null ? [] : DV_ALSO[id]!;
@@ -72,7 +72,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     e.stopPropagation(); const s = b.dataset.s;
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
     else if (s === 'jump' && jg) { el.remove(); navTo(window, jg[1]); }
-    else if ((s === 'dv' || s === 'dvx') && dv != null) { el.remove(); try { sessionStorage.setItem(DV_FOCUS, id); } catch { /* private mode */ } navTo(window, `#D/${s === 'dvx' ? b.dataset.n : dv}`); }
+    else if ((s === 'dv' || s === 'dvx') && dv != null) { el.remove(); try { sessionStorage.setItem(DV_FOCUS, id); } catch { /* private mode */ } navTo(window, `#D/${dvK(s === 'dvx' ? Number(b.dataset.n) : dv)}`); }
     else if (s === 'sib' && b.dataset.k) go(b.dataset.k);
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });

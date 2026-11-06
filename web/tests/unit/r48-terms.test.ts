@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import zh0 from '../../src/dv/zh';
 import en0 from '../../src/dv/en';
 import { deepFill, fillCardText, fillDvText } from '../../src/dv/nums';
+import { dvI, type SK } from '../../src/dv/links';
 // R49: pages read {#key} numbers from dv/nums.ts — test what the reader sees
 const zh = deepFill(zh0, (s) => fillDvText(s, 'zh')), en = deepFill(en0, (s) => fillDvText(s, 'en'));
 
@@ -15,7 +16,8 @@ type Card = { n: string; s: string[]; no?: string };
 const cards = (l: 'zh' | 'en'): Record<string, Card> => deepFill(Object.assign({}, ...['k', 'k1', 'k3'].map((g) => JSON.parse(rd(`l4/c/${g}-${l}.json`)))), (s: string) => fillCardText(s, l));
 const ZH = cards('zh'), EN = cards('en');
 const txt = (c?: Card) => (c ? [c.n, c.no ?? '', ...c.s].join('\n') : '');
-const stage = (d: typeof zh, n: number) => JSON.stringify(d.st[n]);
+// a stage by its step key (8a / 8b are the two halves of step 8)
+const stage = (d: typeof zh, n: SK) => JSON.stringify(d.st[dvI(n)]);
 const ZH_FILES = ['dv/zh.ts', 'l4/c/k-zh.json', 'l4/c/k1-zh.json', 'l4/c/k3-zh.json', 'lx/m5-zh.json', 'lx/p3.ts', 'lx/p5.ts', 'lx/ids.ts', 'l4/pages.ts', 'l4/txt.ts', 'px/quiz.ts'];
 const EN_FILES = ['dv/en.ts', 'lx/m5-en.json'];
 
@@ -48,20 +50,20 @@ describe('R4 the same example numbers on both sides', () => {
 });
 
 describe('R8 shared sentences, verbatim on both views', () => {
-  const both = (ks: string[], st: number, s: string[]) => {
+  const both = (ks: string[], st: SK, s: string[]) => {
     for (const k of ks) { expect(txt(ZH[k]), k).toContain(s[0]); expect(txt(EN[k]), k).toContain(s[1]); }
     expect(stage(zh, st)).toContain(s[0]); expect(stage(en, st)).toContain(s[1]);
   };
-  it('normalisation: K09, K05, KM11 ↔ stage 8', () => both(['K09', 'K05', 'KM11'], 8, NORM));
-  it('position: K04 ↔ stage 8', () => both(['K04'], 8, POS));
-  it('FFN activation and 4× width: K10 ↔ stage 8', () => { both(['K10'], 8, ACT); expect(txt(ZH.K10)).toContain('4 倍'); expect(stage(zh, 8)).toContain('4 倍'); });
+  it('normalisation: K09, K05, KM11 ↔ stage 8b', () => both(['K09', 'K05', 'KM11'], '8b', NORM));
+  it('position: K04 ↔ stage 8b', () => both(['K04'], '8b', POS));
+  it('FFN activation and 4× width: K10 ↔ stage 8b', () => { both(['K10'], '8b', ACT); expect(txt(ZH.K10)).toContain('4 倍'); expect(stage(zh, '8b')).toContain('4 倍'); });
   it('alignment: KC07 also names DPO and reasoning RL (stage 10)', () => {
     expect(txt(ZH.KC07)).toContain('如今也用 DPO、推理 RL'); expect(txt(EN.KC07)).toContain('DPO and reasoning RL');
     expect(stage(zh, 10)).toMatch(/DPO/); expect(stage(zh, 10)).toMatch(/推理/);
   });
   it('C7: stage 12 explains sampling and temperature, as a plain fact (no {~} mark)', () => {
-    const i = zh.st[12]!.i.find((s) => s.startsWith('**采样与温度**'))!, j = en.st[12]!.i.find((s) => s.startsWith('**Sampling and temperature**'))!;
-    expect(i).toBeTruthy(); expect(j).toBeTruthy(); expect(i).not.toContain('{~'); expect(j).not.toContain('{~'); expect(zh.st[12]!.i.length).toBe(en.st[12]!.i.length);
+    const s12 = dvI(12), i = zh.st[s12]!.i.find((s) => s.startsWith('**采样与温度**'))!, j = en.st[s12]!.i.find((s) => s.startsWith('**Sampling and temperature**'))!;
+    expect(i).toBeTruthy(); expect(j).toBeTruthy(); expect(i).not.toContain('{~'); expect(j).not.toContain('{~'); expect(zh.st[s12]!.i.length).toBe(en.st[s12]!.i.length);
   });
   it('en has no CJK outside quoted demo words', () => {
     for (const k of ['K02', 'K04', 'K05', 'K09', 'K10', 'KM11', 'KC04', 'KC07']) expect(EN[k]!.s[2]).not.toMatch(/[\u4e00-\u9fff]/);

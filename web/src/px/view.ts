@@ -16,7 +16,7 @@ import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
 import { navBack } from '../l4/hnav';
 
-export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined }
+export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined }
 export interface PxApi {
   step: (s: Step | null) => void;
   root: HTMLElement; host: HTMLElement; l: L; go: (h: string) => void; top: (html: string) => void; crumb: (c: [string, string | null][]) => void;

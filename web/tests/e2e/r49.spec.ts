@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { NUM } from '../../src/dv/nums';
+import { DV_KEY } from '../../src/dv/links';
 /* R49 C12 one canonical example: the card holds it, the stage page's ④ reuses the same numbers and shows the card as a chip. */
 const ORIGIN = 'http://localhost:4173';
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
@@ -26,7 +27,7 @@ test.describe('R49 shared examples', () => {
   }
   test('every stage with an example of its own shows its canonical card chips in ④', async ({ page }) => {
     await open(page, './?lang=zh#D/0'); const bad: string[] = [];
-    for (let i = 0; i < 16; i++) {
+    for (const i of DV_KEY.slice(0, -1)) {
       await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await expect(page.locator('#l4')).toHaveAttribute('data-px', `D/${i}.zh`);
       if ((await page.locator('.l4-ks').nth(3).locator('.dv-ex .dv-kb').count()) < 1) bad.push(`D/${i}`);
     }

@@ -6,7 +6,7 @@ import { NUM, NUMS, deepFill, fillCardText, fillDvText, numKeys, type Lang } fro
 import zh from '../../src/dv/zh';
 import en from '../../src/dv/en';
 import type { Card } from '../../src/l4/c/kc';
-import { DV_EX, DV_EX_PTR, DV_N } from '../../src/dv/links';
+import { DV_EX, DV_EX_PTR, DV_N, dvI } from '../../src/dv/links';
 
 const src = (p: string) => fs.readFileSync(path.join(__dirname, '../../src', p), 'utf8');
 const RAW: Record<Lang, Record<string, Card>> = {
@@ -39,14 +39,14 @@ describe('R49 shared numbers (R4)', () => {
       expect(n.st.length, k).toBeGreaterThan(0);
       for (const l of LS) {
         for (const id of n.cards) expect(numKeys(cardRaw(l, id)), `${l} ${id} {#${k}}`).toContain(k);
-        for (const s of n.st) expect(numKeys(stageRaw(l, s)), `${l} D/${s} {#${k}}`).toContain(k);
+        for (const s of n.st) expect(numKeys(stageRaw(l, dvI(s))), `${l} D/${s} {#${k}}`).toContain(k);
       }
     }
   });
   it('a page only uses numbers that list it (the table says who shares what)', () => {
     for (const l of LS) {
       for (const id of Object.keys(RAW[l])) for (const k of numKeys(cardRaw(l, id))) expect(NUMS[k]!.cards, `${l} ${id} {#${k}}`).toContain(id);
-      DV[l].st.forEach((_, s) => { for (const k of numKeys(stageRaw(l, s))) expect(NUMS[k]!.st, `${l} D/${s} {#${k}}`).toContain(s); });
+      DV[l].st.forEach((_, s) => { for (const k of numKeys(stageRaw(l, s))) expect(NUMS[k]!.st.map(dvI), `${l} D/${s} {#${k}}`).toContain(s); });
     }
   });
   it('no page hard-codes a shared number (or an old differing value) outside the table', () => {
@@ -73,7 +73,7 @@ describe('R49 shared numbers (R4)', () => {
         const lab = n.ap[l === 'zh' ? 0 : 1];
         expect(lab.length, k).toBeGreaterThan(1);
         for (const id of n.cards) expect(card(l, id), `${l} ${id}`).toContain('<span class="ap">≈ ' + lab + '</span>');
-        for (const s of n.st) expect(JSON.stringify(stage(l, s)), `${l} D/${s}`).toContain('{~' + lab + '}');
+        for (const s of n.st) expect(JSON.stringify(stage(l, dvI(s))), `${l} D/${s}`).toContain('{~' + lab + '}');
       }
     }
     // the rules of thumb named in R4 are all marked
@@ -84,7 +84,7 @@ describe('R49 shared numbers (R4)', () => {
       const plain = n[l].replace(/`/g, '');
       const strip = (s: string) => s.replace(/<[^>]+>/g, '').replace(/`/g, '');
       for (const id of n.cards) expect(strip(card(l, id)), `${l} ${id} {#${k}}`).toContain(plain);
-      for (const s of n.st) expect(strip(JSON.stringify(stage(l, s))), `${l} D/${s} {#${k}}`).toContain(plain);
+      for (const s of n.st) expect(strip(JSON.stringify(stage(l, dvI(s)))), `${l} D/${s} {#${k}}`).toContain(plain);
     }
   });
   it('the numbers are right', () => {

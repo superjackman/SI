@@ -20,7 +20,7 @@ import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { lastPage, layerStats, lvTag, pageLayer, pageName, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
-import { DV_N, DV_NM, isDv } from '../dv/links';
+import { DV_ALIAS, DV_N, DV_NM, dvK, isDv } from '../dv/links';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
@@ -247,7 +247,7 @@ export function start(doc: Document = document, win: Window = window) {
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
     const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
-    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${k + b} 步`, `Step ${k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${esc(s.lab ?? '')}${s.i + b} / ${s.n - 1 + b}</span>` : '';
+    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${s.keys?.[k] ?? k + b} 步`, `Step ${s.keys?.[k] ?? k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}</span>` : '';
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span><button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
   }
   const run = (f: string | (() => void) | null | undefined) => { if (typeof f === 'string') go(f); else f?.(); };
@@ -290,11 +290,13 @@ export function start(doc: Document = document, win: Window = window) {
     const prog = `<div class="l4-mpg">${ps.map((x) => `<div class="rw">${lvTag(x.n, lang)}${pbar(x.s, x.t, x.n)}<span class="m">${esc(tx([`看过 ${x.s}/${x.t} 页 · 卡 ${x.c}/${x.ct}`, `${x.s}/${x.t} pages · ${x.c}/${x.ct} cards`], lang))}</span></div>`).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
     list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
-      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${i}`, `${i} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
+      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }
   /* ---------- routing ---------- */
   function route() {
     const r = parse(win.location.hash); let id = r.id; const lid = lxFrom(id);
+    /* R51: an old single-step link (#D/8) opens the station that replaced it, rewriting the address (no new entry) */
+    const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}${r.card ? '~' + r.card : ''}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
     if (!(lid || id === 'home' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';

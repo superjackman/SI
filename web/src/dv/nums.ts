@@ -12,8 +12,8 @@ export type Num = {
   ap?: [string, string];
   /** cards that must use it */
   cards: string[];
-  /** stage pages (D/n) that must use it */
-  st: number[];
+  /** stage pages (D/n) that must use it, as step keys (8a / 8b for the two halves of step 8) */
+  st: (number | '8a' | '8b')[];
   /** hard-coded spellings that must not appear outside this table */
   ban: RegExp[];
 };
@@ -43,18 +43,18 @@ export const NUM = {
     cards: ['KC05'], st: [9],
     ban: [/每个?参数.{0,3}20|20\s*个?\s*(token|词元)\s*每|20 tokens per/],
   },
-  // ── step 8 · KC08 parameter count, K10 FFN width ──
+  // ── step 8b · KC08 parameter count, K10 FFN width ──
   p12: {
     zh: '约 `12 × d²` 个参数（注意力 `4 × d²` + 前馈 `8 × d²`）',
     en: 'about `12 × d²` parameters (attention `4 × d²` + feed-forward `8 × d²`)',
     ap: ['粗算，不含词向量表', 'rough, embeddings not counted'],
-    cards: ['KC08'], st: [8],
+    cards: ['KC08'], st: ['8b'],
     ban: [/\b(12|4|8)\s*[·×*]?\s*d²/],
   },
   ffn: {
     zh: '约 4 倍', en: 'about 4×',
     ap: ['常见值，各模型不同', 'typical, varies by model'],
-    cards: ['K10'], st: [8],
+    cards: ['K10'], st: ['8b'],
     ban: [/(?<![\d.])4\s*倍|(?<![\d.])4×/],
   },
   // ── step 11 · KC13 LoRA and quantisation ──
@@ -75,30 +75,30 @@ export const NUM = {
     cards: ['KC13'], st: [11],
     ban: [/\b14\s*GB|\b3\.5\s*GB|(?<![\d.])7\s*GB/],
   },
-  // ── steps 7 and 8 · KM12 one attention example ──
+  // ── steps 7 and 8a · KM12 one attention example ──
   attS0: {
     zh: '[16, 8, 0]', en: '[16, 8, 0]',
-    cards: ['KM12'], st: [8],
+    cards: ['KM12'], st: ['8a'],
     ban: [/\[16,\s*8,\s*0\]|\[8,\s*4,\s*0\]/],
   },
   attK: {
     zh: '`d_k = 64`，除以 `√64 = 8`', en: '`d_k = 64`, divide by `√64 = 8`',
-    cards: ['KM12'], st: [8],
+    cards: ['KM12'], st: ['8a'],
     ban: [/√\s*64|d_k\s*=\s*64/],
   },
   attSat: {
     zh: '[0.9997, 0.0003, 0.0000]', en: '[0.9997, 0.0003, 0.0000]',
-    cards: ['KM12'], st: [8],
+    cards: ['KM12'], st: ['8a'],
     ban: [/0\.9997|98\.17\s*%/],
   },
   attS1: {
     zh: '[2, 1, 0]', en: '[2, 1, 0]',
-    cards: ['KM12'], st: [7, 8],
+    cards: ['KM12'], st: [7, '8a'],
     ban: [/\[2,\s*1,\s*0\]|\[1,\s*0\.5,\s*0\]/],
   },
   attW: {
     zh: '[0.665, 0.245, 0.090]', en: '[0.665, 0.245, 0.090]',
-    cards: ['KM12'], st: [7, 8],
+    cards: ['KM12'], st: [7, '8a'],
     ban: [/0\.665|0\.245|50\.6\s*%/],
   },
   // ── step 12 · K15 / K12 temperature, KC14 KV cache ──
