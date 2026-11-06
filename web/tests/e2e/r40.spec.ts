@@ -44,7 +44,7 @@ test.describe('R40 练记享', () => {
   test('home has 学 练 记 享 and the quick-path entry; each opens its area', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
     await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
-    await expect(page.locator('.l4-go')).toContainText(/10 分钟快速路径 · 12 站/); // R42 A-tier home: the quick-path block
+    await expect(page.locator('.l4-go')).toContainText(/选深度和目标|选我的路线|10 分钟/); // R52 home: depth+goal or quick path
     for (const [go, id] of [['#P', 'P'], ['#R', 'R'], ['#S', 'S'], ['#Q', 'Q']] as const) {
       await page.evaluate(() => { location.hash = '#home'; }); await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
       await page.locator(`.l4-home [data-go="${go}"]`).click();

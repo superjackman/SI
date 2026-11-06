@@ -17,7 +17,7 @@ export const DEPTH_MAX: Readonly<Record<Depth, number>> = { s: 1, m: 3, d: 5 };
 export const depthFor = (k: number): Depth => (k <= 1 ? 's' : k <= 3 ? 'm' : 'd');
 const okD = (v: unknown): v is Depth => v === 's' || v === 'm' || v === 'd';
 export const depthGet = (): Depth => { try { const v = localStorage.getItem(LY_DEPTH); return okD(v) ? v : 'm'; } catch { return 'm'; } };
-const depthSet = (d: Depth) => { try { localStorage.setItem(LY_DEPTH, d); } catch { /* private mode */ } };
+export const depthSet = (d: Depth) => { try { localStorage.setItem(LY_DEPTH, d); } catch { /* private mode */ } };
 const openAll = (): Record<string, number> => { try { const v = JSON.parse(localStorage.getItem(LY_OPEN) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, number>) : {}; } catch { return {}; } };
 /** how many layers of `page` the reader has opened (1–5) */
 export const openGet = (page: string) => { const n = Number(openAll()[page]); return Number.isInteger(n) && n >= 1 && n <= 5 ? n : 1; };
@@ -75,7 +75,7 @@ function picFlow(l: L, mk: Mk, pc: string[]) {
 }
 function picXor(l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  const pts = [[40, 40, '0,0→0'], [40, 140, '0,1→1'], [200, 40, '1,0→1'], [200, 140, '1,1→0']];
+  const pts: [number, number, string][] = [[40, 40, '0,0→0'], [40, 140, '0,1→1'], [200, 40, '1,0→1'], [200, 140, '1,1→0']];
   const dots = pts.map(([x, y, lab]) => `<circle cx="${x}" cy="${y}" r="10" fill="${lab.endsWith('0') ? '#ff8a80' : '#34d399'}"/><text x="${x}" y="${y + 28}" text-anchor="middle" fill="#9db0d8" font-size="11">${lab}</text>`).join('');
   return `<svg class="ly-xor" viewBox="0 0 280 190" role="img" aria-label="${z('XOR：一条直线分不开', 'XOR: one line cannot separate')}"><rect x="8" y="8" width="264" height="174" rx="8" fill="#0a1736" stroke="#33508f"/>${dots}<line x1="20" y1="160" x2="220" y2="30" stroke="#ffd166" stroke-width="2" stroke-dasharray="4 3"/><text x="140" y="100" text-anchor="middle" fill="#ffd166" font-size="12">${z('直线切不开', 'a line fails')}</text></svg>
 <ul class="ly-leg"><li><span class="ly-dot ly-k" aria-hidden="true"></span>${z('输出 1', 'output 1')}</li><li><span class="ly-dot ly-r" aria-hidden="true"></span>${z('输出 0', 'output 0')}</li><li><span class="ly-c ly-q" aria-hidden="true">— </span>${z('任意直线都会把某一类切错', 'any straight cut misclassifies one class')}</li></ul>`;

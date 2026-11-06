@@ -51,7 +51,7 @@ export const DV_K: readonly (readonly string[])[] = DV_BORN.map((b, i) => [...b,
 export const DV_SOLO: readonly number[] = DV_BORN.map((b, i) => (i < DV_N - 1 && !(b[0] && cardLv(b[0]) === DV_LV[i]) ? i : -1)).filter((i) => i >= 0);
 export const DV_SEEN = 'si.dv.seen';
 export const DV_FOCUS = 'si.dv.focus';
-export const isDv = (id: string) => id === 'D' || id === 'D/map' || id === 'D/routes' || id in DV_ALIAS || (id.startsWith('D/') && dvI(id.slice(2)) >= 0);
+export const isDv = (id: string) => id === 'D' || id === 'D/map' || id === 'D/routes' || id === 'D/ch' || id.startsWith('D/ch/') || id in DV_ALIAS || (id.startsWith('D/') && dvI(id.slice(2)) >= 0);
 export const DV_NM: readonly (readonly [string, string])[] = [
   ['用样本找函数', 'Learn a function from examples'],
   ['概率基础', 'Probability basics'],

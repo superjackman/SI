@@ -60,3 +60,27 @@ button.dv-from span::before { content: '‹ '; }
 .dv-qt { flex: none; margin-left: auto; padding: 0 6px; border: 1px solid #5b8cff; border-radius: 9px; font-size: 12px; font-weight: 700; line-height: 1.5; color: #cfe0ff; white-space: nowrap; }
 .dv-qt.all { border-color: #34d399; color: #7ef0b0; }
 .dv-st .dv-qt + em { margin-left: 0; }
+
+/* R52 mastery + routes + challenge */
+.dv-rd b.dv-qr { color: #ffd166; }
+.dv-st.mastered { border-color: #c99a2e; background: #1a1630; }
+.dv-st.mastered em { color: #ffd166; }
+.dv-rts { display: flex; flex-direction: column; gap: 10px; }
+.dv-rt { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid color-mix(in srgb, var(--c) 55%, #2c4690); border-radius: 12px; background: #0a1532e6; }
+.dv-rt.mine { outline: 2px solid var(--c); outline-offset: 1px; }
+.dv-rth { display: flex; align-items: center; gap: 8px; }
+.dv-rth b { flex: 1; min-width: 0; font-size: 15px; color: #e6eeff; }
+.dv-rth em { font-style: normal; font-size: 11px; font-weight: 800; color: #0b1230; background: var(--c); padding: 1px 7px; border-radius: 8px; }
+.dv-rth span { flex: none; font-size: 12px; color: #ffd166; font-weight: 700; }
+.dv-rt p { margin: 0; font-size: 12.5px; color: #c4d2f2; line-height: 1.4; }
+.dv-railrow { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 0; }
+.dv-railrow .dv-ms { min-width: 34px; min-height: 28px; padding: 0 6px; border: 1px solid color-mix(in srgb, var(--c) 50%, #2c4690); border-radius: 9px; background: #0b1230; color: #e6eeff; font-size: 12px; font-weight: 800; }
+.dv-railrow .dv-ms.on { background: var(--c); color: #fff; border-color: transparent; }
+.dv-railrow .dv-ms.seen { border-color: #34d399; }
+.dv-rail { display: inline-block; width: 10px; height: 2px; background: var(--c); opacity: .55; margin: 0 1px; }
+.dv-chq .vf-opts { display: grid; gap: 6px; margin-top: 8px; }
+.dv-chq .vf-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.dv-chq .vf-in { flex: 1; min-width: 100px; min-height: 40px; padding: 0 10px; border: 1px solid #2c4690; border-radius: 10px; background: #0b1230; color: #e6eeff; font-size: 15px; }
+.dv-chq .vf-fb { margin: 8px 0 0; font-size: 13px; color: #c4d2f2; min-height: 1.2em; }
+.dv-chq .vf-fb.ok { color: #34d399; font-weight: 700; }
+.dv-chq .vf-fb.miss { color: #fb7185; }

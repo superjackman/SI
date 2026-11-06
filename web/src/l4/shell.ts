@@ -140,12 +140,12 @@ export function start(doc: Document = document, win: Window = window) {
   function goCard() {
     const last = lastPage();
     if (!last) return `<div class="l4-go"><div class="r"><b>${tx(['从这里开始', 'Start here'], lang)}</b><span class="m">${tx(['第一次来？', 'First visit?'], lang)}</span></div>`
-      + `<p>⏱ ${tx(['10 分钟快速路径 · 12 站，走一遍五层，外加 2 张知识卡', '10-minute quick path · 12 stops through all five layers, plus 2 cards'], lang)}</p>`
-      + `<button type="button" class="l4-b gold big" data-go="#Q">${tx(['开始快速路径 ›', 'Start the quick path ›'], lang)}</button></div>`;
+      + `<p>${tx(['选深度和目标，生成你的路线；或先花 10 分钟走一遍五层。', 'Pick a depth and a goal for your route — or take 10 minutes through all five layers.'], lang)}</p>`
+      + `<div class="r"><button type="button" class="l4-b gold big" data-go="#D/routes">${tx(['选我的路线 ›', 'Pick my route ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#Q">${tx(['10 分钟路径 ›', '10-min path ›'], lang)}</button></div></div>`;
     const n = pageLayer(last.id), st = layerStats(seen)[n - 1]!;
     return `<div class="l4-go"><div class="r"><b>${tx(['继续上次', 'Pick up where you left off'], lang)}</b></div>`
       + `<div class="r l">${lvTag(n, lang)}<span>${esc(pageName(last.id, lang))} · ${tx([`看过 ${st.s}/${st.t} 页`, `${st.s}/${st.t} pages seen`], lang)}</span></div>${pbar(st.s, st.t, n)}`
-      + `<div class="r"><button type="button" class="l4-b gold big" data-go="${H(last.id)}">${tx(['继续 ›', 'Continue ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#Q">${tx(['10 分钟路径 ›', '10-min path ›'], lang)}</button></div></div>`;
+      + `<div class="r"><button type="button" class="l4-b gold big" data-go="${H(last.id)}">${tx(['继续 ›', 'Continue ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#D/routes">${tx(['我的路线 ›', 'My route ›'], lang)}</button></div></div>`;
   }
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
@@ -290,7 +290,7 @@ export function start(doc: Document = document, win: Window = window) {
     const prog = `<div class="l4-mpg">${ps.map((x) => `<div class="rw">${lvTag(x.n, lang)}${pbar(x.s, x.t, x.n)}<span class="m">${esc(tx([`看过 ${x.s}/${x.t} 页 · 卡 ${x.c}/${x.ct}`, `${x.s}/${x.t} pages · ${x.c}/${x.ct} cards`], lang))}</span></div>`).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
     list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
-      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
+      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }
   /* ---------- routing ---------- */
   function route() {

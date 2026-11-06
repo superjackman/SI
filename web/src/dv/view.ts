@@ -8,6 +8,7 @@ import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
 import { DV_ALIAS, DV_BORN, DV_EX, DV_EX_PTR, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_OF, DV_SEEN, DV_USES, cardLv, dvI, dvK } from './links';
+import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
 
@@ -39,6 +40,8 @@ export async function dv(id: string, A: PxApi) {
   const z = (a: string, b: string) => tx([a, b], l), name = z('推导之路', 'Derivation path');
   if (id === 'D') return chain(A, D, z, name);
   if (id === 'D/map') return map(A, D, z, name);
+  if (id === 'D/routes') return routes(A, D, z, name);
+  if (id === 'D/ch' || id.startsWith('D/ch/')) { const m = await import('./ch'); if (!A.still()) return; return m.challenge(id, A); }
   const i0 = dvI((DV_ALIAS[id] ?? id).slice(2)), i = i0 >= 0 ? i0 : 0, S = D.st[i]!;
   const C: Record<string, Card> = { ...(await cards(l, 'K01')), ...(await cards(l, 'KA01')), ...(await cards(l, 'KC01')) }; if (!A.still()) return;
   A.top(`<b class="l4-tt">${stepNo(i, l)} · ${esc(S.n)}</b>`);
@@ -65,6 +68,7 @@ ${LY && S.ly ? LY.html({ ...S, ly: S.ly }, page, l, mk, exK) : `${sec(1, z('① 
 ${sec(5, next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), `<p class="dv-lo">${mk(S.lo)}</p>${nxt}`)}
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
+${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="button" class="l4-b g-act" data-go="#D/ch/${dvK(i)}">${z('✎ 分享挑战题：让朋友算一算', '✎ Share a challenge: let a friend try')}</button></div>` : ''}
 <div class="dv-ks"><h3>${z('换个角度看 · 金字塔里的卡', 'Another angle · cards in the pyramid')}</h3>${born ? `<h4>${z('本步诞生的卡', 'Born in this step')}</h4><div class="dv-kg">${born}</div>` : ''}${uses ? `<h4>${z('本步也用到', 'Also used here')}</h4><div class="dv-kg">${uses}</div>` : ''}<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('在知识地图里看这一步', 'This step on the knowledge map')}</button>${n ? `<button type="button" class="l4-b dv-lv" data-go="#L${n}">${z(`↓ 去金字塔 第${n}层`, `↓ To the pyramid · layer ${n}`)}</button>` : ''}</div></div>`;
   A.host.scrollTop = 0; seenAdd(i);
   let fk: string | null = null; try { fk = sessionStorage.getItem(DV_FOCUS); sessionStorage.removeItem(DV_FOCUS); } catch { /* private mode */ }
@@ -81,20 +85,21 @@ ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p
 function chain(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: string) {
   const l = A.l, seen = new Set(seenGet()), vd = vfDone(), vs = vfStages(DV_N, vd);
   /* R50: the self-check ratio per step (same done/total convention as 读过) */
-  const qt = (i: number) => { const r = vfStat(`D/${dvK(i)}`, vd); return r.t ? `<span class="dv-qt${r.s === r.t ? ' all' : ''}" aria-label="${z(`自测 ${r.s}/${r.t}`, `self-check ${r.s}/${r.t}`)}">✎ ${r.s}/${r.t}</span>` : ''; };
+  const qt = (i: number) => { const r = vfStat(`D/${dvK(i)}`, vd); return r.t ? `<span class="dv-qt${r.s === r.t ? ' all' : ''}" aria-label="${z(`掌握 ${r.s}/${r.t}`, `mastered ${r.s}/${r.t}`)}">✎ ${r.s}/${r.t}</span>` : ''; };
+  const mastered = (i: number) => { const r = vfStat(`D/${dvK(i)}`, vd); return r.t > 0 && r.s === r.t; };
   A.top(`<b class="l4-tt">${esc(D.t)}</b>`); A.crumb([[z('首页', 'Home'), '#home'], [name, null]]); A.step(null);
   let last = -1, h = '';
   D.st.forEach((S, i) => {
     const n = DV_LV[i]!;
     if (n !== last) { last = n; h += `<div class="dv-gh" style="--c:${col(i)}">${lvT(i, l)}<b>${n ? esc(tx(UI.lvN[n - 1]!, l)) : z('串起全链路', 'The whole chain')}</b>${n ? `<button type="button" class="dv-gp" data-go="#L${n}">${z('金字塔 ›', 'Pyramid ›')}</button>` : ''}</div>`; }
-    h += `<button type="button" class="dv-st g-rj${seen.has(i) ? ' seen' : ''}" data-go="${hD(i)}" style="${cv(i)}"><span class="dv-n">${dvK(i)}</span><span class="dv-t"><b>${esc(S.n)}</b><i>${esc(S.s)}</i></span>${qt(i)}${seen.has(i) ? '<em aria-label="✓">✓</em>' : ''}</button>`;
+    h += `<button type="button" class="dv-st g-rj${mastered(i) ? ' mastered' : seen.has(i) ? ' seen' : ''}" data-go="${hD(i)}" style="${cv(i)}"><span class="dv-n">${dvK(i)}</span><span class="dv-t"><b>${esc(S.n)}</b><i>${esc(S.s)}</i></span>${qt(i)}${mastered(i) ? '<em aria-label="mastered">★</em>' : seen.has(i) ? '<em aria-label="✓">✓</em>' : ''}</button>`;
     if (S.e) h += `<div class="dv-lk"><span>${z('遗留', 'Left open')}</span>${esc(S.e)}</div>`;
   });
-  const nx = [...Array(DV_N).keys()].find((i) => !seen.has(i)), go = nx ?? 0;
+  const nx = [...Array(DV_N).keys()].find((i) => !mastered(i)) ?? [...Array(DV_N).keys()].find((i) => !seen.has(i)), go = nx ?? 0;
   A.host.innerHTML = `<div class="px dv dv-ch"><p class="px-sub">${esc(D.sub)}</p>
 <details class="px-how"><summary><span>${z('怎么读 · 和金字塔的关系', 'How to read it · and the pyramid')}</span></summary><p class="px-f">${mk(D.how)}</p></details>
-<p class="dv-rd">${z('↓ 往下读：每个箭头旁是上一步留下的问题，下一步就是它的答案。', '↓ Read down: beside each arrow is what the step above left open; the next step answers it.')}<b>${z(`读过 ${seen.size}/${DV_N}`, `${seen.size}/${DV_N} read`)}</b><b class="dv-qr">${z(`自测做对 ${vs.s}/${vs.t}`, `Self-check ${vs.s}/${vs.t}`)}</b></p>
-<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('看知识地图：每张卡在哪一步诞生、属于哪一层', 'Knowledge map: the step each card is born in, and its layer')}</button>
+<p class="dv-rd">${z('↓ 往下读：每个箭头旁是上一步留下的问题，下一步就是它的答案。', '↓ Read down: beside each arrow is what the step above left open; the next step answers it.')}<b class="dv-qr">${z(`掌握 ${vs.s}/${vs.t}`, `Mastered ${vs.s}/${vs.t}`)}</b><b>${z(`读过 ${seen.size}/${DV_N}`, `${seen.size}/${DV_N} read`)}</b></p>
+<div class="px-row l"><button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('知识地图', 'Knowledge map')}</button><button type="button" class="l4-b g-jump" data-go="#D/routes">${z('五条学习路线 ›', 'Five learning routes ›')}</button></div>
 <div class="dv-c">${h}</div>
 <div class="px-row"><button type="button" class="l4-b g-jump big" data-go="${hD(go)}">${nx == null ? z('从第 0 步重读', 'Read again from step 0') : seen.size ? z(`继续：第 ${dvK(go)} 步`, `Continue: step ${dvK(go)}`) : z('从第 0 步开始', 'Start at step 0')}</button></div></div>`;
   if (A.still()) A.root.dataset.px = `D.${l}`;
@@ -123,4 +128,37 @@ async function map(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: s
   let fr: string | null = null; try { fr = sessionStorage.getItem(DV_FOCUS); if (fr?.startsWith('s')) sessionStorage.removeItem(DV_FOCUS); else fr = null; } catch { /* private mode */ }
   const re = fr ? A.host.querySelector<HTMLElement>(`#${fr}`) : null; if (re) { re.classList.add('on'); re.scrollIntoView({ block: 'center' }); }
   if (A.still()) A.root.dataset.px = `D/map.${l}`;
+}
+
+/* R52 五条学习路线 (#D/routes): metro-style list. Each line is a subset of the 23 stations in derivation order. */
+function routes(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: string) {
+  const l = A.l, seen = new Set<string>(seenGet().map(dvK)), vd = vfDone();
+  const mastered = new Set<string>([...DV_KEY].filter((k) => { const r = vfStat('D/' + k, vd); return r.t > 0 && r.s === r.t; }));
+  const mine = goalGet();
+  A.top(`<b class="l4-tt">${z('五条学习路线', 'Five learning routes')}</b>`);
+  A.crumb([[z('首页', 'Home'), '#home'], [name, '#D'], [z('路线', 'Routes'), null]]); A.step(null);
+  const card = (r: typeof ROUTES[number]) => {
+    const done = r.st.filter((k) => mastered.has(String(k))).length, tot = r.st.length, nxt = routeNext(r, mastered, seen);
+    const stops = r.st.map((k) => {
+      const key = String(k), i = dvI(k), on = mastered.has(key), rd = seen.has(key);
+      return `<button type="button" class="dv-ms${on ? ' on' : rd ? ' seen' : ''}" data-go="${hD(i)}" style="--c:${r.c}" title="${esc(D.st[i]!.n)}"><span class="dv-sb">${key}</span></button>`;
+    }).join('<i class="dv-rail" style="--c:' + r.c + '" aria-hidden="true"></i>');
+    return `<article class="dv-rt${mine === r.id ? ' mine' : ''}" style="--c:${r.c}">
+<div class="dv-rth"><b>${esc(tx(r.n, l))}</b>${mine === r.id ? `<em>${z('我的路线', 'My route')}</em>` : ''}<span>✎ ${done}/${tot}</span></div>
+<p>${esc(tx(r.s, l))}</p>
+<div class="dv-railrow">${stops}</div>
+<div class="px-row l"><button type="button" class="l4-b gold" data-go="${hD(dvI(nxt))}" data-goal="${r.id}">${done === tot ? z('从头再走 ›', 'Walk again ›') : z(`下一站 · ${nxt} ›`, `Next stop · ${nxt} ›`)}</button>
+<button type="button" class="l4-b sm" data-a="setgoal" data-goal="${r.id}">${mine === r.id ? z('已选 ✓', 'Selected ✓') : z('设为我的路线', 'Make this my route')}</button></div></article>`;
+  };
+  A.host.innerHTML = `<div class="px dv dv-rts"><p class="px-sub">${z('同一批站点，五条地铁线。按你的目标选一条；沿线的站永远按推导顺序。', 'The same stations, five metro lines. Pick one for your goal; stops always follow derivation order.')}</p>
+${ROUTES.map(card).join('')}
+<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路图', 'Back to the chain')}</button><button type="button" class="l4-b" data-go="#D/map">${z('知识地图', 'Knowledge map')}</button></div></div>`;
+  A.host.querySelectorAll<HTMLElement>('[data-a="setgoal"]').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.goal; const r = routeOf(id); if (!r) return;
+    import('./routes').then((m) => { m.goalSet(r.id); routes(A, D, z, name); });
+  }));
+  A.host.querySelectorAll<HTMLElement>('[data-goal][data-go]').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.goal; const r = routeOf(id); if (r) void import('./routes').then((m) => m.goalSet(r.id));
+  }));
+  if (A.still()) A.root.dataset.px = `D/routes.${l}`;
 }

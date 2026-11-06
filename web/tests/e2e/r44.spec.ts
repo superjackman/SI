@@ -52,15 +52,15 @@ test.describe('R44 step bar', () => {
     await expect(sh.locator('.g-prev')).toBeDisabled(); await sh.locator('.g-next').click(); await expect(sh).toHaveAttribute('data-p', '2');
     await expect(sh.locator('.g-next')).toBeDisabled(); await sh.locator('.g-prev').click(); await expect(sh).toHaveAttribute('data-p', '1');
   });
-  test('onboarding: 上一步 / 下一步 through three steps, 跳过 closes', async ({ page }) => {
+  test('onboarding: depth + goal chooser, 跳过 closes', async ({ page }) => {
     await page.addInitScript(() => { if (!sessionStorage.getItem('r44')) { sessionStorage.setItem('r44', '1'); localStorage.removeItem('si.onb'); } });
     await open(page, './?lang=zh#home'); const ob = page.locator('.l4-ob'); await expect(ob).toBeVisible();
-    const n = ob.locator('.g-n'); await expect(n).toHaveText('1 / 3'); await expect(ob.locator('[data-o="prev"]')).toBeDisabled();
-    await ob.locator('[data-o="next"]').click(); await expect(n).toHaveText('2 / 3');
-    await expect(ob.locator('.g-jump')).toHaveCount(1); await expect(ob.locator('.g-info')).toHaveCount(1); await expect(ob.locator('.g-act')).toHaveCount(1);
-    await ob.locator('[data-o="prev"]').click(); await expect(n).toHaveText('1 / 3');
-    await ob.locator('[data-o="next"]').click(); await ob.locator('[data-o="next"]').click(); await expect(n).toHaveText('3 / 3');
-    await expect(ob.locator('[data-o="quick"]')).toBeVisible(); await expect(ob.locator('[data-o="next"]')).toHaveCount(0);
+    const n = ob.locator('.g-n'); await expect(n).toHaveText('1 / 2'); await expect(ob.locator('[data-o="prev"]')).toBeDisabled();
+    await expect(ob.locator('[data-o="depth:m"]')).toBeVisible();
+    await ob.locator('[data-o="next"]').click(); await expect(n).toHaveText('2 / 2');
+    await expect(ob.locator('[data-o="goal:derive"]')).toBeVisible();
+    await expect(ob.locator('[data-o="start"]')).toBeVisible();
+    await ob.locator('[data-o="prev"]').click(); await expect(n).toHaveText('1 / 2');
     await ob.locator('.ob-skip').click(); await expect(ob).toHaveCount(0);
   });
 });
