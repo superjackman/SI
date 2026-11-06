@@ -295,7 +295,7 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4 .g-bdg { display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: #2563eb; color: #fff; font-size: 13px; font-style: normal; font-weight: 700; line-height: 1; flex: none; overflow: visible; }
 .l4 .l4-lb i.g-bdg { width: 16px; height: 16px; margin-top: -8px; line-height: 16px; }
 /* the step bar */
-.l4 .g-nav { position: relative; flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: #060d24; border-top: 1px solid #1f3270; }
+.l4 .g-nav { position: relative; flex: none; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto) minmax(0, 1fr); align-items: center; gap: 8px; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); background: #060d24; border-top: 1px solid #1f3270; }
 .l4 .g-nav[hidden] { display: none; }
 .l4 .g-nav > button { min-height: 44px; border-radius: 12px; font-size: 15px; font-weight: 700; padding: 0 10px; white-space: nowrap; min-width: min(104px, 100%); max-width: 100%; }
 .l4 .g-prev { background: transparent; color: #cfe0ff; border: 1.5px solid #3b5bb5; justify-self: start; }
@@ -308,7 +308,10 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4 .g-dots button::after { content: ''; position: absolute; inset: -16px -2px -3px; }
 .l4 .g-dots button.d { background: #6f8fe0; } .l4 .g-dots button.on { background: #fff; width: 16px; border-radius: 4px; }
 .l4 .g-dots button:disabled { cursor: default; }
-.l4 .g-dots.many { gap: 3px; } .l4 .g-dots.many button { width: 6px; height: 6px; } .l4 .g-dots.many button.on { width: 12px; }
+.l4 .g-dots.many { gap: 2px; flex-wrap: wrap; max-width: min(140px, 36vw); justify-content: center; }
+.l4 .g-dots.many button { width: 5px; height: 5px; } .l4 .g-dots.many button.on { width: 10px; }
+.l4 .g-mid { min-width: 0; max-width: 42vw; overflow: hidden; }
+.l4 .g-nav > button { overflow: hidden; }
 .l4[data-lang="en"] .g-nav > button { font-size: 14px; padding: 0 8px; }
 @media (max-width: 380px) { .l4 .g-nav { gap: 6px; padding-left: 8px; padding-right: 8px; } .l4 .g-nav > button { min-width: min(88px, 100%); padding: 0 9px; font-size: 14px; } }
 .l4-dots { display: none !important; }
