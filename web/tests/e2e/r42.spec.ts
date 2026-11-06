@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 /* R42: the share-card picker (search, pick, the QR follows), the per-card landing pages /c/<id>.html (og meta, redirect into
    the app with the card open, a no-JS fallback), the dark first paint, and the en practice list fits at every phone width. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 async function open(p: Page, q: string) {

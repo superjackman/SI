@@ -3,7 +3,7 @@ import { textIssues } from './small-text.js';
 /* R42b: no text anywhere is under 12 px, covered, clipped, cut, scrolled sideways or badly wrapped —
    geometric checks (tests/e2e/small-text.js) over the main pages, charts, cards, sheets, share and quiz, zh and en.
    m360 runs at 360×640 (the shortest supported phone) instead of its usual 360×740. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 const PAGES = ['#home', '#map', '#R', '#P', '#S', '#L1', '#L2', '#L3', '#L3/X', '#L3/U5', '#L4', '#L4/us/1', '#L5', '#L5/M2d', '#L5/M3a', '#L5/M5a', '#L5/M6c', '#L5/M8', '#L2~KB01', '#L4~K06', '#L5~KM03', '#L3~KC03', '#P/q1', '#Q/done'];

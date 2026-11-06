@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 /* R41: the L4 screens follow the reference images: title / worked example / live question (→ ?) on top, the reference crumbs,
    a four-row info box with a tall gold 知识卡 button on the right (no title row), round 地图 / 进度 / 下一步 buttons with
    the words inside, and the reference info rows with this site's real numbers. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));

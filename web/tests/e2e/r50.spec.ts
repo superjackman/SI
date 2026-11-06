@@ -7,7 +7,7 @@ import { VF_Q } from '../../src/vf/ids';
 /* R50 验证优化: every stage page (and the maths cards) ends with ✎ 自己算一算 (typed / picked answers → instant ✓ ✗,
    a hint on a miss, the working on demand, ticks on the chain and the map) and ⚠ 常见误解; three slider demos.
    Nothing in it adds a history entry; everything reads at 360 / 390 / 430 in zh and en. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   // R51 the layered pilot pages (1, 2, 8a, 8b): every layer open, as a reader on 深入 who has gone through all five
   { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/0': 5, 'D/P': 5, 'D/1': 5, 'D/2': 5, 'D/3': 5, 'D/4': 5, 'D/5': 5, 'D/6': 5, 'D/7': 5, 'D/8a': 5, 'D/8b': 5, 'D/9': 5, 'D/E': 5, 'D/10': 5, 'D/11': 5, 'D/12': 5, 'D/13': 5, 'D/14': 5, 'D/S': 5, 'D/15a': 5, 'D/15b': 5, 'D/A': 5, 'D/16': 5 }) }];

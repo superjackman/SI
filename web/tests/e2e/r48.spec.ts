@@ -5,7 +5,7 @@ import { CARD_DV, DV_BORN, DV_LV, DV_N, cardLv, dvI, dvK } from '../../src/dv/li
 /* R48 two views, one body of knowledge: every card sheet and every stage page carries the same
    「自顶向下·看结构 / 自底向上·看推导」 switch and a gold 「换个角度看」 box that links to the other view;
    jumps land on the card (focus ring), never add history entries, and read at 360 / 390 / 430 in zh and en. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }, { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({"D/0": 5, "D/P": 5, "D/1": 5, "D/2": 5, "D/3": 5, "D/4": 5, "D/5": 5, "D/6": 5, "D/7": 5, "D/8a": 5, "D/8b": 5, "D/9": 5, "D/E": 5, "D/10": 5, "D/11": 5, "D/12": 5, "D/13": 5, "D/14": 5, "D/S": 5, "D/15a": 5, "D/15b": 5, "D/A": 5, "D/16": 5}) }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {

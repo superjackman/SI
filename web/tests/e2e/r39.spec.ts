@@ -3,7 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
    page 2 (⑤) and closes with 返回; nothing sticks out, is cut or overlaps at 360×640 and 390×844 in zh and en; a box
    with + opens in place. */
 import { LX, LIVE, lxHash } from '../../src/lx/ids';
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 const LAYERS = ([1, 2, 3, 5] as const).filter((n) => LIVE.includes(n));

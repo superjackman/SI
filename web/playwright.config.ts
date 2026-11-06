@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import { resolveBase } from './base.config.mjs';
 
 const base: string = resolveBase();
-const port = 4173;
+const port = Number(process.env.SI_E2E_PORT || 4173);
 // Uses the locally installed Google Chrome (no 150 MB browser download, works behind the GFW).
 // Set CHROME_PATH to point at another Chromium, or PW_BUNDLED=1 to use `npx playwright install chromium`.
 const chrome = process.env.PW_BUNDLED

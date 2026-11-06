@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 /* R46: moving inside the site never adds a browser history entry, so the phone's Back leaves the site in one step;
    the site's own controls (↑, crumbs, the map, ✕) still move inside it, ✕ back to the previous view. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {

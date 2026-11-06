@@ -4,7 +4,7 @@ import { contrastIssues } from './contrast.js';
 import { DV_KEY } from '../../src/dv/links';
 /* R47 自底向上 · 推导之路: home entry → the chain (#D) → each stage (#D/0–16); step bar, ↑, crumbs, cards both ways;
    no history entries; readable at 360 / 390 / 430 in zh and en. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {

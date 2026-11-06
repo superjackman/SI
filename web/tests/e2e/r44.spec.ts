@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 /* R44: one way to move everywhere — the bottom step bar (‹ 上一步 · dots · n / N · 下一步 ›) on layer pages, the L4 walks,
    quiz, experiments, card pages and onboarding; ↑ goes up one level; ☰ opens the map / progress sheet; sharing is a dialog
    (preview on top, format switch, ✕ / Esc / backdrop close, an honest empty state). */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {

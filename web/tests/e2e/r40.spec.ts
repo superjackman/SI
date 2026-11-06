@@ -3,7 +3,7 @@ import { test, expect, type Page } from '@playwright/test';
    runs end to end and lands in the record; the share card renders with a QR and never carries quiz text; the quick path
    walks all stops to the end; nothing sticks out, is cut or is under 12px at 360×640 and 390×844 in zh and en. */
 import { QUIZ } from '../../src/px/quiz';
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 const SHOTS = process.env.R40_SHOTS;
 

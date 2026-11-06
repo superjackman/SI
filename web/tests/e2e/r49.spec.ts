@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { NUM } from '../../src/dv/nums';
 import { DV_KEY } from '../../src/dv/links';
 /* R49 C12 one canonical example: the card holds it, the stage page's ④ reuses the same numbers and shows the card as a chip. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   // R51 the layered pilot pages (1, 2, 8a, 8b): every layer open, as a reader on 深入 who has gone through all five
   { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/1': 5, 'D/2': 5, 'D/8a': 5, 'D/8b': 5 }) }];

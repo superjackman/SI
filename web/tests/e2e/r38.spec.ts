@@ -4,7 +4,7 @@ import { test, expect, type Page } from '@playwright/test';
    again closes it. Every box has a four-row info card and a five-part 知识卡 (page 1 ①–④, 续 ⑤, 看数学 → L5 card).
    L4 only in this batch (L1/2/3/5 "即将上线"); the R34–R37 3D site and the classic site are gone. All numbers come from the real
    hand-written TS Transformer in a worker. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }] }] } });
 
 async function open(p: Page, q: string, ready = true) {

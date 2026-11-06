@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 /* R41b / G4: the settings sheet from the reference. Gear in the top bar → 设置 with 语言 / 动画 / 清除学习记录 / 完成.
    No 声音 row: the site has no sound or vibration, so a sound switch would do nothing. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const REC = ['si.l4.seen', 'si.l4.cards', 'si.px.log', 'si.px.days', 'si.px.q'];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   ...REC.map((name) => ({ name, value: '["x"]' })), { name: 'si.l4.my', value: '{"keep":1}' }] }] } });
