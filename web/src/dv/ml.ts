@@ -6,6 +6,9 @@ import { tx, type L } from '../l4/txt';
 import { ML, type Goal, type Ml } from './mld';
 import { ML_G, mlGet, mlSet, type MlS } from './prog';
 import { fillDvText } from './nums';
+import { DEMO } from '../vf/data';
+import { DEMO0, type DemoS } from '../vf/ui';
+import { liveQ, takePick, type LiveQ } from './liveq';
 import { BASE, misOf, varN, varQ, type VarQ } from '../vf/var';
 import { fmt, parseNum } from '../vf/calc';
 import { vfAdd } from '../vf/ids';
@@ -31,8 +34,9 @@ ${(() => { const d = diaryLine(k, l); return d ? `<p class="ml-dy"><b>${esc(d.ye
 <button type="button" class="l4-b sm" data-ml-share="1">${z('分享这一站', 'Share this stop')}</button>
 </section>`;
   const bar = `<div class="ml-bar"><div class="ml-gs" role="radiogroup" aria-label="${z('进度', 'Progress')}">${M.goals.map((_, i) => `<button type="button" role="radio" data-ml-g="${i}" aria-checked="false"><i aria-hidden="true"></i></button>`).join('')}</div></div>`;
-  let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `).replace('<div class="ly-top">', `<div class="ly-top">${bar}`);
-  h = h.replace(/(<\/ol><\/div>)(<section class="ly-l")/, `$1<section class="ml-p ml-i" aria-live="polite"></section><section class="ml-p ml-rz"></section>$2`);
+  let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
+  h = h.replace('</ol></div></div>', `</ol>${bar}</div></div>`);
+  h = h.replace(/(<\/div><\/div>)(<section class="ly-l")/, `$1<section class="ml-p ml-i" aria-live="polite"></section><section class="ml-p ml-rz"></section>$2`);
   h = h.replace('<div class="ly-nx"></div>', '<div class="ly-nx"></div><div class="ml-rze"></div><section class="ml-p ml-v" aria-live="polite"></section>');
   return card + h;
 }
@@ -76,9 +80,52 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     $('.ml-rze').innerHTML = `<button type="button" class="l4-b g-jump ml-go" data-ml-to="v">${z('继续 ›', 'Continue ›')}</button>`;
   };
   let cur: VarQ | null = null, last: 'ok' | 'bad' | null = null, lastMis: ReturnType<typeof misOf> = null;
+  const prW: number[][] = M.goals.map(() => []), liveW: number[][] = M.goals.map(() => []), liveOk = M.goals.map(() => false);
+  let liveSig = '';
+  const snap = () => {
+    const kind = DEMO['D/' + k]; if (!kind) return null;
+    const s: DemoS = { ...DEMO0 };
+    host.querySelectorAll<HTMLInputElement>(`[data-dm="${kind}"] input[data-vs]`).forEach((inp) => {
+      const name = inp.dataset.vs as keyof DemoS;
+      if (name in s) s[name] = Number(inp.value);
+    });
+    return { k: kind, s };
+  };
+  const morphNow = () => {
+    const box = host.querySelector<HTMLElement>('[data-morph]'); if (!box) return null;
+    const inp = box.querySelector<HTMLInputElement>('input');
+    if (inp) return Number(inp.value) / 100;
+    const m = Number(box.style.getPropertyValue('--m'));
+    return Number.isFinite(m) ? m : 0;
+  };
+  const currentLive = (): LiveQ | null => {
+    const live = liveQ(k, morphNow(), snap());
+    if (live && live.sig !== liveSig) {
+      if (liveSig) { for (let i = 0; i < N; i++) { liveW[i] = []; liveOk[i] = false; } }
+      liveSig = live.sig;
+    }
+    return live;
+  };
+  const mcq = (q: T, o: readonly T[], a: number, why: readonly T[], wrongs: readonly number[], solved: boolean) => {
+    const ops = o.map((opt, i) => {
+      const bad = wrongs.includes(i), ok = solved && i === a, off = bad || solved;
+      return `<button type="button" class="ml-op${ok ? ' ok' : bad ? ' bad' : ''}" data-ml-p="${i}"${off ? ' aria-disabled="true"' : ''}><b>${ABC[i]}</b><span>${t(opt)}</span>${bad || ok ? `<em>${z('你选了', 'your pick')}</em>` : ''}</button>`;
+    }).join('');
+    const shown = solved ? why.map((_, i) => i) : wrongs;
+    const bits = shown.map((i) => i === a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(why[i]!)}</p>`).join('');
+    const foot = bits ? `<div class="ml-why">${bits}</div>${solved ? `<p class="ml-n">${z('✓ 对了。', '✓ Right.')}</p>` : `<p class="ml-n">${z('这一条走不通。还可以再选。', 'That way does not work. You can choose again.')}</p>`}` : '';
+    return `<div class="ml-pr"><p class="ml-q">${t(q)}</p><div class="ml-ops">${ops}</div>${foot}</div>`;
+  };
+  const prBlock = () => {
+    const g0 = M.goals[S.g]!, live = currentLive();
+    if (live) return mcq(live.q, live.o, live.a, live.why, liveW[S.g] ?? [], !!liveOk[S.g]);
+    const why = g0.pr.o.map((o, i) => (i === g0.pr.a ? g0.pr.why : [`「${tx(o, 'zh')}」对不上这道题里的数。还可以再选。`, `“${tx(o, 'en')}” does not match the numbers in this question. You can choose again.`] as T));
+    return mcq(g0.pr.q, g0.pr.o, g0.pr.a, why, prW[S.g] ?? [], pred[S.g] === g0.pr.a);
+  };
+  const paintPr = () => { const el = root.querySelector('.ml-pr'); if (el) el.outerHTML = prBlock(); };
   const ver = (judged?: VarQ) => {
-    const g = M.goals[S.g]!, pp = pred[S.g], vi = S.v[S.g]! - (judged ? 1 : 0), q = judged ?? (cur = varQ(g.vk, vi)), n = varN(g.vk), streak = S.k[S.g]!;
-    const pr = `<div class="ml-pr"><p class="ml-q">${t(g.pr.q)}</p><div class="ml-ops s">${g.pr.o.map((o, i) => `<button type="button" class="ml-op${pp == null ? '' : i === g.pr.a ? ' ok' : i === pp ? ' bad' : ' dim'}" data-ml-p="${i}"><b>${ABC[i]}</b><span>${t(o)}</span></button>`).join('')}</div>${pp == null ? '' : `<p class="ml-rev"><b>${pp === g.pr.a ? z('✓ 对了。', '✓ Right.') : z('✗ 不是这样：', '✗ Not this:')}</b>${t(g.pr.why)}</p>`}</div>`;
+    const g = M.goals[S.g]!, vi = S.v[S.g]! - (judged ? 1 : 0), q = judged ?? (cur = varQ(g.vk, vi)), n = varN(g.vk), streak = S.k[S.g]!;
+    const pr = prBlock();
     const done = !!S.m[S.g];
     const head = `<p class="ml-q ml-vh"><span class="ml-vn">${z(`第 ${(vi % n) + 1} 组数 / ${n}`, `number set ${(vi % n) + 1} / ${n}`)} · ${done ? z('这里过了 ✓', 'this part is done ✓') : z(`连对 ${streak}/2`, `${streak}/2 in a row`)}</span></p><p class="ml-vqq">${t(q.q)}${judged && last === 'ok' ? ` <b class="ml-ans">= ${fmt(q.a, q.d)}${q.u ? tx(q.u, l) : ''}</b>` : ''}</p>`;
     let fb = '';
@@ -97,7 +144,10 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${fb}</div>`;
   };
   const draw = () => { bar(); if (S.s === 'i') inv(); else if (S.s === 'r') rz(); else ver(); setTop(); };
-  const go = (s: MlS['s'], scroll = true) => { S.s = s; save(); draw(); if (scroll) { const p = s === 'i' ? $('.ml-i') : s === 'r' ? $('.ml-rz') : $('.ml-v'); p.scrollIntoView({ block: 'start' }); } };
+  const go = (s: MlS['s'], scroll = true) => {
+    if (s === 'v' && S.s !== 'v') { liveW[S.g] = []; liveOk[S.g] = false; }
+    S.s = s; save(); draw(); if (scroll) { const p = s === 'i' ? $('.ml-i') : s === 'r' ? $('.ml-rz') : $('.ml-v'); p.scrollIntoView({ block: 'start' }); }
+  };
   const lyGo = (n: number, fr?: number) => {
     go('r', false); root.querySelector<HTMLElement>(`[data-ly-go="${n}"]`)?.click();
     if (fr) { const at = () => { const el = root.querySelector<HTMLElement>('[data-att]'); if (el?.classList.contains('ly-anim')) el.dispatchEvent(new CustomEvent('att-go', { detail: fr - 1 })); else setTimeout(at, 250); }; at(); }
@@ -129,7 +179,16 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     }
     if (d.mlTo) { go(d.mlTo as MlS['s']); return; }
     if (d.mlLy) { lyGo(Number(d.mlLy), d.mlFr ? Number(d.mlFr) : undefined); last = null; return; }
-    if (d.mlP) { pred[S.g] = Number(d.mlP); ver(); return; }
+    if (d.mlP) {
+      const i = Number(d.mlP), live = currentLive();
+      if (live) {
+        const next = takePick(live.a, liveW[S.g] ?? [], !!liveOk[S.g], i);
+        liveW[S.g] = next.wrongs; liveOk[S.g] = next.solved; paintPr(); return;
+      }
+      const g0 = M.goals[S.g]!;
+      const next = takePick(g0.pr.a, prW[S.g] ?? [], pred[S.g] === g0.pr.a, i);
+      prW[S.g] = next.wrongs; if (next.solved) pred[S.g] = g0.pr.a; paintPr(); return;
+    }
     if (d.mlCk) { check(); return; }
     if (d.mlAgain) { last = null; ver(); root.querySelector<HTMLInputElement>('.ml-in')?.focus({ preventScroll: true }); return; }
     if (d.mlNext) { S.g = Math.min(N - 1, S.g + 1); S.s = 'i'; last = null; save(); draw(); $('.ml-i').scrollIntoView({ block: 'start' }); return; }
@@ -137,6 +196,13 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     if (d.mlEnd) { host.querySelector<HTMLElement>('.dv-take')?.scrollIntoView({ block: 'start' }); }
   });
   root.addEventListener('keydown', (e) => { const tg = e.target as HTMLElement; if (e.key === 'Enter' && tg.classList.contains('ml-in')) { e.preventDefault(); check(); } });
+  // capture: the demo slider stops the bubble so the page never sees it
+  host.addEventListener('input', (e) => {
+    const t0 = e.target as HTMLElement;
+    if (!(t0 instanceof HTMLInputElement) || !t0.closest('[data-morph], .vf-sl') || S.s !== 'v') return;
+    if (!currentLive()) return;
+    paintPr();
+  }, true);
   draw();
   host.querySelector('[data-ml-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();

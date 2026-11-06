@@ -1,11 +1,12 @@
 .ly .nw, .ly .formula.nw { white-space: nowrap; }
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
 .ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: #e6eeff; }
-/* R54 the depth switch and the five-layer bar stay pinned to the top of the scroll box while reading; headings land below it */
-.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-flow: row wrap; align-items: center; gap: 4px; margin: 0; padding: 4px 0 6px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; min-width: 0; max-width: 100%; }
+/* R54 the depth switch and the segment dots stay pinned, on one row, while reading */
+.ly-top { position: sticky; top: -4px; z-index: 3; display: block; margin: 0; padding: 4px 0 6px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; min-width: 0; max-width: 100%; }
+.ly-row { display: flex; flex-flow: row nowrap; align-items: center; gap: 2px; min-width: 0; max-width: 100%; }
 .l4 .ly .g-seg.ly-dep { width: auto; flex: 0 0 auto; grid-template-columns: repeat(3, auto); }
-.ly .g-seg.ly-dep button { padding: 0 8px; min-height: 44px; font-size: 13px; white-space: nowrap; }
-.ly-pg { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+.ly .g-seg.ly-dep button { padding: 0 6px; min-width: 44px; min-height: 44px; font-size: 12.5px; white-space: nowrap; }
+.ly-pg { list-style: none; margin: 0; padding: 0; flex: 1 1 0; min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; }
 .ly-pg button { width: 100%; min-height: 44px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #e6eeff; }
 .ly-pg button b { font-size: 13px; font-weight: 700; line-height: 1; }
 .ly-pg button { overflow: hidden; }
