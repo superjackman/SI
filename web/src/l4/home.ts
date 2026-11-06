@@ -83,7 +83,8 @@ ${chooser}
   const LM: readonly [string, Tx][] = [['P', ['概率', 'Prob.']], ['2', ['梯度', 'Grad.']], ['8a', ['注意力', 'Attn']], ['10', ['后训练', 'Post-train']], ['13', ['RAG', 'RAG']], ['16', ['回顾', 'Recap']]];
   const marks = LM.map(([k, t], j) => { const i = dvI(k), pc = (X(i) / 300) * 100; return `<span class="${j % 2 ? 'lo' : ''}${i === DV_N - 1 ? ' end' : ''}" style="${i === DV_N - 1 ? 'right:0' : `left:${pc.toFixed(1)}%`}">${esc(tx(t, l))}</span>`; }).join('');
   const rts = ROUTES.map((x) => `<article class="hm-rt${x.id === r.id ? ' on' : ''}" style="--c:${x.c}"><div class="hm-rh"><b>${esc(tx(x.n, l))}</b><span>${z(`${x.st.length} 站`, `${x.st.length} stops`)} · ${mins(x.st.length)}</span>${x.id === r.id ? `<em>${z('当前', 'Current')}</em>` : `<button type="button" class="hm-lk" data-h="goal:${x.id}">${z('换这条', 'Switch')} ›</button>`}</div><p>${esc(tx(x.s, l))}</p>${rail(x)}</article>`).join('');
-  const pyr = [0, 1, 2, 3, 4].map((i) => `<i style="width:${34 + i * 15}%;background:${LCOL[i]}"></i>`).join('');
+  /* R54 five equal rows (a layered list, macro → micro), not a pyramid shape */
+  const pyr = [0, 1, 2, 3, 4].map((i) => `<i style="background:${LCOL[i]}"></i>`).join('');
   const cols = Array.from({ length: DV_N }, (_, i) => `<i style="height:${18 + (i * 82) / (DV_N - 1)}%"></i>`).join('');
   const below = `<section class="hm-routes" data-hm="routes"><div class="hm-sec"><b>${z('五条路线，同一批站', 'Five routes, the same stops')}</b><a class="hm-lk" href="#D/routes">${z('地铁图', 'Metro map')} ›</a></div>
 <p class="hm-n">${z(`横着是 ${DV_N} 站（按推导顺序），每条线只停它需要的站；时长按「${tx(DLAB[d], 'zh')}」深度估算。`, `Across: the ${DV_N} stops in derivation order; each line stops only where it needs to. Times at the “${tx(DLAB[d], 'en')}” depth.`)}</p>

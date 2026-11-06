@@ -123,18 +123,7 @@ html.l4-mode #root { display: none; }
 /* home */
 .l4-home { flex: 1; min-height: 0; overflow: auto; padding: 6px 12px 0; display: flex; flex-direction: column; align-items: center; }
 .l4-hs { margin: 0 0 6px; font-size: 12.5px; color: #b7c6ea; }
-.l4-pyr { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.l4-lv { width: var(--w); min-height: 50px; clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%); border: 0; background: linear-gradient(#13245a, #0c1a3d); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3px 12%; color: #c4d2f2; }
-.l4-lv b { font-size: 13.5px; color: #e6eeff; line-height: 1.25; }
-.l4-lv .n, .l4-lv .s { font-size: 12px; line-height: 1.25; }
-.l4-lv .s { color: #8fa4d8; }
-.l4-lv.live { background: linear-gradient(#2a5ae0, #1c3f9e); color: #fff; filter: drop-shadow(0 0 10px #3f6fff); }
-.l4-lv.live .s { color: #ffe08a; font-weight: 700; }
 /* R47 推导之路 entry: the ground under layer 5 (bottom-up), three stacked blocks in the layer 5/4/3 colours */
-.l4-bu { width: 100%; max-width: 420px; min-height: 46px; margin-top: 6px; display: flex; align-items: center; gap: 10px; padding: 4px 10px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; color: #e6eeff; text-align: left; }
-.l4-bu .ic { flex: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 2px; } .l4-bu .ic i { display: block; height: 6px; border-radius: 2px; }
-.l4-bu .ic i:nth-child(1) { width: 22px; background: #7c3aed; } .l4-bu .ic i:nth-child(2) { width: 16px; background: #2563eb; } .l4-bu .ic i:nth-child(3) { width: 10px; background: #4f46e5; }
-.l4-bu .t { flex: 1; min-width: 0; display: flex; flex-direction: column; } .l4-bu .t b { font-size: 13.5px; line-height: 1.3; color: #ffd77a; } .l4-bu .t span { font-size: 12px; line-height: 1.3; color: #dbe6ff; }
 .l4-hb { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
 .l4-hr { width: 76px; height: 72px; border-radius: 36px; border: 1px solid #3a63d0; background: #0c1a3d; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #e6eeff !important; padding: 0 2px; text-align: center; }
 .l4-hr b { font-size: 20px; line-height: 1.3; } [data-lang="en"] .l4-hr b { font-size: 15px; } .l4-hr span { font-size: 12px; color: #b7c6ea; line-height: 1.2; }
@@ -358,7 +347,6 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4 .g-ri { display: inline-flex; align-items: center; gap: 4px; color: #99f6e4; font-style: normal; }
 .l4 .g-ri::before { content: 'i'; display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--gi); color: var(--gi); font: italic 700 12px/1 Georgia, serif; flex: none; }
 .lx-fl .g-bdg { vertical-align: -3px; margin-left: 2px; }
-.l4-lv { position: relative; } .l4-lv .g-bdg { position: absolute; right: 9%; top: 50%; margin-top: -8px; }
 .l4-hr { position: relative; } .l4-hr .g-bdg { position: absolute; right: 2px; top: 2px; }
 .l4 .l4-go .g-jump.big { justify-content: center; }
 .l4 .g-dots i { width: 7px; height: 7px; border-radius: 50%; background: #2c3f78; } .l4 .g-dots i.d { background: #6f8fe0; } .l4 .g-dots i.on { background: #fff; width: 16px; border-radius: 4px; }
@@ -422,7 +410,27 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4-tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
 .l4 .l4-tabs button.on { color: #ffd77a; font-weight: 700; }
 .l4[data-tabs="1"] .l4-nav { display: none; }
-.l4-mh2 { margin: 4px 0 8px; font-size: 15px; color: #e6eeff; }
-.l4-mls { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 6px; margin: 10px 0 12px; }
+.l4-mh2 { margin: 4px 0 4px; font-size: 17px; color: #e6eeff; }
+/* R54 地图 tab: the five layers as equal-width rows, macro → micro, no trapezoids */
+.l4-mapw { width: 100%; max-width: 460px; display: flex; flex-direction: column; }
+.l4-msub { margin: 0 0 10px; font-size: 15px; line-height: 1.5; color: #cfdcff; }
+.l4-pyr { list-style: none; margin: 0; padding: 0; width: 100%; display: flex; flex-direction: column; }
+.l4-pyr li { display: flex; flex-direction: column; align-items: stretch; }
+.l4 .l4-lv { position: relative; width: 100%; min-height: 76px; display: flex; align-items: center; gap: 12px; padding: 10px 40px 10px 10px; border: 1px solid #2c4690; border-left: 5px solid var(--c); border-radius: 12px; background: #0a1532; color: #cfdcff; text-align: left; }
+.l4-lv .q { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 7px; background: var(--cb); color: #fff; font-size: 17px; font-weight: 800; }
+.l4-lv .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.l4-lv .n { font-size: 12.5px; line-height: 1.3; color: #a9bde8; }
+.l4-lv b { font-size: 16px; line-height: 1.3; color: #fff; }
+.l4-lv .d { font-size: 13.5px; line-height: 1.4; color: #cfdcff; }
+.l4-lv .m { font-size: 12.5px; line-height: 1.3; color: #a9bde8; }
+.l4-lv .l4-pb { flex: none; margin-top: 4px; width: 100%; }
+.l4-lv .g-bdg { position: absolute; right: 12px; top: 50%; margin-top: -8px; }
+.l4-lv:not(.live) { border-style: dashed; }
+.l4-lvj { align-self: flex-start; margin: 2px 0 2px 26px; padding-left: 10px; border-left: 2px solid #2c4690; font-size: 12.5px; line-height: 18px; color: #a9bde8; }
+.l4-bu { width: 100%; min-height: 56px; margin-top: 12px; position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 40px 8px 10px; border: 1px solid #c99a2e; border-radius: 12px; background: #13183a; color: #e6eeff; text-align: left; }
+.l4-bu .ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #3a2f0a; color: #ffd77a; font-size: 18px; font-weight: 800; }
+.l4-bu .t { flex: 1; min-width: 0; display: flex; flex-direction: column; } .l4-bu .t b { font-size: 15px; line-height: 1.3; color: #ffd77a; } .l4-bu .t span { font-size: 13px; line-height: 1.35; color: #dbe6ff; }
+.l4-bu .g-bdg { position: absolute; right: 12px; top: 50%; margin-top: -8px; }
+.l4-mls { width: 100%; display: flex; flex-direction: column; gap: 6px; margin: 10px 0 12px; }
 .l4 .l4-ml2 { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 4px 12px; border: 1px solid #2c4690; border-radius: 12px; background: #0a1532; text-align: left; }
 .l4-ml2 b { flex: none; font-size: 14px; } .l4-ml2 span { flex: 1; min-width: 0; font-size: 12px; color: #a9b9e0; }

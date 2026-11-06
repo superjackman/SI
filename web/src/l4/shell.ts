@@ -18,7 +18,7 @@ import { applyAnim } from '../store/prefs';
 import { normCrumb } from './crumb';
 import { gramOn } from './gram';
 import type { Step } from '../px/view';
-import { layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
+import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
 import { DV_ALIAS, DV_N, DV_NM, dvK, isDv } from '../dv/links';
 
@@ -136,17 +136,22 @@ export function start(doc: Document = document, win: Window = window) {
     const t = ++hmTok, l = lang; delete root.dataset.hm;
     void import('./home').then((m) => { if (t !== hmTok || cur !== 'home' || lang !== l) return; m.home(home, { l, root, go, redraw: () => { if (cur === 'home') drawHome(); } }); }).catch(() => { /* offline: the shell still works */ });
   }
+  /* R54 地图 tab: the five layers as a plain list, macro (how I use it) at the top → micro (the maths) at the bottom.
+     The pyramid is the knowledge structure (each layer opens the one above), not a shape: equal-width rows, no trapezoids. */
+  const LV_SUB: Tx[] = [['你说需求 → 它拆步骤、调工具、交回结果', 'You ask → it plans, calls tools, reports back'], ['感知、规划、调工具、观察、记忆', 'Perceive, plan, call tools, observe, remember'], ['海量文字 → 分词 → 预训练 → 微调 → 对齐', 'Text → tokens → pre-training → tuning → alignment'], ['注意力、前馈、残差，一个字一个字地生成', 'Attention, feed-forward, residuals, one token at a time'], ['向量、点积、矩阵、softmax、损失、梯度', 'Vectors, dot product, matrices, softmax, loss, gradients']];
   function drawMap() {
-    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}<i class="g-bdg" aria-hidden="true">›</i></button>`; }).join('');
+    const st = layerStats(seen, opened);
+    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1), x = st[i]!;
+      return `<li><button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--c:${LCOL[i]};--cb:${LBG[i]}"><span class="q" aria-hidden="true">${i + 1}</span><span class="t"><span class="n">${tx(UI.lv[i]!, lang)}${i === 0 ? ` · ${tx(['最宏观', 'big picture'], lang)}` : i === 4 ? ` · ${tx(['最微观', 'the details'], lang)}` : ''}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="d">${tx(LV_SUB[i]!, lang)}</span><span class="m">${tx([`${x.ct} 张卡 · 看过 ${x.s}/${x.t} 页`, `${x.ct} cards · ${x.s}/${x.t} pages seen`], lang)}${on ? '' : ` · ${T('soon')}`}</span>${pbar(x.s, x.t, i + 1)}</span><i class="g-bdg" aria-hidden="true">›</i></button>${i < 4 ? `<span class="l4-lvj" aria-hidden="true">${tx(['↓ 拆开看', '↓ open it up'], lang)}</span>` : ''}</li>`; }).join('');
     /* R47 the bottom-up way in: the ground under layer 5 — 23 stations from one function up to an agent */
-    const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span></button>`;
+    const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true">↑</span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span><i class="g-bdg" aria-hidden="true">›</i></button>`;
     const ln = (go: string, t: Tx, s: Tx, a = '') => `<button type="button" class="l4-ml2"${a ? ` data-a="${a}"` : ` data-go="${go}"`}><b>${tx(t, lang)}</b><span>${tx(s, lang)}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
-    home.innerHTML = `<h2 class="l4-mh2">${tx(['自顶向下 · 金字塔', 'Top-down: the pyramid'], lang)}</h2><div class="l4-pyr">${lv}</div>${bu}<div class="l4-mls">`
+    home.innerHTML = `<div class="l4-mapw"><h2 class="l4-mh2">${tx(['自顶向下 · 五层结构', 'Top-down: five layers'], lang)}</h2><p class="l4-msub">${tx(['从宏观到微观：每一层都是把上一层拆开来看。点一层进去。', 'From the big picture to the details: each layer opens up the one above. Tap a layer.'], lang)}</p><ol class="l4-pyr">${lv}</ol>${bu}<div class="l4-mls">`
       + ln('#D/map', ['知识地图', 'Knowledge map'], ['5 层 × 23 站，两个坐标一起看', '5 layers × 23 stops on one grid'])
       + ln('#D/routes', ['五条学习路线', 'Five learning routes'], ['同一批站，按目标选一条', 'The same stops; pick one for your goal'])
       + ln('#Q', ['10 分钟快速路径', '10-minute quick path'], ['走一遍五层', 'Once through all five layers'])
       + ln('#S', ['做分享卡', 'Make share cards'], ['把一张知识卡做成图片', 'Turn a card into an image'])
-      + ln('', ['全部页面和进度', 'Every page and progress'], ['目录、看过的页、每层进度', 'Contents, pages seen, progress per layer'], 'menu') + '</div>';
+      + ln('', ['全部页面和进度', 'Every page and progress'], ['目录、看过的页、每层进度', 'Contents, pages seen, progress per layer'], 'menu') + '</div></div>';
   }
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
@@ -162,7 +167,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; home.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
     home.hidden = isL4; stg.hidden = !isL4;
-    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' ? '' : T('sub'); dots.innerHTML = '';
+    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
       if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);

@@ -12,8 +12,8 @@ export function drawAch(a: Ach, fmt: Fmt, doc: Document = document): HTMLCanvasE
   g.textBaseline = 'top'; let y = M;
   g.fillStyle = '#ffe08a'; g.font = font(40 * k, 800); g.fillText('◆ ' + a.site, M, y); y += 90 * k;
   g.fillStyle = '#ffffff'; g.font = font(60 * k, 900); for (const s of wrap(g, a.title, IW, 2)) { g.fillText(s, M, y); y += 76 * k; } y += 40 * k;
-  /* a pyramid of five layers (the site's map), drawn, not a picture */
-  const py = y, ph = 300 * k; for (let i = 0; i < 5; i++) { const w = IW * (0.36 + i * 0.16), h = ph / 5 - 10, x = (W - w) / 2, yy = py + i * (ph / 5);
+  /* the five layers (the site's map) as five equal rows, macro → micro, drawn, not a picture (R54: no pyramid shape) */
+  const py = y, ph = 300 * k; for (let i = 0; i < 5; i++) { const w = IW * 0.68, h = ph / 5 - 10, x = (W - w) / 2, yy = py + i * (ph / 5);
     rr(g, x, yy, w, h, 14); g.fillStyle = ['#7c3aed', '#4f46e5', '#2563eb', '#0d9488', '#0891b2'][i]!; g.globalAlpha = 0.85; g.fill(); g.globalAlpha = 1; }
   y = py + ph + 50 * k;
   g.fillStyle = '#ffe08a'; g.font = font(78 * k, 900); for (const s of wrap(g, a.big, IW, 2)) { g.fillText(s, M, y); y += 96 * k; }
