@@ -1,3 +1,4 @@
+.ly .nw, .ly .formula.nw { white-space: nowrap; }
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
 .ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: #e6eeff; }
 .ly-top { display: flex; flex-direction: column; gap: 6px; padding: 6px 0; background: #050c22f2; }
@@ -33,7 +34,7 @@
 .ly-nx { display: flex; flex-direction: column; }
 .ly-go { min-height: 48px; font-size: 15px; font-weight: 700; }
 .ly-end { margin: 0; color: #7ef0b0; font-size: 14px; }
-.ly-leg { list-style: none; padding: 0 !important; font-size: 13.5px; color: #cfe0ff; }
+.ly-leg { text-wrap: pretty; } .ly-leg { list-style: none; padding: 0 !important; font-size: 13.5px; color: #cfe0ff; }
 .ly-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; vertical-align: 0; background: currentColor; }
 .ly-dot.ly-q { background: #ffd166; } .ly-dot.ly-k { background: #34d399; } .ly-dot.ly-v { background: #c4b5fd; } .ly-dot.ly-r { background: #ff8a80; } .ly-dot.ly-y { background: #ffd166; border-radius: 2px; }
 /* ② softmax rows */
@@ -80,3 +81,9 @@
 }
 @keyframes ly-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ly-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+
+.ly-leg { margin: 6px 0 0; padding: 0 0 0 2px; list-style: none; display: grid; gap: 4px; }
+.ly-leg li { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.35; color: #cfe0ff; }
+.ly-leg li .nw { white-space: nowrap; }
+@media (max-width: 380px) { .ly-leg li { font-size: 12px; } .ly-leg li .nw { white-space: normal; overflow-wrap: anywhere; text-wrap: pretty; } }

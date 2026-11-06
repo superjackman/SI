@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolveBase } from './base.config.mjs';
 import { buildId, versionJson } from './scripts/build-id.mjs';
+import { buildSeo } from './scripts/seo.mjs';
 import type { Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
 
@@ -9,7 +10,15 @@ const base: string = resolveBase();
 const BUILD = buildId(fileURLToPath(new URL('.', import.meta.url)), base);
 const versionFile = (): Plugin => ({
   name: 'si-version-json',
-  generateBundle() { this.emitFile({ type: 'asset', fileName: 'version.json', source: versionJson(BUILD) }); },
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: 'version.json', source: versionJson(BUILD) });
+    // R52: restore SEO static pages (removed in R38) for the 23 derivation stations
+    const seo = buildSeo({ web: fileURLToPath(new URL('.', import.meta.url)), base });
+    for (const [name, source] of seo) {
+      const fileName = name.endsWith('/') ? name + 'index.html' : name;
+      this.emitFile({ type: 'asset', fileName, source });
+    }
+  },
   configureServer(s) { s.middlewares.use((q, r, next) => { if ((q.url ?? '').split('?')[0] === base + 'version.json') { r.setHeader('content-type', 'application/json'); r.setHeader('cache-control', 'no-store'); r.end(versionJson(BUILD)); } else next(); }); },
 });
 

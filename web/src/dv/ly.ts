@@ -45,7 +45,11 @@ function picSm(l: L, mk: Mk) {
   let c = ''; for (let k = 0; k <= 60; k++) { const q = 0.03 + (0.97 * k) / 60; c += `${k ? 'L' : 'M'}${X(q).toFixed(1)} ${Y(-Math.log(q)).toFixed(1)}`; }
   const pts = [[0.0536, '#ff8a80'], [p[0]!, '#ffd166'], [0.998, '#34d399']] as const;
   const svg = `<svg class="ly-pen" viewBox="0 0 300 100" role="img" aria-label="${z('罚分曲线：概率越小，罚分越大', 'Penalty curve: the smaller the probability, the bigger the penalty')}"><line x1="8" y1="92" x2="292" y2="92" stroke="#33508f"/><line x1="8" y1="8" x2="8" y2="92" stroke="#33508f"/><path d="${c}" fill="none" stroke="#c4b5fd" stroke-width="2.5"/>${pts.map(([q, col]) => `<circle cx="${X(q).toFixed(1)}" cy="${Y(-Math.log(q)).toFixed(1)}" r="5" fill="${col}"/>`).join('')}</svg>`;
-  const leg = [[`{#p0}`, `{#ce0}`, 'r'], [`${fmt(100 * p[0]!, 1)}%`, '`−ln 0.625 ≈ 0.47`', 'q'], [`{#p1}`, `{#ce1}`, 'k']].map(([a, b, c2]) => `<li><span class="ly-dot ly-${c2}" aria-hidden="true"></span>${mk(fillDvText(`p = ${a} → ${z('罚分', 'penalty')} ${b}`, l))}</li>`).join('');
+  const leg = [[`{#p0}`, `{#ce0}`, 'r'], [`${fmt(100 * p[0]!, 1)}%`, '`−ln 0.625 ≈ 0.47`', 'q'], [`{#p1}`, `{#ce1}`, 'k']].map(([a, b, c2]) => {
+    const body = mk(fillDvText(`p=${a} → ${z('罚分', 'penalty')} ${b}`, l));
+    // keep the trailing number with the arrow so 360px never leaves a one-glyph last line
+    return `<li><span class="ly-dot ly-${c2}" aria-hidden="true"></span><span class="nw">${body}</span></li>`;
+  }).join('');
   return `<div class="ly-sm" role="group" aria-label="softmax"><div class="ly-smh"><span>${z('候选', 'Token')}</span><span class="ly-c ly-q">${z('分数', 'Score')}</span><span></span><span class="ly-c ly-k">${z('softmax 后的概率', 'Probability after softmax')}</span></div>${rows}</div>
 <p class="ly-cap">${z('罚分 = −ln p（横轴：给正确答案的概率 p，纵轴：罚分）', 'Penalty = −ln p (across: the probability p of the right answer; up: the penalty)')}</p>${svg}<ul class="ly-leg">${leg}</ul>`;
 }
@@ -63,7 +67,7 @@ function picBowl(l: L) {
 <path d="${path}" fill="none" stroke="#e6eeff" stroke-width="1" stroke-dasharray="2 3"/>${pts.slice(1).map(([a, b]) => `<circle cx="${X(a).toFixed(1)}" cy="${Y(b).toFixed(1)}" r="2.6" fill="#e6eeff"/>`).join('')}
 <line x1="${x0}" y1="${y0}" x2="${x0 + dx}" y2="${y0}" stroke="#ffd166" stroke-width="3" marker-end="url(#ly-aq)"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y0 - dy}" stroke="#34d399" stroke-width="3" marker-end="url(#ly-ak)"/><line x1="${x0}" y1="${y0}" x2="${x0 + dx}" y2="${y0 - dy}" stroke="#c4b5fd" stroke-width="3.5" marker-end="url(#ly-av)"/>
 <circle cx="${x0}" cy="${y0}" r="4.5" fill="#ff8a80"/><path d="M${X(2)} ${Y(1) - 7}l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z" fill="#ffd166"/></svg>
-<ul class="ly-leg"><li><span class="ly-dot ly-r" aria-hidden="true"></span>${z('起点 (0, 0)，横轴 w1，纵轴 w2', 'Start (0, 0); across w1, up w2')}</li><li><span class="ly-dot ly-q" aria-hidden="true"></span>${z('只动 w1：−∂L/∂w1 = 4', 'Only w1: −∂L/∂w1 = 4')}</li><li><span class="ly-dot ly-k" aria-hidden="true"></span>${z('只动 w2：−∂L/∂w2 = 4', 'Only w2: −∂L/∂w2 = 4')}</li><li><span class="ly-dot ly-v" aria-hidden="true"></span>${z('合起来：负梯度 (4, 4)，一步同时改两个', 'Together: the negative gradient (4, 4), one step changes both')}</li><li><span class="ly-c ly-q" aria-hidden="true">★ </span>${z('碗底 (2, 1)', 'the bottom (2, 1)')}</li></ul>`;
+<ul class="ly-leg"><li><span class="ly-dot ly-r" aria-hidden="true"></span><span class="nw">${z('起点 (0,0)：横 w1 · 纵 w2', 'Start (0,0); across w1, up w2')}</span></li><li><span class="ly-dot ly-q" aria-hidden="true"></span><span class="nw">${z('只动 w1：−∂L/∂w1 = 4', 'Only w1: −∂L/∂w1 = 4')}</span></li><li><span class="ly-dot ly-k" aria-hidden="true"></span><span class="nw">${z('只动 w2：−∂L/∂w2 = 4', 'Only w2: −∂L/∂w2 = 4')}</span></li><li><span class="ly-dot ly-v" aria-hidden="true"></span><span class="nw">${z('合起来是负梯度 (4,4)，一步改两个', 'Together: negative gradient (4,4), one step changes both')}</span></li><li><span class="ly-c ly-q" aria-hidden="true">★ </span><span class="nw">${z('碗底 (2, 1)', 'the bottom (2, 1)')}</span></li></ul>`;
 }
 
 function picFlow(l: L, mk: Mk, pc: string[]) {

@@ -84,3 +84,10 @@ button.dv-from span::before { content: '‹ '; }
 .dv-chq .vf-fb { margin: 8px 0 0; font-size: 13px; color: #c4d2f2; min-height: 1.2em; }
 .dv-chq .vf-fb.ok { color: #34d399; font-weight: 700; }
 .dv-chq .vf-fb.miss { color: #fb7185; }
+
+
+/* R52: keep the stage page from forcing .l4-home to scroll sideways at 360 */
+.dv.dv-sp { max-width: 100%; overflow-x: clip; }
+.dv .dv-hd { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; max-width: 100%; }
+.dv .dv-so { min-width: 0; overflow-wrap: anywhere; }
+.dv .g-seg.dv-vsw { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }

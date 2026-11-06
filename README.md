@@ -39,7 +39,7 @@ git add -A && git commit -m "site: …" && git push
 
 ## 搜索引擎 · Search engines (R25)
 
-每次构建都会自动生成：每站一张静态页（`s/<站>/`、`en/s/<站>/`）、两张目录页（`s/`、`en/s/`）、`sitemap.xml`、`robots.txt`、`404.html`（生成器：`web/scripts/seo.mjs`）。
+每次构建都会自动生成：推导之路每站一张静态页（`s/<站键>/`、`en/s/<站键>/`，共 23 站）、两张目录页（`s/`、`en/s/`）、`sitemap.xml`（含知识卡 `c/<id>.html`）、`robots.txt`、`404.html`（生成器：`web/scripts/seo.mjs`，R52 恢复）。
 
 站点验证（站长自己做，仓库里不放任何假的验证码）：
 
