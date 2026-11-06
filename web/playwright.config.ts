@@ -32,7 +32,7 @@ export default defineConfig({
     // SI_E2E_ROOT=<dir> serves another directory with the same layout (a staged copy, before deploying)
     command: process.env.SI_E2E_SERVE === 'repo' ? `node scripts/pages-serve.mjs --port ${port} --prefix ${base}${process.env.SI_E2E_ROOT ? ` --root ${process.env.SI_E2E_ROOT}` : ''}` : `npx vite preview --port ${port} --strictPort`,
     url: `http://localhost:${port}${base}`,
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },
 });
