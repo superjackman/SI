@@ -1,7 +1,7 @@
 /* R52 challenge share (#D/ch/<station>): one shareable quiz question with a QR that opens this answer page.
    Lazy chunk. Pilot: step 2 (gradient descent) and step 8a (attention). Reuses vf questions + share draw. */
-import { tx, type L } from '../l4/txt';
-import { QQ } from '../vf/data';
+import { tx, type L, type Tx } from '../l4/txt';
+import { QQ, type Q } from '../vf/data';
 import { fillDvText } from './nums';
 import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
 import { DV_KEY, dvI } from './links';
@@ -13,6 +13,36 @@ import { masteredSt } from './prog';
     question gets its first one, so the home page's 今天的挑战 can be shared as the very same question */
 const PILOT: Readonly<Record<string, string>> = { '2': 's2a', '8a': 's8a' };
 export const CH: Readonly<Record<string, string>> = { ...Object.fromEntries(DV_KEY.flatMap((k) => { const id = (VF_Q['D/' + k] ?? []).find((q) => QQ[q]?.o); return id ? [[k, id]] : []; })), ...PILOT };
+/** a question a friend can answer: a self-check when this station has one, otherwise the station's opening choice */
+export interface Ask extends Q { id: string; why?: readonly Tx[] }
+type OpenG = { q: Tx; o: readonly [Tx, Tx, Tx]; a: number; why: readonly [Tx, Tx, Tx] };
+const fromQ = (id: string, Q: Q): Ask => {
+  const a: Ask = { id, q: Q.q, a: Q.a, d: Q.d, h: Q.h, w: Q.w };
+  if (Q.o) a.o = Q.o;
+  if (Q.tol != null) a.tol = Q.tol;
+  if (Q.u) a.u = Q.u;
+  if (Q.n) a.n = Q.n;
+  return a;
+};
+export function askFromGoal(k: string, g: OpenG): Ask {
+  return { id: `open:${k}`, q: g.q, o: [g.o[0], g.o[1], g.o[2]], a: g.a, d: 0, h: g.why[(g.a + 1) % 3]!, w: g.why[g.a]!, why: g.why };
+}
+/** sync lookup. Pass the opening goal when this station has no self-check mapped in CH. */
+export function askOf(k: string, goal?: OpenG | null): Ask | null {
+  if (dvI(k) < 0) return null;
+  const id = CH[k];
+  if (id && id in QQ) return fromQ(id, QQ[id]!);
+  return goal ? askFromGoal(k, goal) : null;
+}
+/** every real station: the mapped self-check, or that station's opening three-way question. Never a missing page. */
+export async function liveAsk(k: string): Promise<Ask | null> {
+  if (dvI(k) < 0) return null;
+  const hit = askOf(k);
+  if (hit) return hit;
+  const { ML } = await import('./mld');
+  const g = ML[k]?.goals[0];
+  return g ? askFromGoal(k, g) : null;
+}
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 /** R56: the link carries the sharer's first-try accuracy (fa, %) and stops mastered (fm) once they have answered
@@ -31,8 +61,8 @@ export function sharer(search = location.search): { fa: number; fm: number } | n
 export async function challenge(id: string, A: PxApi) {
   const l = A.l, z = (a: string, b: string) => tx([a, b], l);
   const key = id === 'D/ch' ? '2' : id.slice('D/ch/'.length);
-  const qid = CH[key];
-  if (!qid || !(qid in QQ) || dvI(key) < 0) {
+  const ask = await liveAsk(key);
+  if (!ask) {
     A.top(`<b class="l4-tt">${z('挑战', 'Challenge')}</b>`);
     A.crumb([[z('首页', 'Home'), '#home'], [z('挑战', 'Challenge'), null]]);
     A.host.innerHTML = `<div class="px dv"><p class="px-sub">${z('这道挑战还没上线。', 'This challenge is not live yet.')}</p>
@@ -40,8 +70,9 @@ export async function challenge(id: string, A: PxApi) {
     A.step(null); if (A.still()) A.root.dataset.px = `D/ch.${l}`;
     return;
   }
-  const Q = QQ[qid]!, done = vfDone().has(qid);
-  const qText = fillDvText(tx(Q.q, l), l).replace(/`/g, '');
+  const Q = ask, qid = ask.id, done = vfDone().has(qid);
+  const clean = (s: Tx) => fillDvText(tx(s, l), l).replace(/`/g, '').replace(/\*\*/g, '');
+  const qText = clean(Q.q);
   A.top(`<b class="l4-tt">${z(`挑战 · 第 ${key} 站`, `Challenge · stop ${key}`)}</b>`);
   const sh = sharer();
   const ban = sh ? `<section class="dv-fr"><b>${z(`分享者首答正确率 ${sh.fa}%，掌握 ${sh.fm} 站`, `The sharer: ${sh.fa}% right at the first try, ${sh.fm} stops mastered`)}</b><span>${z('你的首答呢？只算第一次作答。', 'And your first try? Only the first answer counts.')}</span></section>` : '';
@@ -52,12 +83,12 @@ export async function challenge(id: string, A: PxApi) {
 ${ban}<p class="px-sub">${z('朋友出的挑战题 · 答对才揭晓讲解', 'A challenge from a friend · the explain unlocks when you get it right')}</p>
 <p class="dv-fy" aria-live="polite" hidden></p>
 <section class="l4-ks"><h3 class="l4-kh c1">${z('题目', 'Question')}</h3><div class="l4-kbd"><p>${esc(qText)}</p>
-${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(fillDvText(tx(Q.o![i]!, l), l).replace(/`/g, ''))}</button>`).join('')}</div>`
+${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(clean(Q.o![i]!))}</button>`).join('')}</div>`
   : `<div class="vf-row"><input type="number" class="vf-in" inputmode="decimal" step="any" aria-label="${z('你的答案', 'Your answer')}" ${done ? 'disabled' : ''}><span class="vf-u">${esc(unit)}</span><button type="button" class="l4-b gold vf-go"${done ? ' disabled' : ''}>${z('提交', 'Submit')}</button></div>`}
 <p class="vf-fb" aria-live="polite">${done ? z('✓ 你已经答对过这道题', '✓ You already got this right') : ''}</p>
 </div></section>
 <div class="vf-why" hidden>
-<section class="l4-ks"><h3 class="l4-kh c2">${z('解答', 'Answer')}</h3><div class="l4-kbd"><p>${esc(fillDvText(tx(Q.w, l), l).replace(/`/g, '').replace(/\*\*/g, ''))}</p></div></section>
+<section class="l4-ks"><h3 class="l4-kh c2">${z('解答', 'Answer')}</h3><div class="l4-kbd"><p>${esc(clean(Q.w))}</p></div></section>
 <div class="px-row l"><button type="button" class="l4-b gold" data-go="#D/${key}">${z(`从这一站开始学：第 ${key} 站 ›`, `Start learning here: stop ${key} ›`)}</button>
 <button type="button" class="l4-b" data-go="#D/routes">${z('选一条学习路线 ›', 'Pick a learning route ›')}</button></div>
 </div>
@@ -67,14 +98,14 @@ ${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<
   const fb = A.host.querySelector<HTMLElement>('.vf-fb')!, why = A.host.querySelector<HTMLElement>('.vf-why')!;
   if (done) why.hidden = false;
   const fy = A.host.querySelector<HTMLElement>('.dv-fy')!; let first: boolean | null = done ? true : null;
-  const ok = (right: boolean) => {
+  const ok = (right: boolean, picked?: number) => {
     if (first === null) { first = right; fy.hidden = false; fy.className = `dv-fy ${right ? 'ok' : 'bad'}`;
       fy.textContent = right ? z(`你答对了 1/1（首答）${sh ? ` · 分享者首答正确率 ${sh.fa}%` : ''}`, `You got 1/1 at the first try${sh ? ` · the sharer: ${sh.fa}%` : ''}`) : z(`首答 0/1，再算一次也能解锁讲解${sh ? ` · 分享者首答正确率 ${sh.fa}%` : ''}`, `First try 0/1; get it right to unlock the explanation${sh ? ` · the sharer: ${sh.fa}%` : ''}`); }
     if (right) { vfAdd(qid); fb.textContent = z('✓ 答对了', '✓ Correct'); fb.className = 'vf-fb ok'; why.hidden = false; }
-    else { fb.textContent = z('✗ 再试试：', '✗ Try again: ') + fillDvText(tx(Q.h, l), l); fb.className = 'vf-fb miss'; }
+    else { const line = picked != null && ask.why?.[picked] ? ask.why[picked]! : Q.h; fb.textContent = z('✗ 再试试：', '✗ Try again: ') + clean(line); fb.className = 'vf-fb miss'; }
   };
   A.host.querySelectorAll<HTMLElement>('.vf-op').forEach((b) => b.addEventListener('click', () => {
-    if (vfDone().has(qid)) return; ok(Number(b.dataset.a) === Q.a);
+    if (vfDone().has(qid)) return; const i = Number(b.dataset.a); ok(i === Q.a, i);
   }));
   A.host.querySelector('.vf-go')?.addEventListener('click', () => {
     if (vfDone().has(qid)) return;

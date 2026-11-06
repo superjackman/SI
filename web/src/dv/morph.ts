@@ -10,16 +10,28 @@ const PATH = new Set(['6', '7', '8a', '8b', '9', 'E', '10', '11', '12', '16']);
 const svg = (label: string, body: string, h = 150) => `<svg class="ly-life" viewBox="0 0 300 ${h}" role="img" aria-label="${esc(label)}"><rect width="300" height="${h}" rx="12" fill="#0a1736"/>${body}</svg>`;
 const txt = (x: number, y: number, s: string, c = '#e6eeff') => `<text x="${x}" y="${y}" fill="${c}" font-size="16" font-family="system-ui,sans-serif">${esc(s)}</text>`;
 
+/** station 6 math arrows, degrees above +x. Cat and dog stay close; the car is more than 60° from both. */
+export const ST6_ANG = { ox: 46, oy: 110, cat: 74, dog: 56, car: -18, lc: 88, ld: 96, lr: 155 } as const;
+const tip = (deg: number, len: number) => {
+  const r = (deg * Math.PI) / 180;
+  return [+(ST6_ANG.ox + len * Math.cos(r)).toFixed(1), +(ST6_ANG.oy - len * Math.sin(r)).toFixed(1)] as const;
+};
+function arrow(deg: number, len: number, color: string, name: string) {
+  const [x, y] = tip(deg, len), r = (deg * Math.PI) / 180;
+  const bx = +(x - 12 * Math.cos(r)).toFixed(1), by = +(y + 12 * Math.sin(r)).toFixed(1);
+  const px = +(6 * Math.sin(r)).toFixed(1), py = +(6 * Math.cos(r)).toFixed(1);
+  return `<path data-v="${name}" d="M${ST6_ANG.ox} ${ST6_ANG.oy} L${x} ${y}" stroke="${color}" stroke-width="4" stroke-linecap="round"/><path d="M${x} ${y} L${+(bx + px).toFixed(1)} ${+(by + py).toFixed(1)} L${+(bx - px).toFixed(1)} ${+(by - py).toFixed(1)} Z" fill="${color}"/>`;
+}
+
 function math(key: string, l: L): string {
   const z = (a: string, b: string) => tx([a, b], l);
   if (key === '6') {
     const cat = z('猫', 'cat'), dog = z('狗', 'dog'), car = z('车', 'car');
+    const [cx, cy] = tip(ST6_ANG.cat, ST6_ANG.lc), [dx, dy] = tip(ST6_ANG.dog, ST6_ANG.ld), [rx, ry] = tip(ST6_ANG.car, ST6_ANG.lr);
     return svg(z('猫和狗靠得近，车离得远', 'cat and dog are close, the car is far'),
-      `<line x1="36" y1="118" x2="270" y2="118" stroke="#33508f"/><line x1="36" y1="118" x2="36" y2="16" stroke="#33508f"/>
-<path d="M36 118 L150 48" stroke="${Y}" stroke-width="4"/><path d="M140 46 l-14 6 l8 14" fill="${Y}"/>
-<path d="M36 118 L176 72" stroke="${G}" stroke-width="4"/><path d="M176 72 l-16 0 l6 14" fill="${G}"/>
-<path d="M36 118 L250 28" stroke="${B}" stroke-width="4"/><path d="M250 28 l-16 2 l8 14" fill="${B}"/>
-${txt(154, 40, cat, Y)}${txt(182, 78, dog, G)}${txt(228, 22, car, B)}`);
+      `<line x1="${ST6_ANG.ox}" y1="${ST6_ANG.oy}" x2="286" y2="${ST6_ANG.oy}" stroke="#33508f"/><line x1="${ST6_ANG.ox}" y1="${ST6_ANG.oy}" x2="${ST6_ANG.ox}" y2="14" stroke="#33508f"/>
+${arrow(ST6_ANG.cat, ST6_ANG.lc, Y, 'cat')}${arrow(ST6_ANG.dog, ST6_ANG.ld, G, 'dog')}${arrow(ST6_ANG.car, ST6_ANG.lr, B, 'car')}
+${txt(cx - 8, cy - 6, cat, Y)}${txt(dx + 8, dy + 4, dog, G)}${txt(rx + 8, ry - 4, car, B)}`, 176);
   }
   if (key === '7') return svg(z('越传越淡，旁边能回头看', 'fades as it is passed, and can look back'),
     `<circle cx="50" cy="78" r="16" fill="${Y}"/><circle cx="120" cy="78" r="14" fill="${Y}" opacity="0.55"/><circle cx="186" cy="78" r="12" fill="${Y}" opacity="0.28"/>

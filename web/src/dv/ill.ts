@@ -22,8 +22,12 @@ const SCENE: Record<string, readonly [string, string, string]> = {
     `<rect x="36" y="28" width="70" height="76" rx="8" fill="${R}"/><rect x="120" y="46" width="48" height="58" rx="8" fill="${Y}"/><rect x="186" y="70" width="28" height="34" rx="8" fill="${G}"/><path d="M230 86h40" stroke="${D}" stroke-width="3" />`],
   '5': ['三个旋钮', 'Three knobs',
     `<circle cx="70" cy="66" r="28" fill="none" stroke="${B}" stroke-width="6"/><path d="M70 66 L88 52" stroke="${Y}" stroke-width="3"/><circle cx="150" cy="66" r="28" fill="none" stroke="${G}" stroke-width="6"/><path d="M150 66 L150 44" stroke="${Y}" stroke-width="3"/><circle cx="230" cy="66" r="28" fill="none" stroke="${P}" stroke-width="6"/><path d="M230 66 L214 80" stroke="${Y}" stroke-width="3"/>`],
-  '6': ['两支方向接近的箭头', 'Two arrows pointing almost the same way',
-    `<path d="M40 96 L150 40" stroke="${Y}" stroke-width="4"/><path d="M140 40 l-16 4 l6 14" fill="${Y}"/><path d="M40 96 L180 70" stroke="${G}" stroke-width="4"/><path d="M180 70 l-18-2 l4 14" fill="${G}"/>`],
+  '6': ['一本户口本，号码排开，看不出谁住得近', 'A household register: the numbers do not show who lives near whom',
+    `<rect x="22" y="16" width="96" height="100" rx="6" fill="#13224d" stroke="${D}" stroke-width="2"/><rect x="22" y="16" width="14" height="100" rx="4" fill="#1c3f9e"/>
+<rect x="46" y="34" width="58" height="8" rx="2" fill="${Y}"/><rect x="46" y="58" width="48" height="8" rx="2" fill="${G}"/><rect x="46" y="82" width="62" height="8" rx="2" fill="${B}"/>
+<circle cx="156" cy="78" r="16" fill="${Y}"/><path d="M144 70 l12-16 12 16" fill="${Y}"/>
+<circle cx="210" cy="78" r="16" fill="${G}"/><path d="M198 68 l8-14 12 8" fill="${G}"/>
+<rect x="240" y="66" width="44" height="18" rx="5" fill="${B}"/><circle cx="252" cy="90" r="6" fill="${D}"/><circle cx="272" cy="90" r="6" fill="${D}"/>`],
   '7': ['一张纸条越传越淡，旁边一条能回头看的弧', 'A note that fades as it is passed, and an arc that looks back',
     `<circle cx="50" cy="70" r="16" fill="${Y}"/><circle cx="110" cy="70" r="14" fill="${Y}" opacity="0.55"/><circle cx="168" cy="70" r="12" fill="${Y}" opacity="0.28"/><path d="M250 90 C250 30 70 30 70 70" fill="none" stroke="${B}" stroke-width="3"/>`],
   '8a': ['三个人里，一束光打在其中一个身上', 'Three people, a light on one of them',

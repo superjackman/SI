@@ -20,6 +20,8 @@ test.describe('hub, reminder, certificate, demos', () => {
     await page.locator('[data-h="tab:news"]').click();
     await expect(page.locator('[data-pane="news"] .hb-item').first()).toBeVisible();
     await expect(page.locator('[data-pane="news"]')).toContainText('读懂度');
+    await expect(page.locator('[data-pane="news"]')).not.toContainText('往期留在下面');
+    await expect(page.locator('[data-pane="news"]')).toContainText('2026-11-02');
     await expect(page.locator('[data-pane="news"] a[target="_blank"]').first()).toHaveAttribute('href', /^https:\/\//);
     await page.locator('[data-h="tab:tools"]').click();
     await expect(page.locator('[data-pane="tools"]')).toContainText('安全');
