@@ -86,7 +86,7 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   if (LY) LY.wire(A.host, page, l);
   if (MLm) MLm.wire(A.host, dvK(i), l, mk, prev?.e ?? '', i > 0 ? dvK(i - 1) : '');
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
-  A.step({ n: DV_N, i, pv: z('上一步', 'Back'), nx: next ? z('下一步', 'Next') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, txt: z(`第 ${i + 1} / ${DV_N} 站`, `Stop ${i + 1} / ${DV_N}`) });
+  A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, txt: z(`第 ${dvK(i)} 站`, `Stop ${dvK(i)}`) });
   if (A.still()) morphWire(A.host);
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
@@ -106,7 +106,7 @@ function memKit(i: number, S: Dv['st'][number], prev: Dv['st'][number] | null, n
   const nd = (j: number, cls: string, label: string) => `<button type="button" class="dv-cn ${cls}" data-go="#D/${dvK(j)}" style="${cv(j)}"><span>${esc(label)}</span><b>${esc(DV_NM_(j, l))}</b></button>`;
   const line = [prev ? nd(i - 1, 'p', z(`上一站 ${dvK(i - 1)}`, `Prev ${dvK(i - 1)}`)) : '', `<span class="dv-cn c" style="${cv(i)}"><span>${z(`这一站 ${dvK(i)}`, `This stop ${dvK(i)}`)}</span><b>${esc(S.n)}</b></span>`, next ? nd(i + 1, 'n', z(`下一站 ${dvK(i + 1)}`, `Next ${dvK(i + 1)}`)) : ''].filter(Boolean).join('<i class="dv-ca" aria-hidden="true">↓</i>');
   const why = prev ? z(`上一站留下「${prev.e}」，这一站用「${S.s}」接住${next ? `；它又留下「${S.e}」，下一站解决。` : '。'}`, `The last stop left “${prev.e}”; this one answers with “${S.s}”${next ? `, and leaves “${S.e}” for the next.` : '.'}`) : z(`起点：「${S.s}」，留下「${S.e}」给下一站。`, `The start: “${S.s}”, leaving “${S.e}” for the next.`);
-  const chainB = `<section class="dv-chn"><div class="dv-th"><b>🔗 ${z('串起来：你走到了哪', 'The chain: where you are')}</b><span>${z(`第 ${i + 1}/${DV_N} 站`, `stop ${i + 1}/${DV_N}`)}</span></div><div class="dv-cl">${line}</div><p class="dv-cw">${mk(why)}</p><p class="dv-cp">${n ? z(`在金字塔里的位置：第 ${n} 层「${tx(UI.lvN[n - 1]!, 'zh')}」`, `In the pyramid: layer ${n}, “${tx(UI.lvN[n - 1]!, 'en')}”`) : z('回顾：把五层串起来', 'Recap: all five layers together')}</p></section>`;
+  const chainB = `<section class="dv-chn"><div class="dv-th"><b>🔗 ${z('串起来：你走到了哪', 'The chain: where you are')}</b><span>${z(`第 ${dvK(i)} 站`, `stop ${dvK(i)}`)}</span></div><div class="dv-cl">${line}</div><p class="dv-cw">${mk(why)}</p><p class="dv-cp">${n ? z(`在金字塔里的位置：第 ${n} 层「${tx(UI.lvN[n - 1]!, 'zh')}」`, `In the pyramid: layer ${n}, “${tx(UI.lvN[n - 1]!, 'en')}”`) : z('回顾：把五层串起来', 'Recap: all five layers together')}</p></section>`;
   // the last stop of a pyramid layer offers 阶段排序 for that layer
   const so = n && DV_LV[i + 1] !== n ? `<button type="button" class="dv-so" data-go="#R/so${n}"><b>🧩 ${z(`阶段回顾：把第 ${n} 层排个序`, `Layer ${n} recap: put its stops in order`)}</b><span>${z(`这一层 ${DV_LV.filter((x) => x === n).length} 站，按推导顺序点一遍`, `${DV_LV.filter((x) => x === n).length} stops, tap them in derivation order`)} ›</span></button>` : '';
   return take + chainB + so;

@@ -26,7 +26,8 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.dv-st')).toHaveCount(23); await expect(page.locator('.dv-lk')).toHaveCount(22); await expect(page.locator('.dv-gh')).toHaveCount(6);
     await expect(page.locator('.l4-nav')).toBeHidden();
     await page.locator('.dv-st[data-go="#D/0"]').click(); await expect(page).toHaveURL(re('#D/0')); await px(page, 'D/0.zh');
-    await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 0 站 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('第 1 / 23 站');
+    await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 0 站 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('第 0 站');
+    await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站'); await expect(page.locator('.l4-nav [data-a="next"]')).toContainText('下一站');
     await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
@@ -75,7 +76,7 @@ test.describe('R47 derivation path', () => {
       await open(page, `./?lang=${l}#home`);
       // R53: the new home scrolls down by design; it must never scroll sideways (tests/e2e/r53.spec.ts checks the rest)
       const hs = await page.evaluate(() => { const h = document.querySelector<HTMLElement>('.l4-home')!; return h.scrollWidth - h.clientWidth; }); if (hs > 1) bad.push(`${l} home scrolls sideways ${hs}`);
-      for (const h of ['#D', '#D/0', '#D/4', '#D/8a', '#D/8b', '#D/9', '#D/11', '#D/12', '#D/14', '#D/16']) {
+      for (const h of ['#D', '#D/0', '#D/4', '#D/6', '#D/8a', '#D/8b', '#D/9', '#D/11', '#D/12', '#D/14', '#D/16']) {
         await page.evaluate((x) => { location.replace(x); }, h); await px(page, `${h.slice(1)}.${l}`);
         for (const end of [false, true]) {
           if (end) await page.evaluate(() => { const e = document.querySelector<HTMLElement>('.l4-home')!; e.scrollTop = e.scrollHeight; });

@@ -5,7 +5,10 @@ import { ML } from '../../src/dv/mld';
 import { DV_KEY } from '../../src/dv/links';
 import { varQ } from '../../src/vf/var';
 import { QQ } from '../../src/vf/data';
-/* R56/R57: one ledger (pager 「第 n 站 · m/23」), the 调查 → 推理 → 验证 micro-loop on every stop with a wrong answer
+import { liveAsk } from '../../src/dv/ch';
+import { fillDvText } from '../../src/dv/nums';
+import { tx } from '../../src/l4/txt';
+/* R56/R57: one ledger (pager 「第 n 站」, the same station number as the title), the 调查 → 推理 → 验证 micro-loop on every stop with a wrong answer
    re-looping to the exact layer and two right variants mastering a small goal, the memory kit (3 takeaways + one picture,
    the prev / this / next chain, 今日复习 on home and #R/rv, 阶段排序), badges from mastery, the nameless certificate and
    the friend landing page that shows the sharer's first-try accuracy from the URL. No in-site move adds a history entry. */
@@ -45,7 +48,7 @@ async function readable(p: Page, tag: string, root: string, bad: string[]) {
 test.describe('R56 micro-loop', () => {
   test('stop 2: guess → dead ends, 推理 shows the layers, wrong variant → re-loop to the layer, two right → goal mastered; no history entries', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/1'); const h0 = await hl(page);
-    await expect(page.locator('.l4-nav')).toContainText('第 3 / 23 站');
+    await expect(page.locator('.l4-nav')).toContainText('第 1 站');
     await go(page, '#D/2'); await px(page, 'D/2.zh');
     const G = ML['2']!.goals[0]!, ly = page.locator('.ly.ml');
     await expect(page.locator('.ml-goal')).toContainText(ML['2']!.goal[0]); await expect(ly).toHaveAttribute('data-ml-s', 'i');
@@ -77,7 +80,7 @@ test.describe('R56 micro-loop', () => {
   });
   test('8a: a re-loop on the scale step lands on its attention shot', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/8a');
-    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('Stop 10 / 23');
+    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('Stop 8a');
     await page.locator('[data-ml-g="1"]').click(); await cont(page, 'r');
     await expect(page.locator('.ml-lys [data-ml-fr]').first()).toBeVisible(); await page.locator('.ml-lys [data-ml-fr]').first().click();
     await expect(page.locator('[data-att]')).toBeVisible();
@@ -197,6 +200,38 @@ test.describe('R56 reads on this phone', () => {
     }
     expect(bad).toEqual([]);
   });
+});
+test('every station share opens that station’s question, and the station 6 card is not a placeholder', async ({ page }) => {
+  test.setTimeout(180_000);
+  const errs = await open(page, './?lang=zh#D/6');
+  await expect(page.locator('.l4-tt')).toContainText('第 6 站');
+  await expect(page.locator('.l4-nav .g-n')).toHaveText('第 6 站');
+  await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站');
+  await expect(page.locator('.l4-nav [data-a="next"]')).toContainText('下一站');
+  const morph = page.locator('[data-morph]');
+  await expect(morph.locator('.dv-mcap .a')).toContainText('户口编号');
+  await expect(morph.locator('.dv-ma')).not.toContainText('猫');
+  await morph.locator('input').evaluate((el) => { const i = el as HTMLInputElement; i.value = '100'; i.dispatchEvent(new Event('input', { bubbles: true })); });
+  await expect(morph).toHaveAttribute('data-at', 'math');
+  await expect(morph.locator('.dv-mcap .b')).toContainText('车离得远');
+  await page.locator('[data-ml-share]').click();
+  const pv = page.locator('.g-pv');
+  await expect(pv).toHaveAttribute('data-url', /#D\/ch\/6$/);
+  const text = (await pv.getAttribute('data-text'))!;
+  expect(text).toContain('这一站还没算对一组数');
+  expect(text.split('这一站还没算对一组数').length - 1).toBe(1);
+  expect(text).toContain('猫');
+  expect(text).not.toContain('答对才看讲解');
+  expect(text).not.toContain('分享这一站');
+  for (const k of DV_KEY) {
+    const ask = (await liveAsk(k))!;
+    const q = fillDvText(tx(ask.q, 'zh'), 'zh').replace(/`/g, '').replace(/\*\*/g, '').slice(0, 12);
+    await go(page, `#D/ch/${k}`);
+    await expect(page.locator('#l4')).not.toContainText('还没上线');
+    await expect(page.locator('.dv-chq')).toContainText(q);
+    expect(await page.locator('.vf-op, .vf-in').count()).toBeGreaterThan(0);
+  }
+  expect(errs).toEqual([]);
 });
 test('the challenge page shows plain-text formulas (no backticks or **)', async ({ page }) => {
   await open(page, './?lang=zh#D/ch/2'); await expect(page.locator('.dv-chq')).toBeVisible();
