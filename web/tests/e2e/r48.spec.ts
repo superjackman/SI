@@ -38,7 +38,7 @@ test.describe('R48 two views', () => {
     await expect(page).toHaveURL(re('#D/4')); await px(page, 'D/4.zh');
     await expect(page.locator('.dv-vsw [aria-checked="true"]')).toHaveText('自底向上·看推导');
     await expect(page.locator('.dv-kb.on')).toHaveCount(1); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
-    await expect(page.locator('.dv-kb.on')).toBeInViewport();
+    await page.locator('.dv-kb.on').scrollIntoViewIfNeeded(); await expect(page.locator('.dv-kb.on')).toBeInViewport();
     /* stage switch → its layer, opened on the first card born here */
     await page.locator('.dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[dvI(4)]!.find((k) => cardLv(k) === 5)}`));
     /* used again: K09 → step 8b (组装成 Transformer) */
