@@ -25,12 +25,12 @@ export const cardLv = (k: string) => (k.startsWith('KM') ? 5 : k.startsWith('KC'
     Written with step numbers (8a / 8b as strings); CARD_DV below is the same table as station indices. */
 export const CARD_SK: Readonly<Record<string, readonly SK[]>> = {
   KM01: [0, 6], KC08: [0, '8b', 11],
-  KM05: [1, 7], KM06: [1, 9], KM07: [1, 9, 10], K13: [1, 9],
+  KM05: [1, 7], KM04: [1, 7, '8a', 9, 12], KM06: [1, 9], KM07: [1, 9, 10], K13: [1, 9],
   KM08: [2, 4], KM10: [2, 5],
   KM03: [3, 0, '8a'], K10: [3, '8b', 12],
   KM13: [5, 9], KM09: [4], KM11: [4, '8b'], K09: [4, '8b'], K14: [4, 2, 5],
   K03: [6, '8a', 13], KM02: [6, 7, '8a', 13],
-  KM04: [7, '8a', 9, 12], K16: [7, '8a'],
+  K16: [7, '8a'],
   K07: ['8a', 7, '8b'], K08: ['8a', 9], K12: ['8a', 1, 7], KM12: ['8a'],
   K01: ['8b', 16], K04: ['8b', 15], K05: ['8b', 4], K06: ['8b', 12], K11: ['8b', 9],
   KC01: [9, 10, 16], KC02: [9], KC03: [9, 6], KC04: [9], KC05: [9, 15], K02: [9, 6],
@@ -75,7 +75,7 @@ export const DV_E: readonly (readonly [string, string])[] = [
    (shared {#key} in dv/nums.ts) and shows these cards as chips. DV_EX_PTR = stages whose own example is different
    and only points to the card's example (no shared number). Step 16 is the recap: no example of its own. */
 export const DV_EX: readonly (readonly string[])[] = [
-  ['KC08'], ['KM07', 'K13'], ['KM10', 'K14'], ['K10'], ['KM09'], ['KM13'], ['KM02'], ['K16', 'KM04', 'KM12'],
+  ['KC08'], ['KM07', 'K13', 'KM04'], ['KM10', 'K14', 'KM08'], ['K10'], ['KM09'], ['KM13'], ['KM02'], ['K16', 'KM04', 'KM12'],
   ['KM12'], ['KC08', 'K10'], ['KC04', 'K02', 'KC05'], ['KC07'], ['KC13'], ['K15', 'KC14', 'KC11'], ['KB06'], ['KB01'], ['KA07'], [],
 ];
 export const DV_EX_PTR: Readonly<Record<number, string>> = {

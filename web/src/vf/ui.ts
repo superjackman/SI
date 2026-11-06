@@ -65,9 +65,11 @@ function qItem(id: string, q: Q, l: L, done: boolean) {
 }
 const pcT = (s: number, t: number, l: L) => tx([`做对 ${s}/${t}`, `${s}/${t} solved`], l);
 
-/** fill `slot` for page `page` ('D/n' or a card id); resolves when drawn. `onTick` runs after a newly solved question. */
-export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void) {
-  const z = (a: string, b: string) => tx([a, b], l), ids = VF_Q[page] ?? [], mc = MCS(page), dk = DEMO[page], d0 = vfDone();
+/** fill `slot` for page `page` ('D/n' or a card id); resolves when drawn. `onTick` runs after a newly solved question.
+    `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤). */
+export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void, part?: 'demo' | 'check') {
+  const z = (a: string, b: string) => tx([a, b], l), d0 = vfDone();
+  const ids = part === 'demo' ? [] : VF_Q[page] ?? [], mc = part === 'demo' ? [] : MCS(page), dk = part === 'check' ? undefined : DEMO[page];
   if (!ids.length && !mc.length && !dk) { slot.innerHTML = ''; return; }
   const st = vfStat(page, d0), s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`

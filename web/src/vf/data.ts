@@ -39,6 +39,8 @@ export const QQ: Record<string, Q> = {
     o: [['两者相等，因为此时熵 `H(p) = 0`', 'They are equal, because then the entropy `H(p) = 0`'], ['KL 总是比交叉熵大', 'KL is always larger than cross-entropy'], ['两者没有关系', 'They are unrelated']],
     h: ['`KL(p‖q) = H(p, q) − H(p)`。one-hot 分布有多不确定？', '`KL(p‖q) = H(p, q) − H(p)`. How uncertain is a one-hot distribution?'],
     w: ['one-hot 没有不确定性，`H(p) = 0`，所以 `KL(p‖q) = H(p, q) − 0`。', 'A one-hot distribution has no uncertainty, `H(p) = 0`, so `KL(p‖q) = H(p, q) − 0`.'] },
+  s1d: { q: ['只有两个候选，分数是 2 和 0。softmax 后，第一个的概率是百分之几？（保留 1 位小数）', 'Only two candidates, with scores 2 and 0. After softmax, the first probability in percent? (1 decimal)'], a: 100 * softmax([2, 0])[0]!, d: 1, tol: 0.2, u: ['%', '%'],
+    h: ['先取指数：e² ≈ 7.39，e⁰ = 1；再除以总和。', 'Exponentiate first: e² ≈ 7.39, e⁰ = 1; then divide by the total.'], w: ['`7.39 ÷ (7.39 + 1)`', '`7.39 ÷ (7.39 + 1)`'] },
   // ── 2 ──
   s2a: { q: ['在 {#gdL} 上，从 w = 0 出发，η = 0.3。走 1 步后 w = ？', 'On {#gdL}, start at w = 0 with η = 0.3. After 1 step, w = ?'], a: gdSeq(0.3, 1)[1]!, d: 2, n: 'gd03',
     h: ['先算坡度 `2(w − 2)` 在 w = 0 处的值，再用 `新w = 旧w − η × 坡度`。', 'First the slope `2(w − 2)` at w = 0, then `new w = old w − η × slope`.'],
@@ -47,6 +49,8 @@ export const QQ: Record<string, Q> = {
     h: ['现在 w = 1.20，坡度 `2 × (1.20 − 2)`。', 'Now w = 1.20, slope `2 × (1.20 − 2)`.'], w: ['坡度 `−1.6`；`1.20 − 0.3 × (−1.6)`', 'Slope `−1.6`; `1.20 − 0.3 × (−1.6)`'] },
   s2c: { q: ['同一条曲线，η 改成 1.1，从 w = 0 走 1 步，w = ？', 'Same curve, η = 1.1, one step from w = 0: w = ?'], a: gdSeq(1.1, 1)[1]!, d: 2, n: 'gd11',
     h: ['坡度还是 −4，只是步子乘了 1.1。', 'The slope is still −4; only the step is × 1.1.'], w: ['`0 − 1.1 × (−4)`：离 2 的距离从 2 变成 2.4，越走越远', '`0 − 1.1 × (−4)`: the distance to 2 grows from 2 to 2.4, moving away'] },
+  s2d: { q: ['在 {#bowlL} 上，点 (w1, w2) = (0.4, 0.4) 处，∂L/∂w2 = ？', 'On {#bowlL}, at the point (w1, w2) = (0.4, 0.4): ∂L/∂w2 = ?'], a: 4 * (0.4 - 1), d: 1,
+    h: ['w1 不动，只看 w2 那一项 2 × (w2 − 1)²，它对 w2 的导数是 4 × (w2 − 1)。', 'Keep w1 fixed and look only at the term 2 × (w2 − 1)²; its derivative in w2 is 4 × (w2 − 1).'], w: ['`4 × (0.4 − 1)`：负数，说明 w2 还要变大', '`4 × (0.4 − 1)`: negative, so w2 should still grow'] },
   // ── 3 ──
   s3a: { q: ['XOR 小网络：`h1 = ReLU(x1 + x2)`，`h2 = ReLU(x1 + x2 − 1)`，`y = h1 − 2 × h2`。输入 (1, 1) 时 h2 = ？', 'The XOR net: `h1 = ReLU(x1 + x2)`, `h2 = ReLU(x1 + x2 − 1)`, `y = h1 − 2 × h2`. For input (1, 1), h2 = ?'], a: xor(1, 1).h2, d: 0,
     h: ['ReLU 不改变正数。', 'ReLU leaves positive numbers alone.'], w: ['`h2 = ReLU(1 + 1 − 1) = ReLU(1)`', '`h2 = ReLU(1 + 1 − 1) = ReLU(1)`'] },
@@ -213,6 +217,7 @@ export const QQ: Record<string, Q> = {
 const M: Record<string, Mc> = {
   param: { x: ['参数就是训练数据。', 'The parameters are the training data.'], r: ['参数是函数里能调的数（w、b）；数据是用来调它们的样本。训练完，留下的参数就是模型。', 'Parameters are the tunable numbers in the function (w, b); data are the samples used to tune them. After training, the parameters are the model.'] },
   mse: { x: ['分类问题也用 MSE 就好。', 'Just use MSE for classification too.'], r: ['能算，但分类常用交叉熵：它重罚“自信地答错”，配合 softmax 时梯度就是“概率 − 正确答案”，简单又稳定。', 'It works, but classification uses cross-entropy: it punishes confident mistakes hard, and with softmax its gradient is simply “probability − target”.'] },
+  sm1: { x: ['softmax 的概率和分数成正比：分数翻倍，概率也翻倍。', 'Softmax probabilities are proportional to the scores: double a score and its probability doubles.'], r: ['softmax 只看分数之间的**差**：所有分数同加一个数，概率不变；两个分数差 1，概率之比约 e ≈ 2.7 倍。', 'Softmax only looks at the **differences** between scores: add the same number to all of them and nothing changes; scores 1 apart give odds about e ≈ 2.7 times apart.'] },
   ce: { x: ['交叉熵、熵、KL 散度是一回事。', 'Cross-entropy, entropy and KL divergence are the same thing.'], r: ['熵 `H(p)` 只看真实分布 p 自己有多不确定；交叉熵 `H(p, q)` 是用模型 q 描述 p 的平均代价；`KL(p‖q) = H(p, q) − H(p) ≥ 0` 是多付的那部分。p（数据）固定时 `H(p)` 是常数，所以最小化交叉熵 = 最小化 KL = 极大似然。', 'Entropy `H(p)` measures how uncertain the true distribution p itself is; cross-entropy `H(p, q)` is the average cost of describing p with the model q; `KL(p‖q) = H(p, q) − H(p) ≥ 0` is the extra paid. With p (the data) fixed, `H(p)` is a constant, so minimising cross-entropy = minimising KL = maximum likelihood.'] },
   coord: { x: ['梯度下降一次只改一个参数，改完这个再改下一个。', 'Gradient descent changes one parameter at a time, then the next.'], r: ['那是另一种方法：坐标下降。梯度下降在同一点把**所有偏导**一起算出来（这就是梯度），再**同时**更新所有参数：每个 i 都做 `w_i ← w_i − η × ∂L/∂w_i`。', 'That is a different method: coordinate descent. Gradient descent computes **all the partial derivatives** at the same point (that is the gradient) and updates every parameter **at once**: `w_i ← w_i − η × ∂L/∂w_i` for every i together.'] },
   lr: { x: ['学习率越大，学得越快。', 'A bigger learning rate always learns faster.'], r: ['在 {#gdL} 上，每一步都把到 2 的距离乘以 `(1 − 2η)`：η < 0.5 平稳靠近；0.5 < η < 1 来回跳但仍收敛；η = 1 原地来回；η > 1 越跳越远（发散）。', 'On {#gdL} every step multiplies the distance to 2 by `(1 − 2η)`: η < 0.5 glides in; 0.5 < η < 1 zig-zags but converges; η = 1 bounces forever; η > 1 runs away (diverges).'] },
@@ -241,7 +246,7 @@ const M: Record<string, Mc> = {
   db: { x: ['大模型回答问题是在查一个数据库。', 'An LLM answers by looking things up in a database.'], r: ['它是逐字预测下一个最可能的字，知识被压缩在参数里，并不逐条存储，所以会说出流畅但错误的话（幻觉）；需要准确时配合 RAG 和工具。', 'It predicts the next most likely token, one at a time; knowledge is compressed into the parameters, not stored as entries, so it can say fluent but wrong things (hallucination). Pair it with RAG and tools when accuracy matters.'] },
 };
 const MP: Record<string, string[]> = {
-  'D/0': ['param'], 'D/1': ['ce', 'mse'], 'D/2': ['coord', 'lr', 'normal'], 'D/3': ['lin', 'normal'], 'D/4': ['bp'], 'D/5': ['opt'], 'D/6': ['dot'], 'D/7': ['attw'],
+  'D/0': ['param'], 'D/1': ['sm1', 'ce', 'mse'], 'D/2': ['coord', 'lr', 'normal'], 'D/3': ['lin', 'normal'], 'D/4': ['bp'], 'D/5': ['opt'], 'D/6': ['dot'], 'D/7': ['attw'],
   'D/8a': ['qkv', 'sqrtd'], 'D/8b': ['pos', 'res', 'head'], 'D/9': ['pre', 'head'], 'D/10': ['reason', 'rlhf'], 'D/11': ['lora', 'lorai'], 'D/12': ['kv', 'temp'], 'D/13': ['rag'], 'D/14': ['agent'],
   'D/15': ['vote', 'diff'], 'D/16': ['db', 'coord', 'reason'],
   KM02: ['dot', 'qkv', 'head'], KM07: ['ce'], KM08: ['coord'], KM09: ['bp'], KM10: ['coord', 'lr', 'normal'], KM12: ['sqrtd'], KM13: ['opt'],

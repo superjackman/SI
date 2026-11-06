@@ -18,7 +18,7 @@ const ln = Math.log;
 
 /** hand-computed answers (numbers written out, not taken from src/vf) */
 const EXPECT: Record<string, number> = {
-  s0a: 2, s0b: 1, s1a: 0.5 / 3, s1b: ln(2), s1c: 0, s2a: 1.2, s2b: 1.68, s2c: 4.4, s3a: 1, s3b: 1, s3c: 0,
+  s0a: 2, s0b: 1, s1a: 0.5 / 3, s1b: ln(2), s1c: 0, s1d: (100 * Math.exp(2)) / (Math.exp(2) + 1), s2a: 1.2, s2b: 1.68, s2c: 4.4, s2d: -2.4, s3a: 1, s3b: 1, s3c: 0,
   s4a: 3, s4b: 4, s4c: 6, s5a: 3906.25, s5b: 2.71, s5c: 0, s6a: 8.5, s6b: 0.88,
   s7a: Math.exp(2) / (Math.exp(2) + Math.exp(1) + 1),
   s7b: (100 * Math.exp(2)) / (Math.exp(2) + Math.exp(1) + Math.exp(0.1) + Math.exp(-0.5)),
@@ -37,7 +37,7 @@ describe('R50 self-check questions', () => {
     const listed = new Set(Object.values(VF_Q).flat());
     expect([...listed].sort()).toEqual(Object.keys(QQ).sort());
     for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]?.length, 'D/' + dvK(i)).toBeGreaterThanOrEqual(1);
-    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]!.length, 'D/' + dvK(i)).toBeLessThanOrEqual(3);
+    for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]!.length, 'D/' + dvK(i)).toBeLessThanOrEqual(4);
     expect(Object.keys(VF_Q).filter((p) => p.startsWith('D/')).length, 'only real stations').toBe(DV_N);
     for (const p of Object.keys(VF_Q)) if (!p.startsWith('D/')) expect(CARDS.has(p), p).toBe(true);
     // all 13 maths cards KM01–KM13 have questions
@@ -143,7 +143,7 @@ describe('R50 helpers', () => {
     const t = vfStages(DV_N); expect(t.s).toBe(0); expect(t.t).toBe(Object.keys(VF_Q).filter((p) => p.startsWith('D/')).reduce((s, p) => s + VF_Q[p]!.length, 0));
     vfAdd('s2a'); vfAdd('s2a'); vfAdd('s2c');
     expect(JSON.parse(localStorage.getItem(VF_KEY)!)).toEqual(['s2a', 's2c']);
-    expect(vfStat('D/2')).toEqual({ s: 2, t: 3 }); expect(vfStat('KM10')).toEqual({ s: 2, t: 4 }); expect(vfStages(DV_N).s).toBe(2);
+    expect(vfStat('D/2')).toEqual({ s: 2, t: 4 }); expect(vfStat('KM10')).toEqual({ s: 2, t: 4 }); expect(vfStages(DV_N).s).toBe(2);
     localStorage.setItem(VF_KEY, '{bad'); expect(vfDone().size).toBe(0);
   });
 });

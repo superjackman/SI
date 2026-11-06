@@ -8,7 +8,9 @@ import { VF_Q } from '../../src/vf/ids';
    a hint on a miss, the working on demand, ticks on the chain and the map) and ⚠ 常见误解; three slider demos.
    Nothing in it adds a history entry; everything reads at 360 / 390 / 430 in zh and en. */
 const ORIGIN = 'http://localhost:4173';
-const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
+const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
+  // R51 the layered pilot pages (1, 2, 8a, 8b): every layer open, as a reader on 深入 who has gone through all five
+  { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/1': 5, 'D/2': 5, 'D/8a': 5, 'D/8b': 5 }) }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -24,23 +26,23 @@ test.describe('R50 self-check', () => {
     const errs = await open(page, './?lang=zh#D/2'); await px(page, 'D/2.zh');
     const h0 = await hl(page);
     const qz = page.locator('.vf-qz'); await expect(qz).toBeVisible();
-    await expect(qz.locator('.vf-pc')).toHaveText('做对 0/3');
+    await expect(qz.locator('.vf-pc')).toHaveText('做对 0/4');
     const q = qz.locator('.vf-q[data-q="s2a"]');
     await q.locator('.vf-in').fill('0.6'); await q.locator('.vf-ck').click();
     await expect(q).toHaveAttribute('data-st', 'bad'); await expect(q.locator('.vf-fb')).toContainText('提示');
     await q.locator('.vf-in').fill('1.2'); await q.locator('.vf-in').press('Enter');
     await expect(q).toHaveAttribute('data-st', 'ok'); await expect(q.locator('.vf-tk')).toBeVisible();
-    await expect(qz.locator('.vf-pc')).toHaveText('做对 1/3');
+    await expect(qz.locator('.vf-pc')).toHaveText('做对 1/4');
     await q.locator('.vf-sw').click(); await expect(q.locator('.vf-sol')).toBeVisible(); await expect(q.locator('.vf-sol')).toContainText('1.20');
     // typed the phone way: comma-free, full-width digits
     const q3 = qz.locator('.vf-q[data-q="s2c"]'); await q3.locator('.vf-in').fill('４.４'); await q3.locator('.vf-ck').click(); await expect(q3).toHaveAttribute('data-st', 'ok');
     expect(await hl(page)).toBe(h0);
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('si.vf') || '[]'))).toEqual(['s2a', 's2c']);
     await go(page, '#D'); await px(page, 'D.zh');
-    await expect(page.locator('.dv-st[data-go="#D/2"] .dv-qt')).toHaveText('✎ 2/3');
+    await expect(page.locator('.dv-st[data-go="#D/2"] .dv-qt')).toHaveText('✎ 2/4');
     await expect(page.locator('.dv-rd .dv-qr')).toContainText('2/');
     await go(page, '#D/map'); await px(page, 'D/map.zh');
-    await expect(page.locator('#s2 .dv-ms .dv-qt')).toHaveText('✎ 2/3');
+    await expect(page.locator('#s2 .dv-ms .dv-qt')).toHaveText('✎ 2/4');
     // the same question on card KM10 is already ticked
     await go(page, `#L${cardLv('KM10')}~KM10`); const sh = page.locator('.l4-sheet[data-card="KM10"]'); await expect(sh).toBeVisible();
     await expect(sh.locator('.vf-q[data-q="s2a"].done')).toHaveCount(1); await expect(sh.locator('.vf-pc')).toHaveText('做对 2/4');
