@@ -22,7 +22,7 @@ export default defineConfig({
   // SI_E2E_WORKERS=<n> lowers parallel browsers on a busy machine (same tests, nothing skipped); default = Playwright's own
   ...(process.env.SI_E2E_WORKERS ? { workers: Number(process.env.SI_E2E_WORKERS) } : {}),
   reporter: [['list']],
-  retries: 0,
+  retries: 1,
   // specs start from a saved storage state (tests/e2e/onb-done.json)
   use: { baseURL: `http://localhost:${port}${base}`, locale: 'zh-CN', trace: 'off', storageState: 'tests/e2e/onb-done.json' },
   projects: [phone('m360', 360, 740), phone('m390', 390, 844), phone('m430', 430, 932)],

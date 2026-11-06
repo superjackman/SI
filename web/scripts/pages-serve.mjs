@@ -9,19 +9,26 @@ const arg = (k, d) => { const i = process.argv.indexOf('--' + k); return i > 0 ?
 const root = resolve(arg('root', new URL('../..', import.meta.url).pathname)), port = +arg('port', '4173'), prefix = arg('prefix', '/SI/');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.xml': 'application/xml' };
 createServer((req, res) => {
-  const u = new URL(req.url || '/', 'http://x');
-  let p = decodeURIComponent(u.pathname);
-  if (p + '/' === prefix) { res.writeHead(301, { Location: prefix + u.search }); return res.end(); }
-  if (!p.startsWith(prefix)) { res.writeHead(404); return res.end('not found'); }
-  const rel = normalize(p.slice(prefix.length));
-  if (rel.split(sep).some((s) => s === '..' || (s.startsWith('.') && s !== '.'))) { res.writeHead(404); return res.end('not found'); }
-  let f = join(root, rel);
-  if (existsSync(f) && statSync(f).isDirectory()) {
-    if (!p.endsWith('/')) { res.writeHead(301, { Location: p + '/' + u.search }); return res.end(); }
-    f = join(f, 'index.html');
+  try {
+    const u = new URL(req.url || '/', 'http://x');
+    let p = decodeURIComponent(u.pathname);
+    if (p + '/' === prefix) { res.writeHead(301, { Location: prefix + u.search }); return res.end(); }
+    if (!p.startsWith(prefix)) { res.writeHead(404); return res.end('not found'); }
+    const rel = normalize(p.slice(prefix.length));
+    if (rel.split(sep).some((s) => s === '..' || (s.startsWith('.') && s !== '.'))) { res.writeHead(404); return res.end('not found'); }
+    let f = join(root, rel);
+    if (existsSync(f) && statSync(f).isDirectory()) {
+      if (!p.endsWith('/')) { res.writeHead(301, { Location: p + '/' + u.search }); return res.end(); }
+      f = join(f, 'index.html');
+    }
+    /* ban a 'web/' segment in the URL path (repo source) — not in the absolute filesystem path, or --root dist under web/ would 404 everything */
+    if (!existsSync(f) || !statSync(f).isFile() || rel.split(sep).includes('web')) { res.writeHead(404); return res.end('not found'); }
+    res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream', 'Cache-Control': 'max-age=600' });
+    res.end(readFileSync(f));
+  } catch (e) {
+    console.error('pages-serve', req.url, e);
+    try { res.writeHead(500); res.end('error'); } catch { /* already closed */ }
   }
-  /* ban a 'web/' segment in the URL path (repo source) — not in the absolute filesystem path, or --root dist under web/ would 404 everything */
-  if (!existsSync(f) || !statSync(f).isFile() || rel.split(sep).includes('web')) { res.writeHead(404); return res.end('not found'); }
-  res.writeHead(200, { 'Content-Type': TYPES[extname(f)] || 'application/octet-stream', 'Cache-Control': 'max-age=600' });
-  res.end(readFileSync(f));
 }).listen(port, '127.0.0.1', () => console.log(`pages-serve ${root} at http://127.0.0.1:${port}${prefix}`));
+process.on('uncaughtException', (e) => console.error('pages-serve uncaught', e));
+process.on('unhandledRejection', (e) => console.error('pages-serve rejection', e));
