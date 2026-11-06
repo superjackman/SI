@@ -61,6 +61,17 @@ else step('e2e smoke 360/390/430', 'npx', ['playwright', 'test']);
 step('size budget', 'node', ['scripts/size.mjs']);
 
 const dist = join(web, 'dist');
+// The learner must never see the old procedure labels. Fail the deploy if a built chunk still contains them.
+{
+  const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做'];
+  const hit = [];
+  for (const rel of walk(dist)) {
+    if (!/\.(js|html|css)$/.test(rel)) continue;
+    const t = readFileSync(rel, 'utf8');
+    for (const s of banned) if (t.includes(s)) hit.push(`${relative(dist, rel)}: ${s}`);
+  }
+  if (hit.length) die('built files still name the teaching procedure:\n' + hit.join('\n'));
+}
 // 1) plan generations: the new build + the previous one stay; older generations' files go
 mkdirSync(dest, { recursive: true });
 const manPath = join(dest, MANIFEST);

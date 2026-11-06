@@ -1,8 +1,7 @@
 /* R56 调查 → 推理 → 验证 micro-loop · the pilot stations' content (zh + en).
-   One station = one main goal split into small goals. Each small goal: 🔍 调查 (what is left over + "what would you do?"
-   three ways + why the wrong ways fail, like the researchers who hit those walls) → 💡 推理 (the station's existing
-   layers; `ly` names the ones that carry this goal, `fr` an attention shot) → ✔ 验证 (predict, then reveal; then
-   computed variant questions, vf/var.ts). Text marks as on the stage pages: **word**, `formula`, {#…} shared numbers. */
+   One station = one main goal split into smaller parts. Each part: the leftover question, three real options
+   (the wrong ones are shown as turns that do not work), then the explanation and a computed check (vf/var.ts).
+   Text marks as on the stage pages: **word**, `formula`, {#…} shared numbers. */
 import type { VarK } from './nums';
 import { ML_A } from './ml/a';
 import { ML_B } from './ml/b';
@@ -13,7 +12,7 @@ type T = readonly [string, string];
 export interface Goal {
   t: T; // the small goal, short
   pv: T; // 调查: what is left over (goal 1 also shows the previous station's question)
-  q: T; // 你会怎么做？
+  q: T; // the question, asked as the content itself
   o: readonly [T, T, T];
   a: number; // the way that works
   why: readonly [T, T, T]; // per option: why this way fails (or works)

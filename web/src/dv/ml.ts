@@ -59,7 +59,6 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     root.querySelectorAll<HTMLElement>('[data-ml-g]').forEach((b) => { const i = Number(b.dataset.mlG), on = i === S.g; b.className = `${on ? 'on' : ''}${S.m[i] ? ' m' : ''}`; b.setAttribute('aria-checked', String(on)); b.setAttribute('aria-label', `${CIRC[i]} ${tx(M.goals[i]!.t, l)}${S.m[i] ? z('（过了）', ' (done)') : ''}`); b.textContent = S.m[i] ? '✓' : CIRC[i]!; });
     root.querySelectorAll<HTMLElement>('[data-ml-s]').forEach((b) => { if (b.classList.contains('ly')) return; const on = b.dataset.mlS === S.s; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); const dn = b.dataset.mlS === 'i' ? S.p[S.g]! >= 0 : b.dataset.mlS === 'v' ? !!S.m[S.g] : false; b.classList.toggle('dn', dn); });
   };
-  /* 🔍 调查 */
   const inv = () => {
     const g = M.goals[S.g]!, pk = S.p[S.g]!, from = S.g === 0 ? (prevQ ? `<p class="ml-pv"><span>${z(`第 ${prevK} 站留下`, `Left open by stop ${prevK}`)}</span><b>${esc(prevQ)}</b></p>` : '') : `<p class="ml-pv"><span>${z('刚才留下', 'Left just now')}</span><b>${t(M.goals[S.g - 1]!.nx)}</b></p>`;
     const ops = g.o.map((o, i) => `<button type="button" class="ml-op${pk < 0 ? '' : i === g.a ? ' ok' : i === pk ? ' bad' : ' dim'}" data-ml-o="${i}"${pk >= 0 ? ' aria-disabled="true"' : ''}><b>${ABC[i]}</b><span>${t(o)}</span>${pk === i ? `<em>${z('你选了', 'your pick')}</em>` : ''}</button>`).join('');
@@ -68,14 +67,12 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     $('.ml-i').innerHTML = `<div class="ml-ph"><span class="ml-tag i">${esc(tx(g.t, l))}</span><span class="ml-sg">${CIRC[S.g]} / ${N}</span></div>${from}<p class="ml-pv2">${t(g.pv)}</p>
 <p class="ml-q">${t(g.q)}</p><div class="ml-ops">${ops}</div>${why}`;
   };
-  /* 💡 推理 */
   const rz = () => {
     const g = M.goals[S.g]!;
     const jumps = g.ly.map((n) => `<button type="button" class="l4-b g-info ml-ly" data-ml-ly="${n}"${n === 2 && g.fr ? ` data-ml-fr="${g.fr}"` : ''}>${esc(lyLab(n, n === 2 ? g.fr : undefined))}</button>`).join('');
     $('.ml-rz').innerHTML = `<div class="ml-ph"><span class="ml-tag r">${esc(tx(g.t, l))}</span><span class="ml-sg">${CIRC[S.g]} / ${N}</span></div><ol class="ml-rl">${g.rz.map((x) => `<li>${t(x)}</li>`).join('')}</ol><div class="ml-lys">${jumps}</div>`;
     $('.ml-rze').innerHTML = `<button type="button" class="l4-b g-jump ml-go" data-ml-to="v">${z('来算一下 ›', 'Work the numbers ›')}</button>`;
   };
-  /* ✔ 验证 */
   let cur: VarQ | null = null, last: 'ok' | 'bad' | null = null, lastMis: ReturnType<typeof misOf> = null;
   const ver = (judged?: VarQ) => {
     const g = M.goals[S.g]!, pp = pred[S.g], vi = S.v[S.g]! - (judged ? 1 : 0), q = judged ?? (cur = varQ(g.vk, vi)), n = varN(g.vk), streak = S.k[S.g]!;

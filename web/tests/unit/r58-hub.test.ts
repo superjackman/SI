@@ -1,6 +1,6 @@
 // P1/P2: easier certificate, reminders, unique pictures, sourced diary, news/tools, station OG paths.
 import { describe, expect, it, beforeEach } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DV_KEY } from '../../src/dv/links';
 import { DIARY } from '../../src/dv/diary';
@@ -22,6 +22,16 @@ describe('voice', () => {
   it('station chrome does not tell the learner the teaching procedure', () => {
     const src = readFileSync(resolve(web, 'src/dv/ml.ts'), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
     expect(src).not.toMatch(/先猜|你会怎么做|先别看|先预测|死路/);
+  });
+  it('published ml bundles do not contain the old procedure labels', () => {
+    const dir = resolve(web, '../assets');
+    const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做'];
+    let files: string[] = [];
+    try { files = readdirSync(dir).filter((f) => f.startsWith('ml-') && f.endsWith('.js')); } catch { return; }
+    for (const f of files) {
+      const t = readFileSync(resolve(dir, f), 'utf8');
+      for (const s of banned) expect(t.includes(s), `${f} ${s}`).toBe(false);
+    }
   });
 });
 
