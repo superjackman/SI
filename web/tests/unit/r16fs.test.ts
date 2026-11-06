@@ -59,10 +59,14 @@ describe('R16 full screen + add-to-home-screen tip', () => {
     document.body.innerHTML = '<button id="b">x</button>';
     document.getElementById('b')!.click();
     expect(req).not.toHaveBeenCalled();           // no silent first-tap full screen any more
-    await vi.advanceTimersByTimeAsync(4100);
+    await vi.advanceTimersByTimeAsync(6000);
+    expect(document.getElementById('siFsAsk')).toBeNull();   // R56: never on the first page
+    window.dispatchEvent(new Event('hashchange'));             // the second page
+    await vi.advanceTimersByTimeAsync(1600);
     vi.useRealTimers();
     await vi.waitFor(() => expect(document.getElementById('siFsAsk')).not.toBeNull());
     expect(document.getElementById('siFsAsk')!.textContent).toMatch(/全屏|full screen/i);
+    expect(localStorage.getItem('si.fs.ask')).toBe('1');      // asked once, whatever the answer
     document.querySelector<HTMLElement>('#siFsAsk [data-fs=yes]')!.click();
     expect(req).toHaveBeenCalledTimes(1);
     expect(document.getElementById('siFsAsk')).toBeNull();

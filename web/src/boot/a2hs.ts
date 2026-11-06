@@ -12,14 +12,14 @@ const HOW: Record<'ios' | 'other', Bi> = {
 };
 const CSS = '.si-a2{position:fixed;left:50%;bottom:calc(var(--bnh,56px) + 12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:125;display:flex;align-items:flex-start;gap:4px;width:max-content;max-width:calc(100vw - 24px);box-sizing:border-box;padding:10px 4px 10px 14px;background:#fff;color:#1e293b;border:1px solid #c7d2fe;border-radius:14px;box-shadow:0 8px 28px rgba(30,27,75,.22);font:14px/1.45 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}'
   + '.si-a2 b{display:block;color:#3730a3}.si-a2 small{display:block;font-size:12.5px;color:#475569;margin-top:2px}'
-  + '#siFsAsk{padding:12px 14px}.fa-r{display:flex;gap:8px;margin-top:10px}.fa-r button{min-height:40px;padding:0 16px;border-radius:999px;border:1px solid #c7d2fe;background:#fff;color:#3730a3;font-weight:600;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}.fa-r .fa-y{background:#4f46e5;border-color:#4f46e5;color:#fff}'
+  + '#siFsAsk{padding:6px 8px 6px 12px;align-items:center;gap:8px;font-size:13px}#siFsAsk>div{display:flex;align-items:center;gap:8px;flex-wrap:nowrap}#siFsAsk b{display:inline;white-space:nowrap}#siFsAsk small{display:none}.fa-r{display:flex;gap:6px;margin:0}.fa-r button{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid #c7d2fe;background:#fff;color:#3730a3;font-weight:600;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}.fa-r .fa-y{background:#4f46e5;border-color:#4f46e5;color:#fff}'
   + '#siA2hs button{flex:none;width:36px;height:36px;margin-top:-6px;border:0;background:none;font-size:20px;color:#64748b;cursor:pointer}';
 
 /* R21: ask before going full screen (Android & co.) — the tap on "full screen" is the gesture the API needs */
 const ASK: Record<'q' | 'w' | 'y' | 'n', Bi> = {
-  q: { zh: '要全屏看吗？', en: 'Go full screen?' },
-  w: { zh: '地址栏会藏起来，画面更大。以后可以在右上角 ⚙ 设置里开关全屏。', en: 'The address bar hides and the page gets bigger. You can switch it later in ⚙ Settings, top right.' },
-  y: { zh: '⛶ 全屏', en: '⛶ Full screen' },
+  q: { zh: '全屏看更大？', en: 'Full screen?' },
+  w: { zh: '也可以以后在 ⚙ 设置里开。', en: 'Or later in ⚙ Settings.' },
+  y: { zh: '⛶ 全屏', en: '⛶ Full' },
   n: { zh: '不用了', en: 'No thanks' },
 };
 /** first-visit help (welcome card on screen, coach marks, tour) goes first: ask a bit later, a few times at most */
@@ -37,7 +37,8 @@ export function askFS(enter: () => void, tries = 0) {
   y.onclick = () => { close(); enter(); };
   n.onclick = () => { close(); try { localStorage.setItem('si.fs', '0'); } catch { /* fine */ } };
   r.append(y, n); t.append(r); b.append(t); document.body.appendChild(b);
-  const tm = setTimeout(close, 15000);
+  try { localStorage.setItem('si.fs.ask', '1'); } catch { /* fine */ }
+  const tm = setTimeout(close, 9000);
 }
 function box(id: string) {
   if (!document.getElementById('siA2hsCss')) { const s = document.createElement('style'); s.id = 'siA2hsCss'; s.textContent = CSS; document.head.appendChild(s); }
