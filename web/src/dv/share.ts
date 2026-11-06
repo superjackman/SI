@@ -3,6 +3,7 @@
    The link is the friend landing: #D/ch/<station> with fa / fm when we have them. */
 import { tx, type L } from '../l4/txt';
 import type { Data } from '../l4/share/draw';
+import { order } from '../vf/ids';
 import { mlGet } from './prog';
 import { DV_NM, dvI } from './links';
 
@@ -21,21 +22,25 @@ export function progressLine(k: string, l: L): string {
   return '这一站还没算对一组数';
 }
 
+const plainQ = (s: string) => s.replace(/`/g, '').replace(/\*\*/g, '');
+
 export async function sharePack(k: string, l: L, title: string, head: string): Promise<Data> {
-  const [{ CH, chUrl }, { QQ }, { fillDvText }, D] = await Promise.all([
-    import('./ch'), import('../vf/data'), import('./nums'), import('../l4/share/draw'),
+  const [{ chUrl, liveAsk }, { fillDvText }, D] = await Promise.all([
+    import('./ch'), import('./nums'), import('../l4/share/draw'),
   ]);
-  const qid = CH[k], Q = qid ? QQ[qid] : undefined;
-  const q = Q ? fillDvText(tx(Q.q, l), l).replace(/`/g, '') : title;
+  const ask = await liveAsk(k);
+  const text = (s: readonly [string, string]) => plainQ(fillDvText(tx(s, l), l));
+  const q = ask ? text(ask.q) : '';
+  const opts = ask?.o ? order(ask.id, ask.o.length).map((i) => text(ask.o![i]!)) : [];
   const name = tx(DV_NM[dvI(k)] ?? [title, title], l);
   return {
     site: tx(D.SITE_N, l), url: chUrl(k, l),
     lv: l === 'zh' ? `第 ${k} 站` : `Stop ${k}`, lvC: '#4f46e5', path: '', icon: '✎',
     name, idea: q, parts: [], co: '', why: '',
     head, badge: '✎',
-    scan: l === 'zh' ? '扫码做这道题' : 'Scan to try the question',
+    scan: ask ? (l === 'zh' ? '扫码做这道题' : 'Scan to try the question') : '',
     how: '', whyT: '',
-    pts: [head, q.slice(0, 90), l === 'zh' ? '答对才看讲解' : 'The explanation waits until the answer is right'],
+    pts: opts.slice(0, 3),
     sub: l === 'zh' ? '一层层看懂 AI' : 'AI, layer by layer',
   };
 }
