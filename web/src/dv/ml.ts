@@ -1,4 +1,4 @@
-/* R56 调查 → 推理 → 验证 micro-loop on the pilot stations (参考图 A1 / A2). A lazy chunk, loaded only on a station with
+/* R56/R57 调查 → 推理 → 验证 micro-loop on every station (参考图 A1 / A2). A lazy chunk, loaded only on a station with
    ML content (./mld). It wraps the station's layered body (./ly):
    - above it, 本站大目标: the one main goal, its 2–3 small goals (lit when mastered) and the everyday picture first;
    - inside the pinned top bar, one more row: the small goals ①②③ and the three steps 🔍 调查 · 💡 推理 · ✔ 验证;

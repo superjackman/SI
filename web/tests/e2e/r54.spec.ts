@@ -1,14 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
 import { contrastIssues } from './contrast.js';
 import { textIssues } from './small-text.js';
+import { ML_AT_REASON } from './ml-open';
 /* R54 (1) the 地图 tab: the five layers are a plain list, macro (layer 1) at the top → micro (layer 5) at the bottom —
    equal-width rows with a title, a one-line summary, the card count and progress; no trapezoids, no pyramid shape.
    (2) on a layered stage page the depth switch and the five-layer bar stay pinned at the top of the scroll box, and a
    layer opened from the bar lands just below them, nothing covered. No in-site move adds a history entry. */
 const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
-  // R56: the micro-loop pilot (1, 2, 8a) opened on 💡 推理, where the layered body lives
-  { name: 'si.ml', value: '{"1":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"2":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"8a":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]}}' }];
+  // R57: every station's micro-loop opens on 💡 推理, where the layered body lives
+  { name: 'si.ml', value: ML_AT_REASON }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));

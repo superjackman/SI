@@ -1,13 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
+import { ML_AT_REASON } from './ml-open';
 /* R51 逐层展开 pilot (steps 1, 2, 8a, 8b): a 5-part bar, 「懂了，下一层」, the depth switch 30 秒 / 5 分钟 / 深入 kept in
    localStorage, the softmax / bowl / block pictures and the attention animation (pause, step, reduced motion).
    Nothing adds a history entry; #D/8 still opens (as 8a); everything reads at 360 / 390 / 430 in zh and en. */
 const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
-  // R56: the micro-loop pilot (1, 2, 8a) opened on 💡 推理, where the layered body lives
-  { name: 'si.ml', value: '{"1":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"2":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"8a":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]}}' }];
+  // R57: every station's micro-loop opens on 💡 推理, where the layered body lives
+  { name: 'si.ml', value: ML_AT_REASON }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));

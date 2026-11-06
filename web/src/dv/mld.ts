@@ -4,6 +4,10 @@
    layers; `ly` names the ones that carry this goal, `fr` an attention shot) → ✔ 验证 (predict, then reveal; then
    computed variant questions, vf/var.ts). Text marks as on the stage pages: **word**, `formula`, {#…} shared numbers. */
 import type { VarK } from './nums';
+import { ML_A } from './ml/a';
+import { ML_B } from './ml/b';
+import { ML_C } from './ml/c';
+import { ML_D } from './ml/d';
 
 type T = readonly [string, string];
 export interface Goal {
@@ -22,7 +26,7 @@ export interface Goal {
 }
 export interface Ml { goal: T; min: number; pic: { e: string; t: T; s: T }; goals: readonly Goal[]; take: readonly [T, T, T]; tpic: T }
 
-export const ML: Readonly<Record<string, Ml>> = {
+const PILOT: Record<string, Ml> = {
   '1': {
     goal: ['模型猜完一次，怎么用一个数说清“错了多少”？', 'After one guess, how do we say “how wrong” with one number?'], min: 6,
     pic: { e: '🌦️', t: ['天气预报员说“明天 90% 下雨”，结果大晴天。该罚多少？', 'The forecaster said “90% rain tomorrow”, and it was sunny. How big a penalty?'], s: ['说得越肯定、错得越离谱，罚得越狠。', 'The surer the wrong call, the bigger the penalty.'] },
@@ -147,3 +151,4 @@ export const ML: Readonly<Record<string, Ml>> = {
     tpic: ['🎉 聚会找人：需求对名牌，按对得上的程度听大家的。', '🎉 The party: need against name tags, listen to each by how well they match.'],
   },
 };
+export const ML: Readonly<Record<string, Ml>> = { ...PILOT, ...ML_A, ...ML_B, ...ML_C, ...ML_D };

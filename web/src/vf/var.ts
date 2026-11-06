@@ -3,6 +3,7 @@
    attention station, the animation shot) that explains the step that was missed. Text marks as on the stage pages. */
 import { VAR, type VarK } from '../dv/nums';
 import { dot, mse, softmax } from './calc';
+import { BASE2, extraG } from './var2';
 
 type T = readonly [string, string];
 /** a common mistake: the value it produces, what went wrong, where to look again (layer 1–5, optional shot 1–7) */
@@ -11,9 +12,9 @@ export interface VarQ { q: T; a: number; d: number; tol: number; u?: T; mis: Mis
 const f = (v: number, d = 2) => { const s = Math.abs(v).toFixed(d).replace(/\.?0+$/, ''); return (v < 0 ? '−' : '') + (s === '' ? '0' : s); };
 const ln = Math.log;
 /** the base self-check question each kind's entry 0 equals (vf/data QQ id), if any */
-export const BASE: Readonly<Partial<Record<VarK, string>>> = { mse: 's1a', ce: 's1b', sm2: 's1d', gd1: 's2a', bowl: 's2d', gdbig: 's2c', scale: 's8a' };
+export const BASE: Readonly<Partial<Record<VarK, string>>> = { mse: 's1a', ce: 's1b', sm2: 's1d', gd1: 's2a', bowl: 's2d', gdbig: 's2c', scale: 's8a', ...BASE2 };
 const gdStep = (w: number, e: number) => w - e * 2 * (w - 2);
-const G: Record<VarK, (p: readonly number[]) => VarQ> = {
+const G: Record<VarK, (p: readonly number[]) => VarQ> = { ...(extraG as Record<VarK, (p: readonly number[]) => VarQ>),
   mse: (p) => ({ q: [`预测 ${p.map((x) => f(x)).join('、')}，真实 3、5、7。MSE = ？（保留 3 位小数）`, `Predictions ${p.map((x) => f(x)).join(', ')}; true values 3, 5, 7. MSE = ? (3 decimals)`],
     a: mse(p, [3, 5, 7]), d: 3, tol: 0.004, w: ['先算每个误差的平方，再加起来除以 3。', 'Square each error, add them, divide by 3.'],
     mis: [{ v: mse(p, [3, 5, 7]) * 3, why: ['你把平方加起来了，但忘了除以 3 取平均。', 'You added the squares but forgot to divide by 3.'], lab: ['MSE 的“M”：取平均', 'The “M” in MSE: the mean'], ly: 4 },
@@ -59,7 +60,7 @@ const G: Record<VarK, (p: readonly number[]) => VarQ> = {
       { v: v[top]!, why: ['你只取了权重最大的那个：这是“硬查找”，注意力是把大家按比例混合。', 'You took only the top-weighted word: that is a hard lookup; attention mixes everyone by share.'], lab: ['软的 HashMap.get', 'A soft HashMap.get'], ly: 1 }] }; },
 };
 /** variant `i` (wraps around) of kind `k` */
-export const varQ = (k: VarK, i: number): VarQ => { const L = VAR[k], n = L.length; return G[k](L[((i % n) + n) % n]!); };
+export const varQ = (k: VarK, i: number): VarQ => { const L = VAR[k], n = L.length; const g = G[k]; if (!g) throw new Error('no variant ' + k); return g(L[((i % n) + n) % n]!); };
 export const varN = (k: VarK) => VAR[k].length;
 /** which mistake (if any) a wrong answer matches */
 export const misOf = (q: VarQ, v: number) => q.mis.find((m) => Math.abs(m.v - q.a) > q.tol && Math.abs(v - m.v) <= q.tol + 1e-9) ?? null;

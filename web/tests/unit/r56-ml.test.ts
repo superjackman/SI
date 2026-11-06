@@ -5,6 +5,7 @@ import { QQ } from '../../src/vf/data';
 import { BASE, misOf, varN, varQ } from '../../src/vf/var';
 import { VAR, type VarK } from '../../src/dv/nums';
 import { ML } from '../../src/dv/mld';
+import { DV_KEY } from '../../src/dv/links';
 import { ML_G, masteredSt } from '../../src/dv/prog';
 
 describe('R56 variants', () => {
@@ -22,12 +23,19 @@ describe('R56 variants', () => {
   }
 });
 describe('R56 content', () => {
-  it('each pilot station has its goals, 3 options per guess and per prediction, 3 takeaways in zh and en', () => {
-    for (const k of Object.keys(ML_G)) {
-      const S = ML[k]!; expect(S.goals.length).toBe(ML_G[k]); expect(S.take.length).toBe(3);
-      for (const g of S.goals) { expect(g.o.length).toBe(3); expect(g.why.length).toBe(3); expect(g.pr.o.length).toBe(3); expect(g.a).toBeGreaterThanOrEqual(0); expect(g.a).toBeLessThan(3); expect(VAR[g.vk]).toBeTruthy(); }
+  it('every station has goals, 3 options per guess and per prediction, 3 hand-written takeaways in zh and en', () => {
+    expect([...DV_KEY].sort()).toEqual(Object.keys(ML_G).sort());
+    expect(Object.keys(ML).sort()).toEqual(Object.keys(ML_G).sort());
+    for (const k of DV_KEY) {
+      const S = ML[k]!; expect(S.goals.length).toBe(ML_G[k]); expect(S.goals.length).toBeGreaterThanOrEqual(2); expect(S.take.length).toBe(3);
+      for (const line of S.take) { expect(line[0].length).toBeGreaterThan(12); expect(line[1].length).toBeGreaterThan(12); }
+      for (const g of S.goals) {
+        expect(g.o.length).toBe(3); expect(g.why.length).toBe(3); expect(g.pr.o.length).toBe(3); expect(g.a).toBeGreaterThanOrEqual(0); expect(g.a).toBeLessThan(3); expect(VAR[g.vk]).toBeTruthy();
+        const q = varQ(g.vk, 0); expect(q.mis.some((m) => Math.abs(m.v - q.a) > q.tol)).toBe(true);
+        for (const n of g.ly) expect(n).toBeGreaterThanOrEqual(1); expect(g.ly.every((n) => n <= 5)).toBe(true);
+      }
       const en = JSON.stringify(S, (_, v: unknown) => (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' ? v[1] : v));
-      expect(en).not.toMatch(/[\u3400-\u9fff]/);
+      expect(en, k).not.toMatch(/[\u3400-\u9fff]/);
     }
   });
 });

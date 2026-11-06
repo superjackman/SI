@@ -328,5 +328,126 @@ export const VAR = {
   scale: [[16, 64], [8, 16], [12, 9], [24, 64], [6, 4]],
   /** weights (3) then values (3) → the mixed value Σ w × v */
   mix: [[0.5, 0.25, 0.25, 2, 4, 8], [0.7, 0.2, 0.1, 10, 0, 5], [0.6, 0.3, 0.1, 1, 2, 3], [0.25, 0.25, 0.5, 8, 4, 2], [0.8, 0.1, 0.1, 5, 10, 0]],
+  /* R57: one pool per new station goal. Entry 0 is that station’s own self-check when vf/var.ts BASE names one. */
+  /** (x1, y1, x2, y2) → slope (y2−y1)/(x2−x1) */
+  wlin: [[1, 3, 2, 5], [1, 3, 3, 7], [0, 1, 2, 7], [1, 0, 4, 6], [2, 1, 6, 13]],
+  /** (w, x, y) → intercept y − w·x */
+  blin: [[2, 1, 3], [2, 2, 5], [3, 2, 8], [4, 1, 6], [2, 3, 9]],
+  /** (w, x, b) → prediction w·x + b */
+  ylin: [[2, 4, 1], [3, 2, 1], [2, 5, 1], [4, 3, 2], [5, 1, 2]],
+  /** four probabilities → their sum */
+  psum: [[0.5, 0.2, 0.2, 0.1], [0.4, 0.4, 0.4, 0.4], [0.2, 0.2, 0.2, 0.2], [0.9, 0.2, 0.2, 0.1], [0.1, 0.1, 0.1, 0.1]],
+  /** (top probability, how many candidates) → each of the others */
+  crest: [[0.7, 4], [0.5, 4], [0.4, 3], [0.82, 4], [0.25, 5]],
+  /** three numbers → their mean */
+  mean3: [[1.5, 1, 6], [2, 5, 8], [3, 3, 9], [10, 0, 5], [4, 1, 7]],
+  /** (x1, x2) → h2 = ReLU(x1 + x2 − 1) */
+  xoh: [[1, 1], [2, 1], [3, 0], [4, 1], [2, 2]],
+  /** (x1, x2) → y = h1 − 2·h2 on the hand-built XOR net */
+  xoy: [[0, 1], [1, 1], [2, 2], [1, 0], [3, 1]],
+  /** one number → ReLU */
+  relu1: [[-2], [1.5], [-0.5], [3], [-4]],
+  /** three factors → their product (chain rule) */
+  chn: [[2, 3, 0.5], [2, 4, 0.5], [1, 5, 2], [4, 2, 0.5], [5, 2, 0.5]],
+  /** (x, w1, w2, t) → dL/dw2 on y = w2·ReLU(w1·x), L = (y−t)² */
+  bp2: [[1, 2, 3, 5], [1, 2, 4, 5], [2, 1, 3, 4], [1, 3, 2, 4], [1, 4, 2, 5]],
+  /** same net → dL/dw1 */
+  bp1: [[1, 2, 3, 5], [1, 2, 4, 5], [2, 1, 3, 4], [1, 3, 2, 4], [1, 4, 2, 5]],
+  /** (samples, batch) → updates per epoch */
+  epoch: [[1000000, 256], [500000, 100], [1000000, 500], [2000000, 128], [800000, 200]],
+  /** constant gradient g, momentum 0.9, three steps → v */
+  mom3: [[1], [2], [0.5], [3], [1.5]],
+  /** (train %, val %) → the gap */
+  gap: [[99, 70], [95, 80], [90, 60], [100, 75], [88, 70]],
+  /** (vocab size, embedding dim) → numbers stored for one word */
+  emb: [[50000, 300], [30000, 256], [100000, 768], [32000, 512], [8000, 128]],
+  /** two 2-d word vectors → dot product */
+  dotw: [[3, 1, 2, 2.5], [1, 2, 3, 1], [2, -1, 1, 3], [0.5, 4, 2, 1], [1, 1, 4, -3]],
+  /** two 3-d vectors → dot product */
+  dot3: [[0.8, 0.1, 0.6, 0.7, 0.2, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.2, 0.3, 0.4, 0.5, 0.6, 0.7], [1, 2, 3, 1, 1, 1], [0.9, 0.1, 0.2, 0.4, 0.5, 0.6]],
+  /** sentence length → RNN steps that cannot run at once */
+  seqn: [[8], [6], [10], [4], [12]],
+  /** steps of “halve each time” → fraction left */
+  halv: [[4], [2], [3], [5], [6]],
+  /** three scores → softmax weight of the first */
+  smw: [[2, 1, 0], [3, 1, 0], [4, 1, 0], [2, 0, -1], [1, 0, -2]],
+  /** (model dim, heads) → per-head width */
+  hd: [[512, 8], [768, 12], [1024, 8], [256, 8], [4096, 32]],
+  /** model dim → millions of parameters in one block, about 12·d² */
+  pmill: [[4096], [1024], [512], [2048], [768]],
+  /** (x, F(x)) → residual output x + F(x) */
+  res: [[5, 2], [4, 1], [8, 1], [3, 4], [7, 2]],
+  /** token count → next-token questions in one forward pass */
+  ntok: [[6], [8], [4], [10], [16]],
+  /** perplexity e^(ln k) = k */
+  ppl: [[4], [2], [10], [8], [5]],
+  /** same perplexity, tied to the evaluation station’s question */
+  pplE: [[4], [2], [8], [5], [10]],
+  /** (score, score, score, temperature) → first probability in percent */
+  tmp: [[4.1, 1.3, 1, 1], [4.1, 1.3, 1, 0.5], [4.1, 1.3, 1, 2], [3, 1, 0, 1], [2, 0.5, 0, 1.5]],
+  /** (right, total) → accuracy in percent */
+  acc: [[8, 10], [7, 10], [18, 20], [3, 5], [9, 10]],
+  /** (items, leaked) → clean items left */
+  clean: [[20, 5], [50, 10], [10, 2], [40, 15], [8, 1]],
+  /** (rA, rB) → σ(rA − rB) */
+  sig: [[1.5, 0.5], [2, 1], [1, 0], [0.5, -0.5], [3, 1]],
+  /** equal rewards → σ(0) */
+  sige: [[1.2, 1.2], [0, 0], [2, 2], [0.5, 0.5], [3, 3]],
+  /** (reward, β, KL) → r − β·KL */
+  rkl: [[1.4, 0.1, 2], [2, 0.5, 1], [3, 0.2, 5], [0.8, 0.1, 3], [2.5, 0.4, 1]],
+  /** (d, r) → LoRA numbers trained, 2·d·r */
+  loraN: [[4096, 8], [1024, 4], [768, 8], [512, 16], [2048, 8]],
+  /** (billions of parameters, bits) → gigabytes */
+  qgb: [[7, 4], [7, 8], [7, 16], [13, 4], [70, 4]],
+  /** (d, r) → LoRA as a percent of the full matrix */
+  loraf: [[4096, 8], [1024, 8], [768, 4], [512, 8], [2048, 16]],
+  /** (layers, KV heads, head dim, bytes) → bytes of cache per token */
+  kvb: [[32, 32, 128, 2], [32, 8, 128, 2], [24, 8, 128, 2], [32, 32, 64, 2], [16, 8, 64, 2]],
+  /** n → 1+…+n */
+  tri: [[100], [10], [20], [50], [8]],
+  /** (old KV heads, new KV heads) → new cache as a fraction of the old */
+  gqr: [[32, 8], [32, 4], [16, 4], [64, 8], [32, 16]],
+  /** two 2-d vectors → cosine similarity (retrieval) */
+  cosr: [[1, 0, 0.6, 0.8], [3, 4, 6, 8], [1, 2, 2, 1], [0, 1, 1, 0], [2, 0, 1, 1]],
+  /** (higher similarity, lower) → the gap */
+  dsim: [[0.82, 0.31], [0.9, 0.2], [0.6, 0.4], [0.75, 0.25], [0.88, 0.4]],
+  /** (chunks, kept) → how many are left out */
+  dropk: [[5, 2], [8, 3], [6, 1], [10, 4], [4, 1]],
+  /** (success per step, steps) → probability every step works */
+  pow: [[0.95, 20], [0.99, 20], [0.9, 10], [0.8, 5], [0.95, 10]],
+  /** (apps, tools) → connections saved by MCP: M·N − (M+N) */
+  mcp: [[6, 4], [5, 5], [8, 3], [10, 2], [7, 3]],
+  /** (calls, confirms) → calls that run without asking */
+  freen: [[4, 1], [6, 2], [5, 1], [8, 3], [3, 1]],
+  /** (actions, risky ones) → how many need a person */
+  safen: [[5, 2], [6, 1], [8, 3], [4, 1], [7, 2]],
+  /** untrusted chunks → how many must stay data, not instructions */
+  unt: [[4], [6], [3], [8], [5]],
+  /** (chance a call stays clean, calls) → chance the whole trace stays clean */
+  srisk: [[0.9, 8], [0.9, 5], [0.8, 4], [0.95, 6], [0.9, 10]],
+  /** (image side, patch side) → visual tokens */
+  vitp: [[224, 16], [224, 14], [224, 32], [256, 16], [336, 14]],
+  /** (image side, patch side) → patches along one edge */
+  side: [[224, 16], [224, 14], [224, 32], [112, 16], [256, 16]],
+  /** (predicted noise, true noise) → squared error */
+  nse: [[0.2, 0.5], [0.7, 0.2], [0.9, 0.4], [0.3, 0.9], [1.2, 0.4]],
+  /** five samples → the majority value */
+  vote: [[12, 12, 15, 12, 9], [7, 7, 7, 3, 9], [3, 3, 9, 3, 1], [6, 2, 6, 6, 9], [4, 4, 7, 4, 1]],
+  /** (short window, long window) in K → how many times longer */
+  winx: [[4, 128], [4, 32], [2, 32], [8, 128], [4, 64]],
+  /** (length, strong at the start, strong at the end) → weakly used middle */
+  mid: [[100, 20, 20], [80, 10, 10], [50, 10, 10], [200, 40, 40], [128, 16, 16]],
+  /** a fix loop: (success per step, steps) */
+  loopn: [[0.9, 4], [0.95, 4], [0.8, 5], [0.9, 6], [0.99, 3]],
+  /** passages kept vs retrieved */
+  dropa: [[12, 3], [8, 2], [20, 5], [6, 2], [15, 4]],
+  /** a screenshot cut into patches */
+  vita: [[224, 16], [224, 32], [112, 16], [256, 16], [336, 16]],
+  /** (w, gradient, learning rate) → w after one update */
+  upd: [[0.5, 0.2, 0.1], [0.5, 0.4, 0.1], [1, 0.5, 0.2], [0.2, 0.2, 0.5], [2, 3, 0.1]],
+  /** probability of the right token when every candidate is equal → −ln p */
+  ceu: [[0.25], [0.5], [0.1], [0.2], [0.8]],
+  /** perplexity of a uniform  k-way guess */
+  pplR: [[4], [2], [8], [10], [5]],
 } as const;
 export type VarK = keyof typeof VAR;
