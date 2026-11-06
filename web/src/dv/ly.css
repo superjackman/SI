@@ -1,7 +1,8 @@
 .ly .nw, .ly .formula.nw { white-space: nowrap; }
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
 .ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: #e6eeff; }
-.ly-top { display: flex; flex-direction: column; gap: 6px; padding: 6px 0; background: #050c22f2; }
+/* R54 the depth switch and the five-layer bar stay pinned to the top of the scroll box while reading; headings land below it */
+.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-direction: column; gap: 6px; margin: 0 -12px; padding: 10px 12px 8px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; }
 .l4 .ly .g-seg.ly-dep { grid-template-columns: 1fr 1fr 1fr; }
 .ly-pg { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
 .ly-pg button { width: 100%; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px; border: 1px solid #2c4690; border-bottom-width: 4px; border-radius: 8px; background: #08112b; color: #9cb3e6; font-size: 12px; line-height: 1.25; }
@@ -14,7 +15,7 @@
 .ly-l[hidden] { display: none; }
 .ly-l p, .ly-l ul { margin: 0; }
 .ly-l ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
-.ly-h { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #9cc8ff; outline: none; scroll-margin-top: 96px; }
+.ly-h { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #9cc8ff; outline: none; scroll-margin-top: 132px; }
 .ly-h:focus-visible { outline: 2px solid #ffd166; outline-offset: 2px; border-radius: 4px; }
 .ly-n { flex: none; display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #1d3270; color: #fff; font-size: 14px; }
 .ly-hook b { display: block; color: #ffd166; font-size: 13px; letter-spacing: .02em; }

@@ -55,7 +55,9 @@ export function textIssues(min) {
       const st = document.elementsFromPoint(x, y); let hit = null;
       for (const o of st) { if (o === e || e.contains(o)) break; if (o.contains(e)) break; if (painted(o) || inks(o, x, y)) { hit = o; break; } }
       if (hit && modal(hit) && !modal(hit).contains(e)) continue; // a sheet, drawer or popup is open on top: what is under it is meant to be covered
-      if (hit) { const hp = cs(hit).position; if (sc && !sc.contains(hit) && /fixed|sticky|absolute/.test(hp)) continue; add('cover', e, txt, { by: lbl(hit) }); break; }
+      if (hit) { const hp = cs(hit).position; if (sc && !sc.contains(hit) && /fixed|sticky|absolute/.test(hp)) continue;
+        // R54 text scrolled up under a pinned (sticky) header inside the same scroll box is out of view, like the box edge
+        { let k = hit; while (k && k !== sc && cs(k).position !== 'sticky') k = k.parentElement; if (k && k !== sc && !k.contains(e)) continue; } add('cover', e, txt, { by: lbl(hit) }); break; }
     }
     // a button / chip label broken over two lines; a lone last character
     const bt = first && e.closest('button, .l4-b, [role=button], .chip, .l4-chip'); // a wide answer row may wrap a sentence; a short button label may not
