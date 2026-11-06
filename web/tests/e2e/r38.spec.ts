@@ -155,7 +155,7 @@ test.describe('R38 explorer', () => {
     await go('#L4/tr/3'); await page.locator('[data-a="menu"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
     await go('#L4/tr/2'); await page.locator('[data-a="menu"]').click(); await page.locator('.l4-ms [data-t="prog"]').click();
     await expect(page.locator('.l4-ms .l4-mpg .rw')).toHaveCount(5); await page.locator('.l4-ms .l4-mpg [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/);
-    await expect.poll(async () => Number(/\d+/.exec((await page.locator('.px-lvr[data-go="#L4"] i').first().textContent()) ?? '')?.[0] ?? 0)).toBeGreaterThanOrEqual(2); /* R42: per-layer seen count */
+    await expect.poll(async () => Number(/看过 (\d+)|(\d+)\/\d+ pages/.exec((await page.locator('.px-lvr[data-go="#L4"] i').first().textContent()) ?? '')?.slice(1).find(Boolean) ?? 0)).toBeGreaterThanOrEqual(2); /* R42: per-layer seen count */
     await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
     await go('#L4/tr/2');
     await page.locator('[data-a="lang"]').click(); await expect(page.locator('#l4')).toHaveAttribute('data-lang', 'en'); expect(await page$(page)).toBe('TR2');

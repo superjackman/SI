@@ -91,3 +91,23 @@ button.dv-from span::before { content: '‹ '; }
 .dv .dv-hd { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; max-width: 100%; }
 .dv .dv-so { min-width: 0; overflow-wrap: anywhere; }
 .dv .g-seg.dv-vsw { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+/* R56 记忆: 本站只带走 3 句 + 串起来 */
+.dv-take, .dv-chn { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 14px; color: #e6eeff; font-size: 15px; line-height: 1.6; }
+.dv-take { border: 1px solid #c99a2e; background: linear-gradient(#1d1a3a, #121a3c); }
+.dv-chn { border: 1px solid #2c4690; background: #0a1532e6; }
+.dv-th { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.dv-th b { font-size: 15px; color: #ffe08a; } .dv-th span { font-size: 12.5px; color: #b7c6ea; }
+.dv-take ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 6px; }
+.dv-tp { margin: 0; display: block; padding: 8px 10px; border-radius: 10px; background: #0a1532; font-size: 14px; } .dv-tp > b { display: block; font-weight: 400; text-wrap: pretty; } .dv-tp span { display: block; font-size: 12.5px; color: #ffe08a; }
+.dv-cl { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.dv-cn { display: flex; align-items: baseline; gap: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--c); border-radius: 10px; background: #08112b; color: #e6eeff; text-align: left; line-height: 1.3; }
+.dv-cn span { flex: none; font-size: 12.5px; color: #b7c6ea; } .dv-cn b { min-width: 0; font-size: 14px; font-weight: 700; }
+.dv-cn.c { background: #ffd77a; border-color: #ffd77a; color: #1a1204; } .dv-cn.c span { color: #3a2a04; }
+.dv-ca { font-style: normal; color: #9cb3e6; text-align: center; font-size: 13px; line-height: 1; }
+.dv-cw, .dv-cp { margin: 0; font-size: 14px; } .dv-cp { color: #b7c6ea; font-size: 13px; }
+.dv-take .nw { white-space: nowrap; }
+.dv-fr { display: flex; flex-direction: column; gap: 2px; margin: 0 0 8px; padding: 10px 12px; border: 1px solid #c99a2e; border-radius: 12px; background: #1d1a3a; color: #e6eeff; }
+.dv-fr b { font-size: 15px; color: #ffe08a; } .dv-fr span { font-size: 13px; color: #cfe0ff; }
+.dv-fy { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; font-size: 14.5px; font-weight: 700; } .dv-fy.ok { background: #0b2a22; color: #7ef0b0; } .dv-fy.bad { background: #2a1020; color: #fecaca; }
+.dv-so { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; margin-top: 10px; min-height: 52px; padding: 8px 12px; border: 1px solid #ffd166; border-radius: 12px; background: #2a2208; color: #fff3c4; text-align: left; }
+.dv-so b { font-size: 15px; color: #ffe08a; } .dv-so span { font-size: 13px; color: #fff3c4; }

@@ -10,7 +10,9 @@ import { VF_Q } from '../../src/vf/ids';
 const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   // R51 the layered pilot pages (1, 2, 8a, 8b): every layer open, as a reader on 深入 who has gone through all five
-  { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/0': 5, 'D/P': 5, 'D/1': 5, 'D/2': 5, 'D/3': 5, 'D/4': 5, 'D/5': 5, 'D/6': 5, 'D/7': 5, 'D/8a': 5, 'D/8b': 5, 'D/9': 5, 'D/E': 5, 'D/10': 5, 'D/11': 5, 'D/12': 5, 'D/13': 5, 'D/14': 5, 'D/S': 5, 'D/15a': 5, 'D/15b': 5, 'D/A': 5, 'D/16': 5 }) }];
+  { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/0': 5, 'D/P': 5, 'D/1': 5, 'D/2': 5, 'D/3': 5, 'D/4': 5, 'D/5': 5, 'D/6': 5, 'D/7': 5, 'D/8a': 5, 'D/8b': 5, 'D/9': 5, 'D/E': 5, 'D/10': 5, 'D/11': 5, 'D/12': 5, 'D/13': 5, 'D/14': 5, 'D/S': 5, 'D/15a': 5, 'D/15b': 5, 'D/A': 5, 'D/16': 5 }) },
+  // R56: the micro-loop pilot (1, 2, 8a) opened on 💡 推理, where the layered body lives
+  { name: 'si.ml', value: '{"1":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"2":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]},"8a":{"m":[0,0,0],"k":[0,0,0],"v":[0,0,0],"g":0,"s":"r","p":[0,0,0]}}' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -40,7 +42,7 @@ test.describe('R50 self-check', () => {
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('si.vf') || '[]'))).toEqual(['s2a', 's2c']);
     await go(page, '#D'); await px(page, 'D.zh');
     await expect(page.locator('.dv-st[data-go="#D/2"] .dv-qt')).toHaveText('✎ 2/4');
-    await expect(page.locator('.dv-rd .dv-qr')).toContainText(/掌握 2\/|Self-check 2\/|2\//);
+    await expect(page.locator('.dv-rd .dv-qr')).toHaveText('掌握 0/23 站'); await expect(page.locator('.dv-rd')).toContainText('答对 2/');
     await go(page, '#D/map'); await px(page, 'D/map.zh');
     await expect(page.locator('#s2 .dv-ms .dv-qt')).toHaveText('✎ 2/4');
     // the same question on card KM10 is already ticked

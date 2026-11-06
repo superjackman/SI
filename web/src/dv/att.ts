@@ -63,6 +63,8 @@ export function att(el: HTMLElement, l: L) {
     stop(); f = k === 'prev' ? Math.max(0, f - 1) : Math.min(N - 1, f + 1); show();
   });
   show();
+  /* R56 回炉: the micro-loop opens one exact shot (0-based) */
+  el.addEventListener('att-go', (e) => { const k = Number((e as CustomEvent<number>).detail); if (!Number.isInteger(k)) return; stop(); played = true; f = Math.max(0, Math.min(N - 1, k)); show(); el.scrollIntoView({ block: 'center' }); });
   // auto-play once, the first time it is actually on screen
   if (!reduce && 'IntersectionObserver' in window) {
     const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting) && !played && el.isConnected && !el.closest('[hidden]')) { played = true; io.disconnect(); play(); } }, { threshold: 0.6 });

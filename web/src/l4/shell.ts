@@ -21,6 +21,7 @@ import type { Step } from '../px/view';
 import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
 import { DV_ALIAS, DV_N, DV_NM, dvK, isDv } from '../dv/links';
+import { layerMastery, masteredSt } from '../dv/prog';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
@@ -140,9 +141,9 @@ export function start(doc: Document = document, win: Window = window) {
      The pyramid is the knowledge structure (each layer opens the one above), not a shape: equal-width rows, no trapezoids. */
   const LV_SUB: Tx[] = [['你说需求 → 它拆步骤、调工具、交回结果', 'You ask → it plans, calls tools, reports back'], ['感知、规划、调工具、观察、记忆', 'Perceive, plan, call tools, observe, remember'], ['海量文字 → 分词 → 预训练 → 微调 → 对齐', 'Text → tokens → pre-training → tuning → alignment'], ['注意力、前馈、残差，一个字一个字地生成', 'Attention, feed-forward, residuals, one token at a time'], ['向量、点积、矩阵、softmax、损失、梯度', 'Vectors, dot product, matrices, softmax, loss, gradients']];
   function drawMap() {
-    const st = layerStats(seen, opened);
-    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1), x = st[i]!;
-      return `<li><button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--c:${LCOL[i]};--cb:${LBG[i]}"><span class="q" aria-hidden="true">${i + 1}</span><span class="t"><span class="n">${tx(UI.lv[i]!, lang)}${i === 0 ? ` · ${tx(['最宏观', 'big picture'], lang)}` : i === 4 ? ` · ${tx(['最微观', 'the details'], lang)}` : ''}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="d">${tx(LV_SUB[i]!, lang)}</span><span class="m">${tx([`${x.ct} 张卡 · 看过 ${x.s}/${x.t} 页`, `${x.ct} cards · ${x.s}/${x.t} pages seen`], lang)}${on ? '' : ` · ${T('soon')}`}</span>${pbar(x.s, x.t, i + 1)}</span><i class="g-bdg" aria-hidden="true">›</i></button>${i < 4 ? `<span class="l4-lvj" aria-hidden="true">${tx(['↓ 拆开看', '↓ open it up'], lang)}</span>` : ''}</li>`; }).join('');
+    const st = layerStats(seen, opened), lm = layerMastery(masteredSt());
+    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1), x = st[i]!, [ma, mt] = lm[i]!;
+      return `<li><button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--c:${LCOL[i]};--cb:${LBG[i]}"><span class="q" aria-hidden="true">${i + 1}</span><span class="t"><span class="n">${tx(UI.lv[i]!, lang)}${i === 0 ? ` · ${tx(['最宏观', 'big picture'], lang)}` : i === 4 ? ` · ${tx(['最微观', 'the details'], lang)}` : ''}</span><b>${tx(UI.lvN[i]!, lang)}</b><span class="d">${tx(LV_SUB[i]!, lang)}</span><span class="m">${tx([`${x.ct} 张卡 · ${mt} 站 · 掌握 ${ma}/${mt}`, `${x.ct} cards · ${mt} stops · ${ma}/${mt} mastered`], lang)}${on ? '' : ` · ${T('soon')}`}</span>${pbar(ma, mt, i + 1)}</span><i class="g-bdg" aria-hidden="true">›</i></button>${i < 4 ? `<span class="l4-lvj" aria-hidden="true">${tx(['↓ 拆开看', '↓ open it up'], lang)}</span>` : ''}</li>`; }).join('');
     /* R47 the bottom-up way in: the ground under layer 5 — 23 stations from one function up to an agent */
     const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true">↑</span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span></button>`;
     const ln = (go: string, t: Tx, s: Tx, a = '') => `<button type="button" class="l4-ml2"${a ? ` data-a="${a}"` : ` data-go="${go}"`}><b>${tx(t, lang)}</b><span>${tx(s, lang)}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
@@ -265,7 +266,7 @@ export function start(doc: Document = document, win: Window = window) {
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
     const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
-    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${s.keys?.[k] ?? k + b} 步`, `Step ${s.keys?.[k] ?? k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}</span>` : '';
+    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${s.keys?.[k] ?? k + b} 步`, `Step ${s.keys?.[k] ?? k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${s.txt != null ? esc(s.txt) : `${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}`}</span>` : '';
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span><button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
   }
   const run = (f: string | (() => void) | null | undefined) => { if (typeof f === 'string') go(f); else f?.(); };
@@ -305,7 +306,8 @@ export function start(doc: Document = document, win: Window = window) {
     const lxs = (n: 1 | 2 | 3 | 5) => LIVE.includes(n) ? sec('', LX[n], LX[n].map((id) => [tx(LX_N[id]!, 'zh').replace(/^M\d\s+/, ''), tx(LX_N[id]!, 'en').replace(/^M\d\s+/, '')] as Tx), n) : '';
     const soonL = [1, 2, 3, 5].filter((n) => !LIVE.includes(n)).map((n) => `<a href="#L${n}">${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)} <em>${T('soon')}</em></a>`).join('');
     const opened = new Set(LS.get<string[]>('si.l4.cards', [])), ps = layerStats(seen, opened);
-    const prog = `<div class="l4-mpg">${ps.map((x) => `<div class="rw">${lvTag(x.n, lang)}${pbar(x.s, x.t, x.n)}<span class="m">${esc(tx([`看过 ${x.s}/${x.t} 页 · 卡 ${x.c}/${x.ct}`, `${x.s}/${x.t} pages · ${x.c}/${x.ct} cards`], lang))}</span></div>`).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
+    const lm = layerMastery(masteredSt());
+    const prog = `<div class="l4-mpg">${ps.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<div class="rw">${lvTag(x.n, lang)}${pbar(ma, mt, x.n)}<span class="m">${esc(tx([`掌握 ${ma}/${mt} 站 · 看过 ${x.s}/${x.t} 页`, `${ma}/${mt} stops mastered · ${x.s}/${x.t} pages`], lang))}</span></div>`; }).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
     list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
       + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);

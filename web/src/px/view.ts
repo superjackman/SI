@@ -10,13 +10,18 @@ import { cards, type Card } from '../l4/c/kc';
 import { cardData, lvOf } from '../l4/share/card';
 import { dlgHtml, download, shareOut } from '../l4/share/modal';
 import { LX_N, lxFrom, lxHash, isLx } from '../lx/ids';
-import { cardLayer, layerStats, lastPage, pageLayer, pageName, pbar, recent } from '../l4/progress';
+import { cardLayer, layerStats, pageLayer, pageName, pbar, recent } from '../l4/progress';
 import { hashOf, parse, pickHead, Q } from '../l4/pages';
 import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
 import { navBack } from '../l4/hnav';
+import { layerMastery, masteredSt, seenSt } from '../dv/prog';
+import { goalGet, routeNext, routeOf } from '../dv/routes';
+import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
+import { VF_Q, vfDone } from '../vf/ids';
+import * as RV from './rv';
 
-export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined }
+export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined; /** R56 the counter text (else 「key / last」) */ txt?: string | undefined }
 export interface PxApi {
   step: (s: Step | null) => void;
   root: HTMLElement; host: HTMLElement; l: L; go: (h: string) => void; top: (html: string) => void; crumb: (c: [string, string | null][]) => void;
@@ -30,7 +35,7 @@ const W: Record<string, Tx> = {
   pickL: ['选卡片：{n}', 'Card: {n}'], shT2: ['分享', 'Share'], emptyS: ['还没有可分享的内容：你真实做到的事。完成一个小目标后就能生成。', 'Nothing to share yet — only what you really did. Reach one small goal to make one.'], emptyM: ['你真实做到的事。完成一个小目标后就能生成。', 'Only what you really did. Reach one small goal to make one.'],
   pvQ: ['上一题', 'Prev'], nxQ: ['下一题', 'Next'], nxR: ['看结果', 'Results'], pvS: ['上一套', 'Prev quiz'], nxS: ['下一套小测', 'Next quiz'], nxP: ['看进度', 'Progress'],
   pvX: ['上个实验', 'Prev'], nxX: ['下个实验', 'Next'], nxXq: ['去小测', 'To quiz'], labQ: ['第 ', 'Q '], labS: ['小测 ', 'Quiz '], labX: ['实验 ', 'Lab '],
-  practice: ['练', 'Practice'], record: ['记', 'Record'], share: ['享', 'Share'], quick: ['10 分钟快速路径', '10-minute quick path'],
+  practice: ['练习', 'Practice'], record: ['记', 'Record'], share: ['享', 'Share'], quick: ['10 分钟快速路径', '10-minute quick path'],
   pSub: ['动手试一试：小实验都是真实计算；每层 4 道小测，答完就讲为什么。', 'Try it: the experiments compute for real; 4 questions per layer, each explained.'],
   exps: ['实验', 'Experiments'], tests: ['测试题', 'Quizzes'], mine: ['我的训练题', 'My training set'], mineB: ['自己出题，训练小模型', 'Write questions, train the tiny model'],
   trained: ['已训练过', 'trained'], notYet: ['没做过', 'not yet'], doneY: ['做过 ✓', 'done ✓'], bestS: ['最好 {r}/{n}', 'best {r}/{n}'], nqNo: ['4 题 · 没做', '4 Qs · not yet'], qz: ['小测', 'quiz'], last: ['上次', 'last'], nq: ['4 题', '4 Qs'], done: ['做过', 'done'],
@@ -108,6 +113,7 @@ export async function px(id: string, A: PxApi) {
   if (/^P\/q[1-5]$/.test(id)) return quiz(A, Number(id[3]) as N);
   if (/^P\/x[1-5]$/.test(id)) return exp(A, id.slice(2));
   if (id === 'R') return void record(A);
+  if (id === 'R/rv' || /^R\/so[1-5]$/.test(id)) return (await import('./mem')).mem(id, A);
   if (id === 'S' || id.startsWith('S/')) return share(A, id.slice(2));
   if (id === 'Q/done') return qDone(A);
   return qLand(A);
@@ -122,7 +128,16 @@ function list(A: PxApi) {
   A.top(`<b class="l4-tt">${t('practice')}</b>`); crumbs(A, [t('practice'), null]);
   const ran = new Set(R.log().filter((e) => e.k === 'exp').map((e) => (e as { id: string }).id)), my = !!localStorage.getItem('si.l4.my');
   const it = (h: string, n: N, name: string, st: string, on: boolean) => `<button type="button" class="px-it" data-go="${h}">${lvT(n, L_)}<b>${esc(name)}</b><i class="${on ? 'on' : ''}">${esc(st)}</i></button>`;
-  A.host.innerHTML = `<div class="px px-p"><p class="px-sub">${t('pSub')}</p>
+  /* R56 one ledger: 练习 is grouped by station along my route (the same mastery as home / 地图 / 我的), then the rest */
+  const z = (a: string, b: string) => tx([a, b], L_), vd = vfDone(), ms = masteredSt(vd), r = routeOf(goalGet()) ?? routeOf('model')!, on = new Set(r.st.map(String));
+  const stB = (k: string) => { const q = VF_Q['D/' + k] ?? [], s = q.filter((id) => vd.has(id)).length, m = ms.has(k), n = DV_LV[dvI(k)] ?? 0;
+    return `<button type="button" class="px-st2${m ? ' m' : ''}" data-go="#D/${k}" style="--c:${n ? LC[n - 1] : '#c99a2e'}"><span class="px-sk">${esc(k)}</span><b>${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</b><i>${m ? z('★ 已掌握', '★ mastered') : `✎ ${s}/${q.length}`}</i></button>`; };
+  const rest = DV_KEY.filter((k) => !on.has(k) && (VF_Q['D/' + k] ?? []).length), rp = RV.rvPick(3);
+  const rvB = `<button type="button" class="px-rvb" data-go="#R/rv"><b>🧠 ${z('今日复习', 'Today’s review')}</b><span>${rp.length ? esc(z(`${rp.length} 题到期 · 错题本 ${RV.wrongIds().length} 题`, `${rp.length} due · wrong book ${RV.wrongIds().length}`)) : esc(z('今天没有到期的题', 'Nothing due today'))}</span><i aria-hidden="true">›</i></button>`;
+  A.host.innerHTML = `<div class="px px-p">${rvB}<p class="px-sub">${z('按站练：一站的小测全对（或小目标都过了验证）就算掌握，首页、地图、我的都用这一本账。', 'Practise by stop: a stop is mastered when all its checks are right (or all its small goals pass), the same count as home, the map and Me.')}</p>
+<h3 class="px-rh"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))}</span>${esc(z(`我的路线 · 掌握 ${r.st.filter((k) => ms.has(String(k))).length}/${r.st.length} 站`, `My route · ${r.st.filter((k) => ms.has(String(k))).length}/${r.st.length} mastered`))}<button type="button" class="l4-b sm" data-go="#D/routes">${z('换路线', 'Switch')}</button></h3>
+<div class="px-sts">${r.st.map((k) => stB(String(k))).join('')}</div>
+<details class="px-more"><summary>${esc(z(`其他站（${rest.length}）`, `Other stops (${rest.length})`))}</summary><div class="px-sts">${rest.map(stB).join('')}</div></details>
 <h3>${t('exps')}</h3><div class="px-g">${EXP.map((x) => it('#P/' + x.id, x.n, tx(x.t, L_), ran.has(x.id) ? t('doneY') : t('notYet'), ran.has(x.id))).join('')}</div>
 <h3>${t('tests')}</h3><div class="px-g">${LAYERS.map((n) => { const b = bestOf(n as N); return it('#P/q' + n, n as N, t('qz'), b ? t('bestS', { r: b.right, n: b.total }) : t('nqNo'), !!b); }).join('')}</div>
 <h3>${t('mine')}</h3><div class="px-g1">${it('#L4/my/1', 4, t('mineB'), my ? t('trained') : t('notYet'), my)}</div></div>`;
@@ -229,12 +244,15 @@ const md = (t0: number) => { const d = new Date(t0); return `${d.getMonth() + 1}
 async function record(A: PxApi) {
   A.top(`<b class="l4-tt">${t('recT')}</b>`); crumbs(A, [t('recT'), null]);
   const C = await allCards(A.l); if (!A.still()) return;
-  const lg = R.log(), sk = R.streak(), st = layerStats(A.seen, A.opened), last = lastPage();
-  const S = st.reduce((a, x) => a + x.s, 0), T = st.reduce((a, x) => a + x.t, 0), Cn = st.reduce((a, x) => a + x.c, 0), CT = st.reduce((a, x) => a + x.ct, 0);
-  const cont = last
-    ? `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l">${lvT(pageLayer(last.id), L_)}<span>${esc(pageName(last.id, L_))}</span></div><button type="button" class="l4-b gold" data-go="${pgHash(last.id)}">${t('cont')}</button></div>`
-    : `<div class="px-ct"><p class="px-sub">${t('fresh')}</p><button type="button" class="l4-b gold" data-go="#L1">${t('start1')}</button></div>`;
-  const lv = st.map((x) => `<button type="button" class="px-lvr" data-go="#L${x.n}"><span class="px-row l">${lvT(x.n, L_)}<b>${esc(tx(UI.lvN[x.n - 1]!, L_))}</b><i>${esc(t(x.s === x.t ? 'lvDone' : 'lvRow', { s: x.s, t: x.t, c: x.c, ct: x.ct }))}</i></span>${pbar(x.s, x.t, x.n)}</button>`).join('');
+  const lg = R.log(), sk = R.streak(), st = layerStats(A.seen, A.opened);
+  /* R56 one ledger: the same station mastery as the home ring, the 地图 tab, the chain and 练习 */
+  const vd = vfDone(), ms = masteredSt(vd), sn = seenSt(), lm = layerMastery(ms), r = routeOf(goalGet()) ?? routeOf('model')!, nx = routeNext(r, ms, sn);
+  const rdone = r.st.filter((k) => ms.has(String(k))).length, z = (a: string, b: string) => tx([a, b], L_);
+  const C2 = 2 * Math.PI * 30, ring = `<svg class="px-ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="30" fill="none" stroke="#1d2d5c" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="#ffd77a" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C2 * ms.size) / DV_N).toFixed(1)} ${C2.toFixed(1)}" transform="rotate(-90 38 38)"/></svg>`;
+  const ft = RV.firstTry();
+  const cont = `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))} ${rdone}/${r.st.length}</span><span>${esc(z(`第 ${nx} 站 · `, `Stop ${nx} · `))}${esc(tx(DV_NM[dvI(nx)] ?? ['', ''], L_))}</span></div><button type="button" class="l4-b gold" data-go="#D/${nx}">${t('cont')}</button></div>
+<div class="px-mst">${ring}<p><b>${ms.size}</b><span>/ ${z(`${DV_N} 站掌握`, `${DV_N} stops mastered`)}</span></p><ul><li>${z(`答对 ${vd.size} 题`, `${vd.size} questions right`)}</li><li>${ft.n ? z(`首答正确率 ${ft.p}%`, `First-try accuracy ${ft.p}%`) : z('首答正确率：还没答过', 'First-try accuracy: none yet')}</li><li>${z(`读过 ${sn.size}/${DV_N} 站`, `${sn.size}/${DV_N} stops read`)}</li></ul></div>`;
+  const lv = st.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<button type="button" class="px-lvr" data-go="#L${x.n}"><span class="px-row l">${lvT(x.n, L_)}<b>${esc(tx(UI.lvN[x.n - 1]!, L_))}</b><i>${esc(z(`掌握 ${ma}/${mt} 站 · 看过 ${x.s}/${x.t} 页`, `${ma}/${mt} stops mastered · ${x.s}/${x.t} pages seen`))}</i></span>${pbar(ma, mt, x.n)}</button>`; }).join('');
   const best = LAYERS.map((n) => { const b = bestOf(n as N); return `<button type="button" class="px-bc" data-go="#P/q${n}">${lvT(n, L_)}<span>${b ? `${b.right}/${b.total}${b.right * 4 >= b.total * 3 ? ' 🏅' : ''}` : t('noQz')}</span></button>`; }).join('');
   /* questions whose latest answer was wrong */
   const lastA = new Map<string, boolean>(); for (const e of lg) if (e.k === 'ans') lastA.set(e.id, e.ok);
@@ -250,10 +268,13 @@ async function record(A: PxApi) {
   const rc = its.slice(0, 6).map((e) => `<button type="button" class="px-rc" ${e.go}><span class="k">${esc(e.k)}</span><span class="h">${esc(e.h)}</span><i>${md(e.t)}</i></button>`).join('');
   const ach = st.some((x) => x.t && x.s === x.t) || lg.some((e) => (e.k === 'quiz' && e.right * 4 >= e.total * 3) || e.k === 'path');
   A.host.innerHTML = `<div class="px px-rec">${cont}
-<h3>${t('fiveT', { s: S, t: T, c: Cn, ct: CT })}</h3><div class="px-lvs">${lv}</div>
+<h3>${esc(z(`五层掌握 · ${ms.size}/${DV_N} 站`, `Five layers · ${ms.size}/${DV_N} stops mastered`))}</h3><div class="px-lvs">${lv}</div>
+<div class="px-wall" data-px="wall"></div>
 <h3>${t('bestT')}</h3><div class="px-bcs">${best}</div>${wrong}
 <h3>${t('seenT')}</h3><div class="px-rcs">${rc || `<p class="px-sub">${t('none0')}</p>`}</div>
 <div class="px-row"><button type="button" class="l4-b" data-go="#P">${t('toP')}</button>${ach ? `<button type="button" class="l4-b gold" data-go="#S/ach">${t('shareAch')}</button>` : ''}</div><p class="px-f">${t('local')}${ach ? '' : ' ' + t('achNote')}</p></div>`;
+  const wall = A.host.querySelector<HTMLElement>('.px-wall');
+  if (wall) { const M = await import('./mem'); if (!A.still()) return; M.wall(wall, A); }
   done(A, 'R');
 }
 

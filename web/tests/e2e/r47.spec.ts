@@ -26,7 +26,7 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.dv-st')).toHaveCount(23); await expect(page.locator('.dv-lk')).toHaveCount(22); await expect(page.locator('.dv-gh')).toHaveCount(6);
     await expect(page.locator('.l4-nav')).toBeHidden();
     await page.locator('.dv-st[data-go="#D/0"]').click(); await expect(page).toHaveURL(re('#D/0')); await px(page, 'D/0.zh');
-    await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 0 步 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('0 / 16');
+    await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 0 站 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('第 0 站 · 1/23');
     await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');

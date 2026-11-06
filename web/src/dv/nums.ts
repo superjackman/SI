@@ -305,3 +305,28 @@ export function deepFill<T>(v: T, f: (s: string) => string): T {
 export function numKeys(s: string): string[] {
   return [...s.matchAll(RE)].map((m) => m[1]!);
 }
+
+/* R56 变式题 (variant questions): the number sets the 验证 step draws from, one list per kind. Entry 0 is always the
+   station's own example (the same numbers as the base self-check named in vf/var.ts), the rest are new numbers.
+   tests/unit/r56-ml.test.ts recomputes every answer and checks entry 0 against the base question. */
+export const VAR = {
+  /** predictions vs the true values 3, 5, 7 → MSE */
+  mse: [[2.5, 5, 7.5], [2, 5, 8], [3, 4, 7], [3.5, 5.5, 6], [4, 5, 6]],
+  /** the probability given to the right answer → −ln p */
+  ce: [[0.5], [0.25], [0.8], [0.1], [0.9]],
+  /** two scores → softmax % of the first */
+  sm2: [[2, 0], [1, 0], [3, 1], [0.5, 0], [2, 1]],
+  /** (w0, η) on L(w) = (w − 2)² + 0.5 → w after one step */
+  gd1: [[0, 0.3], [1.2, 0.3], [3, 0.25], [4, 0.1], [-1, 0.2]],
+  /** (w1, w2) on L = (w1 − 2)² + 2 × (w2 − 1)² → ∂L/∂w2 */
+  bowl: [[0.4, 0.4], [0, 0], [1, 0.5], [2, 1.5], [0.5, 2]],
+  /** (w0, η) with a big step → w after one step */
+  gdbig: [[0, 1.1], [1, 1.2], [3, 1.1], [0, 1.0], [4, 1.05]],
+  /** q = (a, b), k = (c, d) → q·k */
+  dot2: [[3, 1, 2, 2.5], [1, 2, 3, 1], [2, -1, 1, 3], [0.5, 4, 2, 1], [1, 1, 4, -3]],
+  /** (dot product, d_k) → scaled score */
+  scale: [[16, 64], [8, 16], [12, 9], [24, 64], [6, 4]],
+  /** weights (3) then values (3) → the mixed value Σ w × v */
+  mix: [[0.5, 0.25, 0.25, 2, 4, 8], [0.7, 0.2, 0.1, 10, 0, 5], [0.6, 0.3, 0.1, 1, 2, 3], [0.25, 0.25, 0.5, 8, 4, 2], [0.8, 0.1, 0.1, 5, 10, 0]],
+} as const;
+export type VarK = keyof typeof VAR;

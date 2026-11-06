@@ -6,6 +6,7 @@ import { tx, type L } from '../l4/txt';
 import { fillDvText } from '../dv/nums';
 import { QQ, MCS, DEMO, type Q, type DemoK } from './data';
 import { VF_Q, order, vfAdd, vfDone, vfStat } from './ids';
+import { rvAns } from '../px/rv';
 import { attW, D_ATT, D_DK, D_SM, fmt, gdKind, gdL, gdSeq, parseNum, softmax } from './calc';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -65,26 +66,29 @@ function qItem(id: string, q: Q, l: L, done: boolean) {
 const pcT = (s: number, t: number, l: L) => tx([`做对 ${s}/${t}`, `${s}/${t} solved`], l);
 
 /** fill `slot` for page `page` ('D/n' or a card id); resolves when drawn. `onTick` runs after a newly solved question.
-    `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤). */
-export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void, part?: 'demo' | 'check') {
+    `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤).
+    `o` (R56 今日复习): `ids` = just these questions (no demo, no 常见误解), `rev` = answers here clear the wrong book,
+    `onJudge` runs after every answer. Every answer also goes into the review queue (px/rv). */
+export interface MountO { ids?: readonly string[]; rev?: boolean; onJudge?: (id: string, right: boolean) => void }
+export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void, part?: 'demo' | 'check', o: MountO = {}) {
   const z = (a: string, b: string) => tx([a, b], l), d0 = vfDone();
-  const ids = part === 'demo' ? [] : VF_Q[page] ?? [], mc = part === 'demo' ? [] : MCS(page), dk = part === 'check' ? undefined : DEMO[page];
+  const ids = o.ids ? o.ids.filter((id) => id in QQ) : part === 'demo' ? [] : VF_Q[page] ?? [], mc = o.ids || part === 'demo' ? [] : MCS(page), dk = o.ids || part === 'check' ? undefined : DEMO[page];
   if (!ids.length && !mc.length && !dk) { slot.innerHTML = ''; return; }
   const st = vfStat(page, d0), s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
-    + (ids.length ? `<section class="vf-b vf-qz"><h3 class="vf-h"><span class="vf-ic">✎</span>${z('自己算一算', 'Work it out')}<span class="vf-pc${st.s === st.t ? ' all' : ''}">${pcT(st.s, st.t, l)}</span></h3><p class="vf-sub">${z('先自己算，再填进去：答错会给提示，随时可以看解答。', 'Work it out first, then type it in: a miss gives a hint, and the working is always one tap away.')}</p><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
+    + (ids.length ? `<section class="vf-b vf-qz"><h3 class="vf-h"><span class="vf-ic">✎</span>${z('自己算一算', 'Work it out')}${o.ids ? '' : `<span class="vf-pc${st.s === st.t ? ' all' : ''}">${pcT(st.s, st.t, l)}</span>`}</h3><p class="vf-sub">${z('先自己算，再填进去：答错会给提示，随时可以看解答。', 'Work it out first, then type it in: a miss gives a hint, and the working is always one tap away.')}</p><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
     + (mc.length ? `<section class="vf-b vf-mc"><h3 class="vf-h"><span class="vf-ic">⚠</span>${z('常见误解', 'Common misconceptions')}</h3>${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
     + '</div>';
   const pc = slot.querySelector<HTMLElement>('.vf-pc');
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {
     const id = li.dataset.q!, q = QQ[id]!, fb = li.querySelector<HTMLElement>('.vf-fb')!;
-    li.dataset.st = right ? 'ok' : 'bad';
+    li.dataset.st = right ? 'ok' : 'bad'; rvAns(id, right, undefined, !!o.rev); o.onJudge?.(id, right);
     fb.innerHTML = right ? `<b>✓ ${z('对了！', 'Right!')}</b>` : `<b>✗ ${z('还不对，再试试。', 'Not yet — try again.')}</b> ${z('提示：', 'Hint: ')}${mk(tx(q.h, l), l)}`;
     if (q.o) li.querySelectorAll<HTMLElement>('.vf-op').forEach((b) => { const i = Number(b.dataset.vf!.slice(5)); b.classList.toggle('ok', right && i === q.a); b.classList.toggle('bad', !right && i === pick); });
     if (right && !vfDone().has(id)) {
       vfAdd(id); li.classList.add('done');
       const qq = li.querySelector('.vf-qq'); if (qq && !qq.querySelector('.vf-tk')) qq.insertAdjacentHTML('beforeend', `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>`);
-      const r = vfStat(page); if (pc) { pc.textContent = pcT(r.s, r.t, l); pc.classList.toggle('all', r.s === r.t); }
+      const r = vfStat(page); if (pc && !o.ids) { pc.textContent = pcT(r.s, r.t, l); pc.classList.toggle('all', r.s === r.t); }
       onTick?.();
     }
   };

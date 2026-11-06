@@ -84,7 +84,7 @@ test.describe('R53 home', () => {
     await sh.locator('[data-s="g:interview"]').click(); await expect(sh.locator('[data-s="g:interview"]')).toHaveAttribute('aria-checked', 'true');
     await sh.locator('[data-s="jv"]').click(); expect(await page.evaluate(() => localStorage.getItem('si.ly.jv'))).toBe('1');
     await sh.locator('[data-s="go"]').click(); await expect(sh).toHaveCount(0); await expect(page).toHaveURL(/#D\/1$/);
-    await page.waitForSelector('.ly-jv'); expect(await page.locator('.ly-jv').evaluate((e) => (e as HTMLDetailsElement).open)).toBe(true);
+    await page.waitForSelector('.ly-jv', { state: 'attached' }); expect(await page.locator('.ly-jv').evaluate((e) => (e as HTMLDetailsElement).open)).toBe(true);
     expect(errs).toEqual([]);
   });
   for (const lang of ['zh', 'en'] as const) {
