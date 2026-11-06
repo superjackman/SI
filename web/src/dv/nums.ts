@@ -449,5 +449,11 @@ export const VAR = {
   ceu: [[0.25], [0.5], [0.1], [0.2], [0.8]],
   /** perplexity of a uniform  k-way guess */
   pplR: [[4], [2], [8], [10], [5]],
+  /** (experts, top-k) → percent of experts that run */
+  moe: [[8, 2], [8, 1], [16, 2], [64, 8], [4, 2]],
+  /** (teacher size, student size) → student as a percent of the teacher */
+  dist: [[100, 10], [100, 25], [70, 7], [50, 5], [100, 40]],
+  /** (human-written, model-written) → percent that the model wrote */
+  syn: [[80, 20], [50, 50], [90, 10], [60, 40], [100, 25]],
 } as const;
 export type VarK = keyof typeof VAR;

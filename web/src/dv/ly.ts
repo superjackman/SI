@@ -8,6 +8,7 @@ import { tx, type L } from '../l4/txt';
 import type { Ly, Stage } from './types';
 import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
+import { life } from './ill';
 
 import { LY_DEPTH, depthGet, depthSet, jvGet, okD, type Depth } from './prog';
 
@@ -25,8 +26,8 @@ const openSet = (page: string, n: number) => { const o = openAll(); o[page] = n;
 export const shown = (open: number, d: Depth) => Math.max(1, Math.min(open, DEPTH_MAX[d]));
 
 const NAME: readonly (readonly [string, string])[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
-const HEAD: readonly (readonly [string, string])[] = [['为什么要关心 · 生活类比', 'Why care · an everyday analogy'], ['看图', 'See it'], ['算一算真实的数', 'The real numbers'], ['公式：每一块对应刚才的类比', 'The formula: each part maps back to the analogy'], ['小测 + 常见误解', 'Check yourself + common misconceptions']];
-const NXT: readonly (readonly [string, string])[] = [['懂了，看图', 'Got it: see the picture'], ['懂了，看数字', 'Got it: the numbers'], ['懂了，看公式', 'Got it: the formula'], ['懂了，做小测', 'Got it: check yourself']];
+const HEAD: readonly (readonly [string, string])[] = [['为什么要关心', 'Why it matters'], ['一幅图', 'A picture'], ['这几个数', 'These numbers'], ['写成式子', 'As a formula'], ['算一下', 'Work it out']];
+const NXT: readonly (readonly [string, string])[] = [['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue'], ['来算一下', 'Work it out']];
 const CIRC = ['①', '②', '③', '④', '⑤'];
 const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 
@@ -70,12 +71,6 @@ function picBowl(l: L) {
 <ul class="ly-leg"><li><span class="ly-dot ly-r" aria-hidden="true"></span><span class="nw">${z('起点 (0,0)：横 w1 · 纵 w2', 'Start (0,0); across w1, up w2')}</span></li><li><span class="ly-dot ly-q" aria-hidden="true"></span><span class="nw">${z('只动 w1：−∂L/∂w1 = 4', 'Only w1: −∂L/∂w1 = 4')}</span></li><li><span class="ly-dot ly-k" aria-hidden="true"></span><span class="nw">${z('只动 w2：−∂L/∂w2 = 4', 'Only w2: −∂L/∂w2 = 4')}</span></li><li><span class="ly-dot ly-v" aria-hidden="true"></span><span class="nw">${z('合起来是负梯度 (4,4)，一步改两个', 'Together: negative gradient (4,4), one step')}</span></li><li><span class="ly-c ly-q" aria-hidden="true">★ </span><span class="nw">${z('碗底 (2, 1)', 'the bottom (2, 1)')}</span></li></ul>`;
 }
 
-function picFlow(l: L, mk: Mk, pc: string[]) {
-  const z = (a: string, b: string) => tx([a, b], l);
-  const steps = pc.length ? pc : [z('一步 → 下一步', 'one step → the next')];
-  const boxes = steps.map((s, i) => `<div class="ly-fls"><span class="ly-fln">${i + 1}</span><p>${mk(s)}</p></div>${i < steps.length - 1 ? '<div class="ly-fla" aria-hidden="true">↓</div>' : ''}`).join('');
-  return `<div class="ly-flow" role="group" aria-label="${z('流程', 'Flow')}">${boxes}</div>`;
-}
 function picXor(l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   const pts: [number, number, string][] = [[40, 40, '0,0→0'], [40, 140, '0,1→1'], [200, 40, '1,0→1'], [200, 140, '1,1→0']];
@@ -104,13 +99,15 @@ function picBlk(l: L) {
 /** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
   const z = (a: string, b: string) => tx([a, b], l), Y = S.ly, d = depthGet(), v = shown(openGet(page), d);
-  const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'flow' ? picFlow(l, mk, Y.pc) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : `<div class="ly-att" data-att="1"></div>`;
+  const key = page.replace(/^D\//, '');
+  const own = life(key, l);
+  const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : Y.pic === 'att' ? `<div class="ly-att" data-att="1"></div>` : own;
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<p class="ly-hook"><b>${z('为什么要关心', 'Why care')}</b>${mk(Y.hook)}</p>${P(Y.an, mk)}<details class="ly-jv"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
-    `${pic}${Y.pic === 'flow' ? '' : P(Y.pc, mk, 'ly-cap')}`,
+    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}<details class="ly-jv"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
+    `${pic}${P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" data-vf-part="demo"></div>`,
-    `<div class="ly-fx">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p></details>`,
+    `<div class="ly-fx">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('自己算一算', 'Work it out')}</b>${mk(S.h)}</p></details>`,
     `<div class="vf-slot" data-vf-part="check"></div>`,
   ];
   const seg = (['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" data-ly-d="${k}" aria-checked="${k === d}"${k === d ? ' class="on"' : ''}>${esc(tx(DLAB[k], l))}</button>`).join('');
@@ -138,7 +135,7 @@ export function wire(host: HTMLElement, page: string, l: L) {
     const nx = root.querySelector<HTMLElement>('.ly-nx')!;
     nx.innerHTML = v >= 5 ? `<p class="ly-end">${z('✓ 五层都看完了。下面是下一步。', '✓ All five layers done. The next step is below.')}</p>`
       : v < max ? `<button type="button" class="l4-b g-jump ly-go" data-ly-a="next">${esc(tx(NXT[v - 1]!, l))}</button>`
-      : `<button type="button" class="l4-b g-info ly-go" data-ly-a="up">${d === 's' ? z('想多看一点？切到 5 分钟：图和数字', 'Want more? Switch to 5 min: picture and numbers') : z('想看公式和小测？切到深入', 'Want the formula and a check? Switch to Deep')}</button>`;
+      : `<button type="button" class="l4-b g-info ly-go" data-ly-a="up">${d === 's' ? z('再往下看？切到 5 分钟', 'More of it? Switch to 5 min') : z('连式子一起？切到深入', 'The formula too? Switch to Deep')}</button>`;
   };
   const focus = (k: number) => { const h = root.querySelector<HTMLElement>(`.ly-l[data-ly="${k}"] .ly-h`); if (!h) return; h.focus({ preventScroll: true }); h.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' }); };
   const openTo = (k: number) => { if (k > open) { open = k; openSet(page, k); } if (k > DEPTH_MAX[d]) { d = depthFor(k); depthSet(d); } draw(); focus(k); };

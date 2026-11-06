@@ -404,6 +404,21 @@ export const extraG: Partial<Record<VarK, (p: readonly number[]) => Q2>> = {
     [M(ln(k!), ['这是损失，不是困惑度。', 'That is the loss, not the perplexity.'], ['困惑度 = e^L', 'perplexity = e^L'], 4),
       M(1 / k!, ['这是每个候选的概率，不是困惑度。', 'That is each candidate’s probability, not the perplexity.'], ['犹豫的个数', 'How many it is torn between'], 1),
       M(k! - 1, ['你减了 1。均匀猜 k 个，困惑度就是 k。', 'You subtracted 1. Uniform over k means perplexity k.'], ['就是 k', 'It is k'], 3)]),
+  moe: ([n, k]) => box('moe', [`${f(n!, 0)} 个专家，每次只用 ${f(k!, 0)} 个。参加计算的占百分之几？`, `${f(n!, 0)} experts, and only ${f(k!, 0)} run. What percent joins the computation?`],
+    (100 * k!) / n!, 0, 0.6, [`\`${f(k!, 0)} ÷ ${f(n!, 0)}\``, `\`${f(k!, 0)} ÷ ${f(n!, 0)}\``],
+    [M(k!, ['这是选中的个数，不是百分比。', 'That is how many were picked, not the percent.'], ['个数和百分比', 'A count and a percent'], 1),
+      M(n! - k!, ['这是没被选中的个数。', 'That is how many were not picked.'], ['睡着的那些', 'The ones asleep'], 3),
+      M((100 * n!) / k!, ['分子分母反了。', 'Numerator and denominator are swapped.'], ['选中 ÷ 总数', 'picked ÷ total'], 4)]),
+  dist: ([t, s]) => box('dist', [`老师 ${f(t!, 0)}，学生 ${f(s!, 0)}。学生是老师的百分之几？`, `Teacher ${f(t!, 0)}, student ${f(s!, 0)}. What percent of the teacher is the student?`],
+    (100 * s!) / t!, 0, 0.6, [`\`${f(s!, 0)} ÷ ${f(t!, 0)}\``, `\`${f(s!, 0)} ÷ ${f(t!, 0)}\``],
+    [M(t! - s!, ['这是两者的差，不是学生占老师的比例。', 'That is the gap, not the student’s share of the teacher.'], ['差和比例', 'A gap and a share'], 1),
+      M(t!, ['这是老师自己的大小。', 'That is the teacher’s own size.'], ['学生更小', 'The student is smaller'], 3),
+      M(s! / t!, ['差了 100 倍：问的是百分比。', 'Short by 100: the question asks for a percent.'], ['百分比', 'Percent'], 4)]),
+  syn: ([h, m]) => box('syn', [`人写 ${f(h!, 0)} 道，模型写 ${f(m!, 0)} 道。模型写的占百分之几？`, `${f(h!, 0)} written by people, ${f(m!, 0)} by a model. What percent did the model write?`],
+    (100 * m!) / (h! + m!), 0, 0.6, [`\`${f(m!, 0)} ÷ (${f(h!, 0)} + ${f(m!, 0)})\``, `\`${f(m!, 0)} ÷ (${f(h!, 0)} + ${f(m!, 0)})\``],
+    [M((100 * m!) / h!, ['分母只用了人写的题。两种要加在一起。', 'The denominator used only the human questions. Add both kinds.'], ['分母是全部', 'The denominator is the whole'], 4),
+      M(h!, ['这是人写的道数。', 'That is how many people wrote.'], ['问的是模型写的那一份', 'The question asks for the model’s share'], 1),
+      M(100, ['100% 表示全部都是模型写的。这里还有人写的。', '100% would mean the model wrote all of them. People wrote some too.'], ['不是全部', 'Not the whole'], 3)]),
 };
 
 /** self-checks that entry 0 of a new pool reproduces */

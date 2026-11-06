@@ -64,9 +64,9 @@ export async function dv(id: string, A: PxApi) {
   /* R56 the micro-loop pilot (调查 → 推理 → 验证) wraps the layered body on stations with ML content */
   const MLm = LY && dvK(i) in ML_G ? await import('./ml') : null; if (!A.still()) return;
   const page = `D/${dvK(i)}`;
-  const vsw = `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${z('换个角度看', 'Another angle')}"><button type="button" role="radio" aria-checked="false" data-go="${tdh}">${z('自顶向下·看结构', 'Top-down · structure')}</button><button type="button" role="radio" aria-checked="true" class="on" data-a="none">${z('自底向上·看推导', 'Bottom-up · derivation')}</button></div>`;
+  A.root.dataset.topdown = tdh;
   A.host.innerHTML = `<div class="px dv dv-sp" style="--c:${col(i)}">
-${vsw}<div class="dv-hd">${lvT(i, l)}<span class="dv-so">${esc(S.s)}</span></div>${from}
+<div class="dv-hd">${lvT(i, l)}<span class="dv-so">${esc(S.s)}</span></div>${from}
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
 ${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
 ${sec(5, next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), `<p class="dv-lo">${mk(S.lo)}</p>${nxt}`)}

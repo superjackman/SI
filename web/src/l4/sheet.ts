@@ -53,8 +53,9 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     + `</section>`;
   const el = document.createElement('div'); el.className = 'l4-sheet'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', `${T('kcT')} ${id} ${c.n}`); el.dataset.card = id; el.dataset.p = String(p); if (q) el.classList.add('q');
   const head = `<header class="l4-sh"><span class="l4-kid">${id}</span><b class="l4-kn">${c.n}</b><span class="l4-ktag">${LV.tag ? tx(LV.tag, l) : T('kcT')}${p === 2 ? ' ' + tx(['（续）', '(cont.)'], l) : ''}</span></header>`;
+  const bits = `<ol class="kc-bits">${(['s2', 's3', 's4'] as const).map((k, i) => `<li><button type="button" class="kc-bit" data-s="bit" data-bit="c${i + 2}">${T(k)}</button></li>`).join('')}</ol>`;
   const body = p === 1
-    ? `${vsw}<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}<div class="vf-slot" data-vf-page="${id}"></div>${alt}`
+    ? `${vsw}${bits}<div class="l4-k1">${mini(c, l)}<div class="l4-k12">${sec(T('s1'), 'c1', c.s[0], '')}${sec(T('s2'), 'c2', c.s[1], '')}<p class="l4-knote">${c.no || T('litNote')}</p></div></div>${sec(T('s3'), 'c3', c.s[2], '')}${sec(T('s4'), 'c4', c.s[3], '')}<div class="vf-slot" data-vf-page="${id}"></div>${alt}`
     : sec(T('s5'), 'c5', c.s[4], '');
   const z = (a: string, b: string) => tx([a, b], l), jt = jg ? tx(jg[0], l).replace(/\s*›$/, '') : '';
   const foot = `<footer class="l4-sf g-sf"><div class="g-l">${math ? `<button type="button" class="l4-b g-info" data-s="math">${T('math')}</button>` : ''}${jg ? `<button type="button" class="l4-b g-jump" data-s="jump">${jt}</button>` : ''}<button type="button" class="l4-b g-act" data-s="share">⤴ ${T('shareB')}</button></div>
@@ -73,6 +74,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     if (s === 'close') go(null); else if (s === 'flip') go(p === 1 ? `${id}.2` : id); else if (s === 'math' && math) go(math);
     else if (s === 'jump' && jg) { el.remove(); navTo(window, jg[1]); }
     else if ((s === 'dv' || s === 'dvx') && dv != null) { el.remove(); try { sessionStorage.setItem(DV_FOCUS, id); } catch { /* private mode */ } navTo(window, `#D/${dvK(s === 'dvx' ? Number(b.dataset.n) : dv)}`); }
+    else if (s === 'bit' && b.dataset.bit) el.querySelector<HTMLElement>(`.l4-kh.${b.dataset.bit}`)?.scrollIntoView({ block: 'start' });
     else if (s === 'sib' && b.dataset.k) go(b.dataset.k);
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });

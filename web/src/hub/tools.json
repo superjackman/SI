@@ -1,0 +1,101 @@
+{
+  "checked": "2026-11-06",
+  "items": [
+    {
+      "id": "deepseek",
+      "cat": "read",
+      "name": "DeepSeek",
+      "url": "https://www.deepseek.com/",
+      "zh": "对话、查资料、写代码。",
+      "en": "Chat, look things up, write code.",
+      "free": ["有免费档，额度以官网当天为准", "A free tier; the quota is whatever the site says that day"],
+      "cn": ["官网在中国大陆可以打开", "The site opens in mainland China"],
+      "st": ["9", "12"],
+      "safe": "S"
+    },
+    {
+      "id": "kimi",
+      "cat": "read",
+      "name": "Kimi",
+      "url": "https://kimi.moonshot.cn/",
+      "zh": "长文和查资料。",
+      "en": "Long documents and lookup.",
+      "free": ["有免费档，额度以官网当天为准", "A free tier; the quota is whatever the site says that day"],
+      "cn": ["官网在中国大陆可以打开", "The site opens in mainland China"],
+      "st": ["13", "15b"],
+      "safe": "S"
+    },
+    {
+      "id": "qwen",
+      "cat": "read",
+      "name": "Qwen",
+      "url": "https://www.tongyi.com/",
+      "zh": "通义千问：对话、读文档。",
+      "en": "Chat and reading documents.",
+      "free": ["有免费档，额度以官网当天为准", "A free tier; the quota is whatever the site says that day"],
+      "cn": ["官网在中国大陆可以打开", "The site opens in mainland China"],
+      "st": ["9", "14"],
+      "safe": "S"
+    },
+    {
+      "id": "doubao",
+      "cat": "read",
+      "name": "Doubao",
+      "url": "https://www.doubao.com/",
+      "zh": "豆包：日常对话。",
+      "en": "Everyday chat.",
+      "free": ["有免费档，额度以官网当天为准", "A free tier; the quota is whatever the site says that day"],
+      "cn": ["官网在中国大陆可以打开", "The site opens in mainland China"],
+      "st": ["9", "14"],
+      "safe": "S"
+    },
+    {
+      "id": "chatgpt",
+      "cat": "code",
+      "name": "ChatGPT",
+      "url": "https://chatgpt.com/",
+      "zh": "对话和写代码。",
+      "en": "Chat and code.",
+      "free": ["有免费档，付费档另算，以官网为准", "A free tier, paid plans separate; see the site"],
+      "cn": ["官网在中国大陆不能直接打开", "The site does not open directly in mainland China"],
+      "st": ["9", "A"],
+      "safe": "S"
+    },
+    {
+      "id": "claude",
+      "cat": "code",
+      "name": "Claude",
+      "url": "https://claude.ai/",
+      "zh": "对话和改长文。",
+      "en": "Chat and long edits.",
+      "free": ["有免费档，额度以官网当天为准", "A free tier; the quota is whatever the site says that day"],
+      "cn": ["官网在中国大陆不能直接打开", "The site does not open directly in mainland China"],
+      "st": ["9", "10"],
+      "safe": "S"
+    },
+    {
+      "id": "copilot",
+      "cat": "code",
+      "name": "GitHub Copilot",
+      "url": "https://github.com/features/copilot",
+      "zh": "在编辑器里补代码。",
+      "en": "Code completion inside an editor.",
+      "free": ["有免费档，以 GitHub 当天说明为准", "A free tier; see GitHub’s current note"],
+      "cn": ["需要 GitHub 账号，大陆访问 GitHub 不稳定", "Needs a GitHub account; GitHub is unreliable in mainland China"],
+      "st": ["A", "11"],
+      "safe": "S"
+    },
+    {
+      "id": "ollama",
+      "cat": "local",
+      "name": "Ollama",
+      "url": "https://ollama.com/",
+      "zh": "在自己的电脑上跑开源模型。",
+      "en": "Run an open model on your own computer.",
+      "free": ["软件本身免费，模型在本机", "The app is free; the model runs locally"],
+      "cn": ["不经过境外接口，安装包需能下载", "No foreign API; you still need to download the installer"],
+      "st": ["12", "11"],
+      "safe": "S"
+    }
+  ]
+}

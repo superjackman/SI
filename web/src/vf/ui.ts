@@ -8,6 +8,7 @@ import { QQ, MCS, DEMO, type Q, type DemoK } from './data';
 import { VF_Q, order, vfAdd, vfDone, vfStat } from './ids';
 import { rvAns } from '../px/rv';
 import { attW, D_ATT, D_DK, D_SM, fmt, gdKind, gdL, gdSeq, parseNum, softmax } from './calc';
+import { extraCtl, extraOut, extraTitle, isExtra } from './demo2';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 /** **keyword** · `formula` · {~approximate} · {#shared number}, as on the stage pages */
@@ -21,11 +22,12 @@ export const ansT = (q: Q, l: L) => (q.o ? tx(q.o[q.a]!, l) : fmt(q.a, q.d) + (q
 export { order };
 
 /* ---------- the three demos (pure: state → html, tested) ---------- */
-export type DemoS = { eta: number; n: number; T: number; dk: number };
-export const DEMO0: DemoS = { eta: 0.3, n: 4, T: 1, dk: 3 };
+export type DemoS = { eta: number; n: number; T: number; dk: number; pred: number; ang: number; layer: number; rank: number; len: number; hit: number; play: number; frame: number };
+export const DEMO0: DemoS = { eta: 0.3, n: 4, T: 1, dk: 3, pred: 4, ang: 40, layer: 0, rank: 4, len: 4, hit: 1, play: 0, frame: 0 };
 const pct = (v: number) => fmt(100 * v, 1) + '%';
 const bars = (lab: string[], p: number[]) => p.map((v, i) => `<div class="vf-bar"><span>${esc(lab[i]!)}</span><i style="width:${Math.max(1, Math.round(100 * v))}%"></i><b>${pct(v)}</b></div>`).join('');
 export function demoOut(k: DemoK, s: DemoS, l: L): string {
+  if (isExtra(k)) return extraOut(k, s, l);
   const z = (a: string, b: string) => tx([a, b], l);
   if (k === 'gd') {
     const w = gdSeq(s.eta, s.n), L0 = gdL(w[0]!), Ln = gdL(w[s.n]!), kind = gdKind(s.eta);
@@ -44,14 +46,15 @@ export function demoOut(k: DemoK, s: DemoS, l: L): string {
   const dk = D_DK[s.dk]!, p = attW(D_ATT, dk), sc = D_ATT.map((v) => v / Math.sqrt(dk));
   return `${bars([z('词 1', 'word 1'), z('词 2', 'word 2'), z('词 3', 'word 3')], p)}<p class="vf-o">[${D_ATT.join(', ')}] ÷ √${dk} = [${sc.map((v) => fmt(v, 2)).join(', ')}]</p><p class="vf-n">${dk === 1 ? z('d_k = 1 等于不缩放：几乎只看词 1', 'd_k = 1 is no scaling: almost only word 1') : z('d_k 越大除得越多，权重越平均，不会全压在一个词上', 'The bigger d_k, the more it divides: the weights even out instead of piling onto one word')}</p>`;
 }
-const DT: Record<DemoK, readonly [string, string]> = { gd: ['拖一拖 · 梯度下降', 'Drag it · gradient descent'], sm: ['拖一拖 · 温度', 'Drag it · temperature'], att: ['拖一拖 · 注意力缩放', 'Drag it · attention scaling'] };
+const DT = { gd: ['拖一拖 · 梯度下降', 'Drag it · gradient descent'], sm: ['拖一拖 · 温度', 'Drag it · temperature'], att: ['拖一拖 · 注意力缩放', 'Drag it · attention scaling'] } as const;
 const sl = (k: keyof DemoS, lab: string, a: number, b: number, st: number, v: number, out: string) => `<label class="vf-sl"><span>${esc(lab)}</span><input type="range" data-vs="${k}" min="${a}" max="${b}" step="${st}" value="${v}" aria-label="${esc(lab)}"><output>${out}</output></label>`;
-const slOut = (k: keyof DemoS, v: number) => (k === 'dk' ? String(D_DK[v]) : k === 'n' ? String(v) : fmt(v, k === 'eta' ? 2 : 1));
+const slOut = (k: keyof DemoS, v: number) => (k === 'dk' ? String(D_DK[v] ?? v) : k === 'n' || k === 'layer' || k === 'rank' || k === 'len' || k === 'hit' || k === 'play' || k === 'frame' ? String(Math.round(v)) : k === 'ang' ? `${fmt(v, 0)}°` : fmt(v, k === 'eta' ? 2 : 1));
 function demo(k: DemoK, s: DemoS, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  const ctl = k === 'gd' ? sl('eta', z('学习率 η', 'Rate η'), 0.05, 1.2, 0.05, s.eta, slOut('eta', s.eta)) + sl('n', z('步数', 'Steps'), 1, 8, 1, s.n, slOut('n', s.n))
-    : k === 'sm' ? sl('T', z('温度 T', 'Temp T'), 0.1, 3, 0.1, s.T, slOut('T', s.T)) : sl('dk', 'd_k', 0, D_DK.length - 1, 1, s.dk, slOut('dk', s.dk));
-  return `<section class="vf-b vf-dm" data-dm="${k}"><h3 class="vf-h"><span class="vf-ic">⇆</span>${esc(tx(DT[k], l))}</h3><div class="vf-ctl">${ctl}</div><div class="vf-res" aria-live="polite">${demoOut(k, s, l)}</div></section>`;
+  const ctl = extraCtl(k, s, l) ?? (k === 'gd' ? sl('eta', z('学习率 η', 'Rate η'), 0.05, 1.2, 0.05, s.eta, slOut('eta', s.eta)) + sl('n', z('步数', 'Steps'), 1, 8, 1, s.n, slOut('n', s.n))
+    : k === 'sm' ? sl('T', z('温度 T', 'Temp T'), 0.1, 3, 0.1, s.T, slOut('T', s.T)) : sl('dk', 'd_k', 0, D_DK.length - 1, 1, s.dk, slOut('dk', s.dk)));
+  const title = isExtra(k) ? extraTitle(k) : DT[k];
+  return `<section class="vf-b vf-dm" data-dm="${k}"><h3 class="vf-h"><span class="vf-ic">⇆</span>${esc(tx(title, l))}</h3><div class="vf-ctl">${ctl}</div><div class="vf-res" aria-live="polite">${demoOut(k, s, l)}</div></section>`;
 }
 
 /* ---------- the questions ---------- */
@@ -97,7 +100,16 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
     if (v == null) { li.dataset.st = 'bad'; li.querySelector<HTMLElement>('.vf-fb')!.innerHTML = `<b>${z('先填一个数字。', 'Type a number first.')}</b>`; return; }
     judge(li, ok(q, v));
   };
+  let timer = 0;
+  const redraw = () => { const r = slot.querySelector<HTMLElement>('.vf-res'); if (r && dk) r.innerHTML = demoOut(dk, s, l); };
   slot.addEventListener('click', (e) => {
+    const pause = (e.target as HTMLElement).closest<HTMLElement>('[data-vs="play"]');
+    if (pause && dk) {
+      e.stopPropagation(); s.play = s.play ? 0 : 1; pause.setAttribute('aria-pressed', s.play ? 'true' : 'false'); pause.textContent = s.play ? z('暂停', 'Pause') : z('播放', 'Play');
+      window.clearInterval(timer);
+      if (s.play) timer = window.setInterval(() => { if (!slot.isConnected || !s.play) { window.clearInterval(timer); return; } s.frame = (s.frame + 1) % 8; if (dk === 'bp') s.layer = s.frame % 4; redraw(); }, 700);
+      return;
+    }
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-vf]'), li = b?.closest<HTMLElement>('.vf-q'); if (!b || !li) return;
     const k = b.dataset.vf!;
     if (k === 'ck') check(li);

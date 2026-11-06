@@ -381,6 +381,8 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 
 /* R48 一体两视角: square 第n层 badges (.l4-lt, 3px), round 第n步 badges (.dv-sb); the view switch; the card's gold 换个角度看 box */
 .l4 .dv-sb { flex: none; display: inline-block; padding: 0 7px; border-radius: 999px; background: #c99a2e; color: #1a1204; font-size: 12px; font-weight: 800; line-height: 1.6; white-space: nowrap; }
+.kc-bits { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; padding: 0; }
+.kc-bit { min-height: 36px; padding: 4px 8px; border-radius: 10px; border: 1px solid #2c4690; background: #0a1532; color: #dbe6ff; font-size: 13px; text-align: left; }
 .l4 .g-seg.l4-vsw, .l4 .g-seg.dv-vsw { margin: 0 0 6px; }
 .l4 .g-seg.l4-vsw button, .l4 .g-seg.dv-vsw button { min-height: 36px; padding: 0 4px; font-size: 12.5px; line-height: 1.25; white-space: normal; }
 .l4-sheet .l4-kalt { margin: 6px 0; padding: 6px 8px 8px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; display: flex; flex-direction: column; gap: 6px; }

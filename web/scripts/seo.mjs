@@ -71,7 +71,7 @@ export function buildSeo({ web, base, lastmod } = {}) {
     + '.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}'
     + '.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}'
     + 'ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}';
-  const head = ({ L, title, desc, path, alt, type = 'article', ld, noindex = false }) => `<!doctype html>
+  const head = ({ L, title, desc, path, alt, type = 'article', ld, noindex = false, image }) => `<!doctype html>
 <html lang="${HL[L]}">
 <head>
 <meta charset="utf-8">
@@ -86,16 +86,16 @@ ${noindex ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" 
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${abs(path)}">
-<meta property="og:image" content="${ORIGIN}${base}og.png">
+<meta property="og:image" content="${image || ORIGIN + base + 'og.png'}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="${esc(SITE[L])}">
+<meta property="og:image:alt" content="${esc(title)}">
 <meta property="og:locale" content="${OGL[L]}">
 <meta property="og:locale:alternate" content="${OGL[L === 'zh' ? 'en' : 'zh']}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
-<meta name="twitter:image" content="${ORIGIN}${base}og.png">
+<meta name="twitter:image" content="${image || ORIGIN + base + 'og.png'}">
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="${base}icon-192.png">
 ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
@@ -147,7 +147,7 @@ ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(plain(
 <section><h2>${T[L].all}</h2><ol>${KEYS.map((kk, j) => j === i ? `<li><b>${esc(names[L][j])}</b></li>` : `<li><a href="${base}${pagePath(kk, L)}">${esc(names[L][j])}</a></li>`).join('')}</ol></section>
 </main>
 `;
-      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer}</p></footer>\n</body>\n</html>\n`);
+      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld, image: `${ORIGIN}${base}og-st/${k}.png` }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer}</p></footer>\n</body>\n</html>\n`);
       pages.push({ path, alt, lastmod: lm });
     }
     const path = catPath(L), alt = { zh: catPath('zh'), en: catPath('en') }, title = `${T[L].catT(KEYS.length)} · ${SITE[L]}`;

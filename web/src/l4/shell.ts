@@ -308,7 +308,9 @@ export function start(doc: Document = document, win: Window = window) {
     const opened = new Set(LS.get<string[]>('si.l4.cards', [])), ps = layerStats(seen, opened);
     const lm = layerMastery(masteredSt());
     const prog = `<div class="l4-mpg">${ps.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<div class="rw">${lvTag(x.n, lang)}${pbar(ma, mt, x.n)}<span class="m">${esc(tx([`掌握 ${ma}/${mt} 站 · 看过 ${x.s}/${x.t} 页`, `${ma}/${mt} stops mastered · ${x.s}/${x.t} pages`], lang))}</span></div>`; }).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
-    list(T('mapT'), `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
+    const onSt = /^D\/(?!map$|routes$|ch)/.test(cur), td = root.dataset.topdown || '#map';
+    const vsw = onSt ? `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${tx(['换个角度看', 'Another angle'], lang)}"><button type="button" role="radio" aria-checked="false" data-go="${td}">${tx(['自顶向下·看结构', 'Top-down · structure'], lang)}</button><button type="button" role="radio" aria-checked="true" class="on">${tx(['自底向上·看推导', 'Bottom-up · derivation'], lang)}</button></div>` : '';
+    list(T('mapT'), vsw + `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
       + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }

@@ -30,7 +30,7 @@
           "目标不是背下样本，而是⟦v:没听过的歌也能收清楚⟧——这叫泛化。"
         ],
         "jv": "像拟合 y = f(x; θ)：θ 是可训练参数；监督学习提供 (x, y) 对；泛化 = 测试集上也准。",
-        "pic": "flow",
+        "pic": "fit",
         "pc": [
           "输入 x → 带参数 θ 的函数 → 预测；用样本把 θ 拧到合适。"
         ],
@@ -77,7 +77,7 @@
           "语言模型就是在算：已知⟦c:前文⟧，下一个⟦v:词元⟧分别有多大可能。"
         ],
         "jv": "像 Map<Token, Double> 存每个候选的概率，且 values 之和必须是 1.0；条件概率就是给定 key 前缀后再查。",
-        "pic": "sm",
+        "pic": "dice",
         "pc": [
           "左：4 个候选的⟦q:分数⟧；中：变成⟦k:概率⟧（加起来 100%）；右：正确答案概率越小，后面的罚分越大。"
         ],
@@ -274,7 +274,7 @@
           "路太长会⟦v:信号消失⟧：用 ReLU、残差、归一化保住通路。"
         ],
         "jv": "dL/dw = dL/dy * dy/dh * dh/dw；框架的 autograd 本质就是反向传播。",
-        "pic": "flow",
+        "pic": "slope",
         "pc": [
           "前向算出每层的值 → 反向把梯度传回来 → 得到每个参数的偏导。"
         ],
@@ -323,7 +323,7 @@
           "⟦v:正则化 / 早停⟧：别背训练集。"
         ],
         "jv": "SGD + momentum + AdamW；train/val/test 划分。",
-        "pic": "flow",
+        "pic": "knob",
         "pc": [
           "抽一批 → 算梯度 → Adam 更新 → 看验证集是否该停。"
         ],
@@ -420,7 +420,7 @@
           "⟦k:注意力⟧像每次发言前扫一眼所有人的名牌，按相关度听。"
         ],
         "jv": "h_t = tanh(W h_{t-1} + U x_t)；attention weights via softmax.",
-        "pic": "flow",
+        "pic": "note",
         "pc": [
           "RNN 逐步更新 h；注意力对所有 h 打分、加权求和。"
         ],
@@ -562,7 +562,7 @@
           "生成时：⟦v:温度 / top-k / top-p⟧决定「保守还是爱玩」。"
         ],
         "jv": "Next-token CE loss；BPE；decoding = sample from softmax(logits/T).",
-        "pic": "flow",
+        "pic": "book",
         "pc": [
           "前文 → 模型 → 各词元概率 → 采样得到下一个 → 接上再走。"
         ],
@@ -609,7 +609,7 @@
           "若⟦v:考题泄漏⟧进了复习资料，高分就不可信——这叫数据污染。"
         ],
         "jv": "像单元测试套件：同一组 assert 跑两个实现，比的是 pass 数；还要防测试数据进了训练集。",
-        "pic": "flow",
+        "pic": "exam",
         "pc": [
           "尺子：基准题集 → 出分；另一把尺子：人评 / 模型评；Agent 另看任务是否办完。"
         ],
@@ -658,7 +658,7 @@
           "⟦v:推理强化学习⟧：答案能自动判对错的题上，学会写长思维链。"
         ],
         "jv": "SFT then preference opt (PPO/DPO) then optional reasoning RL (GRPO etc.).",
-        "pic": "flow",
+        "pic": "coach",
         "pc": [
           "预训练基座 → SFT → 偏好对齐 →（可选）推理 RL。"
         ],
@@ -702,7 +702,7 @@
           "⟦v:量化⟧：用更少比特存权重，换一点精度。"
         ],
         "jv": "W′=W+BA；QLoRA = 4-bit base + LoRA.",
-        "pic": "flow",
+        "pic": "lora",
         "pc": [
           "冻结 W ∥ 旁路 B×A；或 INT4 存 W。"
         ],
@@ -750,7 +750,7 @@
           "多个头⟦k:共用⟧K/V；MoE 则是⟦v:每个词只叫醒几个专家⟧。"
         ],
         "jv": "KV cache; GQA/MQA/MLA; FlashAttention; speculative decoding; MoE.",
-        "pic": "flow",
+        "pic": "cache",
         "pc": [
           "新词元 → 只算自己的 q,k,v → 查缓存的旧 K,V → 注意力。"
         ],
@@ -792,7 +792,7 @@
           "模型⟦v:看着资料⟧回答并标出处。"
         ],
         "jv": "chunk → embed → ANN retrieve → rerank → prompt → generate.",
-        "pic": "flow",
+        "pic": "shelf",
         "pc": [
           "切分 → 嵌入 → 检索 → 重排 → 生成。"
         ],
@@ -835,7 +835,7 @@
           "⟦v:循环⟧：观察→想→做→再观察，直到停。"
         ],
         "jv": "function calling; ReAct loop; MCP as tool protocol.",
-        "pic": "flow",
+        "pic": "tools",
         "pc": [
           "观察 → 思考 → 行动 → 观察 … → 完成/问人。"
         ],
@@ -879,7 +879,7 @@
           "对策：⟦v:最小权限⟧ + ⟦c:花钱前问你⟧ + 分清哪句是指令、哪句是数据。"
         ],
         "jv": "像 API 网关：鉴权、RBAC、对 DELETE/POST 做二次确认；用户内容当 data，不当 code 执行。",
-        "pic": "flow",
+        "pic": "gate",
         "pc": [
           "不可信输入 → 模型 → 工具；中间加权限检查与确认闸门。"
         ],
@@ -924,7 +924,7 @@
           "语音也变成⟦v:音频词元⟧。"
         ],
         "jv": "像把 image patch 编成 token 序列，concat 进 context window。",
-        "pic": "flow",
+        "pic": "eye",
         "pc": [
           "图 → 切块 → 视觉词元 → 与文字一起进 Transformer。"
         ],
@@ -967,7 +967,7 @@
           "⟦v:端侧⟧：蒸馏 + 量化。"
         ],
         "jv": "Test-time compute; RoPE scaling; distillation.",
-        "pic": "flow",
+        "pic": "think",
         "pc": [
           "答题时多步推理；或一次塞进长文。"
         ],
@@ -1012,7 +1012,7 @@
           "每一种都能拆回前面的站，而不是魔法。"
         ],
         "jv": "像微服务编排：每个能力是已有服务（RAG、工具、VLM），应用层只写编排。",
-        "pic": "flow",
+        "pic": "desk",
         "pc": [
           "用户目标 → 选用站（RAG / 工具 / 多模态 / 推理）→ 办完事。"
         ],
@@ -1047,7 +1047,7 @@
           "每一步底部都有验证；用掌握度而不是「翻过」当进度。"
         ],
         "jv": "Re-read any station; switch to the pyramid view anytime.",
-        "pic": "flow",
+        "pic": "thread",
         "pc": [
           "0→…→A 串成闭环；回顾 = 地图 + 下一步行动。"
         ],

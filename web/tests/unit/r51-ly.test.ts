@@ -19,7 +19,7 @@ describe('R52 layered teaching', () => {
   it('every station is layered, in both languages, every part filled', () => {
     for (const D of [zh, en]) {
       expect(D.st.every((s) => !!s.ly)).toBe(true);
-      for (const k of PILOT) { const y = D.st[dvI(k)]!.ly!; expect(y.hook && y.jv && y.an.length && y.pc.length && y.num.length && y.fx.length && y.fe.length, k).toBeTruthy(); expect(['sm','bowl','att','blk','flow','xor','dot']).toContain(y.pic); }
+      for (const k of PILOT) { const y = D.st[dvI(k)]!.ly!; expect(y.hook && y.jv && y.an.length && y.pc.length && y.num.length && y.fx.length && y.fe.length, k).toBeTruthy(); expect(['sm','bowl','att','blk','xor','dot','fit','dice','slope','knob','note','book','exam','coach','lora','cache','shelf','tools','gate','eye','think','desk','thread']).toContain(y.pic); expect(y.pic).not.toBe('flow'); }
     }
   });
   it('zh and en match: same picture, same number of lines, the same colour marks in the same order; no {#…} left', () => {

@@ -45,7 +45,10 @@ test.describe('R51 layers', () => {
     await page.locator('.ly-dep [data-ly-d="d"]').click(); await expect(vis(page)).toHaveCount(5);
     await expect(page.locator('.ly-sm')).toContainText('62.5%');
     // the two-view switch, the map link and the next step still work
-    await expect(page.locator('.dv-vsw [data-go^="#L"]')).toBeVisible(); await expect(page.locator('.dv-ks .dv-mp')).toBeVisible(); await expect(page.locator('.dv-nx')).toContainText('第 2 步');
+    await page.locator('.l4-top [data-a="menu"]').click();
+    await expect(page.locator('.l4-ms .dv-vsw [data-go^="#L"]')).toBeVisible();
+    await page.locator('.l4-ms [data-s="x"]').click();
+    await expect(page.locator('.dv-ks .dv-mp')).toBeVisible(); await expect(page.locator('.dv-nx')).toContainText('第 2 步');
     expect(await hl(page)).toBe(h0);
     expect(errs).toEqual([]);
   });

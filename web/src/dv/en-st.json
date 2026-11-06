@@ -30,7 +30,7 @@
           "The goal is ⟦v:songs you have not heard⟧ still come through — generalisation."
         ],
         "jv": "Fit y = f(x; θ) with supervised pairs; generalisation = accuracy on a test set.",
-        "pic": "flow",
+        "pic": "fit",
         "pc": [
           "x → function with θ → prediction; examples tune θ."
         ],
@@ -77,7 +77,7 @@
           "An LM computes: given ⟦c:the context⟧, how likely is each next ⟦v:token⟧."
         ],
         "jv": "Like Map<Token,Double> whose values sum to 1.0.",
-        "pic": "sm",
+        "pic": "dice",
         "pc": [
           "Left: ⟦q:scores⟧ for 4 candidates; middle: ⟦k:probabilities⟧ (sum to 100%); right: the smaller the right answer’s probability, the bigger the later penalty."
         ],
@@ -274,7 +274,7 @@
           "Long chains ⟦v:vanish⟧ — ReLU, residuals, normalisation keep a path."
         ],
         "jv": "Autograd is backprop; residual y=x+F(x) keeps a gradient path of 1.",
-        "pic": "flow",
+        "pic": "slope",
         "pc": [
           "Forward values → backward gradients → every ∂L/∂w."
         ],
@@ -323,7 +323,7 @@
           "⟦v:Regularisation / early stopping⟧ fight overfitting."
         ],
         "jv": "SGD + momentum + AdamW; train/val/test splits.",
-        "pic": "flow",
+        "pic": "knob",
         "pc": [
           "Sample a batch → gradient → Adam → check val."
         ],
@@ -420,7 +420,7 @@
           "⟦k:Attention⟧ scans every name-tag each time and listens by relevance."
         ],
         "jv": "Recurrent state; softmax attention over encoder states.",
-        "pic": "flow",
+        "pic": "note",
         "pc": [
           "RNN updates h; attention scores all h and mixes them."
         ],
@@ -562,7 +562,7 @@
           "Decoding: ⟦v:temperature / top-k / top-p⟧."
         ],
         "jv": "CE on next tokens; decoding samples softmax(logits/T).",
-        "pic": "flow",
+        "pic": "book",
         "pc": [
           "Context → logits → probabilities → sample → append."
         ],
@@ -609,7 +609,7 @@
           "⟦v:Leaked exam⟧ = contamination."
         ],
         "jv": "Like a shared unit-test suite across implementations.",
-        "pic": "flow",
+        "pic": "exam",
         "pc": [
           "Benchmarks → scores; also human/model judges."
         ],
@@ -658,7 +658,7 @@
           "⟦v:Reasoning RL⟧ grows long chains of thought on checkable tasks."
         ],
         "jv": "SFT → preference opt → optional reasoning RL.",
-        "pic": "flow",
+        "pic": "coach",
         "pc": [
           "Base → SFT → preference → (optional) reasoning RL."
         ],
@@ -702,7 +702,7 @@
           "⟦v:Quantisation⟧ shortens each number."
         ],
         "jv": "W′=W+BA; QLoRA = 4-bit base + LoRA.",
-        "pic": "flow",
+        "pic": "lora",
         "pc": [
           "Frozen W ∥ side path B×A; or INT4 weights."
         ],
@@ -750,7 +750,7 @@
           "⟦k:Share⟧ KV across heads; MoE ⟦v:wakes a few experts⟧ per token."
         ],
         "jv": "KV cache; GQA/MLA; FlashAttention; speculative decoding; MoE.",
-        "pic": "flow",
+        "pic": "cache",
         "pc": [
           "New token → its q,k,v → attend with cached K,V."
         ],
@@ -792,7 +792,7 @@
           "The model answers ⟦v:looking at the evidence⟧."
         ],
         "jv": "RAG pipeline: chunk → embed → retrieve → rerank → generate.",
-        "pic": "flow",
+        "pic": "shelf",
         "pc": [
           "Chunk → embed → retrieve → rerank → generate."
         ],
@@ -835,7 +835,7 @@
           "⟦v:Loop⟧ observe → think → act until done."
         ],
         "jv": "Function calling; ReAct; MCP.",
-        "pic": "flow",
+        "pic": "tools",
         "pc": [
           "Observe → think → act → observe … → stop/ask."
         ],
@@ -879,7 +879,7 @@
           "⟦v:Least privilege⟧ + ⟦c:confirm spends⟧."
         ],
         "jv": "API gateway: auth, RBAC, confirm destructive verbs; treat user content as data.",
-        "pic": "flow",
+        "pic": "gate",
         "pc": [
           "Untrusted input → model → tools, with gates."
         ],
@@ -924,7 +924,7 @@
           "Speech becomes ⟦v:audio tokens⟧ too."
         ],
         "jv": "Image patches as tokens concatenated into the context window.",
-        "pic": "flow",
+        "pic": "eye",
         "pc": [
           "Image → patches → visual tokens → Transformer with text."
         ],
@@ -967,7 +967,7 @@
           "⟦v:On-device⟧: distill + quantise."
         ],
         "jv": "Test-time compute; RoPE scaling; distillation.",
-        "pic": "flow",
+        "pic": "think",
         "pc": [
           "Think longer at answer time; or fit a long doc."
         ],
@@ -1012,7 +1012,7 @@
           "Each type maps back to earlier stations — not magic."
         ],
         "jv": "Microservice orchestration over existing capabilities.",
-        "pic": "flow",
+        "pic": "desk",
         "pc": [
           "Goal → pick stations → finish the job."
         ],
@@ -1047,7 +1047,7 @@
           "Progress is mastery (quizzes), not merely “visited”."
         ],
         "jv": "Jump any station; switch to the pyramid anytime.",
-        "pic": "flow",
+        "pic": "thread",
         "pc": [
           "0→…→A as one loop; recap = map + next action."
         ],

@@ -18,7 +18,7 @@ export interface Ly {
   hook: string; // 为什么要关心: an everyday phenomenon or question
   an: string[]; // the everyday analogy
   jv: string; // the programmer's side analogy (behind 我是程序员)
-  pic: 'sm' | 'bowl' | 'att' | 'blk' | 'flow' | 'xor' | 'dot'; // the picture / animation
+  pic: 'sm' | 'bowl' | 'att' | 'blk' | 'xor' | 'dot' | 'fit' | 'dice' | 'slope' | 'knob' | 'note' | 'book' | 'exam' | 'coach' | 'lora' | 'cache' | 'shelf' | 'tools' | 'gate' | 'eye' | 'think' | 'desk' | 'thread';
   pc: string[]; // what the picture shows
   num: string[]; // extra numbers (before the stage's own `x`)
   fx: string[]; // the formula(s), colour-marked
