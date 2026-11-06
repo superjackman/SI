@@ -8,7 +8,7 @@ export { ST6_ANG };
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
-const CAP: Record<string, readonly [string, string, string, string]> = {
+export const CAP: Record<string, readonly [string, string, string, string]> = {
   '6': ['户口编号，看不出谁住得近', 'ID numbers, no sense of who lives near whom', '猫和狗的方向靠近，车离得远', 'cat and dog point nearly the same way; the car does not'],
   '7': ['纸条越传越淡', 'A note that fades as it is passed', '回头看整句，不用把前面挤掉', 'Look back over the sentence, instead of squeezing the start out'],
   '8a': ['三个人，一束光打在其中一个身上', 'Three people, a light on one of them', '对得上的名牌分更高', 'A tag that matches scores higher'],

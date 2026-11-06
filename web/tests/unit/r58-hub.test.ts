@@ -112,8 +112,11 @@ describe('portal', () => {
   });
   it('tools are real links with a checked date, a task, and a safety station', () => {
     expect(tools.checked).toMatch(/^2026-11-06$/);
-    expect(tools.items.length).toBeGreaterThanOrEqual(20);
-    expect(tools.items.length).toBeLessThanOrEqual(30);
+    expect(tools.items.length).toBeGreaterThanOrEqual(40);
+    expect(tools.items.length).toBeLessThanOrEqual(50);
+    expect(new Set(tools.items.map((t) => t.id)).size).toBe(tools.items.length);
+    expect(tools.items.find((t) => t.id === 'ragflow')!.zh).toContain('开源');
+    expect(tools.items.find((t) => t.id === 'transformers')!.url).toContain('huggingface/transformers');
     const tasks = new Set<string>();
     for (const t of tools.items) {
       expect(t.url).toMatch(/^https:\/\//);
@@ -140,6 +143,8 @@ describe('portal', () => {
     const sm = F.get('sitemap.xml')!;
     expect(sm).toContain('https://superjackman.github.io/SI/s/news/ling-32/');
     expect(sm).toContain('https://superjackman.github.io/SI/s/tools/ollama/');
+    expect(sm).toContain('https://superjackman.github.io/SI/s/tools/ragflow/');
+    expect(F.get('s/tools/llamaindex/index.html')).toContain('run-llama/llama_index');
     expect(sm).toContain('https://superjackman.github.io/SI/en/s/news/');
   });
 });

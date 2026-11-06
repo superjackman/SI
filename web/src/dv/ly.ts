@@ -111,7 +111,7 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const seg = (['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" data-ly-d="${k}" aria-checked="${k === d}"${k === d ? ' class="on"' : ''}>${esc(tx(DLAB[k], l))}</button>`).join('');
   const bar = NAME.map((n, k) => `<li><button type="button" data-ly-go="${k + 1}" aria-label="${esc(tx(n, l))}"><i aria-hidden="true"></i></button></li>`).join('');
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"${k + 1 > v ? ' hidden' : ''}><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
-  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}"><div class="ly-top"><div class="g-seg ly-dep" role="radiogroup" aria-label="${z('学多深', 'How deep')}">${seg}</div><ol class="ly-pg" aria-label="${z('进度', 'Progress')}">${bar}</ol></div>${secs}<div class="ly-nx"></div></div>`;
+  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}"><div class="ly-top"><div class="ly-row"><div class="g-seg ly-dep" role="radiogroup" aria-label="${z('学多深', 'How deep')}">${seg}</div><ol class="ly-pg" aria-label="${z('进度', 'Progress')}">${bar}</ol></div></div>${secs}<div class="ly-nx"></div></div>`;
 }
 
 /** wire the layered body inside `host`: depth, 懂了 → next layer, the bar, the two 验证 parts, the pictures */
