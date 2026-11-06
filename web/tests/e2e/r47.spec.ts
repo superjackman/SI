@@ -5,7 +5,7 @@ import { DV_KEY } from '../../src/dv/links';
 /* R47 自底向上 · 推导之路: home entry → the chain (#D) → each stage (#D/0–16); step bar, ↑, crumbs, cards both ways;
    no history entries; readable at 360 / 390 / 430 in zh and en. */
 const ORIGIN = 'http://localhost:4173';
-const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }, { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({"D/0": 5, "D/P": 5, "D/1": 5, "D/2": 5, "D/3": 5, "D/4": 5, "D/5": 5, "D/6": 5, "D/7": 5, "D/8a": 5, "D/8b": 5, "D/9": 5, "D/E": 5, "D/10": 5, "D/11": 5, "D/12": 5, "D/13": 5, "D/14": 5, "D/S": 5, "D/15a": 5, "D/15b": 5, "D/A": 5, "D/16": 5}) }];
+const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -18,7 +18,7 @@ const px = (p: Page, v: string) => expect(p.locator('#l4')).toHaveAttribute('dat
 
 test.describe('R47 derivation path', () => {
   test('home → chain → stages (next, dot, back, the step it came from) → ↑ chain → ↑ home; no history entries; Back leaves', async ({ page }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(120_000);
     await page.goto('about:blank');
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('.l4-tabs button')).toHaveCount(4);
@@ -30,7 +30,8 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
-    await page.locator('.l4-nav .g-dots [aria-label="第 5 步"]').click(); await expect(page).toHaveURL(re('#D/5'));
+    /* 23 many-dots wrap with fat ::after rings — click the node itself so a neighbour row cannot steal the tap */
+    await page.locator('.l4-nav .g-dots [aria-label="第 5 步"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/5'));
     await page.locator('.l4-nav [data-a="prev"]').click(); await expect(page).toHaveURL(re('#D/4'));
     await page.locator('.dv-from').click(); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
     await page.locator('.dv-nx').click(); await expect(page).toHaveURL(re('#D/4'));

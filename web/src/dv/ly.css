@@ -86,4 +86,8 @@
 .ly-leg { margin: 6px 0 0; padding: 0 0 0 2px; list-style: none; display: grid; gap: 4px; }
 .ly-leg li { display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.35; color: #cfe0ff; }
 .ly-leg li .nw { white-space: nowrap; }
-@media (max-width: 380px) { .ly-leg li { font-size: 12px; } .ly-leg li .nw { white-space: normal; overflow-wrap: anywhere; text-wrap: pretty; } }
+@media (max-width: 440px) {
+  /* only legends — do not override .vf .nw glue spans mounted inside .ly */
+  .ly-leg li { font-size: 12px; }
+  .ly-leg li .nw { white-space: normal; overflow-wrap: anywhere; text-wrap: pretty; }
+}

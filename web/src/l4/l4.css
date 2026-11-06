@@ -311,9 +311,10 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4 .g-dots button:disabled { cursor: default; }
 .l4 .g-dots.many { gap: 2px; flex-wrap: wrap; max-width: min(120px, 32vw); }
 .l4 .g-dots.many button { width: 5px; height: 5px; } .l4 .g-dots.many button.on { width: 10px; }
+.l4 .g-dots.many button::after { inset: -6px -1px -6px; } /* keep rows from stealing each other's taps */
 .l4 .g-nav > button { overflow: hidden; text-overflow: clip; }
 .l4[data-lang="en"] .g-nav > button { font-size: 14px; padding: 0 8px; }
-@media (max-width: 380px) { .l4 .g-nav { gap: 4px; padding-left: 6px; padding-right: 6px; } .l4 .g-nav > button { min-width: min(72px, 100%); padding: 0 6px; font-size: 13px; } .l4 .g-mid { gap: 3px; } }
+@media (max-width: 380px) { .l4 .g-nav { gap: 6px; padding-left: 8px; padding-right: 8px; } .l4 .g-nav > button { min-width: min(88px, 100%); padding: 0 8px; font-size: 14px; } .l4 .g-mid { gap: 3px; } }
 .l4-dots { display: none !important; }
 .l4-menu { font-size: 17px; }
 /* the share dialog */
