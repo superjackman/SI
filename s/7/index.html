@@ -46,7 +46,7 @@
 
 <section><ul><li>RNN 逐步更新 h；注意力对所有 h 打分、加权求和。</li></ul></section>
 
-<section><ul><li>3 个源词分数 → 权重 （与 8a / KM12 同一组）。</li><li>3 个源词打分 ：e² ≈ 7.389，e¹ ≈ 2.718，e⁰ = 1，总和 11.107。</li><li>权重 ≈ ，模型主要在“看”第一个词（第 8a 步和 KM12 卡用同一组数）。</li><li>RNN（K16 卡同一例）：输入 x = 1, 0, 0, 0 → ，第一个词的影响每步约减半。</li><li>softmax（KM04 卡同一例）：分数 → 。</li></ul></section>
+<section><ul><li>3 个源词分数 → 权重 。</li><li>3 个源词打分 ：e² ≈ 7.389，e¹ ≈ 2.718，e⁰ = 1，总和 11.107。</li><li>权重 ≈ ，模型主要在“看”第一个词。</li><li>RNN：输入 x = 1, 0, 0, 0 → ，第一个词的影响每步约减半。</li><li>softmax：分数 → 。</li></ul></section>
 
 <section><ul><li>aᵢ = softmax(eᵢ)；c = Σ aᵢ hᵢ</li><li>h_t = tanh(W × h_(t−1) + U × x_t + b)</li><li>权重 a_i = e^(e_i) / Σ e^(e_j)；上下文 c = Σ a_i × h_i</li></ul><ul><li>权重现算，不是固定参数</li></ul></section>
 

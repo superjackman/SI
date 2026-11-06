@@ -46,7 +46,7 @@
 
 <section><ul><li>Sample a batch → gradient → Adam → check val.</li></ul></section>
 
-<section><ul><li>1M / 256 ≈ 3900 updates per epoch; momentum .</li><li>1 million examples, batch 256: about 3,900 updates per pass; full-batch gradient descent makes 1.</li><li>Momentum (same as card KM13): momentum 0.9, slope keeps the same sign 1, 1, 1, 1 → , faster and faster.</li><li>Train 99%, validation 70%: overfitting — regularise, add data or shrink the model. Both 60%: underfitting.</li></ul></section>
+<section><ul><li>1M / 256 ≈ 3900 updates per epoch; momentum .</li><li>1 million examples, batch 256: about 3,900 updates per pass; full-batch gradient descent makes 1.</li><li>Momentum : momentum 0.9, slope keeps the same sign 1, 1, 1, 1 → , faster and faster.</li><li>Train 99%, validation 70%: overfitting — regularise, add data or shrink the model. Both 60%: underfitting.</li></ul></section>
 
 <section><ul><li>v = βv + g; Adam update</li><li>Momentum: v = β × v + g, w = w − η × v</li><li>Adam: m = β1 × m + (1 − β1) × g, v = β2 × v + (1 − β2) × g², w = w − η × m̂ / (√v̂ + ε)</li><li>L2: L′ = L + λ × Σ w²</li></ul><ul><li>Mini-batch, momentum, Adam, regularisation</li></ul></section>
 

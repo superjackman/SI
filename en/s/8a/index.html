@@ -46,7 +46,7 @@
 
 <section><ul><li>“it” shines a spotlight (Q), the other words show their tags (K), and matches score high. Then everyone’s V is mixed into “it” by those shares. Pause it, or step through it frame by frame.</li></ul></section>
 
-<section><ul><li>Put the numbers below back into the sentence: from highest to lowest the scores belong to cat, mat and as (illustrative numbers), so about two thirds of what “it” attends to is the cat.</li><li>3 words. One word’s q·k with the three keys is ; unscaled, softmax ≈ , nearly all on the first.</li><li>→ , softmax ≈ ; the new vector mixes v1, v2, v3 with these weights (same as card KM12).</li></ul></section>
+<section><ul><li>Put the numbers below back into the sentence: from highest to lowest the scores belong to cat, mat and as (illustrative numbers), so about two thirds of what “it” attends to is the cat.</li><li>3 words. One word’s q·k with the three keys is ; unscaled, softmax ≈ , nearly all on the first.</li><li>→ , softmax ≈ ; the new vector mixes v1, v2, v3 with these weights .</li></ul></section>
 
 <section><ul><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>Causal mask: future positions (j &gt; i) get a score of −∞</li></ul><ul><li>Q × K^T: need against name tag, one match score (dot product) for every pair of words</li><li>/ √d_k: divide by the square root of the width, so scores do not grow so large that one word takes everything</li><li>softmax: turn the scores into attention shares that add up to 100%</li><li>× V: mix everyone’s skills by those shares; the causal mask sets the scores of “future” words to −∞, so their weight is 0</li></ul></section>
 

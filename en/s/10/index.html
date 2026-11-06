@@ -46,7 +46,7 @@
 
 <section><ul><li>Base → SFT → preference → (optional) reasoning RL.</li></ul></section>
 
-<section><ul><li>Scores → P(A&gt;B)=.</li><li>Same question (“What colour is the sky?”), two answers (same as card KC07): A explains why, B says “don’t know, look it up”; the rater picks A.</li><li>Reward model scores , so , and training widens the gap.</li></ul></section>
+<section><ul><li>Scores → P(A&gt;B)=.</li><li>Same question (“What colour is the sky?”), two answers : A explains why, B says “don’t know, look it up”; the rater picks A.</li><li>Reward model scores , so , and training widens the gap.</li></ul></section>
 
 <section><ul><li>P(A&gt;B)=σ(r_A−r_B)</li><li>DPO: prefer pairs directly, skip the reward model</li><li>Reward model (Bradley-Terry): P(A beats B) = σ(r_A − r_B)</li><li>RLHF objective: reward r − β × KL(current ‖ reference)</li><li>DPO: loss = − log σ(β × [log(π(good)/π_ref(good)) − log(π(bad)/π_ref(bad))])</li><li>Pipeline: pre-training (knowledge) → SFT (format) → preference alignment / RL (preferences and reasoning)</li></ul><ul><li>Format, preference, reasoning</li></ul></section>
 

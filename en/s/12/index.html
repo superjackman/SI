@@ -46,7 +46,7 @@
 
 <section><ul><li>New token → its q,k,v → attend with cached K,V.</li></ul></section>
 
-<section><ul><li>Under , ~0.5MB/token; 100 tokens without cache need K,V computes.</li><li>KV cache (same setup as card KC14): ; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache K, V computations; with a cache only 100.</li></ul></section>
+<section><ul><li>Under , ~0.5MB/token; 100 tokens without cache need K,V computes.</li><li>KV cache : ; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache K, V computations; with a cache only 100.</li></ul></section>
 
 <section><ul><li>cache bytes ≈ 2 × layers × KV heads × dim × bytes</li><li>Cache per token = 2 × layers × KV heads × head size × bytes per number</li></ul><ul><li>Sampling moved to step 9; this station is efficiency</li></ul></section>
 

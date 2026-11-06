@@ -46,7 +46,7 @@
 
 <section><ul><li>前向算出每层的值 → 反向把梯度传回来 → 得到每个参数的偏导。</li></ul></section>
 
-<section><ul><li>；带 ReLU 的小例子见本页数字。</li><li>链式法则（KM09 卡同一例）：；下面换成带 ReLU 的小网络。</li><li>y = w2 × ReLU(w1 × x)，L = (y − t)²，取 x = 1、w1 = 2、w2 = 3、t = 5。</li><li>前向：h = 2，y = 6，L = 1。反向：dL/dy = 2(6 − 5) = 2。</li><li>dL/dw2 = 2 × h = 4；dL/dh = 2 × w2 = 6，h &gt; 0 所以 dh/dw1 = x = 1，得 dL/dw1 = 6。</li></ul></section>
+<section><ul><li>；带 ReLU 的小例子见本页数字。</li><li>链式法则：；下面换成带 ReLU 的小网络。</li><li>y = w2 × ReLU(w1 × x)，L = (y − t)²，取 x = 1、w1 = 2、w2 = 3、t = 5。</li><li>前向：h = 2，y = 6，L = 1。反向：dL/dy = 2(6 − 5) = 2。</li><li>dL/dw2 = 2 × h = 4；dL/dh = 2 × w2 = 6，h &gt; 0 所以 dh/dw1 = x = 1，得 dL/dw1 = 6。</li></ul></section>
 
 <section><ul><li>dL/dx = dL/df × df/dx</li><li>残差 y = x + F(x) → 总有一条导数为 1 的路</li><li>dL/dx = dL/df3 × df3/df2 × df2/df1 × df1/dx</li><li>残差：y = x + F(x)，于是 dy/dx = 1 + dF/dx</li></ul><ul><li>上游梯度</li><li>本地导数</li><li>传到更前</li></ul></section>
 

@@ -46,7 +46,7 @@
 
 <section><ul><li>图 → 切块 → 视觉词元 → 与文字一起进 Transformer。</li></ul></section>
 
-<section><ul><li>224×224 / 16 → 个词元（KA07 同一例）。</li><li>一张 224 × 224 的截图变成 196 个视觉词元（KA07 卡同一例），和文字词元拼在一起送进 Transformer。</li></ul></section>
+<section><ul><li>224×224 / 16 → 个词元。</li><li>一张 224 × 224 的截图变成 196 个视觉词元，和文字词元拼在一起送进 Transformer。</li></ul></section>
 
 <section><ul><li>损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT： 个视觉词元</li><li>扩散训练目标：损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT 切块： 个视觉词元</li></ul><ul><li>切块、投影、同一套注意力</li></ul></section>
 

@@ -46,7 +46,7 @@
 
 <section><ul><li>一个解码块：输入先归一化，多头注意力交流，结果加回输入；再归一化，FFN消化，再加回。同样的块叠 N 层，最后接输出头。位置在注意力里旋转 q、k（RoPE）。</li></ul></section>
 
-<section><ul><li>原论文的解码器叠了 N = 6 层；如今的大模型常叠几十层。</li><li>原论文：模型维度 d = 512、h = 8 个头，每个头 512 ÷ 8 = 64 维。</li><li>参数量粗算：每个解码块（KC08 卡同一算法）。</li></ul></section>
+<section><ul><li>原论文的解码器叠了 N = 6 层；如今的大模型常叠几十层。</li><li>原论文：模型维度 d = 512、h = 8 个头，每个头 512 ÷ 8 = 64 维。</li><li>参数量粗算：每个解码块。</li></ul></section>
 
 <section><ul><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x))</li><li>x = x + FFN(Norm(x))</li><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x))，x = x + FFN(Norm(x))</li><li>RMSNorm(x) = x / √(mean(x²) + ε) × g</li></ul><ul><li>多头：维度切成 h 份，每份各做一次注意力，再拼回去</li><li>+ 残差：结果加回输入，原稿不丢，梯度有直通路</li><li>Norm 归一化：把每个词的那串数拉回统一尺度（如今常用 RMSNorm）</li><li>FFN 前馈网络：每个词各自过一个两层网络</li><li>位置：RoPE 按位置旋转 q、k，点积只取决于相对距离</li></ul></section>
 

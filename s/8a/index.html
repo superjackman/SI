@@ -46,7 +46,7 @@
 
 <section><ul><li>“它”发出探照灯（Q），其他词亮出名牌（K）；对得上的分数高。最后按比例把大家的V混进“它”。可以暂停，也可以一帧一帧看。</li></ul></section>
 
-<section><ul><li>把下面这组数放回句子里：分数从高到低依次属于 小猫、垫子、因为（示意数字），所以“它”约三分之二的注意力给了小猫。</li><li>3 个词。某个词的 q 与三个 k 的点积 ；不缩放直接 softmax ≈ ，几乎只看第一个。</li><li>得 ，softmax ≈ ；新表示按这三个权重混合 v1、v2、v3（KM12 卡同一例）。</li></ul></section>
+<section><ul><li>把下面这组数放回句子里：分数从高到低依次属于 小猫、垫子、因为（示意数字），所以“它”约三分之二的注意力给了小猫。</li><li>3 个词。某个词的 q 与三个 k 的点积 ；不缩放直接 softmax ≈ ，几乎只看第一个。</li><li>得 ，softmax ≈ ；新表示按这三个权重混合 v1、v2、v3。</li></ul></section>
 
 <section><ul><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>因果遮罩：未来位置（j &gt; i）的分数设为 −∞</li></ul><ul><li>Q × K^T：需求对名牌，给每一对词算匹配分（点积）</li><li>/ √d_k：除以维数的平方根，防止分数太大、一家独占</li><li>softmax：把分数变成加起来 100% 的关注比例</li><li>× V：按比例混合大家的本事；因果遮罩把“未来”词的分数设为 −∞，权重变成 0</li></ul></section>
 

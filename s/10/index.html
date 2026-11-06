@@ -46,7 +46,7 @@
 
 <section><ul><li>预训练基座 → SFT → 偏好对齐 →（可选）推理 RL。</li></ul></section>
 
-<section><ul><li>奖励分 → P(A&gt;B)=（KC07 同一例）。</li><li>同一问题“天空是什么颜色？”两个回答（KC07 卡同一例）：A 讲清了原因，B 说“不知道，自己查”，标注者选 A。</li><li>奖励模型打分 ，则 ，训练会继续拉大差距。</li></ul></section>
+<section><ul><li>奖励分 → P(A&gt;B)=。</li><li>同一问题“天空是什么颜色？”两个回答：A 讲清了原因，B 说“不知道，自己查”，标注者选 A。</li><li>奖励模型打分 ，则 ，训练会继续拉大差距。</li></ul></section>
 
 <section><ul><li>P(A&gt;B)=σ(r_A−r_B)</li><li>DPO：直接用偏好对，绕过奖励模型</li><li>奖励模型（Bradley-Terry）：P(A 优于 B) = σ(r_A − r_B)</li><li>RLHF 目标：奖励 r − β × KL(当前模型 ‖ 参考模型)</li><li>DPO：损失 = − log σ(β × [log(π(好)/π参考(好)) − log(π(差)/π参考(差))])</li><li>流水线：预训练（知识）→ SFT（格式）→ 偏好对齐 / 强化学习（偏好与推理）</li></ul><ul><li>格式、偏好、推理三阶段</li></ul></section>
 

@@ -46,7 +46,7 @@
 
 <section><ul><li>One decoder block: the input is normalised, multi-head attention lets words talk, and the result is added back to the input; then normalise again, the FFN thinks, and the result is added back. The same block is stacked N times, then the output head. Position rotates q and k inside attention (RoPE).</li></ul></section>
 
-<section><ul><li>The original paper stacked N = 6 decoder layers; today’s large models often stack dozens.</li><li>The original paper: model width d = 512 and h = 8 heads, so each head has 512 ÷ 8 = 64 dimensions.</li><li>Parameter count, roughly: each decoder block has (same count as card KC08).</li></ul></section>
+<section><ul><li>The original paper stacked N = 6 decoder layers; today’s large models often stack dozens.</li><li>The original paper: model width d = 512 and h = 8 heads, so each head has 512 ÷ 8 = 64 dimensions.</li><li>Parameter count, roughly: each decoder block has .</li></ul></section>
 
 <section><ul><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x))</li><li>x = x + FFN(Norm(x))</li><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x)), x = x + FFN(Norm(x))</li><li>RMSNorm(x) = x / √(mean(x²) + ε) × g</li></ul><ul><li>Multi-head: cut the width into h parts, run attention in each, and join them back</li><li>+ the residual: add the result back to the input, so the draft is kept and the gradient has a straight path</li><li>Norm normalisation: pull each word’s numbers back to one scale (RMSNorm is common today)</li><li>FFN the feed-forward network: each word goes through its own two-layer network</li><li>Position: RoPE rotates q and k by position, so their dot product depends only on the distance</li></ul></section>
 

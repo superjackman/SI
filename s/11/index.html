@@ -46,7 +46,7 @@
 
 <section><ul><li>冻结 W ∥ 旁路 B×A；或 INT4 存 W。</li></ul></section>
 
-<section><ul><li>全量 vs LoRA r=8 只训 ；7B INT4 ≈ 。</li><li>（KC13 卡同一例） 的矩阵全量微调；LoRA 取 r = 8，只训练 。</li><li>70 亿（7B）参数的模型：。</li></ul></section>
+<section><ul><li>全量 vs LoRA r=8 只训 ；7B INT4 ≈ 。</li><li>的矩阵全量微调；LoRA 取 r = 8，只训练 。</li><li>70 亿（7B）参数的模型：。</li></ul></section>
 
 <section><ul><li>W′ = W + BA</li><li>x ≈ q × s</li><li>W′ = W + B × A，B 是 d × r，A 是 r × k，r 远小于 d、k</li><li>量化：q = round(x / s)，还原 x ≈ q × s（s 常按组或按通道计算）</li></ul><ul><li>冻结的 W</li><li>低秩更新</li><li>更少比特</li></ul></section>
 
