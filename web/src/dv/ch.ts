@@ -41,7 +41,7 @@ export async function challenge(id: string, A: PxApi) {
     return;
   }
   const Q = QQ[qid]!, done = vfDone().has(qid);
-  const qText = fillDvText(tx(Q.q, l), l);
+  const qText = fillDvText(tx(Q.q, l), l).replace(/`/g, '');
   A.top(`<b class="l4-tt">${z(`挑战 · 第 ${key} 站`, `Challenge · stop ${key}`)}</b>`);
   const sh = sharer();
   const ban = sh ? `<section class="dv-fr"><b>${z(`分享者首答正确率 ${sh.fa}%，掌握 ${sh.fm} 站`, `The sharer: ${sh.fa}% right at the first try, ${sh.fm} stops mastered`)}</b><span>${z('你的首答呢？只算第一次作答。', 'And your first try? Only the first answer counts.')}</span></section>` : '';
@@ -52,12 +52,12 @@ export async function challenge(id: string, A: PxApi) {
 ${ban}<p class="px-sub">${z('朋友出的挑战题 · 答对才揭晓讲解', 'A challenge from a friend · the explain unlocks when you get it right')}</p>
 <p class="dv-fy" aria-live="polite" hidden></p>
 <section class="l4-ks"><h3 class="l4-kh c1">${z('题目', 'Question')}</h3><div class="l4-kbd"><p>${esc(qText)}</p>
-${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(fillDvText(tx(Q.o![i]!, l), l))}</button>`).join('')}</div>`
+${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(fillDvText(tx(Q.o![i]!, l), l).replace(/`/g, ''))}</button>`).join('')}</div>`
   : `<div class="vf-row"><input type="number" class="vf-in" inputmode="decimal" step="any" aria-label="${z('你的答案', 'Your answer')}" ${done ? 'disabled' : ''}><span class="vf-u">${esc(unit)}</span><button type="button" class="l4-b gold vf-go"${done ? ' disabled' : ''}>${z('提交', 'Submit')}</button></div>`}
 <p class="vf-fb" aria-live="polite">${done ? z('✓ 你已经答对过这道题', '✓ You already got this right') : ''}</p>
 </div></section>
 <div class="vf-why" hidden>
-<section class="l4-ks"><h3 class="l4-kh c2">${z('解答', 'Answer')}</h3><div class="l4-kbd"><p>${esc(fillDvText(tx(Q.w, l), l))}</p></div></section>
+<section class="l4-ks"><h3 class="l4-kh c2">${z('解答', 'Answer')}</h3><div class="l4-kbd"><p>${esc(fillDvText(tx(Q.w, l), l).replace(/`/g, '').replace(/\*\*/g, ''))}</p></div></section>
 <div class="px-row l"><button type="button" class="l4-b gold" data-go="#D/${key}">${z(`从这一站开始学：第 ${key} 站 ›`, `Start learning here: stop ${key} ›`)}</button>
 <button type="button" class="l4-b" data-go="#D/routes">${z('选一条学习路线 ›', 'Pick a learning route ›')}</button></div>
 </div>

@@ -144,3 +144,7 @@ test.describe('R56 reads on this phone', () => {
     expect(bad).toEqual([]);
   });
 });
+test('the challenge page shows plain-text formulas (no backticks or **)', async ({ page }) => {
+  await open(page, './?lang=zh#D/ch/2'); await expect(page.locator('.dv-chq')).toBeVisible();
+  expect(await page.locator('.dv-chq').innerText()).not.toMatch(/`|\*\*/);
+});

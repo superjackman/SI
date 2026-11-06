@@ -149,7 +149,7 @@ async function cert(A: PxApi) {
   const D = await import('../l4/share/draw'), { CH } = await import('../dv/ch');
   const m = masteredSt(vfDone()), ft = RV.firstTry(), vd = vfDone().size;
   const k = [...m].filter((x) => CH[x]).sort((a, b) => dvI(b) - dvI(a))[0] ?? '2', qid = CH[k]!, Q = QQ[qid]!;
-  const url = certUrl(k, l, ft.p, c.n), qText = fillDvText(tx(Q.q, l), l);
+  const url = certUrl(k, l, ft.p, c.n), qText = fillDvText(tx(Q.q, l), l).replace(/`/g, '');
   const d: import('../l4/share/draw').Data = {
     site: tx(D.SITE_N, l), url, lv: z('结业证书', 'Certificate'), lvC: '#c99a2e', path: '', icon: '🎓',
     name: z(`我从一道小学算术，亲手推到了「${c.what}」`, `From grade-school arithmetic, I worked my way to “${c.what}”`),
