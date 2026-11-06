@@ -10,7 +10,7 @@ import { VF_Q } from '../../src/vf/ids';
 const ORIGIN = 'http://localhost:4173';
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' },
   // R51 the layered pilot pages (1, 2, 8a, 8b): every layer open, as a reader on 深入 who has gone through all five
-  { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/1': 5, 'D/2': 5, 'D/8a': 5, 'D/8b': 5 }) }];
+  { name: 'si.ly.depth', value: 'd' }, { name: 'si.ly.open', value: JSON.stringify({ 'D/0': 5, 'D/P': 5, 'D/1': 5, 'D/2': 5, 'D/3': 5, 'D/4': 5, 'D/5': 5, 'D/6': 5, 'D/7': 5, 'D/8a': 5, 'D/8b': 5, 'D/9': 5, 'D/E': 5, 'D/10': 5, 'D/11': 5, 'D/12': 5, 'D/13': 5, 'D/14': 5, 'D/S': 5, 'D/15a': 5, 'D/15b': 5, 'D/A': 5, 'D/16': 5 }) }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
   const errs: string[] = []; p.on('pageerror', (e) => errs.push(String(e)));
@@ -40,7 +40,7 @@ test.describe('R50 self-check', () => {
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('si.vf') || '[]'))).toEqual(['s2a', 's2c']);
     await go(page, '#D'); await px(page, 'D.zh');
     await expect(page.locator('.dv-st[data-go="#D/2"] .dv-qt')).toHaveText('✎ 2/4');
-    await expect(page.locator('.dv-rd .dv-qr')).toContainText('2/');
+    await expect(page.locator('.dv-rd .dv-qr')).toContainText(/掌握 2\/|Self-check 2\/|2\//);
     await go(page, '#D/map'); await px(page, 'D/map.zh');
     await expect(page.locator('#s2 .dv-ms .dv-qt')).toHaveText('✎ 2/4');
     // the same question on card KM10 is already ticked
@@ -81,7 +81,7 @@ test.describe('R50 demos', () => {
     await expect(gd).toContainText('w = 0.00, 1.20, 1.68, 1.87, 1.95');
     await gd.locator('input[data-vs="eta"]').fill('1.1'); await expect(gd).toContainText('diverges'); await expect(gd).toContainText('4.40, −0.88');
     await gd.locator('input[data-vs="eta"]').fill('1'); await expect(gd).toContainText('Bounces');
-    await go(page, '#D/12'); await px(page, 'D/12.en');
+    await go(page, '#D/9'); await px(page, 'D/9.en');
     const sm = page.locator('.vf-dm[data-dm="sm"]'); await expect(sm).toContainText('90.4%');
     await sm.locator('input[data-vs="T"]').fill('0.5'); await expect(sm.locator('output')).toHaveText('0.5'); await expect(sm).toContainText('sharper');
     await sm.locator('input[data-vs="T"]').fill('2'); await expect(sm).toContainText('flatter');

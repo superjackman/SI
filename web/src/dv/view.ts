@@ -51,7 +51,7 @@ export async function dv(id: string, A: PxApi) {
   const prev = i > 0 ? D.st[i - 1]! : null, next = i < DV_N - 1 ? D.st[i + 1]! : null, n = DV_LV[i]!;
   const from = prev ? `<button type="button" class="dv-from" data-go="${hD(i - 1)}"><span>${z(`第 ${dvK(i - 1)} 步留下的问题`, `Left open by step ${dvK(i - 1)}`)}</span><b>${esc(prev.e)}</b></button>` : `<p class="dv-from s"><span>${z('起点', 'The start')}</span><b>${z('地基：一个能调的函数', 'The foundation: a function you can tune')}</b></p>`;
   const nxt = next ? `<button type="button" class="l4-b g-jump dv-nx" data-go="${hD(i + 1)}">${z(`去第 ${dvK(i + 1)} 步 · `, `On to step ${dvK(i + 1)} · `)}${esc(next.n)}</button>`
-    : `<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路图', 'Back to the chain')}</button><button type="button" class="l4-b" data-go="#home">${z('去金字塔', 'To the pyramid')}</button></div>`;
+    : `<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路', 'Back to chain')}</button><button type="button" class="l4-b" data-go="#home">${z('去金字塔', 'To the pyramid')}</button></div>`;
   /* R48 cards both ways: born here (square 第n层 badge = the card's pyramid layer) / used again here (round 第n步 badge = where it was born) */
   const kb = (k: string, badge: string) => `<button type="button" class="l4-b g-info dv-kb" data-k="${k}">${badge}<span class="dv-kid">${k}</span><span class="dv-kn">${esc(C[k]!.n)}</span></button>`;
   const lvB = (k: string) => { const c = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[c - 1]}">${tx(UI.lv[c - 1]!, l)}</span>`; };
@@ -78,7 +78,7 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   const slot = LY ? null : A.host.querySelector<HTMLElement>('.vf-slot');
   if (LY) LY.wire(A.host, page, l);
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
-  A.step({ n: DV_N, i, pv: z('上一步', 'Back'), nx: next ? z('下一步', 'Next') : z('回链路图', 'The chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY });
+  A.step({ n: DV_N, i, pv: z('上一步', 'Back'), nx: next ? z('下一步', 'Next') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY });
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
 
@@ -123,7 +123,7 @@ async function map(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: s
   A.host.innerHTML = `<div class="px dv dv-map" lang="${l === 'en' ? 'en' : 'zh-CN'}"><p class="px-sub">${z('同一批知识卡，两个坐标：竖着读是推导顺序（它在第几步诞生），横着读是金字塔（它属于第几层）。金色格＝这一步所在的层，从左上一路走到右下，就是从数学搭到 Agent 的路线。', 'The same cards on two axes: read down for the derivation order (the step a card is born in), across for the pyramid (its layer). Gold cells = the layer each step sits on; from top left to bottom right they trace the route from maths to agents.')}</p>
 <p class="dv-mlg"><span class="dv-mk" style="--cb:${LBG[3]}">K09</span>${z('点卡＝在这里打开它', 'Tap a card to open it here')}<span class="dv-sb">${z('第 4 步', 'Step 4')}</span>${z('点步骤＝去那一步', 'Tap a step to go there')}</p>
 <div class="dv-mg">${hd}${rows}</div>
-<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路图', 'Back to the chain')}</button><button type="button" class="l4-b" data-go="#home">${z('去金字塔', 'To the pyramid')}</button></div></div>`;
+<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路', 'Back to chain')}</button><button type="button" class="l4-b" data-go="#home">${z('去金字塔', 'To the pyramid')}</button></div></div>`;
   A.host.scrollTop = 0;
   let fr: string | null = null; try { fr = sessionStorage.getItem(DV_FOCUS); if (fr?.startsWith('s')) sessionStorage.removeItem(DV_FOCUS); else fr = null; } catch { /* private mode */ }
   const re = fr ? A.host.querySelector<HTMLElement>(`#${fr}`) : null; if (re) { re.classList.add('on'); re.scrollIntoView({ block: 'center' }); }
@@ -152,7 +152,7 @@ function routes(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: stri
   };
   A.host.innerHTML = `<div class="px dv dv-rts"><p class="px-sub">${z('同一批站点，五条地铁线。按你的目标选一条；沿线的站永远按推导顺序。', 'The same stations, five metro lines. Pick one for your goal; stops always follow derivation order.')}</p>
 ${ROUTES.map(card).join('')}
-<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路图', 'Back to the chain')}</button><button type="button" class="l4-b" data-go="#D/map">${z('知识地图', 'Knowledge map')}</button></div></div>`;
+<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路', 'Back to chain')}</button><button type="button" class="l4-b" data-go="#D/map">${z('知识地图', 'Knowledge map')}</button></div></div>`;
   A.host.querySelectorAll<HTMLElement>('[data-a="setgoal"]').forEach((b) => b.addEventListener('click', () => {
     const id = b.dataset.goal; const r = routeOf(id); if (!r) return;
     import('./routes').then((m) => { m.goalSet(r.id); routes(A, D, z, name); });

@@ -46,9 +46,9 @@ test.describe('R51 layers', () => {
     expect(await hl(page)).toBe(h0);
     expect(errs).toEqual([]);
   });
-  test('non-pilot pages keep ①–⑤; old #D/8 opens 8a', async ({ page }) => {
+  test('every station is layered; old #D/8 opens 8a', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/3'); await px(page, 'D/3.en');
-    await expect(page.locator('.ly')).toHaveCount(0); await expect(page.locator('.l4-ks')).toHaveCount(5);
+    await expect(page.locator('.ly')).toHaveCount(1); await expect(page.locator('.ly-pg [data-ly-go]')).toHaveCount(5);
     await go(page, '#D/8'); await px(page, 'D/8a.en'); await expect(page).toHaveURL(/#D\/8a$/); await expect(page.locator('.ly')).toHaveCount(1);
     expect(errs).toEqual([]);
   });

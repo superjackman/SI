@@ -29,13 +29,13 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
-    await page.locator('.l4-nav .g-dots [data-i="5"]').click(); await expect(page).toHaveURL(re('#D/5'));
+    await page.locator('.l4-nav .g-dots [aria-label="第 5 步"]').click(); await expect(page).toHaveURL(re('#D/5'));
     await page.locator('.l4-nav [data-a="prev"]').click(); await expect(page).toHaveURL(re('#D/4'));
-    await page.locator('.dv-from').click(); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.dv-sp .l4-ks')).toHaveCount(5);
+    await page.locator('.dv-from').click(); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
     await page.locator('.dv-nx').click(); await expect(page).toHaveURL(re('#D/4'));
     await page.locator('.l4-crumb a[href="#D"]').click(); await expect(page).toHaveURL(re('#D'));
     await expect(page.locator('.dv-st.seen')).toHaveCount(6); /* 0 P 1 5 4 3 */
-    await page.locator('.dv-st[data-go="#D/16"]').click(); await expect(page.locator('.l4-nav [data-a="next"]')).toContainText('回链路图');
+    await page.locator('.dv-st[data-go="#D/16"]').click(); await expect(page.locator('.l4-nav [data-a="next"]')).toContainText('回链路');
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D'));
     await page.locator('.dv-st[data-go="#D/9"]').click(); await expect(page).toHaveURL(re('#D/9'));
     await page.locator('.l4-top [data-a="back"]').click(); await expect(page).toHaveURL(re('#D'));

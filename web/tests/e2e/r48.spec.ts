@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
-import { CARD_DV, DV_BORN, DV_LV, DV_N, cardLv, dvK } from '../../src/dv/links';
+import { CARD_DV, DV_BORN, DV_LV, DV_N, cardLv, dvI, dvK } from '../../src/dv/links';
 /* R48 two views, one body of knowledge: every card sheet and every stage page carries the same
    「自顶向下·看结构 / 自底向上·看推导」 switch and a gold 「换个角度看」 box that links to the other view;
    jumps land on the card (focus ring), never add history entries, and read at 360 / 390 / 430 in zh and en. */
@@ -40,10 +40,10 @@ test.describe('R48 two views', () => {
     await expect(page.locator('.dv-kb.on')).toHaveCount(1); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     await expect(page.locator('.dv-kb.on')).toBeInViewport();
     /* stage switch → its layer, opened on the first card born here */
-    await page.locator('.dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[4]!.find((k) => cardLv(k) === 5)}`));
+    await page.locator('.dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[dvI(4)]!.find((k) => cardLv(k) === 5)}`));
     /* used again: K09 → step 8b (组装成 Transformer) */
     await page.evaluate((h) => { location.replace(h); }, at('K09'));
-    sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator('.l4-kst[data-n="9"]').click();
+    sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator(`.l4-kst[data-n="${dvI('8b')}"]`).click();
     await expect(page).toHaveURL(re('#D/8b')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     /* the ring is one-shot: a later visit does not ring again */
     await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/8b'));
@@ -83,7 +83,7 @@ test.describe('R48 two views', () => {
         for (const x of await page.evaluate(textIssues, 12)) bad.push(`${l} ${k} ${x.k} ${x.cls} “${x.txt}”${x.why ? ' ' + x.why : ''}`);
         if (l === 'en') { const t = await sh.locator('.l4-vsw, .l4-kalt').allInnerTexts(); if (/[\u3400-\u9fff]/.test(t.join(''))) bad.push(`en ${k} has Chinese`); }
       }
-      for (const i of [0, 4, '8a', '8b', 10, 15, 16]) {
+      for (const i of [0, 4, '8a', '8b', 10, '15a', 16]) {
         await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await px(page, `D/${i}.${l}`);
         for (const x of await page.evaluate(contrastIssues, { root: '.dv-vsw, .dv-ks', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
         await page.locator('.dv-ks').scrollIntoViewIfNeeded();
