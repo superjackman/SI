@@ -66,7 +66,7 @@ export const DV_NM: readonly (readonly [string, string])[] = [
   ['组装成 Transformer', 'Building the Transformer'],
   ['预训练', 'Pre-training'],
   ['评估', 'Evaluation'],
-  ['后训练：SFT、对齐与推理', 'Post-training: SFT, alignment and reasoning'],
+  ['后训练：SFT、对齐与推理', 'Post-training: SFT + align'],
   ['低成本适配', 'Cheap adaptation'],
   ['推理效率', 'Inference speed'],
   ['RAG', 'RAG'],

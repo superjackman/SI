@@ -27,7 +27,7 @@ export const skyP = (T: number) => softmax(SKY, T);
 export const dayNo = (t = Date.now()) => { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
 export const pickDay = <T>(pool: readonly T[], t = Date.now()) => pool[dayNo(t) % pool.length]!;
 const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
-const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句话 + 一张图', 'One line + one picture'], m: ['类比 + 图 + 数字 + 1 题', 'Analogy + picture + numbers + 1 quiz'], d: ['公式 + 推导 + 小测', 'Formulas + derivation + check'] };
+const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句话 + 一张图', 'Line + picture'], m: ['类比 + 图 + 1 题', 'Analogy + quiz'], d: ['公式 + 推导', 'Formulas'] };
 const CIRC = ['①', '②', '③', '④', '⑤'], LYN: readonly Tx[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);

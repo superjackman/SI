@@ -60,8 +60,8 @@ describe('R55 glossary on EN cards', () => {
     }
   });
   it('post-training title names alignment and reasoning on both sides', () => {
-    expect(rd('dv/links.ts')).toMatch(/Post-training: SFT, alignment and reasoning/);
-    expect(rd('dv/en-st.json')).toMatch(/Post-training: SFT, alignment and reasoning/);
+    expect(rd('dv/links.ts')).toMatch(/Post-training: SFT + align/);
+    expect(rd('dv/en-st.json')).toMatch(/Post-training: SFT + align/);
     expect(rd('dv/zh-st.json')).toMatch(/后训练：SFT、对齐与推理/);
   });
 });

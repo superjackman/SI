@@ -628,7 +628,7 @@
       }
     },
     {
-      "n": "Post-training: SFT, alignment and reasoning",
+      "n": "Post-training: SFT + align",
       "s": "SFT, RLHF/DPO, reasoning RL",
       "e": "Customising it costs too much",
       "q": "Make it follow instructions, be helpful and safe — and learn to think before answering.",
