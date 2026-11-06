@@ -37,18 +37,18 @@
 <h1>Reasoning models + long context</h1>
 <p class="lead">Test-time compute, long windows, on-device</p>
 <p class="open"><a href="/SI/?lang=en#D/15b">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Spend more compute when answering, and fit longer text in one go.</p>
-<section><h2>Why care</h2><p>Hard problems want longer thinking; long docs want wider windows.</p></section>
+<p class="bd">Spend more compute when answering, and fit longer text in one go.</p>
+<section><p>Hard problems want longer thinking; long docs want wider windows.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Test-time compute: long CoT, voting, search.</li><li>Long context: bigger windows, middle still hard.</li><li>On-device: distill + quantise.</li></ul></section>
+<section><ul><li>Test-time compute: long CoT, voting, search.</li><li>Long context: bigger windows, middle still hard.</li><li>On-device: distill + quantise.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Test-time compute: longer chains of thought, majority vote across samples, search + verifier; same line as step 10 reasoning models empirical.</li><li>Long context: RoPE extrapolation/interpolation, sparse attention, cache compression; “fits” ≠ “used well” (lost in the middle, Liu et al., 2023) empirical.</li><li>On-device small models: distillation + quantisation + efficient architectures.</li></ul></section>
+<section><ul><li>Test-time compute: longer chains of thought, majority vote across samples, search + verifier; same line as step 10 reasoning models empirical.</li><li>Long context: RoPE extrapolation/interpolation, sparse attention, cache compression; “fits” ≠ “used well” (lost in the middle, Liu et al., 2023) empirical.</li><li>On-device small models: distillation + quantisation + efficient architectures.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Think longer at answer time; or fit a long doc.</li></ul></section>
+<section><ul><li>Think longer at answer time; or fit a long doc.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Five samples [12,12,15,12,9] → majority 12 (KA09).</li><li>Five samples [12, 12, 15, 12, 9] → majority vote 12 (same as card KA09).</li></ul></section>
+<section><ul><li>Five samples [12,12,15,12,9] → majority 12 (KA09).</li><li>Five samples [12, 12, 15, 12, 9] → majority vote 12 (same as card KA09).</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>majority(samples)</li><li>window ↑ ≠ middle-use ↑</li><li>Self-consistency: majority over samples</li><li>Longer window ↑ does not mean middle-content use ↑</li></ul><ul><li>Same architecture as step 10’s reasoning line</li></ul></section>
+<section><ul><li>majority(samples)</li><li>window ↑ ≠ middle-use ↑</li><li>Self-consistency: majority over samples</li><li>Longer window ↑ does not mean middle-content use ↑</li></ul><ul><li>Same architecture as step 10’s reasoning line</li></ul></section>
 
 <p><b>Left open</b> The abilities are in place. Next: where they are combined in real products.</p>
 <nav class="pn"><a href="/SI/en/s/15a/" rel="prev">← Previous stop: Multimodal</a><a href="/SI/en/s/A/" rel="next">Next stop: Applications →</a></nav>

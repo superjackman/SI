@@ -37,18 +37,18 @@
 <h1>RAG</h1>
 <p class="lead">Retrieve, then generate</p>
 <p class="open"><a href="/SI/?lang=en#D/13">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Stale knowledge, missing private knowledge, hallucination, and answers you can’t trace.</p>
-<section><h2>Why care</h2><p>Models go stale and invent. Open-book: retrieve, then generate.</p></section>
+<p class="bd">Stale knowledge, missing private knowledge, hallucination, and answers you can’t trace.</p>
+<section><p>Models go stale and invent. Open-book: retrieve, then generate.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Chunk docs into blocks and embed them.</li><li>Embed the question, fetch top chunks into the prompt.</li><li>The model answers looking at the evidence.</li></ul></section>
+<section><ul><li>Chunk docs into blocks and embed them.</li><li>Embed the question, fetch top chunks into the prompt.</li><li>The model answers looking at the evidence.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Don’t make it memorise — make it an open-book exam: retrieve material, put it in the prompt, then answer. Knowledge in the weights and in an outside store work together.</li><li>Pipeline: ① chunk the documents (a few hundred tokens each, with some overlap) ② embed each chunk into a vector store (step 6 again) ③ embed the question and take the top-k by cosine similarity (approximate nearest-neighbour indexes such as HNSW at scale, often mixed with keyword search like BM25) ④ re-rank with a cross-encoder — coarse first, then fine ⑤ the prompt says “answer only from these sources and cite them”.</li><li>Chunks too big retrieve poorly; too small lose context.</li></ul></section>
+<section><ul><li>Don’t make it memorise — make it an open-book exam: retrieve material, put it in the prompt, then answer. Knowledge in the weights and in an outside store work together.</li><li>Pipeline: ① chunk the documents (a few hundred tokens each, with some overlap) ② embed each chunk into a vector store (step 6 again) ③ embed the question and take the top-k by cosine similarity (approximate nearest-neighbour indexes such as HNSW at scale, often mixed with keyword search like BM25) ④ re-rank with a cross-encoder — coarse first, then fine ⑤ the prompt says “answer only from these sources and cite them”.</li><li>Chunks too big retrieve poorly; too small lose context.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Chunk → embed → retrieve → rerank → generate.</li></ul></section>
+<section><ul><li>Chunk → embed → retrieve → rerank → generate.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Leave policy chunk 0.82 &gt; expense chunk 0.31.</li><li>Question: “What is the company’s 2026 annual-leave policy?”</li><li>Cosine 0.82 with the “staff handbook — leave” chunk, 0.31 with “expense claims”; the first goes into the prompt and the answer cites it.</li></ul></section>
+<section><ul><li>Leave policy chunk 0.82 &gt; expense chunk 0.31.</li><li>Question: “What is the company’s 2026 annual-leave policy?”</li><li>Cosine 0.82 with the “staff handbook — leave” chunk, 0.31 with “expense claims”; the first goes into the prompt and the answer cites it.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>top-k cosine(question, chunk)</li><li>retrieve: top-k cosine(question vector, chunk vectors) → re-rank → into the prompt → generate</li></ul><ul><li>No weight update — only the prompt changes</li></ul></section>
+<section><ul><li>top-k cosine(question, chunk)</li><li>retrieve: top-k cosine(question vector, chunk vectors) → re-rank → into the prompt → generate</li></ul><ul><li>No weight update — only the prompt changes</li></ul></section>
 
 <p><b>Left open</b> RAG only solves “knowing”. People also want it to do things: fetch live data, calculate, edit code, send email — and multi-step questions need looking things up while thinking.</p>
 <nav class="pn"><a href="/SI/en/s/12/" rel="prev">← Previous stop: Inference speed</a><a href="/SI/en/s/14/" rel="next">Next stop: Tools + agents →</a></nav>

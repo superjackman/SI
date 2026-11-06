@@ -37,18 +37,18 @@
 <h1>Layers + non-linearity</h1>
 <p class="lead">Hidden layers + activation functions</p>
 <p class="open"><a href="/SI/?lang=en#D/3">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> A linear model (a single perceptron too) can only split two classes with a straight line (a hyperplane in more dimensions).</p>
-<section><h2>Why care</h2><p>A straight line cannot separate XOR. Stack layers and bend them with non-linearities.</p></section>
+<p class="bd">A linear model (a single perceptron too) can only split two classes with a straight line (a hyperplane in more dimensions).</p>
+<section><p>A straight line cannot separate XOR. Stack layers and bend them with non-linearities.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>A straight cut fails on XOR.</li><li>Fold the paper (hidden layer + activation) and it becomes easy.</li><li>Stacking only linear maps stays linear.</li></ul></section>
+<section><ul><li>A straight cut fails on XOR.</li><li>Fold the paper (hidden layer + activation) and it becomes easy.</li><li>Stacking only linear maps stays linear.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>XOR: (0,0)→0, (0,1)→1, (1,0)→1, (1,1)→0 — no straight line separates them (Minsky and Papert’s 1969 analysis of single-layer perceptrons is the famous milestone).</li><li>Add a hidden layer: map the input into a new space where the problem becomes separable.</li><li>It must be non-linear: stacked linear layers stay linear, W2 × (W1 × x + b1) + b2 = (W2 × W1) × x + (W2 × b1 + b2) — a hundred layers equal one.</li><li>Universal approximation: with enough hidden units, one hidden layer can approximate any continuous function. It only says such a network exists, not that training will find it.</li></ul></section>
+<section><ul><li>XOR: (0,0)→0, (0,1)→1, (1,0)→1, (1,1)→0 — no straight line separates them (Minsky and Papert’s 1969 analysis of single-layer perceptrons is the famous milestone).</li><li>Add a hidden layer: map the input into a new space where the problem becomes separable.</li><li>It must be non-linear: stacked linear layers stay linear, W2 × (W1 × x + b1) + b2 = (W2 × W1) × x + (W2 × b1 + b2) — a hundred layers equal one.</li><li>Universal approximation: with enough hidden units, one hidden layer can approximate any continuous function. It only says such a network exists, not that training will find it.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Four XOR points; one line fails; two layers + ReLU work.</li></ul></section>
+<section><ul><li>Four XOR points; one line fails; two layers + ReLU work.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Hand-built net separates all four inputs.</li><li>XOR by hand: h1 = ReLU(x1 + x2), h2 = ReLU(x1 + x2 − 1), y = h1 − 2 × h2</li><li>(0,0): 0; (0,1): 1; (1,0): 1; (1,1): 2 − 2 × 1 = 0 ✓</li></ul></section>
+<section><ul><li>Hand-built net separates all four inputs.</li><li>XOR by hand: h1 = ReLU(x1 + x2), h2 = ReLU(x1 + x2 − 1), y = h1 − 2 × h2</li><li>(0,0): 0; (0,1): 1; (1,0): 1; (1,1): 2 − 2 × 1 = 0 ✓</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>h = act(W1 x + b1)</li><li>y = W2 h + b2</li><li>h = act(W1 × x + b1), y = W2 × h + b2</li><li>ReLU(z) = max(0, z), sigmoid(z) = 1 / (1 + e^(−z))</li></ul><ul><li>linear map</li><li>activation</li><li>output</li></ul></section>
+<section><ul><li>h = act(W1 x + b1)</li><li>y = W2 h + b2</li><li>h = act(W1 × x + b1), y = W2 × h + b2</li><li>ReLU(z) = max(0, z), sigmoid(z) = 1 / (1 + e^(−z))</li></ul><ul><li>linear map</li><li>activation</li><li>output</li></ul></section>
 
 <p><b>Left open</b> With many layers, how do we get the loss’s gradient for a parameter in an early layer? Nudging parameters one by one is far too slow.</p>
 <nav class="pn"><a href="/SI/en/s/2/" rel="prev">← Previous stop: Gradient descent</a><a href="/SI/en/s/4/" rel="next">Next stop: Backpropagation →</a></nav>

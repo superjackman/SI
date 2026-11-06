@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>推导之路 · 全部 23 站 · 大白话拆解 AI</title>
-<meta name="description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。每站都有钩子、类比、数字、公式和小测。">
+<meta name="description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="推导之路 · 全部 23 站 · 大白话拆解 AI">
-<meta property="og:description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。每站都有钩子、类比、数字、公式和小测。">
+<meta property="og:description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og.png">
 <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="推导之路 · 全部 23 站 · 大白话拆解 AI">
-<meta name="twitter:description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。每站都有钩子、类比、数字、公式和小测。">
+<meta name="twitter:description" content="从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
@@ -33,7 +33,7 @@
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/" hreflang="en" lang="en">English</a></header>
 <main>
 <h1>推导之路 · 全部 23 站</h1>
-<p>从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。每站都有钩子、类比、数字、公式和小测。</p>
+<p>从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。</p>
 <p class="open"><a href="/SI/#D">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <ol><li><a href="/SI/s/0/"><b>用样本找函数</b></a> — 有些任务写不出规则：“这张图里是不是猫”“这句话接下来该说什么”。用 if-else 根本写不完。有些事写不出 if-else：「这是猫吗」「下一句说什么」。换个办法：先给一个能拧的旋钮，再用例子把旋钮拧对。</li><li><a href="/SI/s/P/"><b>概率基础</b></a> — 语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。</li><li><a href="/SI/s/1/"><b>损失函数</b></a> — 需要一个数字来衡量“模型错了多少”，越小越好。模型每猜一次，都要先知道“这次错了多少”。没有这个数，它就不知道该往哪改。损失函数就是给每次猜测打的“罚分”，训练就是让罚分越来越小。</li><li><a href="/SI/s/2/"><b>梯度下降</b></a> — 求 L(θ) 的最小值，而且参数很多。大模型有几十亿个参数，不可能一个个去试。梯度下降就是“蒙着眼下山”：每一步只看脚下哪边最陡，就往下迈一小步。所有大模型都是这样训练出来的。</li><li><a href="/SI/s/3/"><b>多层 + 非线性</b></a> — 线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。</li><li><a href="/SI/s/4/"><b>反向传播</b></a> — 高效地求出所有参数的梯度。多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。</li><li><a href="/SI/s/5/"><b>训练工程</b></a> — 训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防「背题」（过拟合）。</li><li><a href="/SI/s/6/"><b>词向量</b></a> — 把离散的词变成向量，最好让向量带有语义。电脑不认「猫」这个字，只认数。怎么把字变成带意思的数？</li><li><a href="/SI/s/7/"><b>RNN + 注意力</b></a> — 对变长序列建模，让同一个词的表示随上下文变化。句子有长短、有顺序。RNN 一步步读，但记不住太远，也不能并行；注意力让每一步直接回看全部。</li><li><a href="/SI/s/8a/"><b>注意力：谁和谁有关</b></a> — 让每个词能直接看到句子里任何一个词，而且所有位置可以同时算（Vaswani 等，2017，《Attention Is All You Need》）。“小猫坐在垫子上，因为它很累。”“它”是谁？人一眼就知道是小猫。AI…</li><li><a href="/SI/s/8b/"><b>组装成 Transformer</b></a> — 把注意力做成能叠很多层、又稳又能分辨词序的完整模型。注意力只是一个零件。真正的大模型像一栋楼：同一种“楼层”（解码块）叠几十层。每层做两件事：先交流（注意力），再各自消化（前馈网络）。</li><li><a href="/SI/s/9/"><b>预训练</b></a> — 人工标注数据太少，需要一个能用上海量无标注文本的训练任务。架构有了，用什么任务吞下海量文本？答案：猜下一个词元；顺带学会采样——从概率变成一句话。</li><li><a href="/SI/s/E/"><b>评估</b></a> — 模型训完了，怎么客观知道它有多强、哪里不行？训完模型，不能靠感觉说「它变强了」。评估就是用固定的尺子量一量。</li><li><a href="/SI/s/10/"><b>后训练：SFT、对齐与推理</b></a> — 让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。基座只会续写。要让它听指令、更安全、还会「先想再答」——靠后训练。</li><li><a href="/SI/s/11/"><b>低成本适配</b></a> — 全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。全量微调太贵。能不能只动一小块？LoRA…</li><li><a href="/SI/s/12/"><b>推理效率</b></a> — 自回归生成只能一个词元一个词元地输出，不能像训练那样并行。生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。</li><li><a href="/SI/s/13/"><b>RAG</b></a> — 知识过期、缺私有知识、幻觉，以及回答没法溯源。模型会过期、会编。别逼它背——开卷考试：先检索再生成。</li><li><a href="/SI/s/14/"><b>工具与 Agent</b></a> — 让模型与外部世界交互，完成多步任务。只会说不够，还要会做：查天气、改日历。模型只写调用，程序去执行。</li><li><a href="/SI/s/S/"><b>安全</b></a> — Agent 会调工具之后，怎样防止被骗、越权、泄密？助手一旦能做事，安全就从「别说坏话」变成「别做坏事」。</li><li><a href="/SI/s/15a/"><b>多模态</b></a> — 理解和生成图像、语音等，不只是文字。世界不只有字：截图、照片、声音也要懂。</li><li><a href="/SI/s/15b/"><b>推理模型与长上下文</b></a> — 回答时多花算力，以及一次塞进更长的文字。难问题想让它多想一会；长文档想一次读完。</li><li><a href="/SI/s/A/"><b>应用实战</b></a> — 把前面各站拼起来：现在这些能力都用在哪？学完原理，最想知道的是：现在能用来干嘛？ 答案是把前面的站拼起来。</li><li><a href="/SI/s/16/"><b>回顾</b></a> — 把整条链串成一句话，再决定从哪里动手。整条链可以收成一句话：用样本找函数，一路被问题逼到 Agent 与应用。</li></ol>
 </main>

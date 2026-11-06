@@ -37,18 +37,18 @@
 <h1>Training in practice</h1>
 <p class="lead">Mini-batch SGD, Adam, regularisation, validation set</p>
 <p class="open"><a href="/SI/?lang=en#D/5">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Train fast, train stably, and still generalise.</p>
-<section><h2>Why care</h2><p>Millions of samples: do not scan all every step; also avoid memorising.</p></section>
+<p class="bd">Train fast, train stably, and still generalise.</p>
+<section><p>Millions of samples: do not scan all every step; also avoid memorising.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Mini-batches estimate the slope cheaply.</li><li>Adam gives each knob its own step size.</li><li>Regularisation / early stopping fight overfitting.</li></ul></section>
+<section><ul><li>Mini-batches estimate the slope cheaply.</li><li>Adam gives each knob its own step size.</li><li>Regularisation / early stopping fight overfitting.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Mini-batch SGD: estimate the gradient from a small random batch (say 256). Much cheaper; the noise can even help escape bad regions.</li><li>Momentum accumulates past gradients to damp the zig-zag; Adam (Kingma and Ba, 2014) gives each parameter its own adaptive step. Large models use the AdamW variant with learning-rate warm-up and decay.</li><li>Overfitting: training loss keeps falling while new data gets worse. Regularisation: L2, dropout, data augmentation, early stopping.</li><li>Data splits: train to fit the parameters, validation to pick hyper-parameters and when to stop, test once at the very end.</li></ul></section>
+<section><ul><li>Mini-batch SGD: estimate the gradient from a small random batch (say 256). Much cheaper; the noise can even help escape bad regions.</li><li>Momentum accumulates past gradients to damp the zig-zag; Adam (Kingma and Ba, 2014) gives each parameter its own adaptive step. Large models use the AdamW variant with learning-rate warm-up and decay.</li><li>Overfitting: training loss keeps falling while new data gets worse. Regularisation: L2, dropout, data augmentation, early stopping.</li><li>Data splits: train to fit the parameters, validation to pick hyper-parameters and when to stop, test once at the very end.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Sample a batch → gradient → Adam → check val.</li></ul></section>
+<section><ul><li>Sample a batch → gradient → Adam → check val.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>1M / 256 ≈ 3900 updates per epoch; momentum .</li><li>1 million examples, batch 256: about 3,900 updates per pass; full-batch gradient descent makes 1.</li><li>Momentum (same as card KM13): momentum 0.9, slope keeps the same sign 1, 1, 1, 1 → , faster and faster.</li><li>Train 99%, validation 70%: overfitting — regularise, add data or shrink the model. Both 60%: underfitting.</li></ul></section>
+<section><ul><li>1M / 256 ≈ 3900 updates per epoch; momentum .</li><li>1 million examples, batch 256: about 3,900 updates per pass; full-batch gradient descent makes 1.</li><li>Momentum (same as card KM13): momentum 0.9, slope keeps the same sign 1, 1, 1, 1 → , faster and faster.</li><li>Train 99%, validation 70%: overfitting — regularise, add data or shrink the model. Both 60%: underfitting.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>v = βv + g; Adam update</li><li>Momentum: v = β × v + g, w = w − η × v</li><li>Adam: m = β1 × m + (1 − β1) × g, v = β2 × v + (1 − β2) × g², w = w − η × m̂ / (√v̂ + ε)</li><li>L2: L′ = L + λ × Σ w²</li></ul><ul><li>Mini-batch, momentum, Adam, regularisation</li></ul></section>
+<section><ul><li>v = βv + g; Adam update</li><li>Momentum: v = β × v + g, w = w − η × v</li><li>Adam: m = β1 × m + (1 − β1) × g, v = β2 × v + (1 − β2) × g², w = w − η × m̂ / (√v̂ + ε)</li><li>L2: L′ = L + λ × Σ w²</li></ul><ul><li>Mini-batch, momentum, Adam, regularisation</li></ul></section>
 
 <p><b>Left open</b> Numeric inputs such as pixels work now. But text is discrete symbols: how does the word “cat” become numbers a network can use?</p>
 <nav class="pn"><a href="/SI/en/s/4/" rel="prev">← Previous stop: Backpropagation</a><a href="/SI/en/s/6/" rel="next">Next stop: Word vectors →</a></nav>

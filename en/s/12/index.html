@@ -37,18 +37,18 @@
 <h1>Inference speed</h1>
 <p class="lead">KV cache, GQA/MLA, FlashAttention, speculative decoding, MoE</p>
 <p class="open"><a href="/SI/?lang=en#D/12">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Autoregressive generation emits one token at a time; it can’t parallelise like training.</p>
-<section><h2>Why care</h2><p>Generation is serial. KV cache, shared KV, FlashAttention, speculative decoding, MoE cut work and memory.</p></section>
+<p class="bd">Autoregressive generation emits one token at a time; it can’t parallelise like training.</p>
+<section><p>Generation is serial. KV cache, shared KV, FlashAttention, speculative decoding, MoE cut work and memory.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Remember past K, V.</li><li>Share KV across heads; MoE wakes a few experts per token.</li></ul></section>
+<section><ul><li>Remember past K, V.</li><li>Share KV across heads; MoE wakes a few experts per token.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>KV cache: earlier tokens’ K and V never change, so store them and compute only the new token’s q, k, v. But the cache grows with length, and speed is often limited by memory bandwidth, not compute.</li><li>MQA / GQA: query heads share K and V (MQA: one set for all; GQA: one per group). MLA (DeepSeek-V2, 2024): cache a compressed low-dimensional latent instead — low rank again.</li><li>FlashAttention (Dao et al., 2022): exactly the same result as standard attention; it saves memory traffic by computing in tiles in on-chip memory with an “online softmax”, never writing the n × n matrix out.</li><li>Speculative decoding: a small model guesses k tokens, the big model checks them in one parallel pass and keeps the accepted prefix; with the right acceptance rule the output distribution matches the big model’s.</li><li>MoE: replace the FFN with many experts and route each token to the top-k; huge total parameters, few active per token — but memory stays large and the load must be balanced.</li></ul></section>
+<section><ul><li>KV cache: earlier tokens’ K and V never change, so store them and compute only the new token’s q, k, v. But the cache grows with length, and speed is often limited by memory bandwidth, not compute.</li><li>MQA / GQA: query heads share K and V (MQA: one set for all; GQA: one per group). MLA (DeepSeek-V2, 2024): cache a compressed low-dimensional latent instead — low rank again.</li><li>FlashAttention (Dao et al., 2022): exactly the same result as standard attention; it saves memory traffic by computing in tiles in on-chip memory with an “online softmax”, never writing the n × n matrix out.</li><li>Speculative decoding: a small model guesses k tokens, the big model checks them in one parallel pass and keeps the accepted prefix; with the right acceptance rule the output distribution matches the big model’s.</li><li>MoE: replace the FFN with many experts and route each token to the top-k; huge total parameters, few active per token — but memory stays large and the load must be balanced.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>New token → its q,k,v → attend with cached K,V.</li></ul></section>
+<section><ul><li>New token → its q,k,v → attend with cached K,V.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Under , ~0.5MB/token; 100 tokens without cache need K,V computes.</li><li>KV cache (same setup as card KC14): ; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache K, V computations; with a cache only 100.</li></ul></section>
+<section><ul><li>Under , ~0.5MB/token; 100 tokens without cache need K,V computes.</li><li>KV cache (same setup as card KC14): ; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache K, V computations; with a cache only 100.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>cache bytes ≈ 2 × layers × KV heads × dim × bytes</li><li>Cache per token = 2 × layers × KV heads × head size × bytes per number</li></ul><ul><li>Sampling moved to step 9; this station is efficiency</li></ul></section>
+<section><ul><li>cache bytes ≈ 2 × layers × KV heads × dim × bytes</li><li>Cache per token = 2 × layers × KV heads × head size × bytes per number</li></ul><ul><li>Sampling moved to step 9; this station is efficiency</li></ul></section>
 
 <p><b>Left open</b> Fast and lean now — but its knowledge stops at the training cut-off, it confidently makes things up (hallucination) and it has never seen your private documents.</p>
 <nav class="pn"><a href="/SI/en/s/11/" rel="prev">← Previous stop: Cheap adaptation</a><a href="/SI/en/s/13/" rel="next">Next stop: RAG →</a></nav>

@@ -37,18 +37,18 @@
 <h1>Evaluation</h1>
 <p class="lead">Benchmarks, perplexity, contamination, judges</p>
 <p class="open"><a href="/SI/?lang=en#D/E">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> After training, how do we know how strong a model is?</p>
-<section><h2>Why care</h2><p>Do not trust vibes — evaluate with fixed rulers.</p></section>
+<p class="bd">After training, how do we know how strong a model is?</p>
+<section><p>Do not trust vibes — evaluate with fixed rulers.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Same exam for everyone.</li><li>Perplexity = hesitation, not usefulness.</li><li>Leaked exam = contamination.</li></ul></section>
+<section><ul><li>Same exam for everyone.</li><li>Perplexity = hesitation, not usefulness.</li><li>Leaked exam = contamination.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Benchmarks: fixed sets (MMLU, GSM8K, HumanEval).</li><li>Perplexity e^L: how many candidates it is torn between — not the same as usefulness.</li><li>Contamination: test items in training inflate scores.</li><li>Human / model judges; agents also need task success and safety checks.</li></ul></section>
+<section><ul><li>Benchmarks: fixed sets (MMLU, GSM8K, HumanEval).</li><li>Perplexity e^L: how many candidates it is torn between — not the same as usefulness.</li><li>Contamination: test items in training inflate scores.</li><li>Human / model judges; agents also need task success and safety checks.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Benchmarks → scores; also human/model judges.</li></ul></section>
+<section><ul><li>Benchmarks → scores; also human/model judges.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>L=ln4 → perplexity 4; 8/10 → 80%.</li><li>L = ln 4 → perplexity 4.</li><li>A right, B wrong on one item → A gains; if the item was in A’s train set, distrust the score.</li></ul></section>
+<section><ul><li>L=ln4 → perplexity 4; 8/10 → 80%.</li><li>L = ln 4 → perplexity 4.</li><li>A right, B wrong on one item → A gains; if the item was in A’s train set, distrust the score.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>perplexity = e^L</li><li>accuracy = correct / total</li><li>perplexity = e^L</li><li>accuracy = correct / total</li></ul><ul><li>L: mean negative log-likelihood (loss)</li><li>perplexity: e^L, lower = less hesitation</li><li>accuracy: how many items are right</li></ul></section>
+<section><ul><li>perplexity = e^L</li><li>accuracy = correct / total</li><li>perplexity = e^L</li><li>accuracy = correct / total</li></ul><ul><li>L: mean negative log-likelihood (loss)</li><li>perplexity: e^L, lower = less hesitation</li><li>accuracy: how many items are right</li></ul></section>
 
 <p><b>Left open</b> We can measure. But the base model only continues text — post-training is next.</p>
 <nav class="pn"><a href="/SI/en/s/9/" rel="prev">← Previous stop: Pre-training</a><a href="/SI/en/s/10/" rel="next">Next stop: Post-training: SFT + align →</a></nav>

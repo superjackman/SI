@@ -37,18 +37,18 @@
 <h1>Multimodal</h1>
 <p class="lead">VLMs, diffusion, speech</p>
 <p class="open"><a href="/SI/?lang=en#D/15a">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Understand and generate images and speech, not only text.</p>
-<section><h2>Why care</h2><p>The world is more than text: screenshots, photos, speech.</p></section>
+<p class="bd">Understand and generate images and speech, not only text.</p>
+<section><p>The world is more than text: screenshots, photos, speech.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Patch images into tokens that share attention with text.</li><li>Diffusion washes an image out of noise.</li><li>Speech becomes audio tokens too.</li></ul></section>
+<section><ul><li>Patch images into tokens that share attention with text.</li><li>Diffusion washes an image out of noise.</li><li>Speech becomes audio tokens too.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Vision-language models: image patches as tokens (ViT). Vision encoder → projection → language model.</li><li>Diffusion: add noise step by step, learn to denoise; generation starts from noise with text guidance.</li><li>Speech: spectrograms or discrete audio tokens; the same attention can handle them.</li></ul></section>
+<section><ul><li>Vision-language models: image patches as tokens (ViT). Vision encoder → projection → language model.</li><li>Diffusion: add noise step by step, learn to denoise; generation starts from noise with text guidance.</li><li>Speech: spectrograms or discrete audio tokens; the same attention can handle them.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Image → patches → visual tokens → Transformer with text.</li></ul></section>
+<section><ul><li>Image → patches → visual tokens → Transformer with text.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>224×224 / 16 → tokens (same as KA07).</li><li>A 224 × 224 screenshot becomes 196 visual tokens (same as card KA07), concatenated with text tokens into the Transformer.</li></ul></section>
+<section><ul><li>224×224 / 16 → tokens (same as KA07).</li><li>A 224 × 224 screenshot becomes 196 visual tokens (same as card KA07), concatenated with text tokens into the Transformer.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>loss = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT: visual tokens</li><li>Diffusion objective: loss = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT patches: visual tokens</li></ul><ul><li>Same attention, new modalities</li></ul></section>
+<section><ul><li>loss = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT: visual tokens</li><li>Diffusion objective: loss = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT patches: visual tokens</li></ul><ul><li>Same attention, new modalities</li></ul></section>
 
 <p><b>Left open</b> It can see. Hard problems still want it to think longer when answering; long documents want a wider window.</p>
 <nav class="pn"><a href="/SI/en/s/S/" rel="prev">← Previous stop: Safety</a><a href="/SI/en/s/15b/" rel="next">Next stop: Reasoning models + long context →</a></nav>

@@ -37,18 +37,18 @@
 <h1>RNN + attention</h1>
 <p class="lead">A recurrent state; attention eases the bottleneck</p>
 <p class="open"><a href="/SI/?lang=en#D/7">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Model sequences of any length, so a word’s representation changes with its context.</p>
-<section><h2>Why care</h2><p>Sequences vary in length. RNNs read step by step but forget and cannot parallelise; attention looks at all positions.</p></section>
+<p class="bd">Model sequences of any length, so a word’s representation changes with its context.</p>
+<section><p>Sequences vary in length. RNNs read step by step but forget and cannot parallelise; attention looks at all positions.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>RNN passes a small note along a line.</li><li>Attention scans every name-tag each time and listens by relevance.</li></ul></section>
+<section><ul><li>RNN passes a small note along a line.</li><li>Attention scans every name-tag each time and listens by relevance.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>RNN: keep a memory vector h and update it word by word, reusing the same parameters at every step.</li><li>Problems: back-propagating through time multiplies gradients many times, so long-range dependencies are hard; h_t must wait for h_(t−1), so there is no parallelism. LSTM/GRU gates and a mostly additive cell state help (much like residuals) but don’t cure it.</li><li>The seq2seq bottleneck: in translation the encoder squeezes the whole sentence into its last vector; long sentences lose information.</li><li>Attention (Bahdanau, Cho and Bengio — proposed 2014, published at ICLR 2015): for each output word, look back at every encoder position, score them, softmax into weights and take the weighted sum — a context vector made for this step.</li></ul></section>
+<section><ul><li>RNN: keep a memory vector h and update it word by word, reusing the same parameters at every step.</li><li>Problems: back-propagating through time multiplies gradients many times, so long-range dependencies are hard; h_t must wait for h_(t−1), so there is no parallelism. LSTM/GRU gates and a mostly additive cell state help (much like residuals) but don’t cure it.</li><li>The seq2seq bottleneck: in translation the encoder squeezes the whole sentence into its last vector; long sentences lose information.</li><li>Attention (Bahdanau, Cho and Bengio — proposed 2014, published at ICLR 2015): for each output word, look back at every encoder position, score them, softmax into weights and take the weighted sum — a context vector made for this step.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>RNN updates h; attention scores all h and mixes them.</li></ul></section>
+<section><ul><li>RNN updates h; attention scores all h and mixes them.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Scores → weights (same as 8a / KM12).</li><li>Scores for 3 source words : e² ≈ 7.389, e¹ ≈ 2.718, e⁰ = 1, total 11.107.</li><li>Weights ≈ : the model mostly “looks at” the first word (step 8a and card KM12 use the same numbers).</li><li>RNN (same as card K16): inputs x = 1, 0, 0, 0 → : the first token’s influence roughly halves each step.</li><li>Softmax (same as card KM04): scores → .</li></ul></section>
+<section><ul><li>Scores → weights (same as 8a / KM12).</li><li>Scores for 3 source words : e² ≈ 7.389, e¹ ≈ 2.718, e⁰ = 1, total 11.107.</li><li>Weights ≈ : the model mostly “looks at” the first word (step 8a and card KM12 use the same numbers).</li><li>RNN (same as card K16): inputs x = 1, 0, 0, 0 → : the first token’s influence roughly halves each step.</li><li>Softmax (same as card KM04): scores → .</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>aᵢ = softmax(eᵢ); c = Σ aᵢ hᵢ</li><li>h_t = tanh(W × h_(t−1) + U × x_t + b)</li><li>Weights a_i = e^(e_i) / Σ e^(e_j); context c = Σ a_i × h_i</li></ul><ul><li>Weights are computed, not stored parameters</li></ul></section>
+<section><ul><li>aᵢ = softmax(eᵢ); c = Σ aᵢ hᵢ</li><li>h_t = tanh(W × h_(t−1) + U × x_t + b)</li><li>Weights a_i = e^(e_i) / Σ e^(e_j); context c = Σ a_i × h_i</li></ul><ul><li>Weights are computed, not stored parameters</li></ul></section>
 
 <p><b>Left open</b> Attention works, but it still rides on an RNN that runs step by step. Attention already links any two positions directly — can we drop the recurrence and keep only attention?</p>
 <nav class="pn"><a href="/SI/en/s/6/" rel="prev">← Previous stop: Word vectors</a><a href="/SI/en/s/8a/" rel="next">Next stop: Attention: who relates to whom →</a></nav>

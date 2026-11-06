@@ -37,18 +37,18 @@
 <h1>多模态</h1>
 <p class="lead">VLM、扩散、语音</p>
 <p class="open"><a href="/SI/#D/15a">▶ 打开互动版（能点图、做实验、做小测）</a></p>
-<p class="bd"><b>要解决的问题</b> 理解和生成图像、语音等，不只是文字。</p>
-<section><h2>为什么要关心</h2><p>世界不只有字：截图、照片、声音也要懂。</p></section>
+<p class="bd">理解和生成图像、语音等，不只是文字。</p>
+<section><p>世界不只有字：截图、照片、声音也要懂。</p></section>
 
-<section><h2>生活类比</h2><ul><li>把图切成小块当词元，和文字走同一套注意力。</li><li>扩散从噪声一步步「洗」出图。</li><li>语音也变成音频词元。</li></ul></section>
+<section><ul><li>把图切成小块当词元，和文字走同一套注意力。</li><li>扩散从噪声一步步「洗」出图。</li><li>语音也变成音频词元。</li></ul></section>
 
-<section><h2>核心思想</h2><ul><li>视觉语言模型：图像切块当词元（ViT）。视觉编码器 → 投影层 → 语言模型。</li><li>扩散模型：逐步加噪再学去噪；生成时从噪声出发，用文字引导。</li><li>语音：变成频谱或离散音频词元，同一套注意力可处理。</li></ul></section>
+<section><ul><li>视觉语言模型：图像切块当词元（ViT）。视觉编码器 → 投影层 → 语言模型。</li><li>扩散模型：逐步加噪再学去噪；生成时从噪声出发，用文字引导。</li><li>语音：变成频谱或离散音频词元，同一套注意力可处理。</li></ul></section>
 
-<section><h2>看图在说什么</h2><ul><li>图 → 切块 → 视觉词元 → 与文字一起进 Transformer。</li></ul></section>
+<section><ul><li>图 → 切块 → 视觉词元 → 与文字一起进 Transformer。</li></ul></section>
 
-<section><h2>算一算</h2><ul><li>224×224 / 16 → 个词元（KA07 同一例）。</li><li>一张 224 × 224 的截图变成 196 个视觉词元（KA07 卡同一例），和文字词元拼在一起送进 Transformer。</li></ul></section>
+<section><ul><li>224×224 / 16 → 个词元（KA07 同一例）。</li><li>一张 224 × 224 的截图变成 196 个视觉词元（KA07 卡同一例），和文字词元拼在一起送进 Transformer。</li></ul></section>
 
-<section><h2>公式</h2><ul><li>损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT： 个视觉词元</li><li>扩散训练目标：损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT 切块： 个视觉词元</li></ul><ul><li>切块、投影、同一套注意力</li></ul></section>
+<section><ul><li>损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT： 个视觉词元</li><li>扩散训练目标：损失 = ‖ε − ε_θ(x_t, t)‖²</li><li>ViT 切块： 个视觉词元</li></ul><ul><li>切块、投影、同一套注意力</li></ul></section>
 
 <p><b>留下的问题</b> 能看图了。难问题还想让它回答时多想一会；很长的文档也要一次读进。</p>
 <nav class="pn"><a href="/SI/s/S/" rel="prev">← 上一站：安全</a><a href="/SI/s/15b/" rel="next">下一站：推理模型与长上下文 →</a></nav>

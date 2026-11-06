@@ -37,18 +37,18 @@
 <h1>Probability basics</h1>
 <p class="lead">Distributions, conditionals, mean/variance, Gaussians</p>
 <p class="open"><a href="/SI/?lang=en#D/P">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> To predict the next token, we must speak in possibilities.</p>
-<section><h2>Why care</h2><p>Every next-token guess is really “how likely is each word next?”. Probability is that language.</p></section>
+<p class="bd">To predict the next token, we must speak in possibilities.</p>
+<section><p>Every next-token guess is really “how likely is each word next?”. Probability is that language.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>A die: each face 1/6 — a distribution sums to 1.</li><li>Given “it is sunny”, “bring an umbrella?” is conditional.</li><li>An LM computes: given the context, how likely is each next token.</li></ul></section>
+<section><ul><li>A die: each face 1/6 — a distribution sums to 1.</li><li>Given “it is sunny”, “bring an umbrella?” is conditional.</li><li>An LM computes: given the context, how likely is each next token.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Distribution: each candidate gets a probability in [0,1]; they sum to 1.</li><li>Conditional probability P(next | context): given the text so far, how likely each next token is — what an LLM computes.</li><li>Mean is the centre; variance the spread. Attention’s √d scaling uses “variances add”.</li><li>Gaussian: the bell curve. Next step: with Gaussian noise, maximum likelihood recovers MSE.</li></ul></section>
+<section><ul><li>Distribution: each candidate gets a probability in [0,1]; they sum to 1.</li><li>Conditional probability P(next | context): given the text so far, how likely each next token is — what an LLM computes.</li><li>Mean is the centre; variance the spread. Attention’s √d scaling uses “variances add”.</li><li>Gaussian: the bell curve. Next step: with Gaussian noise, maximum likelihood recovers MSE.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Left: scores for 4 candidates; middle: probabilities (sum to 100%); right: the smaller the right answer’s probability, the bigger the later penalty.</li></ul></section>
+<section><ul><li>Left: scores for 4 candidates; middle: probabilities (sum to 100%); right: the smaller the right answer’s probability, the bigger the later penalty.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>→ .</li><li>Candidates blue/green/red/sky at (same as card KM14; also KM04).</li><li>After “the sky is”, “blue” has the highest conditional probability.</li></ul></section>
+<section><ul><li>→ .</li><li>Candidates blue/green/red/sky at (same as card KM14; also KM04).</li><li>After “the sky is”, “blue” has the highest conditional probability.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>P(next|context) sums to 1</li><li>μ, variance</li><li>P(blue|“sky is”) + P(green|…) + … = 1</li><li>μ = (1/n) Σ xᵢ; variance ≈ average squared deviation</li></ul><ul><li>conditional probability: what an LM computes every step</li><li>mean / variance: needed later for √d scaling</li></ul></section>
+<section><ul><li>P(next|context) sums to 1</li><li>μ, variance</li><li>P(blue|“sky is”) + P(green|…) + … = 1</li><li>μ = (1/n) Σ xᵢ; variance ≈ average squared deviation</li></ul><ul><li>conditional probability: what an LM computes every step</li><li>mean / variance: needed later for √d scaling</li></ul></section>
 
 <p><b>Left open</b> We can talk about likelihood. Next: a number that says how wrong a guess was.</p>
 <nav class="pn"><a href="/SI/en/s/0/" rel="prev">← Previous stop: Learn a function from examples</a><a href="/SI/en/s/1/" rel="next">Next stop: Loss functions →</a></nav>

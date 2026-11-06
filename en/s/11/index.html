@@ -37,18 +37,18 @@
 <h1>Cheap adaptation</h1>
 <p class="lead">LoRA, quantisation</p>
 <p class="open"><a href="/SI/?lang=en#D/11">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B model needs about 112 GB before activations — and every task keeps its own full copy.</p>
-<section><h2>Why care</h2><p>Full fine-tuning is costly. LoRA trains a thin side path; quantisation stores fewer bits.</p></section>
+<p class="bd">Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B model needs about 112 GB before activations — and every task keeps its own full copy.</p>
+<section><p>Full fine-tuning is costly. LoRA trains a thin side path; quantisation stores fewer bits.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Freeze W; add B×A beside it.</li><li>Quantisation shortens each number.</li></ul></section>
+<section><ul><li>Freeze W; add B×A beside it.</li><li>Quantisation shortens each number.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>LoRA (Hu et al., 2021): the change ΔW from fine-tuning tends to be low-rank empirical, so freeze W and learn two thin matrices B and A. Afterwards B × A merges back into W at no inference cost; each task keeps only its small matrices.</li><li>SVD intuition: a matrix = U × Σ × V^T; keeping the r largest singular values gives the best rank-r approximation.</li><li>Quantisation: store weights in fewer bits. FP16 is 2 bytes per parameter, INT8 1, INT4 0.5; some accuracy is lost and must be measured.</li><li>QLoRA (Dettmers et al., 2023): keep the base model in 4 bits and train LoRA on top, so one GPU can fine-tune a fairly large model.</li></ul></section>
+<section><ul><li>LoRA (Hu et al., 2021): the change ΔW from fine-tuning tends to be low-rank empirical, so freeze W and learn two thin matrices B and A. Afterwards B × A merges back into W at no inference cost; each task keeps only its small matrices.</li><li>SVD intuition: a matrix = U × Σ × V^T; keeping the r largest singular values gives the best rank-r approximation.</li><li>Quantisation: store weights in fewer bits. FP16 is 2 bytes per parameter, INT8 1, INT4 0.5; some accuracy is lost and must be measured.</li><li>QLoRA (Dettmers et al., 2023): keep the base model in 4 bits and train LoRA on top, so one GPU can fine-tune a fairly large model.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Frozen W ∥ side path B×A; or INT4 weights.</li></ul></section>
+<section><ul><li>Frozen W ∥ side path B×A; or INT4 weights.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Full vs LoRA ; 7B INT4 ≈ .</li><li>Same as card KC13: a 4096 × 4096 matrix: full fine-tuning changes parameters; LoRA with r = 8 trains only .</li><li>A 7-billion (7B) parameter model: .</li></ul></section>
+<section><ul><li>Full vs LoRA ; 7B INT4 ≈ .</li><li>Same as card KC13: a 4096 × 4096 matrix: full fine-tuning changes parameters; LoRA with r = 8 trains only .</li><li>A 7-billion (7B) parameter model: .</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>W′ = W + BA</li><li>x ≈ q × s</li><li>W′ = W + B × A, B is d × r, A is r × k, r ≪ d, k</li><li>Quantise: q = round(x / s), restore x ≈ q × s (s is often per group or per channel)</li></ul><ul><li>frozen W</li><li>low-rank update</li><li>fewer bits</li></ul></section>
+<section><ul><li>W′ = W + BA</li><li>x ≈ q × s</li><li>W′ = W + B × A, B is d × r, A is r × k, r ≪ d, k</li><li>Quantise: q = round(x / s), restore x ≈ q × s (s is often per group or per channel)</li></ul><ul><li>frozen W</li><li>low-rank update</li><li>fewer bits</li></ul></section>
 
 <p><b>Left open</b> It fits now, but generation is still slow: every output token runs the whole network, and longer context uses more memory.</p>
 <nav class="pn"><a href="/SI/en/s/10/" rel="prev">← Previous stop: Post-training: SFT + align</a><a href="/SI/en/s/12/" rel="next">Next stop: Inference speed →</a></nav>

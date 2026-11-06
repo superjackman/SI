@@ -37,18 +37,18 @@
 <h1>Tools + agents</h1>
 <p class="lead">Function calling, the agent loop, MCP</p>
 <p class="open"><a href="/SI/?lang=en#D/14">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
-<p class="bd"><b>The problem</b> Let the model act in the outside world and finish multi-step tasks.</p>
-<section><h2>Why care</h2><p>Talking is not enough — act: call tools. The model writes the call; a program runs it.</p></section>
+<p class="bd">Let the model act in the outside world and finish multi-step tasks.</p>
+<section><p>Talking is not enough — act: call tools. The model writes the call; a program runs it.</p></section>
 
-<section><h2>Everyday analogy</h2><ul><li>Show tool schemas first.</li><li>It emits call JSON; the program runs and returns results.</li><li>Loop observe → think → act until done.</li></ul></section>
+<section><ul><li>Show tool schemas first.</li><li>It emits call JSON; the program runs and returns results.</li><li>Loop observe → think → act until done.</li></ul></section>
 
-<section><h2>Core idea</h2><ul><li>Tool calling: describe the tools (name, JSON Schema for arguments); when needed the model outputs a structured request such as {&quot;name&quot;: &quot;get_weather&quot;, &quot;arguments&quot;: {&quot;city&quot;: &quot;Shanghai&quot;}}; your program runs it and puts the result back in the context. The model executes nothing — it only decides what to call.</li><li>The agent loop: observe → think → act → see the result → … until done (ReAct, Yao et al., 2022), plus planning (sub-tasks), memory (the context is short-term; outside stores are long-term) and reflection (run tests, compare with the goal, retry).</li><li>MCP: an open protocol Anthropic released in November 2024 — JSON-RPC 2.0, client-server — exposing tools, resources and prompt templates to model apps in one way, turning M apps × N tools of glue code into M + N.</li><li>Hard parts: compounding errors, permissions and safety (prompt injection, overreach — least privilege, sandboxes, a human confirms risky steps, keep instructions apart from data), evaluation and cost. Several cooperating agents sometimes help, but not always more than one.</li></ul></section>
+<section><ul><li>Tool calling: describe the tools (name, JSON Schema for arguments); when needed the model outputs a structured request such as {&quot;name&quot;: &quot;get_weather&quot;, &quot;arguments&quot;: {&quot;city&quot;: &quot;Shanghai&quot;}}; your program runs it and puts the result back in the context. The model executes nothing — it only decides what to call.</li><li>The agent loop: observe → think → act → see the result → … until done (ReAct, Yao et al., 2022), plus planning (sub-tasks), memory (the context is short-term; outside stores are long-term) and reflection (run tests, compare with the goal, retry).</li><li>MCP: an open protocol Anthropic released in November 2024 — JSON-RPC 2.0, client-server — exposing tools, resources and prompt templates to model apps in one way, turning M apps × N tools of glue code into M + N.</li><li>Hard parts: compounding errors, permissions and safety (prompt injection, overreach — least privilege, sandboxes, a human confirms risky steps, keep instructions apart from data), evaluation and cost. Several cooperating agents sometimes help, but not always more than one.</li></ul></section>
 
-<section><h2>What the picture shows</h2><ul><li>Observe → think → act → observe … → stop/ask.</li></ul></section>
+<section><ul><li>Observe → think → act → observe … → stop/ask.</li></ul></section>
 
-<section><h2>The numbers</h2><ul><li>Rainy outdoor meeting: weather → calendar → confirm → update.</li><li>“If it rains in Shanghai tomorrow, move my outdoor meeting online.”</li><li>Weather tool (80% rain) → calendar tool finds the meeting → draft the change → ask the user → calendar update tool: 4 tool calls, one of them a human confirmation.</li></ul></section>
+<section><ul><li>Rainy outdoor meeting: weather → calendar → confirm → update.</li><li>“If it rains in Shanghai tomorrow, move my outdoor meeting online.”</li><li>Weather tool (80% rain) → calendar tool finds the meeting → draft the change → ask the user → calendar update tool: 4 tool calls, one of them a human confirmation.</li></ul></section>
 
-<section><h2>Formula</h2><ul><li>0.95^20 ≈ 0.36</li><li>At 95% success per step, all 20 steps succeed with probability 0.95^20 ≈ 0.36</li></ul><ul><li>The model is not the executor; see the Safety station</li></ul></section>
+<section><ul><li>0.95^20 ≈ 0.36</li><li>At 95% success per step, all 20 steps succeed with probability 0.95^20 ≈ 0.36</li></ul><ul><li>The model is not the executor; see the Safety station</li></ul></section>
 
 <p><b>Left open</b> It can call tools. Next: safety — injection, jailbreaks, permissions, confirmation.</p>
 <nav class="pn"><a href="/SI/en/s/13/" rel="prev">← Previous stop: RAG</a><a href="/SI/en/s/S/" rel="next">Next stop: Safety →</a></nav>
