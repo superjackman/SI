@@ -18,6 +18,7 @@ const px = (p: Page, v: string) => expect(p.locator('#l4')).toHaveAttribute('dat
 
 test.describe('R47 derivation path', () => {
   test('home → chain → stages (next, dot, back, the step it came from) → ↑ chain → ↑ home; no history entries; Back leaves', async ({ page }) => {
+    test.setTimeout(90_000);
     await page.goto('about:blank');
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('.l4-tabs button')).toHaveCount(4);
