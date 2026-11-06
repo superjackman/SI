@@ -67,4 +67,32 @@ test.describe('hub, reminder, certificate, demos', () => {
     await expect(play).toHaveAttribute('aria-pressed', 'false');
     expect(errs).toEqual([]);
   });
+  test('share this stop: the card, title and link stay inside the sheet', async ({ page }) => {
+    const errs = await open(page, './?lang=zh#D/0');
+    const spill = async (tag: string) => {
+      await page.locator('[data-ml-share]').click();
+      const sheet = page.locator('.ml-share');
+      await expect(sheet).toBeVisible();
+      await expect(sheet.locator('img')).toBeVisible();
+      await page.waitForFunction(() => { const img = document.querySelector<HTMLImageElement>('.ml-share img'); return !!img && img.complete && img.naturalWidth > 0; });
+      const bad = await sheet.evaluate((root) => {
+        const view = root.getBoundingClientRect(), out: string[] = [];
+        if (view.width > innerWidth + 1) out.push(`sheet ${Math.round(view.width)} > ${innerWidth}`);
+        for (const el of root.querySelectorAll<HTMLElement>('.l4-kn, .ml-dy, img, .l4-sin')) {
+          const r = el.getBoundingClientRect();
+          const name = el.className || el.tagName;
+          if (r.right > innerWidth + 1 || r.left < -1) out.push(`${name} x ${Math.round(r.left)}–${Math.round(r.right)}`);
+          if (el.scrollWidth > el.clientWidth + 1) out.push(`${name} cut ${el.scrollWidth - el.clientWidth}`);
+        }
+        return out;
+      });
+      expect(bad, tag).toEqual([]);
+      await sheet.locator('[data-s="x"]').click();
+      await expect(sheet).toHaveCount(0);
+    };
+    await spill('zh 0');
+    await open(page, './?lang=en#D/15b');
+    await spill('en 15b');
+    expect(errs).toEqual([]);
+  });
 });

@@ -13,6 +13,12 @@
 .ml-pic b { color: #fff; font-size: 15px; } .ml-pic span { color: #cfe0ff; }
 .ml-how, .ml-dy { margin: 0; font-size: 13.5px; color: #d5e2ff; line-height: 1.45; }
 .ml-dy b { color: #ffe08a; } .ml-dy a { color: #9cc8ff; }
+/* share sheet: the preview and the link stay inside the phone width */
+.ml-share { overflow: hidden; }
+.ml-share .l4-sin, .ml-share .l4-sh, .ml-share .l4-sbody { min-width: 0; max-width: 100%; }
+.ml-share .l4-sbody { overflow-x: hidden; }
+.ml-share img { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 12px; }
+.ml-share .ml-dy { overflow-wrap: anywhere; }
 /* unlabeled dots for the parts of this stop; no method names */
 .ml-bar { flex: 1 1 100%; display: flex; align-items: center; }
 .ml-gs { display: flex; gap: 2px; align-items: center; }

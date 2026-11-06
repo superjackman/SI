@@ -130,8 +130,8 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   host.querySelector('[data-ml-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();
     const base = import.meta.env.BASE_URL, page = `${location.origin}${base}s/${k}/`;
-    const box = document.createElement('div'); box.className = 'l4-sheet'; box.setAttribute('role', 'dialog');
-    box.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${esc(tx(M.goal, l))}</b></header><div class="l4-sbody"><img alt="${esc(tx(M.goal, l))}" src="${base}og-st/${k}.png" width="320" style="width:100%;height:auto;border-radius:12px"><p class="ml-dy">${esc(page)}</p></div><footer class="l4-sf"><button type="button" class="l4-b" data-s="x">${z('关闭', 'Close')}</button></footer></div>`;
+    const box = document.createElement('div'); box.className = 'l4-sheet ml-share'; box.setAttribute('role', 'dialog');
+    box.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${esc(tx(M.goal, l))}</b></header><div class="l4-sbody"><img alt="${esc(tx(M.goal, l))}" src="${base}og-st/${k}.png"><p class="ml-dy">${esc(page)}</p></div><footer class="l4-sf"><button type="button" class="l4-b" data-s="x">${z('关闭', 'Close')}</button></footer></div>`;
     box.addEventListener('click', (ev) => { ev.stopPropagation(); const t = ev.target as HTMLElement; if (t === box || t.closest('[data-s="x"]')) box.remove(); });
     (host.closest('#l4') ?? host).appendChild(box);
   });
