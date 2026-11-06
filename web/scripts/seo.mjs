@@ -75,7 +75,7 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
       { '@type': 'WebSite', name: SITE[L], url: abs('') },
       { '@type': kind === 'news' ? 'NewsArticle' : 'WebPage', headline: title, name: title, description: desc, url: abs(path), inLanguage: L === 'zh' ? 'zh-CN' : 'en', dateModified: lm },
     ] };
-    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: ORIGIN + base + 'og.png' })
+    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: `${ORIGIN}${base}og-hub/${kind}/${id}.png` })
       + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])}</p></footer></body></html>\n`);
     pages.push({ path, alt, lastmod: lm });
   };

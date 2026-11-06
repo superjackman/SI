@@ -1,6 +1,6 @@
 // P1/P2: easier certificate, reminders, unique pictures, sourced diary, news/tools, station OG paths.
 import { describe, expect, it, beforeEach } from 'vitest';
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DV_KEY } from '../../src/dv/links';
 import { DIARY } from '../../src/dv/diary';
@@ -128,8 +128,14 @@ describe('portal', () => {
   });
   it('news and tools have static pages and sitemap entries', () => {
     const F = buildSeo({ web: web + '/', base: '/SI/', lastmod: '2026-11-06' });
-    expect(F.get('s/news/ling-32/index.html')).toContain('og:image');
-    expect(F.get('s/tools/deepseek/index.html')).toContain('og:title');
+    const newsOg = F.get('s/news/ling-32/index.html')!;
+    expect(newsOg).toContain('property="og:image" content="https://superjackman.github.io/SI/og-hub/news/ling-32.png"');
+    expect(newsOg).not.toContain('og.png');
+    expect(existsSync(resolve(web, 'public/og-hub/news/ling-32.png'))).toBe(true);
+    expect(existsSync(resolve(web, 'public/og-hub/tools/deepseek.png'))).toBe(true);
+    const toolOg = F.get('s/tools/deepseek/index.html')!;
+    expect(toolOg).toContain('property="og:image" content="https://superjackman.github.io/SI/og-hub/tools/deepseek.png"');
+    expect(toolOg).toContain('og:title');
     expect(F.get('s/news/index.html')).toContain('ling-32');
     const sm = F.get('sitemap.xml')!;
     expect(sm).toContain('https://superjackman.github.io/SI/s/news/ling-32/');

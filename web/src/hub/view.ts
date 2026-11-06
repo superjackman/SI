@@ -20,6 +20,12 @@ const TASK: Record<(typeof TASKS)[number], readonly [string, string]> = {
   local: ['本地跑', 'Run locally'],
 };
 const weeks = () => [...news.weeks].sort((a, b) => (a.week < b.week ? 1 : -1));
+/** heading for week i of n. The “older weeks stay below” line is only true when an older week is actually rendered. */
+export function weekLead(i: number, week: string, n: number, l: L): string {
+  if (i > 0) return tx([`往期 · ${week}`, `Archive · ${week}`], l);
+  const base = tx([`本周 ${week} 起。每条都有来源和日期，没有排行。`, `This week, from ${week}. Each item has a source and a date. No ranking.`], l);
+  return n > 1 ? base + tx(['往期留在下面，不覆盖。', ' Older weeks stay below.'], l) : base;
+}
 export const findNews = (id: string) => weeks().flatMap((w) => w.items.map((it) => ({ ...it, week: w.week }))).find((it) => it.id === id) ?? null;
 export const findTool = (id: string) => tools.items.find((t) => t.id === id) ?? null;
 
@@ -48,7 +54,7 @@ export function newsHtml(l: L, item = ''): string {
   }
   const blocks = weeks().map((w, i) => {
     const items = w.items.map((it) => `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p><a href="#news/${it.id}">${esc(l === 'en' ? it.en : it.zh)}</a></p>${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${news.checked}`, `checked ${news.checked}`)}</p></article>`).join('');
-    const h = i === 0 ? z(`本周 ${w.week} 起。每条都有来源和日期，没有排行。往期留在下面，不覆盖。`, `This week, from ${w.week}. Each item has a source and a date. No ranking. Older weeks stay below.`) : z(`往期 · ${w.week}`, `Archive · ${w.week}`);
+    const h = weekLead(i, w.week, weeks().length, l);
     return `<h3 class="hb-cat">${esc(h)}</h3>${items}`;
   }).join('');
   return `<section class="hb">${blocks}</section>`;
