@@ -9,15 +9,14 @@ import type { Ly, Stage } from './types';
 import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
 
-export const LY_DEPTH = 'si.ly.depth', LY_OPEN = 'si.ly.open';
-export type Depth = 's' | 'm' | 'd';
+import { LY_DEPTH, depthGet, depthSet, jvGet, okD, type Depth } from './prog';
+
+export { LY_DEPTH, depthGet, depthSet, type Depth };
+export const LY_OPEN = 'si.ly.open';
 /** how many layers each depth can show */
 export const DEPTH_MAX: Readonly<Record<Depth, number>> = { s: 1, m: 3, d: 5 };
 /** the smallest depth that shows layer k */
 export const depthFor = (k: number): Depth => (k <= 1 ? 's' : k <= 3 ? 'm' : 'd');
-const okD = (v: unknown): v is Depth => v === 's' || v === 'm' || v === 'd';
-export const depthGet = (): Depth => { try { const v = localStorage.getItem(LY_DEPTH); return okD(v) ? v : 'm'; } catch { return 'm'; } };
-export const depthSet = (d: Depth) => { try { localStorage.setItem(LY_DEPTH, d); } catch { /* private mode */ } };
 const openAll = (): Record<string, number> => { try { const v = JSON.parse(localStorage.getItem(LY_OPEN) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, number>) : {}; } catch { return {}; } };
 /** how many layers of `page` the reader has opened (1–5) */
 export const openGet = (page: string) => { const n = Number(openAll()[page]); return Number.isInteger(n) && n >= 1 && n <= 5 ? n : 1; };
@@ -104,7 +103,7 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'flow' ? picFlow(l, mk, Y.pc) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : `<div class="ly-att" data-att="1"></div>`;
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<p class="ly-hook"><b>${z('为什么要关心', 'Why care')}</b>${mk(Y.hook)}</p>${P(Y.an, mk)}<details class="ly-jv"><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
+    `<p class="ly-hook"><b>${z('为什么要关心', 'Why care')}</b>${mk(Y.hook)}</p>${P(Y.an, mk)}<details class="ly-jv"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
     `${pic}${Y.pic === 'flow' ? '' : P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" data-vf-part="demo"></div>`,
     `<div class="ly-fx">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p></details>`,

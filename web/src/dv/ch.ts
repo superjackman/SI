@@ -3,12 +3,14 @@
 import { tx, type L } from '../l4/txt';
 import { QQ } from '../vf/data';
 import { fillDvText } from './nums';
-import { vfAdd, vfDone } from '../vf/ids';
-import { dvI } from './links';
+import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
+import { DV_KEY, dvI } from './links';
 import type { PxApi } from '../px/view';
 
-/** which station → which vf question id (pilot set) */
-export const CH: Readonly<Record<string, string>> = { '2': 's2a', '8a': 's8a' };
+/** which station → which vf question id: the R52 pilot (2, 8a), and (R53) every other station with a choice
+    question gets its first one, so the home page's 今天的挑战 can be shared as the very same question */
+const PILOT: Readonly<Record<string, string>> = { '2': 's2a', '8a': 's8a' };
+export const CH: Readonly<Record<string, string>> = { ...Object.fromEntries(DV_KEY.flatMap((k) => { const id = (VF_Q['D/' + k] ?? []).find((q) => QQ[q]?.o); return id ? [[k, id]] : []; })), ...PILOT };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function chUrl(k: string, l: L) {
@@ -37,7 +39,7 @@ export async function challenge(id: string, A: PxApi) {
   A.host.innerHTML = `<div class="px dv dv-chq" lang="${l === 'en' ? 'en' : 'zh-CN'}">
 <p class="px-sub">${z('朋友出的挑战题 · 答对才揭晓讲解', 'A challenge from a friend · the explain unlocks when you get it right')}</p>
 <section class="l4-ks"><h3 class="l4-kh c1">${z('题目', 'Question')}</h3><div class="l4-kbd"><p>${esc(qText)}</p>
-${Q.o ? `<div class="vf-opts" role="list">${Q.o.map((o, i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(fillDvText(tx(o, l), l))}</button>`).join('')}</div>`
+${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<button type="button" class="l4-b vf-op" data-a="${i}">${esc(fillDvText(tx(Q.o![i]!, l), l))}</button>`).join('')}</div>`
   : `<div class="vf-row"><input type="number" class="vf-in" inputmode="decimal" step="any" aria-label="${z('你的答案', 'Your answer')}" ${done ? 'disabled' : ''}><span class="vf-u">${esc(unit)}</span><button type="button" class="l4-b gold vf-go"${done ? ' disabled' : ''}>${z('提交', 'Submit')}</button></div>`}
 <p class="vf-fb" aria-live="polite">${done ? z('✓ 你已经答对过这道题', '✓ You already got this right') : ''}</p>
 </div></section>

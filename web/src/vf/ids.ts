@@ -27,3 +27,5 @@ const VF_MO = ['K06', 'KC06', 'KC09', 'KC12'];
 /** does this card / stage get a 验证 block at all? (so the sheet only loads it when there is something to show) */
 export const hasVf = (page: string) => page in VF_Q || VF_MO.includes(page);
 export const VF_MC_ONLY = VF_MO;
+/** options are stored right-answer-first; show them in a fixed per-question order */
+export const order = (id: string, n: number) => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0; const r = h % n; return [...Array(n).keys()].map((i) => (i + r) % n); };

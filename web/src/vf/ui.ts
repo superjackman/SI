@@ -5,7 +5,7 @@ import './vf.css';
 import { tx, type L } from '../l4/txt';
 import { fillDvText } from '../dv/nums';
 import { QQ, MCS, DEMO, type Q, type DemoK } from './data';
-import { VF_Q, vfAdd, vfDone, vfStat } from './ids';
+import { VF_Q, order, vfAdd, vfDone, vfStat } from './ids';
 import { attW, D_ATT, D_DK, D_SM, fmt, gdKind, gdL, gdSeq, parseNum, softmax } from './calc';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -17,8 +17,7 @@ export const mk = (s: string, l: L) => glue(esc(fillDvText(s, l)).replace(/\*\*(
 export const ok = (q: Q, v: number) => Math.abs(v - q.a) <= (q.tol ?? 0.5 * 10 ** -q.d) + 1e-9;
 /** the answer the way it is shown */
 export const ansT = (q: Q, l: L) => (q.o ? tx(q.o[q.a]!, l) : fmt(q.a, q.d) + (q.u ? (q.u[0] === '%' ? '%' : ' ' + tx(q.u, l)) : ''));
-/** options are stored right-answer-first; show them in a fixed per-question order */
-export const order = (id: string, n: number) => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) >>> 0; const r = h % n; return [...Array(n).keys()].map((i) => (i + r) % n); };
+export { order };
 
 /* ---------- the three demos (pure: state → html, tested) ---------- */
 export type DemoS = { eta: number; n: number; T: number; dk: number };
