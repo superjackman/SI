@@ -1,5 +1,8 @@
 // R56 micro-loop: the variant pools start at the page's own question, every wrong path names a different number,
 // and the review queue spaces 1 / 3 / 7 days and keeps wrong answers.
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { QQ } from '../../src/vf/data';
 import { BASE, misOf, varN, varQ } from '../../src/vf/var';
@@ -37,6 +40,15 @@ describe('R56 content', () => {
       const en = JSON.stringify(S, (_, v: unknown) => (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' ? v[1] : v));
       expect(en, k).not.toMatch(/[\u3400-\u9fff]/);
     }
+  });
+});
+describe('R56 station chrome', () => {
+  it('does not name a question / look / compute procedure', () => {
+    const src = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../src/dv');
+    const ml = readFileSync(path.join(src, 'ml.ts'), 'utf8');
+    const ly = readFileSync(path.join(src, 'ly.ts'), 'utf8');
+    const css = readFileSync(path.join(src, 'ml.css'), 'utf8');
+    for (const s of [ml, ly, css]) expect(s).not.toMatch(/接着看|来算一下|算一下|为什么要关心|ml-ss|ml-sg|① \/ /);
   });
 });
 describe('R56 one ledger', () => {

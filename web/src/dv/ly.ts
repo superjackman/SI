@@ -1,8 +1,8 @@
-/* R52 逐层展开 (layered teaching) on every derivation station: one concept per screen, five layers
-   ① 为什么要关心 + 类比 → ② 图 / 动画 → ③ 数字 (+ the slider demo) → ④ 公式 (each part colour-mapped to the analogy) → ⑤ 小测 + 常见误解.
-   A 5-part progress bar on top; 「懂了，下一层」 reveals the next layer; the depth switch 30 秒 / 5 分钟 / 深入 caps what can be shown
-   (1 / 3 / 5 layers) and is remembered in localStorage, as is how far each page has been opened. Nothing here navigates,
-   so it never adds a history entry. A lazy chunk: loaded only when a station with `ly` is opened. */
+/* R52 layered body on every derivation station: one screen of the idea, then the picture, the numbers,
+   the formula, and the quiz. Unlabeled dots mark how far the page is open; nothing on screen names a teaching
+   procedure. The depth switch 30 秒 / 5 分钟 / 深入 caps what can be shown (1 / 3 / 5) and is remembered in
+   localStorage, as is how far each page has been opened. Nothing here navigates, so it never adds a history entry.
+   A lazy chunk: loaded only when a station with `ly` is opened. */
 import './ly.css';
 import { tx, type L } from '../l4/txt';
 import type { Ly, Stage } from './types';
@@ -26,9 +26,7 @@ const openSet = (page: string, n: number) => { const o = openAll(); o[page] = n;
 export const shown = (open: number, d: Depth) => Math.max(1, Math.min(open, DEPTH_MAX[d]));
 
 const NAME: readonly (readonly [string, string])[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
-const HEAD: readonly (readonly [string, string])[] = [['为什么要关心', 'Why it matters'], ['一幅图', 'A picture'], ['这几个数', 'These numbers'], ['写成式子', 'As a formula'], ['算一下', 'Work it out']];
-const NXT: readonly (readonly [string, string])[] = [['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue'], ['来算一下', 'Work it out']];
-const CIRC = ['①', '②', '③', '④', '⑤'];
+const NXT: readonly (readonly [string, string])[] = [['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue']];
 const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 
 type Mk = (s: string) => string;
@@ -111,9 +109,9 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     `<div class="vf-slot" data-vf-part="check"></div>`,
   ];
   const seg = (['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" data-ly-d="${k}" aria-checked="${k === d}"${k === d ? ' class="on"' : ''}>${esc(tx(DLAB[k], l))}</button>`).join('');
-  const bar = NAME.map((n, k) => `<li><button type="button" data-ly-go="${k + 1}"><b>${CIRC[k]}</b><span>${esc(tx(n, l))}</span></button></li>`).join('');
-  const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"${k + 1 > v ? ' hidden' : ''}><h3 class="ly-h" tabindex="-1"><span class="ly-n">${CIRC[k]}</span>${esc(tx(HEAD[k]!, l))}</h3>${b}</section>`).join('');
-  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}"><div class="ly-top"><div class="g-seg ly-dep" role="radiogroup" aria-label="${z('学多深', 'How deep')}">${seg}</div><ol class="ly-pg" aria-label="${z('五层进度', 'Five layers')}">${bar}</ol></div>${secs}<div class="ly-nx"></div></div>`;
+  const bar = NAME.map((n, k) => `<li><button type="button" data-ly-go="${k + 1}" aria-label="${esc(tx(n, l))}"><i aria-hidden="true"></i></button></li>`).join('');
+  const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"${k + 1 > v ? ' hidden' : ''}><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
+  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}"><div class="ly-top"><div class="g-seg ly-dep" role="radiogroup" aria-label="${z('学多深', 'How deep')}">${seg}</div><ol class="ly-pg" aria-label="${z('进度', 'Progress')}">${bar}</ol></div>${secs}<div class="ly-nx"></div></div>`;
 }
 
 /** wire the layered body inside `host`: depth, 懂了 → next layer, the bar, the two 验证 parts, the pictures */
@@ -129,11 +127,11 @@ export function wire(host: HTMLElement, page: string, l: L) {
     root.querySelectorAll<HTMLElement>('[data-ly-d]').forEach((b) => { const on = b.dataset.lyD === d; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     root.querySelectorAll<HTMLElement>('[data-ly-go]').forEach((b) => {
       const k = Number(b.dataset.lyGo); b.className = k < v ? 'done' : k === v ? 'on' : k <= max ? 'off' : 'out';
-      b.setAttribute('aria-label', `${CIRC[k - 1]} ${tx(NAME[k - 1]!, l)}${k <= v ? z('（已展开）', ' (open)') : k <= max ? '' : z('（在更深一档）', ' (in a deeper setting)')}`);
-      if (k === v) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.setAttribute('aria-label', `${tx(NAME[k - 1]!, l)}${k <= v ? z('，已展开', ', open') : k <= max ? '' : z('，在更深一档', ', in a deeper setting')}`);
+      if (k === v) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
     });
     const nx = root.querySelector<HTMLElement>('.ly-nx')!;
-    nx.innerHTML = v >= 5 ? `<p class="ly-end">${z('✓ 五层都看完了。下面是下一步。', '✓ All five layers done. The next step is below.')}</p>`
+    nx.innerHTML = v >= 5 ? `<p class="ly-end">${z('✓ 看完了。', '✓ That’s the end of this part.')}</p>`
       : v < max ? `<button type="button" class="l4-b g-jump ly-go" data-ly-a="next">${esc(tx(NXT[v - 1]!, l))}</button>`
       : `<button type="button" class="l4-b g-info ly-go" data-ly-a="up">${d === 's' ? z('再往下看？切到 5 分钟', 'More of it? Switch to 5 min') : z('连式子一起？切到深入', 'The formula too? Switch to Deep')}</button>`;
   };

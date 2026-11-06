@@ -21,6 +21,15 @@ const hl = (p: Page) => p.evaluate(() => history.length);
 const px = (p: Page, v: string) => expect(p.locator('#l4')).toHaveAttribute('data-px', v);
 const go = (p: Page, h: string) => p.evaluate((x) => { location.replace(x); }, h);
 const num = (a: number, d: number) => String(Number(a.toFixed(Math.max(d, 2))));
+/** move to 推理 / 验证 by continuing, not by a method tab */
+async function cont(p: Page, s: 'r' | 'v') {
+  const cur = await p.locator('.ly.ml').getAttribute('data-ml-s');
+  if (cur === 'i') {
+    if (await p.locator('[data-ml-to="r"]').count() === 0) await p.locator('[data-ml-o="0"]').click();
+    await p.locator('[data-ml-to="r"]').click();
+  }
+  if (s === 'v') await p.locator('[data-ml-to="v"]').click();
+}
 async function readable(p: Page, tag: string, root: string, bad: string[]) {
   for (const x of await p.evaluate(contrastIssues, { root, min: 4.5, icon: 3 })) bad.push(`${tag} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
   for (const x of await p.evaluate(textIssues, 12)) bad.push(`${tag} ${x.k} ${x.cls} “${x.txt}”${x.why ? ' ' + x.why : ''}`);
@@ -38,7 +47,7 @@ test.describe('R56 micro-loop', () => {
     await expect(page.locator('.ly-l').first()).toBeHidden(); await expect(page.locator('.ml-i')).toContainText('第 1 站留下');
     await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(2); await expect(page.locator('.ml-live')).toHaveCount(1);
     await page.locator('[data-ml-to="r"]').first().click(); await expect(ly).toHaveAttribute('data-ml-s', 'r'); await expect(page.locator('.ly-l').first()).toBeVisible();
-    await page.locator('.ml-ss [data-ml-s="v"]').click(); await expect(ly).toHaveAttribute('data-ml-s', 'v');
+    await page.locator('[data-ml-to="v"]').click(); await expect(ly).toHaveAttribute('data-ml-s', 'v');
     await page.locator(`[data-ml-p="${G.pr.a}"]`).click(); await expect(page.locator('.ml-pr')).toContainText('对了');
     // a wrong answer that matches a known mistake → its why + a re-loop button to the exact layer
     const q0 = varQ(G.vk, 0), mis = q0.mis.find((m) => Math.abs(m.v - q0.a) > q0.tol)!;
@@ -47,7 +56,7 @@ test.describe('R56 micro-loop', () => {
     await page.locator('.ml-re').click(); await expect(ly).toHaveAttribute('data-ml-s', 'r');
     await expect(page.locator(`.ly-tab[data-ly-go="${mis.ly}"], [data-ly-go="${mis.ly}"]`).first()).toBeVisible();
     // back to 验证: two new variants right in a row light the goal
-    await page.locator('.ml-ss [data-ml-s="v"]').click(); await page.locator(`[data-ml-p="${G.pr.a}"]`).click();
+    await page.locator('[data-ml-to="v"]').click(); await page.locator(`[data-ml-p="${G.pr.a}"]`).click();
     for (const i of [1, 2]) {
       const q = varQ(G.vk, i); await expect(page.locator('.ml-vn')).toContainText(`第 ${i + 1} 组数`);
       await page.locator('.ml-in').fill(num(q.a, q.d)); await page.locator('[data-ml-ck]').click(); await expect(page.locator('.ml-fb.ok')).toBeVisible();
@@ -63,7 +72,7 @@ test.describe('R56 micro-loop', () => {
   test('8a: a re-loop on the scale step lands on its attention shot', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/8a');
     await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('Stop 8a · 10/23');
-    await page.locator('[data-ml-g="1"]').click(); await page.locator('.ml-ss [data-ml-s="r"]').click();
+    await page.locator('[data-ml-g="1"]').click(); await cont(page, 'r');
     await expect(page.locator('.ml-lys [data-ml-fr]').first()).toBeVisible(); await page.locator('.ml-lys [data-ml-fr]').first().click();
     await expect(page.locator('[data-att]')).toBeVisible();
     expect(errs).toEqual([]);
@@ -71,7 +80,7 @@ test.describe('R56 micro-loop', () => {
   test('stop 0: two right variants light the first small goal', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/0');
     const G = ML['0']!.goals[0]!;
-    await page.locator('.ml-ss [data-ml-s="v"]').click();
+    await cont(page, 'v');
     await page.locator(`[data-ml-p="${G.pr.a}"]`).click();
     for (const i of [0, 1]) {
       const q = varQ(G.vk, i);
@@ -93,7 +102,7 @@ test.describe('R56 micro-loop', () => {
       await expect(page.locator('.dv-take li')).toHaveCount(3);
       await page.locator('[data-ml-o="0"]').click();
       await expect(page.locator('.ml-dead')).toHaveCount(2);
-      await page.locator('.ml-ss [data-ml-s="v"]').click();
+      await cont(page, 'v');
       const q = varQ(ML[k]!.goals[0]!.vk, 0);
       const mis = q.mis.find((m) => Math.abs(m.v - q.a) > q.tol)!;
       await page.locator('.ml-in').fill(num(mis.v, q.d)); await page.locator('[data-ml-ck]').click();
@@ -166,7 +175,7 @@ test.describe('R56 reads on this phone', () => {
         await page.evaluate(() => localStorage.removeItem('si.ml')); await go(page, `#D/${k}`); await px(page, `D/${k}.${l}`);
         await page.locator('[data-ml-o="0"]').click(); await page.locator('.ml-i').evaluate((e) => e.scrollIntoView({ block: 'start' }));
         await readable(page, `${l} ${k} 调查`, '.ml-goal, .ml-bar, .ml-i', bad);
-        await page.locator('.ml-ss [data-ml-s="v"]').click(); await page.locator('[data-ml-p="0"]').click(); await page.locator('.ml-in').fill('99999'); await page.locator('[data-ml-ck]').click();
+        await cont(page, 'v'); await page.locator('[data-ml-p="0"]').click(); await page.locator('.ml-in').fill('99999'); await page.locator('[data-ml-ck]').click();
         await page.locator('.ml-v').evaluate((e) => e.scrollIntoView({ block: 'start' })); await readable(page, `${l} ${k} 验证`, '.ml-v', bad);
         await page.locator('.dv-take').evaluate((e) => e.scrollIntoView({ block: 'start' })); await readable(page, `${l} ${k} take`, '.dv-take, .dv-chn', bad);
         if (l === 'en' && /[\u3400-\u9fff]/.test((await page.locator('.ml-goal, .ml-bar, .ml-v, .dv-take, .dv-chn').allInnerTexts()).join(''))) bad.push(`en ${k} has Chinese`);

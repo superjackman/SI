@@ -11,18 +11,16 @@ const KEYS = ['0', 'P', '1', '2', '3', '4', '5', '6', '7', '8a', '8b', '9', 'E',
 const T = {
   zh: {
     open: '▶ 打开互动版（能点图、做实验、做小测）',
-    hook: '为什么要关心', an: '生活类比', pic: '看图在说什么', num: '算一算', fx: '公式', idea: '核心思想',
     prev: '← 上一站', next: '下一站 →', all: '🗺 全部站点', home: '首页', cat: '全部站点目录', other: 'English',
-    catT: (n) => `推导之路 · 全部 ${n} 站`, catD: '从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。每站都有钩子、类比、数字、公式和小测。',
+    catT: (n) => `推导之路 · 全部 ${n} 站`, catD: '从“用样本找函数”到 Agent 与应用：23 站自底向上推导大模型。',
     nf: '这个页面不存在', nfP: '可能是链接打错了，或者页面已经换了地方。', nfHome: '回到首页', nfCat: '看全部站点',
     course: '大白话拆解 AI：从样本到 Agent', courseD: '小学生也能跟的 AI 推导之路：概率、损失、梯度、Transformer、预训练、Agent、安全与应用。',
     layer: '推导之路',
   },
   en: {
     open: '▶ Open the interactive version (diagrams, labs, quizzes)',
-    hook: 'Why care', an: 'Everyday analogy', pic: 'What the picture shows', num: 'The numbers', fx: 'Formula', idea: 'Core idea',
     prev: '← Previous stop', next: 'Next stop →', all: '🗺 All stops', home: 'Home', cat: 'All stops', other: '中文',
-    catT: (n) => `Derivation path · all ${n} stops`, catD: 'From “learn a function from examples” to agents and apps: 23 stops building an LLM from the ground up. Hook, analogy, numbers, formula, quiz at every stop.',
+    catT: (n) => `Derivation path · all ${n} stops`, catD: 'From “learn a function from examples” to agents and apps: 23 stops building an LLM from the ground up.',
     nf: 'Page not found', nfP: 'The link may be mistyped, or the page has moved.', nfHome: 'Go to the home page', nfCat: 'See all stops',
     course: 'AI, explained plainly: from examples to agents', courseD: 'A plain-language derivation of LLMs: probability, loss, gradients, the Transformer, pre-training, agents, safety and apps.',
     layer: 'Derivation path',
@@ -128,20 +126,20 @@ ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
         crumbs(trail)] };
       const pv = i > 0 ? KEYS[i - 1] : null, nx = i < KEYS.length - 1 ? KEYS[i + 1] : null;
       const lis = (xs) => (xs && xs.length ? `<ul>${xs.map((x) => `<li>${esc(plain(x))}</li>`).join('')}</ul>` : '');
-      const sec = (h, body) => body ? `<section><h2>${esc(h)}</h2>${body}</section>\n` : '';
+      const sec = (body) => body ? `<section>${body}</section>\n` : '';
       const body = `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav>
 <main>
 <p class="lv">${T[L].layer} · ${i + 1} / ${KEYS.length}</p>
 <h1>${esc(nm)}</h1>
 <p class="lead">${esc(plain(s.s))}</p>
 <p class="open"><a href="${appHref('D/' + k, L)}">${T[L].open}</a></p>
-${s.q ? `<p class="bd"><b>${L === 'zh' ? '要解决的问题' : 'The problem'}</b> ${esc(plain(s.q))}</p>` : ''}
-${sec(T[L].hook, ly.hook ? `<p>${esc(plain(ly.hook))}</p>` : '')}
-${sec(T[L].an, lis(ly.an))}
-${sec(T[L].idea, lis(s.i))}
-${sec(T[L].pic, lis(ly.pc))}
-${sec(T[L].num, lis([...(ly.num || []), ...(s.x || [])]))}
-${sec(T[L].fx, lis([...(ly.fx || []), ...(s.f || [])]) + (ly.fe && ly.fe.length ? lis(ly.fe) : ''))}
+${s.q ? `<p class="bd">${esc(plain(s.q))}</p>` : ''}
+${sec(ly.hook ? `<p>${esc(plain(ly.hook))}</p>` : '')}
+${sec(lis(ly.an))}
+${sec(lis(s.i))}
+${sec(lis(ly.pc))}
+${sec(lis([...(ly.num || []), ...(s.x || [])]))}
+${sec(lis([...(ly.fx || []), ...(s.f || [])]) + (ly.fe && ly.fe.length ? lis(ly.fe) : ''))}
 ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(plain(s.lo))}</p>` : ''}
 <nav class="pn">${pv ? `<a href="${base}${pagePath(pv, L)}" rel="prev">${T[L].prev}${L === 'zh' ? '：' : ': '}${esc(names[L][i - 1])}</a>` : '<span></span>'}${nx ? `<a href="${base}${pagePath(nx, L)}" rel="next">${T[L].next.replace(' →', '')}${L === 'zh' ? '：' : ': '}${esc(names[L][i + 1])} →</a>` : ''}</nav>
 <section><h2>${T[L].all}</h2><ol>${KEYS.map((kk, j) => j === i ? `<li><b>${esc(names[L][j])}</b></li>` : `<li><a href="${base}${pagePath(kk, L)}">${esc(names[L][j])}</a></li>`).join('')}</ol></section>

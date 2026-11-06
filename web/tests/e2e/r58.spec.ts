@@ -52,9 +52,12 @@ test.describe('hub, reminder, certificate, demos', () => {
   test('station 1 drag can pause, and the page does not say 先猜 or 调查', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/1');
     await px(page, 'D/1.zh');
-    const text = (await page.locator('.ml-goal, .ml-bar').allInnerTexts()).join('\n');
-    expect(text).not.toMatch(/先猜|你会怎么做|调查|先预测/);
-    await page.locator('.ml-ss [data-ml-s="r"]').click();
+    const text = (await page.locator('.ml-goal, .ml-bar, .ly-top, .ml-i').allInnerTexts()).join('\n');
+    expect(text).not.toMatch(/先猜|你会怎么做|调查|先预测|接着看|算一下|来算一下/);
+    await expect(page.locator('.ml-ss, .ml-sg')).toHaveCount(0);
+    expect((await page.locator('.ml-bar, .ly-pg').allInnerTexts()).join('\n')).not.toMatch(/[①②③④⑤]|问题|接着看|算一下/);
+    if (await page.locator('[data-ml-to="r"]').count() === 0) await page.locator('[data-ml-o="0"]').click();
+    await page.locator('[data-ml-to="r"]').click();
     await page.locator('.ly-pg [data-ly-go="3"]').click();
     const play = page.locator('[data-dm="mse"] [data-vs="play"]');
     await expect(play).toBeVisible();

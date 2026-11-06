@@ -25,7 +25,8 @@ test.describe('R51 layers', () => {
   test('5 分钟 by default: ① first, 懂了 opens ② and ③, then offers 深入; the bar jumps; depth and progress are kept; no history entries', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/2'); await px(page, 'D/2.zh'); const h0 = await hl(page);
     await expect(page.locator('.ly-dep [data-ly-d="m"]')).toHaveAttribute('aria-checked', 'true');
-    await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-l[data-ly="1"]')).toContainText('为什么要关心');
+    await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-l[data-ly="1"]')).toContainText('梯度下降');
+    expect((await page.locator('.ly-top, .ml-bar, .ly-h').allInnerTexts()).join('\n')).not.toMatch(/为什么要关心|算一下|接着看|问题|[①②③④⑤]/);
     await expect(page.locator('.ly-pg button')).toHaveCount(5);
     await page.locator('.ly-go').click(); await expect(vis(page)).toHaveCount(2); await expect(page.locator('.ly-bowl')).toBeVisible();
     await page.locator('.ly-go').click(); await expect(vis(page)).toHaveCount(3); await expect(page.locator('.ly-l[data-ly="3"] .vf-dm[data-dm="gd"]')).toBeVisible();
