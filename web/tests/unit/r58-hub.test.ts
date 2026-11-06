@@ -11,6 +11,8 @@ import { rvAns } from '../../src/px/rv';
 import { masteredSt } from '../../src/dv/prog';
 import news from '../../src/hub/news.json';
 import tools from '../../src/hub/tools.json';
+import { stripIds } from '../../src/dv/plain';
+import { progressLine } from '../../src/dv/share';
 import { buildSeo } from '../../scripts/seo.mjs';
 import { demoOut, DEMO0 } from '../../src/vf/ui';
 import zh from '../../src/dv/zh-st.json';
@@ -86,25 +88,69 @@ describe('pictures and diary', () => {
 
 describe('portal', () => {
   it('news items have a real url, a date, and stations that exist', () => {
-    expect(news.items.length).toBeGreaterThanOrEqual(5);
-    expect(news.items.length).toBeLessThanOrEqual(10);
-    for (const it of news.items) {
+    const items = news.weeks.flatMap((w) => w.items);
+    expect(items.length).toBeGreaterThanOrEqual(5);
+    expect(items.length).toBeLessThanOrEqual(12);
+    for (const it of items) {
       expect(it.url).toMatch(/^https:\/\//);
       expect(it.date).toMatch(/^2026-11-0[2-6]$/);
       expect(it.st.length).toBeGreaterThan(0);
+      expect(it.more.zh.length).toBeGreaterThanOrEqual(3);
+      expect(it.more.en.length).toBe(it.more.zh.length);
+      expect(DV_KEY).toContain(it.goal);
       for (const k of it.st) expect(DV_KEY).toContain(k);
       expect(it.zh + it.en).not.toMatch(/排行|第 ?1 ?名|ranking/i);
     }
   });
-  it('tools are real links with a checked date and a safety station', () => {
+  it('a new week does not drop an older week', async () => {
+    const { keepWeek } = await import('../../src/hub/archive');
+    const prev = [{ week: '2026-10-26', items: [{ id: 'old' }] }, { week: '2026-11-02', items: [{ id: 'a' }] }];
+    const next = keepWeek(prev, { week: '2026-11-02', items: [{ id: 'b' }] });
+    expect(next.map((w) => w.week)).toEqual(['2026-11-02', '2026-10-26']);
+    expect(next.find((w) => w.week === '2026-10-26')!.items).toEqual([{ id: 'old' }]);
+    expect(next.find((w) => w.week === '2026-11-02')!.items).toEqual([{ id: 'b' }]);
+  });
+  it('tools are real links with a checked date, a task, and a safety station', () => {
     expect(tools.checked).toMatch(/^2026-11-06$/);
+    expect(tools.items.length).toBeGreaterThanOrEqual(20);
+    expect(tools.items.length).toBeLessThanOrEqual(30);
+    const tasks = new Set<string>();
     for (const t of tools.items) {
       expect(t.url).toMatch(/^https:\/\//);
       expect(t.safe).toBe('S');
+      expect(t.tasks.length).toBeGreaterThan(0);
+      for (const x of t.tasks) tasks.add(x);
       expect(t.free[1]).not.toMatch(/[\u3400-\u9fff]/);
       expect(t.cn[1]).not.toMatch(/[\u3400-\u9fff]/);
       for (const k of t.st) expect(DV_KEY).toContain(k);
     }
+    expect([...tasks].sort()).toEqual(['code', 'draw', 'local', 'read', 'write']);
+  });
+  it('news and tools have static pages and sitemap entries', () => {
+    const F = buildSeo({ web: web + '/', base: '/SI/', lastmod: '2026-11-06' });
+    expect(F.get('s/news/ling-32/index.html')).toContain('og:image');
+    expect(F.get('s/tools/deepseek/index.html')).toContain('og:title');
+    expect(F.get('s/news/index.html')).toContain('ling-32');
+    const sm = F.get('sitemap.xml')!;
+    expect(sm).toContain('https://superjackman.github.io/SI/s/news/ling-32/');
+    expect(sm).toContain('https://superjackman.github.io/SI/s/tools/ollama/');
+    expect(sm).toContain('https://superjackman.github.io/SI/en/s/news/');
+  });
+});
+
+describe('station prose and the share line', () => {
+  it('strips internal card ids from a sentence', () => {
+    expect(stripIds('点积（KM02 卡同一例）：q = [3, 1]')).toBe('点积：q = [3, 1]');
+    expect(stripIds('BPE（K02 卡同一例）：{#bpe}。')).not.toMatch(/K02|卡同一例/);
+    expect(stripIds('卡上同一个例子（同一组数）')).toBe('同一组数');
+  });
+  it('says every set was right only when none were missed', () => {
+    localStorage.clear();
+    expect(progressLine('6', 'zh')).toBe('这一站还没算对一组数');
+    localStorage.setItem('si.ml', JSON.stringify({ '6': { m: [1, 0, 0], k: [2, 0, 0], v: [3, 0, 0], g: 0, s: 'v', p: [1, -1, -1], c: [3, 0, 0] } }));
+    expect(progressLine('6', 'zh')).toBe('这一站换了 3 组数都算对');
+    localStorage.setItem('si.ml', JSON.stringify({ '6': { m: [0, 0, 0], k: [0, 0, 0], v: [4, 0, 0], g: 0, s: 'v', p: [-1, -1, -1], c: [2, 0, 0] } }));
+    expect(progressLine('6', 'zh')).toBe('这一站算对了 2 组数');
   });
 });
 

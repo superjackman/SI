@@ -1,51 +1,135 @@
 {
-  "week": "2026-11-02",
   "checked": "2026-11-06",
-  "items": [
+  "weeks": [
     {
-      "id": "ling-32",
-      "date": "2026-11-05",
-      "zh": "蚂蚁发布 Ling-3.2-flash：总参数 5600 亿，每步只算其中约 250 亿，上下文 100 万词元，能读文字、图和视频。",
-      "en": "Ant Group released Ling-3.2-flash on 5 Nov 2026: 560 billion parameters in total, about 25 billion used on each step, a one-million-token context, and text, image and video input.",
-      "url": "https://technode.com/2026/11/06/ant-launches-ling-3-2-flash-multimodal-model-with-million-token-context/",
-      "source": "TechNode",
-      "st": ["12", "15a", "15b"]
-    },
-    {
-      "id": "hy4",
-      "date": "2026-11-04",
-      "zh": "腾讯发布 Hy4：这次加上了看图，以及在命令行和图形界面里办事。权重和系统卡写着随后公开。",
-      "en": "Tencent announced Hy4 on 4 Nov 2026, adding image understanding and the ability to work in a terminal or a graphical interface. Weights and a system card were described as coming next.",
-      "url": "https://www.tencent.com/tencent-launches-hy4-joining-the-ranks-of-the-worlds-leading-open-source-ai-models/",
-      "source": "Tencent",
-      "st": ["15a", "14", "A"]
-    },
-    {
-      "id": "kimi-k31",
-      "date": "2026-11-04",
-      "zh": "vLLM 当天支持 Kimi K3.1 Pro：开源权重，总参数 2.8 万亿、每步约 1040 亿，上下文 100 万词元，并在全注意力层用了稀疏注意力。",
-      "en": "On 4 Nov 2026 vLLM shipped day-0 support for Kimi K3.1 Pro: open weights, 2.8 trillion parameters with about 104 billion active, a one-million-token context, and sparse attention on the full-attention layers.",
-      "url": "https://vllm.ai/blog/2026-11-04-kimi-k31-pro",
-      "source": "vLLM",
-      "st": ["12", "8a", "15b"]
-    },
-    {
-      "id": "gpt6-cyber",
-      "date": "2026-11-05",
-      "zh": "OpenAI 发布面向授权安全研究的模型，训练目标包括留在研究者划定的范围里。用它之前，先看安全那一站：不可信文本不是新指令，高风险动作要人确认。",
-      "en": "On 5 Nov 2026 OpenAI announced a model for authorized security research, trained to stay inside the scope a researcher sets. Before using that kind of tool, read the safety stop: untrusted text is not a new instruction, and high-risk actions wait for a person.",
-      "url": "https://openai.com/index/introducing-gpt-6-cyber",
-      "source": "OpenAI",
-      "st": ["S", "14"]
-    },
-    {
-      "id": "endeavor-11",
-      "date": "2026-11-03",
-      "zh": "Flower 发布 Endeavor 1.1：可以看图，思维过程可以打开看，也可以把推理放在欧盟的机器上。",
-      "en": "On 3 Nov 2026 Flower released Endeavor 1.1: image input, thinking traces you can open, and an option to run inference on machines in the EU.",
-      "url": "https://flower.ai/blog/2026-11-03-introducing-endeavor-1.1",
-      "source": "Flower",
-      "st": ["15b", "15a", "E"]
+      "week": "2026-11-02",
+      "items": [
+        {
+          "id": "ling-32",
+          "date": "2026-11-05",
+          "zh": "蚂蚁发布 Ling-3.2-flash：总参数 5600 亿，每步只算其中约 250 亿，上下文 100 万词元，能读文字、图和视频。",
+          "en": "Ant Group released Ling-3.2-flash on 5 Nov 2026: 560 billion parameters in total, about 25 billion used on each step, a one-million-token context, and text, image and video input.",
+          "url": "https://technode.com/2026/11/06/ant-launches-ling-3-2-flash-multimodal-model-with-million-token-context/",
+          "source": "TechNode",
+          "st": ["12", "15a", "15b"],
+          "goal": "12",
+          "gi": 3,
+          "more": {
+            "zh": [
+              "总参数 5600 亿、每步大约 250 亿，是来源里写的数：这一步没有把整张表都算一遍。",
+              "第 12 站的「每次只叫醒几个专家」说的就是这种安排：大部分参数这一步睡着。",
+              "它还能读图和视频。第 15a 站把图切成小块，和文字排进同一句话。",
+              "上下文写到 100 万词元。第 15b 站把「放得下」和「多想一会」分开：窗口变长，不等于中间每个字都被用上。"
+            ],
+            "en": [
+              "The source states 560 billion parameters in total and about 25 billion used on a step: that step does not touch the whole table.",
+              "Stop 12, “only a few experts wake up”, is that arrangement: most parameters sleep for the step.",
+              "It also reads images and video. Stop 15a cuts a picture into patches and lines them up with the words.",
+              "The context is listed as one million tokens. Stop 15b separates “it fits” from “it thinks longer”: a longer window is not the same as using every token in the middle."
+            ]
+          }
+        },
+        {
+          "id": "hy4",
+          "date": "2026-11-04",
+          "zh": "腾讯发布 Hy4：这次加上了看图，以及在命令行和图形界面里办事。权重和系统卡写着随后公开。",
+          "en": "Tencent announced Hy4 on 4 Nov 2026, adding image understanding and the ability to work in a terminal or a graphical interface. Weights and a system card were described as coming next.",
+          "url": "https://www.tencent.com/tencent-launches-hy4-joining-the-ranks-of-the-worlds-leading-open-source-ai-models/",
+          "source": "Tencent",
+          "st": ["15a", "14", "A"],
+          "goal": "15a",
+          "gi": 0,
+          "more": {
+            "zh": [
+              "来源写的是：这次加上看图，并能在命令行或图形界面里办事。权重和系统卡写着随后公开，页上还没有文件本身。",
+              "看图对应第 15a 站「一条边有几块」：图先切成小块，再和文字走同一套注意力。",
+              "在界面里办事对应第 14 站：模型只写下要调用什么，旁边的程序去执行。",
+              "第 A 站把同一套做法放进真实任务里看：会不会停下来问人。"
+            ],
+            "en": [
+              "The source says this release adds image understanding and work inside a terminal or a graphical interface. Weights and a system card were described as coming next; the page does not include the files yet.",
+              "Images line up with stop 15a, “how many patches along one edge”: cut the picture into patches, then use the same attention as the words.",
+              "Working in an interface lines up with stop 14: the model only writes the call, and a program next to it runs the call.",
+              "Stop A puts that same pattern into a real task and asks whether it stops for a person."
+            ]
+          }
+        },
+        {
+          "id": "kimi-k31",
+          "date": "2026-11-04",
+          "zh": "vLLM 当天支持 Kimi K3.1 Pro：开源权重，总参数 2.8 万亿、每步约 1040 亿，上下文 100 万词元，并在全注意力层用了稀疏注意力。",
+          "en": "On 4 Nov 2026 vLLM shipped day-0 support for Kimi K3.1 Pro: open weights, 2.8 trillion parameters with about 104 billion active, a one-million-token context, and sparse attention on the full-attention layers.",
+          "url": "https://vllm.ai/blog/2026-11-04-kimi-k31-pro",
+          "source": "vLLM",
+          "st": ["12", "8a", "15b"],
+          "goal": "8a",
+          "gi": 0,
+          "more": {
+            "zh": [
+              "来源写的是当天就能在 vLLM 里跑：开源权重，总参数 2.8 万亿，每步大约 1040 亿，上下文 100 万词元。",
+              "「全注意力层用了稀疏注意力」对应第 8a 站「打分：谁和我对得上」：不是每个词都跟所有词打一遍分。",
+              "每步只算一部分参数，和第 12 站「每次只叫醒几个专家」是同一类安排。",
+              "100 万词元的窗口对应第 15b 站：放得下，和多想一会，是两件事。"
+            ],
+            "en": [
+              "The source says day-0 support in vLLM: open weights, 2.8 trillion parameters, about 104 billion active, and a one-million-token context.",
+              "Sparse attention on the full-attention layers lines up with stop 8a, “score: who matches me”: not every word is scored against every other word.",
+              "Using only part of the parameters on a step is the same kind of arrangement as stop 12, “only a few experts wake up”.",
+              "A one-million-token window lines up with stop 15b: fitting the text, and thinking longer, are two jobs."
+            ]
+          }
+        },
+        {
+          "id": "gpt6-cyber",
+          "date": "2026-11-05",
+          "zh": "OpenAI 发布面向授权安全研究的模型，训练目标包括留在研究者划定的范围里。用它之前，先看安全那一站：不可信文本不是新指令，高风险动作要人确认。",
+          "en": "On 5 Nov 2026 OpenAI announced a model for authorized security research, trained to stay inside the scope a researcher sets. Before using that kind of tool, read the safety stop: untrusted text is not a new instruction, and high-risk actions wait for a person.",
+          "url": "https://openai.com/index/introducing-gpt-6-cyber",
+          "source": "OpenAI",
+          "st": ["S", "14"],
+          "goal": "S",
+          "gi": 0,
+          "more": {
+            "zh": [
+              "来源写的是：这个模型面向授权的安全研究，训练目标包括留在研究者划定的范围里。",
+              "第 S 站「高风险的动作要等人」：付钱、删除、外发默认停下来问人。只读的查询可以自己做。",
+              "同一站把塞进来的纸条当成数据，不当成新指令。来源里的“留在范围内”说的是同一类边界。",
+              "第 14 站接着说：模型只写下调用，真正执行的是旁边的程序，所以程序这边才能拦住高风险动作。"
+            ],
+            "en": [
+              "The source says the model is for authorized security research, and that training includes staying inside a scope the researcher sets.",
+              "Stop S, “high-risk actions wait for a person”: paying, deleting and sending stop for a nod. A read-only lookup can run alone.",
+              "The same stop treats a slipped-in note as data, not as a new instruction. “Stay inside the scope” in the source is that kind of boundary.",
+              "Stop 14 continues: the model only writes the call, and a program runs it, so the program is where a high-risk action can be stopped."
+            ]
+          }
+        },
+        {
+          "id": "endeavor-11",
+          "date": "2026-11-03",
+          "zh": "Flower 发布 Endeavor 1.1：可以看图，思维过程可以打开看，也可以把推理放在欧盟的机器上。",
+          "en": "On 3 Nov 2026 Flower released Endeavor 1.1: image input, thinking traces you can open, and an option to run inference on machines in the EU.",
+          "url": "https://flower.ai/blog/2026-11-03-introducing-endeavor-1.1",
+          "source": "Flower",
+          "st": ["15b", "15a", "E"],
+          "goal": "15b",
+          "gi": 0,
+          "more": {
+            "zh": [
+              "来源写的是三件事：能看图，思维过程可以打开，推理可以放在欧盟的机器上。",
+              "思维过程可以打开，对应第 15b 站「投票看出现次数」：多想一会是采样和核对，不是把窗口偷偷加长。",
+              "看图对应第 15a 站：图切成小块，和文字走同一套注意力。",
+              "第 E 站提醒：犹豫少不等于答得对。打开思维过程，是为了核对，不是为了看它写得顺。"
+            ],
+            "en": [
+              "The source lists three things: image input, thinking traces you can open, and an option to run inference on machines in the EU.",
+              "Traces you can open line up with stop 15b, “a vote counts how often”: thinking longer is sampling and checking, not quietly growing the window.",
+              "Images line up with stop 15a: cut the picture into patches and use the same attention as the words.",
+              "Stop E adds: little hesitation is not the same as being right. Open the trace to check it, not to admire how smoothly it writes."
+            ]
+          }
+        }
+      ]
     }
   ]
 }

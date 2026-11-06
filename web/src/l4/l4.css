@@ -310,12 +310,13 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .g-modal { position: fixed; inset: 0; z-index: 70; background: rgba(2,6,20,.78); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .g-dlg { width: 100%; max-width: 400px; height: calc(100% - 8px); max-height: 860px; background: #0b1636; border: 1px solid #2c4690; border-radius: 18px; padding: 14px 14px 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
 .g-dh { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; } .g-dh b { font-size: 16px; color: #fff; }
-.l4 .g-x { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #13224d; color: #cfe0ff; border: 1px solid #2c4690; font-size: 16px; padding: 0; }
+.l4 .g-x { flex: none; width: 44px; height: 44px; border-radius: 50%; background: #13224d; color: #cfe0ff; border: 1px solid #2c4690; font-size: 16px; padding: 0; }
 .g-pv { flex: 1; min-height: 0; display: flex; justify-content: safe center; align-items: safe center; background: #050b1f; border-radius: 12px; padding: 10px; overflow: auto; }
 .g-pv img { display: block; max-height: 100%; max-width: 100%; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.5); }
 .g-pv .g-em { margin: 0; color: #9cb3e6; font-size: 13px; text-align: center; line-height: 1.6; padding: 12px; }
 .g-seg { flex: none; display: grid; grid-template-columns: 1fr 1fr; background: #08112b; border: 1px solid #2c4690; border-radius: 10px; padding: 3px; gap: 3px; }
-.l4 .g-seg button { min-height: 34px; border-radius: 8px; border: 0; background: transparent; color: #9cb3e6; font-size: 13px; font-weight: 600; }
+.l4 .g-seg button { min-height: 44px; border-radius: 8px; border: 0; background: transparent; color: #9cb3e6; font-size: 13px; font-weight: 600; }
+.g-dlg .g-row .l4-b, .g-dlg .g-act2 { min-height: 44px; }
 .l4 .g-seg button.on { background: #1d3270; color: #fff; }
 .l4 .g-seg button:disabled { opacity: .5; }
 .g-row { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }

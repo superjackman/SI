@@ -20,11 +20,12 @@ import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
-import { DV_ALIAS, DV_N, DV_NM, dvK, isDv } from '../dv/links';
+import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
+const isHub = (id: string) => id === 'news' || id.startsWith('news/') || id === 'tools' || id.startsWith('tools/');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function start(doc: Document = document, win: Window = window) {
@@ -135,7 +136,9 @@ export function start(doc: Document = document, win: Window = window) {
   let hmTok = 0;
   function drawHome() {
     const t = ++hmTok, l = lang; delete root.dataset.hm;
-    void import('./home').then((m) => { if (t !== hmTok || cur !== 'home' || lang !== l) return; m.home(home, { l, root, go, redraw: () => { if (cur === 'home') drawHome(); } }); }).catch(() => { /* offline: the shell still works */ });
+    const pane = cur.startsWith('tools') ? 'tools' as const : cur.startsWith('news') ? 'news' as const : 'learn' as const;
+    const item = cur.includes('/') ? cur.slice(cur.indexOf('/') + 1) : '';
+    void import('./home').then((m) => { if (t !== hmTok || (cur !== 'home' && !isHub(cur)) || lang !== l) return; m.home(home, { l, root, go, pane, item, redraw: () => { if (cur === 'home' || isHub(cur)) drawHome(); } }); }).catch(() => { /* offline: the shell still works */ });
   }
   /* R54 地图 tab: the five layers as a plain list, macro (how I use it) at the top → micro (the maths) at the bottom.
      The pyramid is the knowledge structure (each layer opens the one above), not a shape: equal-width rows, no trapezoids. */
@@ -168,7 +171,7 @@ export function start(doc: Document = document, win: Window = window) {
     if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; home.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
     home.hidden = isL4; stg.hidden = !isL4;
-    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
+    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || isHub(cur) || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
       if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);
@@ -259,14 +262,15 @@ export function start(doc: Document = document, win: Window = window) {
     ['R', '#R', ['我的', 'Me'], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>'],
   ];
   function drawTabs() {
-    const on = TABS.some(([id]) => id === cur); tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
+    const on = TABS.some(([id]) => id === cur) || isHub(cur); tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
     tabs.setAttribute('aria-label', tx(['主导航', 'Main'], lang));
     tabs.innerHTML = TABS.map(([id, h, t, ic]) => `<button type="button" data-go="${h}"${id === cur ? ' class="on" aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${tx(t, lang)}</span></button>`).join('');
   }
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
     const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
-    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(Z(`第 ${s.keys?.[k] ?? k + b} 步`, `Step ${s.keys?.[k] ?? k + b}`))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${s.txt != null ? esc(s.txt) : `${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}`}</span>` : '';
+    const dotLab = (k: number) => s.keys ? Z(`第 ${s.keys[k]} 站`, `Stop ${s.keys[k]}`) : Z(`第 ${k + b} 步`, `Step ${k + b}`);
+    const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(dotLab(k))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${s.txt != null ? esc(s.txt) : `${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}`}</span>` : '';
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span><button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
   }
   const run = (f: string | (() => void) | null | undefined) => { if (typeof f === 'string') go(f); else f?.(); };
@@ -307,7 +311,7 @@ export function start(doc: Document = document, win: Window = window) {
     const soonL = [1, 2, 3, 5].filter((n) => !LIVE.includes(n)).map((n) => `<a href="#L${n}">${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)} <em>${T('soon')}</em></a>`).join('');
     const opened = new Set(LS.get<string[]>('si.l4.cards', [])), ps = layerStats(seen, opened);
     const lm = layerMastery(masteredSt());
-    const prog = `<div class="l4-mpg">${ps.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<div class="rw">${lvTag(x.n, lang)}${pbar(ma, mt, x.n)}<span class="m">${esc(tx([`掌握 ${ma}/${mt} 站 · 看过 ${x.s}/${x.t} 页`, `${ma}/${mt} stops mastered · ${x.s}/${x.t} pages`], lang))}</span></div>`; }).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
+    const prog = `<div class="l4-mpg">${ps.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<div class="rw">${lvTag(x.n, lang)}${pbar(ma, mt, x.n)}<span class="m">${esc(tx([`掌握 ${ma}/${mt} 站`, `${ma}/${mt} stops mastered`], lang))}</span></div>`; }).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
     const onSt = /^D\/(?!map$|routes$|ch)/.test(cur), td = root.dataset.topdown || '#map';
     const vsw = onSt ? `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${tx(['换个角度看', 'Another angle'], lang)}"><button type="button" role="radio" aria-checked="false" data-go="${td}">${tx(['自顶向下·看结构', 'Top-down · structure'], lang)}</button><button type="button" role="radio" aria-checked="true" class="on">${tx(['自底向上·看推导', 'Bottom-up · derivation'], lang)}</button></div>` : '';
     list(T('mapT'), vsw + `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
@@ -316,12 +320,17 @@ export function start(doc: Document = document, win: Window = window) {
   }
   /* ---------- routing ---------- */
   function route() {
+    const sp = new URLSearchParams(win.location.search);
+    if (sp.has('fa') && sp.has('fm')) {
+      const h = win.location.hash, m = /^#D\/(?!ch\/)([^/?#]+)$/.exec(h), cq = sp.get('cq') || (m ? m[1] : '');
+      if (cq && dvI(cq) >= 0 && !/^#D\/ch\//.test(h)) { navTo(win, `#D/ch/${cq}`); return; }
+    }
     const r = parse(win.location.hash); let id = r.id; const lid = lxFrom(id);
     /* R51: an old single-step link (#D/8) opens the station that replaced it, rewriting the address (no new entry) */
     const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}${r.card ? '~' + r.card : ''}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
-    if (!(lid || id === 'home' || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
+    if (!(lid || id === 'home' || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
     if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = H(id); }
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     if (id !== cur) bump();

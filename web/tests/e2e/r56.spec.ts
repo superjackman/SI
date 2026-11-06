@@ -25,7 +25,12 @@ const num = (a: number, d: number) => String(Number(a.toFixed(Math.max(d, 2))));
 async function cont(p: Page, s: 'r' | 'v') {
   const cur = await p.locator('.ly.ml').getAttribute('data-ml-s');
   if (cur === 'i') {
-    if (await p.locator('[data-ml-to="r"]').count() === 0) await p.locator('[data-ml-o="0"]').click();
+    if (await p.locator('[data-ml-to="r"]').count() === 0) {
+      for (let i = 0; i < 3 && await p.locator('[data-ml-to="r"]').count() === 0; i++) {
+        const b = p.locator(`[data-ml-o="${i}"]:not([aria-disabled="true"])`);
+        if (await b.count()) await b.click();
+      }
+    }
     await p.locator('[data-ml-to="r"]').click();
   }
   if (s === 'v') await p.locator('[data-ml-to="v"]').click();
@@ -40,12 +45,13 @@ async function readable(p: Page, tag: string, root: string, bad: string[]) {
 test.describe('R56 micro-loop', () => {
   test('stop 2: guess → dead ends, 推理 shows the layers, wrong variant → re-loop to the layer, two right → goal mastered; no history entries', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/1'); const h0 = await hl(page);
-    await expect(page.locator('.l4-nav')).toContainText('第 1 站 · 3/23');
+    await expect(page.locator('.l4-nav')).toContainText('第 3 / 23 站');
     await go(page, '#D/2'); await px(page, 'D/2.zh');
     const G = ML['2']!.goals[0]!, ly = page.locator('.ly.ml');
     await expect(page.locator('.ml-goal')).toContainText(ML['2']!.goal[0]); await expect(ly).toHaveAttribute('data-ml-s', 'i');
     await expect(page.locator('.ly-l').first()).toBeHidden(); await expect(page.locator('.ml-i')).toContainText('第 1 站留下');
-    await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(2); await expect(page.locator('.ml-live')).toHaveCount(1);
+    await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(1); await expect(page.locator('.ml-live')).toHaveCount(0);
+    await page.locator(`[data-ml-o="${G.a}"]`).click(); await expect(page.locator('.ml-live')).toHaveCount(1);
     await page.locator('[data-ml-to="r"]').first().click(); await expect(ly).toHaveAttribute('data-ml-s', 'r'); await expect(page.locator('.ly-l').first()).toBeVisible();
     await page.locator('[data-ml-to="v"]').click(); await expect(ly).toHaveAttribute('data-ml-s', 'v');
     await page.locator(`[data-ml-p="${G.pr.a}"]`).click(); await expect(page.locator('.ml-pr')).toContainText('对了');
@@ -71,7 +77,7 @@ test.describe('R56 micro-loop', () => {
   });
   test('8a: a re-loop on the scale step lands on its attention shot', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/8a');
-    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('Stop 8a · 10/23');
+    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('Stop 10 / 23');
     await page.locator('[data-ml-g="1"]').click(); await cont(page, 'r');
     await expect(page.locator('.ml-lys [data-ml-fr]').first()).toBeVisible(); await page.locator('.ml-lys [data-ml-fr]').first().click();
     await expect(page.locator('[data-att]')).toBeVisible();
@@ -100,8 +106,11 @@ test.describe('R56 micro-loop', () => {
       await go(page, `#D/${k}`); await px(page, `D/${k}.zh`);
       await expect(page.locator('.ml-goal')).toBeVisible();
       await expect(page.locator('.dv-take li')).toHaveCount(3);
-      await page.locator('[data-ml-o="0"]').click();
-      await expect(page.locator('.ml-dead')).toHaveCount(2);
+      const a = ML[k]!.goals[0]!.a, wrong = (a + 1) % 3;
+      await page.locator(`[data-ml-o="${wrong}"]`).click();
+      await expect(page.locator('.ml-dead')).toHaveCount(1);
+      await expect(page.locator('.ml-live')).toHaveCount(0);
+      await page.locator(`[data-ml-o="${a}"]`).click();
       await cont(page, 'v');
       const q = varQ(ML[k]!.goals[0]!.vk, 0);
       const mis = q.mis.find((m) => Math.abs(m.v - q.a) > q.tol)!;
@@ -132,7 +141,7 @@ test.describe('R56 memory + badges + sharing', () => {
   });
   test('阶段排序: locked until read; tapping in order solves it and lights the badge', async ({ page }) => {
     const errs = await open(page, './?lang=zh#R/so2'); await px(page, 'R/so2.zh'); await expect(page.locator('.mm-card')).toContainText('解锁');
-    await page.evaluate(() => localStorage.setItem('si.dv.seen', JSON.stringify(['13', '14', 'S'])));
+    await page.evaluate(() => { const st = { m: [1, 1, 1], k: [2, 2, 2], v: [2, 2, 2], g: 0, s: 'v', p: [0, 0, 0], c: [2, 2, 2] }; localStorage.setItem('si.ml', JSON.stringify({ '13': st, '14': st, S: st })); });
     const keys = ['13', '14', 'S'];
     await go(page, '#R'); await go(page, '#R/so2'); await px(page, 'R/so2.zh');
     for (const k of keys) await page.locator(`[data-so="k:${k}"]`).click();

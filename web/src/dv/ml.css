@@ -27,8 +27,8 @@
 .ml-gs button.on { color: #ffd166; } .ml-gs button.on i { width: 10px; height: 10px; }
 .ml-gs button.m { color: #ffe08a; }
 /* which panels each step shows */
-.ly.ml[data-ml-s="i"] > .ly-l, .ly.ml[data-ml-s="i"] > .ly-nx, .ly.ml[data-ml-s="i"] .ly-dep, .ly.ml[data-ml-s="i"] .ly-pg, .ly.ml[data-ml-s="i"] > .ml-rz, .ly.ml[data-ml-s="i"] > .ml-rze, .ly.ml[data-ml-s="i"] > .ml-v,
-.ly.ml[data-ml-s="v"] > .ly-l, .ly.ml[data-ml-s="v"] > .ly-nx, .ly.ml[data-ml-s="v"] .ly-dep, .ly.ml[data-ml-s="v"] .ly-pg, .ly.ml[data-ml-s="v"] > .ml-rz, .ly.ml[data-ml-s="v"] > .ml-rze, .ly.ml[data-ml-s="v"] > .ml-i,
+.ly.ml[data-ml-s="i"] > .ly-l, .ly.ml[data-ml-s="i"] > .ly-nx, .ly.ml[data-ml-s="i"] .ly-dep, .ly.ml[data-ml-s="i"] .ly-pg, .ly.ml[data-ml-s="i"] .ml-lys, .ly.ml[data-ml-s="i"] > .ml-rz, .ly.ml[data-ml-s="i"] > .ml-rze, .ly.ml[data-ml-s="i"] > .ml-v,
+.ly.ml[data-ml-s="v"] > .ly-l, .ly.ml[data-ml-s="v"] > .ly-nx, .ly.ml[data-ml-s="v"] .ly-dep, .ly.ml[data-ml-s="v"] .ly-pg, .ly.ml[data-ml-s="v"] .ml-lys, .ly.ml[data-ml-s="v"] > .ml-rz, .ly.ml[data-ml-s="v"] > .ml-rze, .ly.ml[data-ml-s="v"] > .ml-i,
 .ly.ml[data-ml-s="r"] > .ml-i, .ly.ml[data-ml-s="r"] > .ml-v { display: none; }
 .ly.ml .ly-h, .ly.ml .ml-p { scroll-margin-top: calc(var(--lyt, 190px) + 6px); }
 .ml-p { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid #2c4690; border-radius: 12px; background: #0a1532e6; }
@@ -49,7 +49,7 @@
 .ml-go { min-height: 48px; font-size: 15px; font-weight: 700; }
 .ml-rl { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; }
 .ml-lyh { margin: 0; font-size: 13px; color: #b7c6ea; }
-.ml-lys { display: flex; flex-wrap: wrap; gap: 6px; } .ml-lys .l4-b { min-height: 40px; }
+.ml-lys { display: flex; flex-wrap: wrap; gap: 6px; max-width: 100%; } .ml-lys .l4-b { min-height: 44px; }
 .ml-rze { display: flex; flex-direction: column; }
 .ml-pr, .ml-vq { display: flex; flex-direction: column; gap: 8px; }
 .ml-vq { padding-top: 8px; border-top: 1px solid #1b2a55; }
@@ -64,4 +64,4 @@
 .ml-re i { font-style: normal; display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; background: #ffd77a; color: #1a1204; font-size: 18px; font-weight: 900; }
 .ml-re b { display: block; color: #ffe08a; font-size: 14.5px; } .ml-re em { font-style: normal; color: #ffe08a; font-size: 18px; }
 .ml-n { margin: 0; font-size: 13px; color: #b7c6ea; }
-@media (max-width: 370px) { .ml-gs button { width: 36px; } }
+.ml-pv span, .ml-op > em, .ml-vn, .ml-n { font-size: 13px; }

@@ -16,7 +16,7 @@ import { LBG, LCOL } from './progress';
 import { rvAll, rvNext, rvPick, wrongIds } from '../px/rv';
 import { bellAsk, bellBanner, bellPing } from '../px/remind';
 
-export interface HomeApi { l: L; root: HTMLElement; go: (h: string) => void; redraw: () => void }
+export interface HomeApi { l: L; root: HTMLElement; go: (h: string) => void; redraw: () => void; pane?: 'learn' | 'news' | 'tools'; item?: string }
 /** 看懂大模型 by default (it starts at 词向量) */
 export const DEF_GOAL: GoalId = 'model';
 export const goalNow = (): Route => routeOf(goalGet()) ?? routeOf(DEF_GOAL)!;
@@ -100,8 +100,10 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 <section class="hm-card hm-ch" data-hm="ch"><p class="hm-n">${z('题目加载中…', 'Loading the question…')}</p></section>
 <footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer>`;
 
-  const tabs = `<div class="hm-hub" role="tablist" aria-label="${z('入口', 'Entries')}"><button type="button" role="tab" class="on" data-h="tab:learn" aria-selected="true">${z('学', 'Learn')}</button><button type="button" role="tab" data-h="tab:news" aria-selected="false">${z('查资讯', 'News')}</button><button type="button" role="tab" data-h="tab:tools" aria-selected="false">${z('找工具', 'Tools')}</button></div>`;
-  host.innerHTML = `<div class="hm" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-st="${back ? 'back' : 'first'}">${tabs}${bellBanner(l)}<div data-pane="learn">${top}${below}</div><div data-pane="news" hidden></div><div data-pane="tools" hidden></div></div>`;
+  const pane0 = A.pane ?? 'learn';
+  const tab = (id: 'learn' | 'news' | 'tools', name: string) => `<button type="button" role="tab" class="${pane0 === id ? 'on' : ''}" data-h="tab:${id}" aria-selected="${pane0 === id}">${name}</button>`;
+  const tabs = `<div class="hm-hub" role="tablist" aria-label="${z('入口', 'Entries')}">${tab('learn', z('学', 'Learn'))}${tab('news', z('查资讯', 'News'))}${tab('tools', z('找工具', 'Tools'))}</div>`;
+  host.innerHTML = `<div class="hm" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-st="${back ? 'back' : 'first'}" data-hub="${pane0}">${tabs}${bellBanner(l)}<div data-pane="learn"${pane0 === 'learn' ? '' : ' hidden'}>${top}${below}</div><div data-pane="news"${pane0 === 'news' ? '' : ' hidden'}></div><div data-pane="tools"${pane0 === 'tools' ? '' : ' hidden'}></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => host.querySelector<E>(s);
 
   /* the temperature demo: plain arithmetic on input, nothing moves by itself */
@@ -114,22 +116,25 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-h]'); if (!b) return; const h = b.dataset.h!;
     if (h === 'sheet') sheet(A);
     else if (h === 'bell') void bellAsk(l).then(() => { const b = host.querySelector<HTMLElement>('[data-bell]'); if (b) b.outerHTML = bellBanner(l); });
-    else if (h.startsWith('tab:')) void hubTab(host, A, h.slice(4) as 'learn' | 'news' | 'tools');
+    else if (h.startsWith('tab:')) { const which = h.slice(4); A.go(which === 'news' ? '#news' : which === 'tools' ? '#tools' : '#home'); }
     else if (h.startsWith('goal:')) { goalSet(h.slice(5) as GoalId); A.redraw(); }
     else if (h === 'routes') $('[data-hm="routes"]')?.scrollIntoView({ block: 'start' });
   });
   void challenge(host, A, m);
   bellPing(l);
+  if (pane0 !== 'learn') void hubTab(host, A, pane0, A.item ?? '');
 }
 
-async function hubTab(host: HTMLElement, A: HomeApi, which: 'learn' | 'news' | 'tools') {
+async function hubTab(host: HTMLElement, A: HomeApi, which: 'learn' | 'news' | 'tools', item = '') {
   host.querySelectorAll<HTMLElement>('[data-h^="tab:"]').forEach((b) => { const on = b.dataset.h === `tab:${which}`; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
-  for (const name of ['learn', 'news', 'tools'] as const) { const el = host.querySelector<HTMLElement>(`[data-pane="${name}"]`); if (el) el.hidden = name !== which; }
+  const hm = host.querySelector<HTMLElement>('.hm'); if (hm) hm.dataset.hub = which;
+  for (const name of ['learn', 'news', 'tools'] as const) { const el = host.querySelector<HTMLElement>(`:scope > [data-pane="${name}"], .hm > [data-pane="${name}"]`); if (el) el.hidden = name !== which; }
   if (which === 'learn') return;
-  const pane = host.querySelector<HTMLElement>(`[data-pane="${which}"]`); if (!pane || pane.dataset.ready === '1') return;
+  const pane = host.querySelector<HTMLElement>(`.hm > [data-pane="${which}"]`); if (!pane) return;
   pane.innerHTML = `<p class="hm-n">${A.l === 'en' ? 'Loading…' : '加载中…'}</p>`;
   const hub = await import('../hub/view'); if (!pane.isConnected) return;
-  pane.innerHTML = which === 'news' ? hub.newsHtml(A.l) : hub.toolsHtml(A.l);
+  pane.innerHTML = which === 'news' ? hub.newsHtml(A.l, item) : hub.toolsHtml(A.l, item);
+  if (which === 'tools') hub.wireTools(pane);
   pane.dataset.ready = '1';
 }
 

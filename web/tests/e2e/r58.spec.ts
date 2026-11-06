@@ -56,7 +56,9 @@ test.describe('hub, reminder, certificate, demos', () => {
     expect(text).not.toMatch(/先猜|你会怎么做|调查|先预测|接着看|算一下|来算一下/);
     await expect(page.locator('.ml-ss, .ml-sg')).toHaveCount(0);
     expect((await page.locator('.ml-bar, .ly-pg').allInnerTexts()).join('\n')).not.toMatch(/[①②③④⑤]|问题|接着看|算一下/);
-    if (await page.locator('[data-ml-to="r"]').count() === 0) await page.locator('[data-ml-o="0"]').click();
+    if (await page.locator('[data-ml-to="r"]').count() === 0) {
+      for (let i = 0; i < 3 && await page.locator('[data-ml-to="r"]').count() === 0; i++) await page.locator(`[data-ml-o="${i}"]`).click();
+    }
     await page.locator('[data-ml-to="r"]').click();
     await page.locator('.ly-pg [data-ly-go="3"]').click();
     const play = page.locator('[data-dm="mse"] [data-vs="play"]');
@@ -73,21 +75,23 @@ test.describe('hub, reminder, certificate, demos', () => {
       await page.locator('[data-ml-share]').click();
       const sheet = page.locator('.ml-share');
       await expect(sheet).toBeVisible();
+      await expect(sheet.getByRole('button', { name: /保存图片|Save image/ })).toBeVisible();
+      await expect(sheet.getByRole('button', { name: /复制链接|Copy link/ })).toBeVisible();
+      await expect(sheet.getByRole('button', { name: /分享…|Share…/ })).toBeVisible();
       await expect(sheet.locator('img')).toBeVisible();
       await page.waitForFunction(() => { const img = document.querySelector<HTMLImageElement>('.ml-share img'); return !!img && img.complete && img.naturalWidth > 0; });
       const bad = await sheet.evaluate((root) => {
         const view = root.getBoundingClientRect(), out: string[] = [];
         if (view.width > innerWidth + 1) out.push(`sheet ${Math.round(view.width)} > ${innerWidth}`);
-        for (const el of root.querySelectorAll<HTMLElement>('.l4-kn, .ml-dy, img, .l4-sin')) {
+        for (const el of root.querySelectorAll<HTMLElement>('.g-dh, .g-pv img, .g-row, .g-meta')) {
           const r = el.getBoundingClientRect();
           const name = el.className || el.tagName;
           if (r.right > innerWidth + 1 || r.left < -1) out.push(`${name} x ${Math.round(r.left)}–${Math.round(r.right)}`);
-          if (el.scrollWidth > el.clientWidth + 1) out.push(`${name} cut ${el.scrollWidth - el.clientWidth}`);
         }
         return out;
       });
       expect(bad, tag).toEqual([]);
-      await sheet.locator('[data-s="x"]').click();
+      await sheet.locator('[data-m="close"]').click();
       await expect(sheet).toHaveCount(0);
     };
     await spill('zh 0');

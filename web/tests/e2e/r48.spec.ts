@@ -26,7 +26,7 @@ test.describe('R48 two views', () => {
     let sh = page.locator('.l4-sheet[data-card="K09"]'); await expect(sh).toBeVisible();
     await expect(sh.locator('.l4-vsw [aria-checked="true"]')).toHaveText('自顶向下·看结构');
     await expect(sh.locator('.l4-kalt h3')).toHaveText('换个角度看');
-    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 4 步');
+    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 4 站');
     await expect(sh.locator('.l4-kwhy')).toContainText('多层网络的梯度怎么求');
     /* sibling: K14 is born in step 4 on layer 4 too */
     await sh.locator('.l4-ksib[data-k="K14"]').click(); await expect(page).toHaveURL(re('#L4~K14'));

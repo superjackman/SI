@@ -31,12 +31,13 @@ export const ML_G: Readonly<Record<string, number>> = {
   '0': 3, P: 3, '1': 3, '2': 3, '3': 3, '4': 3, '5': 3, '6': 3, '7': 3, '8a': 3, '8b': 3,
   '9': 3, E: 3, '10': 3, '11': 3, '12': 4, '13': 3, '14': 3, S: 3, '15a': 3, '15b': 3, A: 5, '16': 3,
 };
-export interface MlS { m: number[]; k: number[]; v: number[]; g: number; s: 'i' | 'r' | 'v'; p: number[]; f?: number[] }
+export interface MlS { m: number[]; k: number[]; v: number[]; g: number; s: 'i' | 'r' | 'v'; p: number[]; f?: number[]; c?: number[]; w?: number[][] }
+const rows = (a: unknown, n: number): number[][] => Array.from({ length: n }, (_, i) => (Array.isArray(a) && Array.isArray((a as unknown[])[i]) ? ((a as number[][])[i]!).filter((x) => typeof x === 'number') : []));
 export const mlAll = (): Record<string, MlS> => { try { const v = JSON.parse(localStorage.getItem(ML_KEY) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, MlS>) : {}; } catch { return {}; } };
 export const mlGet = (k: string): MlS => {
   const n = ML_G[k] ?? 0, z = () => Array.from({ length: n }, () => 0), o = mlAll()[k], arr = (a: unknown, d: number) => Array.from({ length: n }, (_, i) => (Array.isArray(a) && typeof a[i] === 'number' ? (a[i] as number) : d));
-  if (!o || typeof o !== 'object') return { m: z(), k: z(), v: z(), g: 0, s: 'i', p: z().map(() => -1) };
-  return { m: arr(o.m, 0), k: arr(o.k, 0), v: arr(o.v, 0), g: Number.isInteger(o.g) && o.g >= 0 && o.g < n ? o.g : 0, s: o.s === 'r' || o.s === 'v' ? o.s : 'i', p: arr(o.p, -1) };
+  if (!o || typeof o !== 'object') return { m: z(), k: z(), v: z(), g: 0, s: 'i', p: z().map(() => -1), c: z(), w: rows(null, n) };
+  return { m: arr(o.m, 0), k: arr(o.k, 0), v: arr(o.v, 0), g: Number.isInteger(o.g) && o.g >= 0 && o.g < n ? o.g : 0, s: o.s === 'r' || o.s === 'v' ? o.s : 'i', p: arr(o.p, -1), c: arr(o.c, 0), w: rows(o.w, n) };
 };
 export const mlSet = (k: string, v: MlS) => { const a = mlAll(); a[k] = v; try { localStorage.setItem(ML_KEY, JSON.stringify(a)); } catch { /* private mode */ } };
 /** small goals mastered on station k: [done, total] */

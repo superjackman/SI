@@ -10,7 +10,11 @@
 .hb-item { display: flex; flex-direction: column; gap: 6px; }
 .hb-item p { margin: 0; font-size: 14.5px; line-height: 1.5; color: #e6eeff; }
 .hb-meta, .hb-src, .hb-r { font-size: 13px; color: #d5e2ff; }
-.hb-r a, .hb-src a { color: #9cc8ff; }
+.hb-r a, .hb-src a, .hb-item b a { color: #9cc8ff; }
+.hb, .hb-f { min-width: 0; max-width: 100%; }
+.hb-f { display: flex; flex-wrap: wrap; gap: 6px; }
+.hb-f button { min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #2c4690; background: #0a1532; color: #e6eeff; font-size: 13px; white-space: nowrap; }
+.hb-f button.on { background: #ffd77a; color: #1a1204; border-color: #ffd77a; font-weight: 700; }
 .hm::before { content: ''; position: absolute; left: 0; right: 0; top: -40px; height: 260px; background: radial-gradient(60% 70% at 50% 0, #3b2fa255, #0000 70%); pointer-events: none; }
 .hm > * { position: relative; }
 .hm-card { background: #0a1532; border: 1px solid #2a3f80; border-radius: 18px; padding: 12px 14px; color: #e6eeff; text-align: left; }

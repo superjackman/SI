@@ -110,7 +110,9 @@ html:lang(en) .px-it b::first-letter { text-transform: uppercase; }
 /* R42b: a long layer name keeps one line; the page/card count drops under it instead of squeezing it */
 .px-lvr .px-row.l { flex-wrap: wrap; row-gap: 1px; } .px-lvr .px-row.l b { flex: 1 0 auto; max-width: 100%; } .px-lvr .px-row.l i { margin-left: auto; }
 /* R42b: narrow zh tiles: the name gets its own line too (as in en), never split mid-name */
-@media (max-width: 480px) { html:lang(zh) .px-it { flex-wrap: wrap; row-gap: 2px; padding: 6px 8px; } html:lang(zh) .px-it i { margin-left: auto; } html:lang(zh) .px-it b { order: 3; flex: 1 1 100%; } }
+@media (max-width: 480px) { html:lang(zh) .px-it { flex-wrap: wrap; row-gap: 2px; padding: 6px 8px; } html:lang(zh) .px-it i { margin-left: auto; } html:lang(zh) .px-it b { order: 3; flex: 1 1 100%; } html:lang(zh) .px-it.g-rj { padding-right: 40px; } }
+.l4 .px-it.g-rj::after { top: 18px; margin-top: 0; }
+.px-it i, .px-sub, .px-f { font-size: 13px; }
 /* R56 one ledger: 我的 mastery ring, 练习 by station */
 .px-mst { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border: 1px solid #2c4690; border-radius: 14px; background: #0a1532e6; }
 .px-ring { flex: none; width: 68px; height: 68px; }
