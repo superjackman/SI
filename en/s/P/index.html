@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Probability basics · AI, explained plainly</title>
+<meta name="description" content="To predict the next token, we must speak in possibilities. Every next-token guess is really “how likely is each word next?”. Probability is that language.">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/P/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/P/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/P/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/P/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Probability basics · AI, explained plainly">
+<meta property="og:description" content="To predict the next token, we must speak in possibilities. Every next-token guess is really “how likely is each word next?”. Probability is that language.">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/P/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Probability basics · AI, explained plainly">
+<meta name="twitter:description" content="To predict the next token, we must speak in possibilities. Every next-token guess is really “how likely is each word next?”. Probability is that language.">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/P/#lesson","name":"Probability basics","headline":"Probability basics · AI, explained plainly","description":"To predict the next token, we must speak in possibilities. Every next-token guess is really “how likely is each word next?”. Probability is that language.","url":"https://superjackman.github.io/SI/en/s/P/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Probability basics","item":"https://superjackman.github.io/SI/en/s/P/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/P/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Probability basics</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 2 / 23</p>
+<h1>Probability basics</h1>
+<p class="lead">Distributions, conditionals, mean/variance, Gaussians</p>
+<p class="open"><a href="/SI/?lang=en#D/P">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> To predict the next token, we must speak in possibilities.</p>
+<section><h2>Why care</h2><p>Every next-token guess is really “how likely is each word next?”. Probability is that language.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>A die: each face 1/6 — a distribution sums to 1.</li><li>Given “it is sunny”, “bring an umbrella?” is conditional.</li><li>An LM computes: given the context, how likely is each next token.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>Distribution: each candidate gets a probability in [0,1]; they sum to 1.</li><li>Conditional probability P(next | context): given the text so far, how likely each next token is — what an LLM computes.</li><li>Mean is the centre; variance the spread. Attention’s √d scaling uses “variances add”.</li><li>Gaussian: the bell curve. Next step: with Gaussian noise, maximum likelihood recovers MSE.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>Left: scores for 4 candidates; middle: probabilities (sum to 100%); right: the smaller the right answer’s probability, the bigger the later penalty.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>→ .</li><li>Candidates blue/green/red/sky at (same as card KM14; also KM04).</li><li>After “the sky is”, “blue” has the highest conditional probability.</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>P(next|context) sums to 1</li><li>μ, variance</li><li>P(blue|“sky is”) + P(green|…) + … = 1</li><li>μ = (1/n) Σ xᵢ; variance ≈ average squared deviation</li></ul><ul><li>conditional probability: what an LM computes every step</li><li>mean / variance: needed later for √d scaling</li></ul></section>
+
+<p><b>Left open</b> We can talk about likelihood. Next: a number that says how wrong a guess was.</p>
+<nav class="pn"><a href="/SI/en/s/0/" rel="prev">← Previous stop: Learn a function from examples</a><a href="/SI/en/s/1/" rel="next">Next stop: Loss functions →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><b>Probability basics</b></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

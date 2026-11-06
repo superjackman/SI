@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Attention: who relates to whom · AI, explained plainly</title>
+<meta name="description" content="Let every word look straight at any other word in the sentence, with all positions computed at once (Vaswani et al., 2017, “Attention Is All You Need”). “The…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/8a/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/8a/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/8a/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/8a/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Attention: who relates to whom · AI, explained plainly">
+<meta property="og:description" content="Let every word look straight at any other word in the sentence, with all positions computed at once (Vaswani et al., 2017, “Attention Is All You Need”). “The…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/8a/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Attention: who relates to whom · AI, explained plainly">
+<meta name="twitter:description" content="Let every word look straight at any other word in the sentence, with all positions computed at once (Vaswani et al., 2017, “Attention Is All You Need”). “The…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/8a/#lesson","name":"Attention: who relates to whom","headline":"Attention: who relates to whom · AI, explained plainly","description":"Let every word look straight at any other word in the sentence, with all positions computed at once (Vaswani et al., 2017, “Attention Is All You Need”). “The…","url":"https://superjackman.github.io/SI/en/s/8a/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Attention: who relates to whom","item":"https://superjackman.github.io/SI/en/s/8a/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/8a/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Attention: who relates to whom</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 10 / 23</p>
+<h1>Attention: who relates to whom</h1>
+<p class="lead">Q/K/V, √d scaling, causal mask</p>
+<p class="open"><a href="/SI/?lang=en#D/8a">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Let every word look straight at any other word in the sentence, with all positions computed at once (Vaswani et al., 2017, “Attention Is All You Need”).</p>
+<section><h2>Why care</h2><p>“The cat sat on the mat as it was tired.” Who is “it”? You know at a glance: the cat. The trick that lets AI read sentences like this is attention.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>At a party you want someone to fix your computer. You have a need in mind, everyone wears a name tag, and each has a skill.</li><li>The better a tag matches your need, the more you listen to that person. The advice you end up with = everyone’s skills mixed by how well they matched. Every word in the sentence asks the same: who here matters most to me?</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>Self-attention: each word’s vector is projected into Q (what I need), K (what I offer) and V (what I hand over). Q·K gives the match, softmax turns it into weights, and the weights mix the V’s — a soft HashMap.get.</li><li>Divide by √d_k: if q and k have unit variance per dimension, their dot product has variance d_k; large values saturate softmax and kill the gradient. E.g. .</li><li>Causal mask: future positions get a score of −∞, so after softmax their weight is 0 and each word sees only itself and the words before it.</li><li>In training the whole sentence goes in at once; with the mask, every position’s next-token prediction comes out of one matrix multiply. That is why it parallelises.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>“it” shines a spotlight (Q), the other words show their tags (K), and matches score high. Then everyone’s V is mixed into “it” by those shares. Pause it, or step through it frame by frame.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>Put the numbers below back into the sentence: from highest to lowest the scores belong to cat, mat and as (illustrative numbers), so about two thirds of what “it” attends to is the cat.</li><li>3 words. One word’s q·k with the three keys is ; unscaled, softmax ≈ , nearly all on the first.</li><li>→ , softmax ≈ ; the new vector mixes v1, v2, v3 with these weights (same as card KM12).</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V</li><li>Causal mask: future positions (j &gt; i) get a score of −∞</li></ul><ul><li>Q × K^T: need against name tag, one match score (dot product) for every pair of words</li><li>/ √d_k: divide by the square root of the width, so scores do not grow so large that one word takes everything</li><li>softmax: turn the scores into attention shares that add up to 100%</li><li>× V: mix everyone’s skills by those shares; the causal mask sets the scores of “future” words to −∞, so their weight is 0</li></ul></section>
+
+<p><b>Left open</b> One pass of attention lets each word take information from the others. But one layer finds only one kind of relation and has no step for “thinking it over”; a full model that stacks dozens of layers needs a few more parts.</p>
+<nav class="pn"><a href="/SI/en/s/7/" rel="prev">← Previous stop: RNN + attention</a><a href="/SI/en/s/8b/" rel="next">Next stop: Building the Transformer →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><b>Attention: who relates to whom</b></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Building the Transformer · AI, explained plainly</title>
+<meta name="description" content="Turn attention into a full model that stacks many layers, trains stably and can tell word order. Attention is only one part. A real large model is like a…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/8b/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/8b/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/8b/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/8b/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Building the Transformer · AI, explained plainly">
+<meta property="og:description" content="Turn attention into a full model that stacks many layers, trains stably and can tell word order. Attention is only one part. A real large model is like a…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/8b/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Building the Transformer · AI, explained plainly">
+<meta name="twitter:description" content="Turn attention into a full model that stacks many layers, trains stably and can tell word order. Attention is only one part. A real large model is like a…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/8b/#lesson","name":"Building the Transformer","headline":"Building the Transformer · AI, explained plainly","description":"Turn attention into a full model that stacks many layers, trains stably and can tell word order. Attention is only one part. A real large model is like a…","url":"https://superjackman.github.io/SI/en/s/8b/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Building the Transformer","item":"https://superjackman.github.io/SI/en/s/8b/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/8b/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Building the Transformer</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 11 / 23</p>
+<h1>Building the Transformer</h1>
+<p class="lead">Heads, FFN, residuals, normalisation, position</p>
+<p class="open"><a href="/SI/?lang=en#D/8b">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Turn attention into a full model that stacks many layers, trains stably and can tell word order.</p>
+<section><h2>Why care</h2><p>Attention is only one part. A real large model is like a tower: the same kind of floor (a decoder block) stacked dozens of times. Each floor does two things: first talk (attention), then think it over alone (the feed-forward network).</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>Like a team of detectives in a meeting: each detective follows one lead (multi-head: one checks who “it” is, one looks at neighbours, one looks for causes); after the meeting everyone goes back to their desk to think (the feed-forward network, FFN).</li><li>Each time they only write notes on the draft and never rewrite it (the residual); before each meeting everyone’s volume is set to the same level (normalisation); and everyone carries a seat number, or nobody could tell who came first (position encoding).</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>Multi-head: split the dimensions into h parts, attend in each, concatenate; each head can learn one kind of relation (e.g. reference, neighbours, cause).</li><li>Position: attention ignores order; most models now use RoPE (Su Jianlin et al., 2021, RoFormer), rotating q and k by position so their dot product depends only on the distance; over time: sinusoidal (original paper) → learned (GPT-1/2) → RoPE (mainstream today).</li><li>FFN: a two-layer network applied to each position, inner width the model width; activation over time: ReLU (original) → GELU (GPT) → SwiGLU (common today).</li><li>Residual + normalisation let it stack many layers; normalisation over time: original Post-LN (this site’s diagram) → Pre-LN from GPT-2 on → RMSNorm in newer models.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>One decoder block: the input is normalised, multi-head attention lets words talk, and the result is added back to the input; then normalise again, the FFN thinks, and the result is added back. The same block is stacked N times, then the output head. Position rotates q and k inside attention (RoPE).</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>The original paper stacked N = 6 decoder layers; today’s large models often stack dozens.</li><li>The original paper: model width d = 512 and h = 8 heads, so each head has 512 ÷ 8 = 64 dimensions.</li><li>Parameter count, roughly: each decoder block has (same count as card KC08).</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x))</li><li>x = x + FFN(Norm(x))</li><li>MultiHead(x) = Concat(head1, …, headh) × W_O</li><li>x = x + Attention(Norm(x)), x = x + FFN(Norm(x))</li><li>RMSNorm(x) = x / √(mean(x²) + ε) × g</li></ul><ul><li>Multi-head: cut the width into h parts, run attention in each, and join them back</li><li>+ the residual: add the result back to the input, so the draft is kept and the gradient has a straight path</li><li>Norm normalisation: pull each word’s numbers back to one scale (RMSNorm is common today)</li><li>FFN the feed-forward network: each word goes through its own two-layer network</li><li>Position: RoPE rotates q and k by position, so their dot product depends only on the distance</li></ul></section>
+
+<p><b>Left open</b> Attention costs grow with n² for length n (steps 12 and 15 return to this). The deeper question: with the architecture in hand, what task and what data give it general language ability?</p>
+<nav class="pn"><a href="/SI/en/s/8a/" rel="prev">← Previous stop: Attention: who relates to whom</a><a href="/SI/en/s/9/" rel="next">Next stop: Pre-training →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><b>Building the Transformer</b></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

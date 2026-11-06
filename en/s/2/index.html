@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gradient descent · AI, explained plainly</title>
+<meta name="description" content="Find the minimum of L(θ) with many parameters. A large model has billions of parameters; you cannot try them one by one. Gradient descent is “walking downhill…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/2/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/2/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/2/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/2/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Gradient descent · AI, explained plainly">
+<meta property="og:description" content="Find the minimum of L(θ) with many parameters. A large model has billions of parameters; you cannot try them one by one. Gradient descent is “walking downhill…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/2/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Gradient descent · AI, explained plainly">
+<meta name="twitter:description" content="Find the minimum of L(θ) with many parameters. A large model has billions of parameters; you cannot try them one by one. Gradient descent is “walking downhill…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/2/#lesson","name":"Gradient descent","headline":"Gradient descent · AI, explained plainly","description":"Find the minimum of L(θ) with many parameters. A large model has billions of parameters; you cannot try them one by one. Gradient descent is “walking downhill…","url":"https://superjackman.github.io/SI/en/s/2/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Gradient descent","item":"https://superjackman.github.io/SI/en/s/2/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/2/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Gradient descent</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 4 / 23</p>
+<h1>Gradient descent</h1>
+<p class="lead">Step against the gradient, again and again</p>
+<p class="open"><a href="/SI/?lang=en#D/2">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Find the minimum of L(θ) with many parameters.</p>
+<section><h2>Why care</h2><p>A large model has billions of parameters; you cannot try them one by one. Gradient descent is “walking downhill blindfolded”: at each step, feel which way is steepest under your feet and take a small step down. Every large model is trained this way.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>You stand blindfolded on the inside of a big bowl and want to reach the bottom. You cannot see it, but your feet feel the slope: how steep it is east–west, and how steep north–south.</li><li>Put the two slopes together and you get the steepest way up. Take a small step the opposite way, feel again, and step by step you reach the bottom. Both slopes are felt at the same spot, and the step moves in both directions at once.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>With one parameter, the derivative says “nudge the parameter up a little: how does the loss change?”. With two, the loss is a bowl L(w1, w2): the partial derivative ∂L/∂w1 is the slope when only w1 moves and w2 stays put, and ∂L/∂w2 likewise. All the partial derivatives in one vector make the gradient, pointing where the loss rises fastest.</li><li>Take a small step the other way and the loss falls. Repeat. Each step computes all the partial derivatives at the same point and updates every parameter at the same time; it does not finish w1 before touching w2 (that would be coordinate descent).</li><li>Why not solve it exactly? Linear regression has the normal equations, but they need a matrix inverse (cubic cost); a neural network’s loss is non-linear and non-convex, with no closed form. Gradient descent only needs a gradient.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>The bowl seen from above: each ring is a contour line, smaller rings mean lower loss, and the bottom is at (2, 1).</li><li>From (0, 0): the yellow arrow is downhill when only w1 moves, the green arrow when only w2 moves; together they make the purple arrow, the negative gradient: one step changes both parameters. The white dots are the next few steps.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>A partial derivative means “move one, keep the rest”: from (0, 0) set w1 to 0.001 and L goes from 6 to 5.996001; the change ÷ 0.001 ≈ −4, which is ∂L/∂w1.</li><li>, derivative 2(w − 2), start at w = 0 (same as card KM10):</li><li>η = 0.3: step 1 gradient −4, w = 1.20; then , closing in on the minimum w = 2.</li><li>With η = 1.1: , the distance from 2 grows 2 → 2.4 → 2.88 → …: it diverges. One parameter’s step (same as card K14): new w = .</li><li>Two parameters (same as card KM08): ; at (0, 0) ; .</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>w_new = w_old − η × ∂L/∂w</li><li>∇L = (∂L/∂w1, ∂L/∂w2)</li><li>(w1, w2)_new = (w1, w2)_old − η × ∇L</li><li>w_new = w_old − η × ∂L/∂w</li><li>gradient ∇L = (∂L/∂w1, ∂L/∂w2, …), θ_new = θ_old − η × ∇L: every parameter updates together</li><li>η is the learning rate: too small is slow, too big swings or blows up.</li></ul><ul><li>∂L/∂w1: keep w2 fixed, nudge only w1, and see how fast L changes (the east–west slope)</li><li>∂L/∂w2: keep w1 fixed and nudge only w2 (the north–south slope)</li><li>∇L the gradient: all the partial derivatives as one vector, pointing uphill fastest; subtracting it goes downhill</li><li>η the learning rate: how big each step is</li></ul></section>
+
+<p><b>Left open</b> We can tune parameters now, but a linear model can’t express some problems no matter how it is tuned.</p>
+<nav class="pn"><a href="/SI/en/s/1/" rel="prev">← Previous stop: Loss functions</a><a href="/SI/en/s/3/" rel="next">Next stop: Layers + non-linearity →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><b>Gradient descent</b></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

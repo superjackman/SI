@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Backpropagation · AI, explained plainly</title>
+<meta name="description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/4/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/4/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/4/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/4/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Backpropagation · AI, explained plainly">
+<meta property="og:description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/4/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Backpropagation · AI, explained plainly">
+<meta name="twitter:description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/4/#lesson","name":"Backpropagation","headline":"Backpropagation · AI, explained plainly","description":"Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.","url":"https://superjackman.github.io/SI/en/s/4/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Backpropagation","item":"https://superjackman.github.io/SI/en/s/4/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/4/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Backpropagation</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 6 / 23</p>
+<h1>Backpropagation</h1>
+<p class="lead">The chain rule; ReLU, residuals, normalisation</p>
+<p class="open"><a href="/SI/?lang=en#D/4">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Get the gradients of all parameters, efficiently.</p>
+<section><h2>Why care</h2><p>How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>Gears in a row: how much the last turned tells how to nudge earlier ones.</li><li>Backprop does this automatically.</li><li>Long chains vanish — ReLU, residuals, normalisation keep a path.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>A network is nested functions L = f3(f2(f1(x))); the chain rule multiplies the local derivatives.</li><li>Backpropagation: run forward to get each layer’s values, then pass “upstream gradient × local derivative” back layer by layer. Reusing the intermediate results makes one backward pass cost about one forward pass (Rumelhart, Hinton and Williams made it widely known in 1986); it is what “autograd” in every framework does.</li><li>New problem — vanishing / exploding gradients: sigmoid’s slope is at most 0.25, and 0.25^10 ≈ 0.00000095 over 10 layers. Fixes: ReLU (slope 1 when positive), residuals (y = x + F(x) always has a path with slope 1; ResNet, He et al., 2015), normalisation (LayerNorm and others), and initialisation scaled to layer width (never all zeros).</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>Forward values → backward gradients → every ∂L/∂w.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>; see the ReLU toy numbers on this page.</li><li>Chain rule (same as card KM09): ; now a small network with a ReLU.</li><li>y = w2 × ReLU(w1 × x), L = (y − t)², with x = 1, w1 = 2, w2 = 3, t = 5.</li><li>Forward: h = 2, y = 6, L = 1. Backward: dL/dy = 2(6 − 5) = 2.</li><li>dL/dw2 = 2 × h = 4; dL/dh = 2 × w2 = 6, and h &gt; 0 so dh/dw1 = x = 1, giving dL/dw1 = 6.</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>dL/dx = dL/df × df/dx</li><li>residual y = x + F(x) → a path with derivative 1</li><li>dL/dx = dL/df3 × df3/df2 × df2/df1 × df1/dx</li><li>Residual: y = x + F(x), so dy/dx = 1 + dF/dx</li></ul><ul><li>upstream</li><li>local</li><li>further back</li></ul></section>
+
+<p><b>Left open</b> Gradients work, but with millions of examples a full pass per step is too slow; different parameters want different step sizes; and the model may just memorise the training set.</p>
+<nav class="pn"><a href="/SI/en/s/3/" rel="prev">← Previous stop: Layers + non-linearity</a><a href="/SI/en/s/5/" rel="next">Next stop: Training in practice →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><b>Backpropagation</b></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cheap adaptation · AI, explained plainly</title>
+<meta name="description" content="Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/11/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/11/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/11/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/11/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Cheap adaptation · AI, explained plainly">
+<meta property="og:description" content="Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/11/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cheap adaptation · AI, explained plainly">
+<meta name="twitter:description" content="Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/11/#lesson","name":"Cheap adaptation","headline":"Cheap adaptation · AI, explained plainly","description":"Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B…","url":"https://superjackman.github.io/SI/en/s/11/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Cheap adaptation","item":"https://superjackman.github.io/SI/en/s/11/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/11/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Cheap adaptation</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 15 / 23</p>
+<h1>Cheap adaptation</h1>
+<p class="lead">LoRA, quantisation</p>
+<p class="open"><a href="/SI/?lang=en#D/11">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Full fine-tuning stores gradients and optimiser state for every parameter: with mixed precision + Adam, roughly 16 bytes per parameter rough estimate, so a 7B model needs about 112 GB before activations — and every task keeps its own full copy.</p>
+<section><h2>Why care</h2><p>Full fine-tuning is costly. LoRA trains a thin side path; quantisation stores fewer bits.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>Freeze W; add B×A beside it.</li><li>Quantisation shortens each number.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>LoRA (Hu et al., 2021): the change ΔW from fine-tuning tends to be low-rank empirical, so freeze W and learn two thin matrices B and A. Afterwards B × A merges back into W at no inference cost; each task keeps only its small matrices.</li><li>SVD intuition: a matrix = U × Σ × V^T; keeping the r largest singular values gives the best rank-r approximation.</li><li>Quantisation: store weights in fewer bits. FP16 is 2 bytes per parameter, INT8 1, INT4 0.5; some accuracy is lost and must be measured.</li><li>QLoRA (Dettmers et al., 2023): keep the base model in 4 bits and train LoRA on top, so one GPU can fine-tune a fairly large model.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>Frozen W ∥ side path B×A; or INT4 weights.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>Full vs LoRA ; 7B INT4 ≈ .</li><li>Same as card KC13: a 4096 × 4096 matrix: full fine-tuning changes parameters; LoRA with r = 8 trains only .</li><li>A 7-billion (7B) parameter model: .</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>W′ = W + BA</li><li>x ≈ q × s</li><li>W′ = W + B × A, B is d × r, A is r × k, r ≪ d, k</li><li>Quantise: q = round(x / s), restore x ≈ q × s (s is often per group or per channel)</li></ul><ul><li>frozen W</li><li>low-rank update</li><li>fewer bits</li></ul></section>
+
+<p><b>Left open</b> It fits now, but generation is still slow: every output token runs the whole network, and longer context uses more memory.</p>
+<nav class="pn"><a href="/SI/en/s/10/" rel="prev">← Previous stop: Post-training: SFT + RL</a><a href="/SI/en/s/12/" rel="next">Next stop: Inference speed →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><b>Cheap adaptation</b></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

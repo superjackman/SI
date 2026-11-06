@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Word vectors · AI, explained plainly</title>
+<meta name="description" content="Turn discrete words into vectors — ideally vectors that carry meaning. Computers need numbers, not the word “cat”. Learn vectors that carry meaning; decide…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/6/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/6/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/6/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/6/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Word vectors · AI, explained plainly">
+<meta property="og:description" content="Turn discrete words into vectors — ideally vectors that carry meaning. Computers need numbers, not the word “cat”. Learn vectors that carry meaning; decide…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/6/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Word vectors · AI, explained plainly">
+<meta name="twitter:description" content="Turn discrete words into vectors — ideally vectors that carry meaning. Computers need numbers, not the word “cat”. Learn vectors that carry meaning; decide…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/6/#lesson","name":"Word vectors","headline":"Word vectors · AI, explained plainly","description":"Turn discrete words into vectors — ideally vectors that carry meaning. Computers need numbers, not the word “cat”. Learn vectors that carry meaning; decide…","url":"https://superjackman.github.io/SI/en/s/6/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Word vectors","item":"https://superjackman.github.io/SI/en/s/6/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/6/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Word vectors</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 8 / 23</p>
+<h1>Word vectors</h1>
+<p class="lead">Learn embeddings from context</p>
+<p class="open"><a href="/SI/?lang=en#D/6">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Turn discrete words into vectors — ideally vectors that carry meaning.</p>
+<section><h2>Why care</h2><p>Computers need numbers, not the word “cat”. Learn vectors that carry meaning; decide token size with BPE.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>One-hot IDs are unique but say nothing about similarity.</li><li>Embeddings place words that share contexts nearby.</li><li>BPE chooses the token grain before embedding.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>One-hot fails: with 50,000 words each is a 50,000-long vector with a single 1; any two different words have dot product 0, so “cat” is as far from “dog” as from “car”.</li><li>Embeddings: give each word a dense short vector (say 300 numbers), itself learned. A lookup equals one-hot × embedding matrix E.</li><li>word2vec (Mikolov et al., 2013): “a word is known by its context” — predict the neighbours from the centre word (skip-gram) or the reverse (CBOW); words in similar contexts end up close.</li><li>This is self-supervised: the labels come from the text itself. It grows into pre-training at step 9.</li><li>Tokenisation (BPE): start from characters or bytes, repeatedly merge the most frequent adjacent pair until the vocabulary reaches tens of thousands; decide token grain before embedding (K02, KC03).</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>Closer directions → larger dot/cosine; cat·dog &gt; cat·car.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>Dot (KM02): . BPE (K02): .</li><li>Dot product (same as card KM02): q = [3, 1], k = [2, 2.5], .</li><li>cat = [0.8, 0.1, 0.6], dog = [0.7, 0.2, 0.5], car = [0.1, 0.9, 0.0]</li><li>cat·dog = 0.56 + 0.02 + 0.30 = 0.88; cat·car = 0.08 + 0.09 + 0 = 0.17</li><li>“king − man + woman ≈ queen” is empirical and doesn’t always hold.</li><li>BPE (same as card K02): .</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>a·b = Σ aᵢbᵢ</li><li>P(context|centre) = softmax(u·v)</li><li>Dot product a · b = Σ ai × bi; cosine similarity a · b / (‖a‖ × ‖b‖)</li><li>Skip-gram maximises P(context | centre) = softmax(u_context · v_centre)</li><li>BPE: repeatedly merge the most frequent adjacent symbol pair</li></ul><ul><li>a</li><li>b</li><li>large dot ≈ aligned directions</li></ul></section>
+
+<p><b>Left open</b> ① Each word has one fixed vector, so “apple” can’t tell the fruit from the company. ② Sentences are ordered and of any length: we need a network for sequences.</p>
+<nav class="pn"><a href="/SI/en/s/5/" rel="prev">← Previous stop: Training in practice</a><a href="/SI/en/s/7/" rel="next">Next stop: RNN + attention →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><b>Word vectors</b></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>

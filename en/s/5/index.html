@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Training in practice · AI, explained plainly</title>
+<meta name="description" content="Train fast, train stably, and still generalise. Millions of samples: do not scan all every step; also avoid memorising.">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/5/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/5/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/5/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/5/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Training in practice · AI, explained plainly">
+<meta property="og:description" content="Train fast, train stably, and still generalise. Millions of samples: do not scan all every step; also avoid memorising.">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/5/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Training in practice · AI, explained plainly">
+<meta name="twitter:description" content="Train fast, train stably, and still generalise. Millions of samples: do not scan all every step; also avoid memorising.">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/5/#lesson","name":"Training in practice","headline":"Training in practice · AI, explained plainly","description":"Train fast, train stably, and still generalise. Millions of samples: do not scan all every step; also avoid memorising.","url":"https://superjackman.github.io/SI/en/s/5/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Training in practice","item":"https://superjackman.github.io/SI/en/s/5/"}]}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/5/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/">All stops</a></li><li><b>Training in practice</b></li></ol></nav>
+<main>
+<p class="lv">Derivation path · 7 / 23</p>
+<h1>Training in practice</h1>
+<p class="lead">Mini-batch SGD, Adam, regularisation, validation set</p>
+<p class="open"><a href="/SI/?lang=en#D/5">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
+<p class="bd"><b>The problem</b> Train fast, train stably, and still generalise.</p>
+<section><h2>Why care</h2><p>Millions of samples: do not scan all every step; also avoid memorising.</p></section>
+
+<section><h2>Everyday analogy</h2><ul><li>Mini-batches estimate the slope cheaply.</li><li>Adam gives each knob its own step size.</li><li>Regularisation / early stopping fight overfitting.</li></ul></section>
+
+<section><h2>Core idea</h2><ul><li>Mini-batch SGD: estimate the gradient from a small random batch (say 256). Much cheaper; the noise can even help escape bad regions.</li><li>Momentum accumulates past gradients to damp the zig-zag; Adam (Kingma and Ba, 2014) gives each parameter its own adaptive step. Large models use the AdamW variant with learning-rate warm-up and decay.</li><li>Overfitting: training loss keeps falling while new data gets worse. Regularisation: L2, dropout, data augmentation, early stopping.</li><li>Data splits: train to fit the parameters, validation to pick hyper-parameters and when to stop, test once at the very end.</li></ul></section>
+
+<section><h2>What the picture shows</h2><ul><li>Sample a batch → gradient → Adam → check val.</li></ul></section>
+
+<section><h2>The numbers</h2><ul><li>1M / 256 ≈ 3900 updates per epoch; momentum .</li><li>1 million examples, batch 256: about 3,900 updates per pass; full-batch gradient descent makes 1.</li><li>Momentum (same as card KM13): momentum 0.9, slope keeps the same sign 1, 1, 1, 1 → , faster and faster.</li><li>Train 99%, validation 70%: overfitting — regularise, add data or shrink the model. Both 60%: underfitting.</li></ul></section>
+
+<section><h2>Formula</h2><ul><li>v = βv + g; Adam update</li><li>Momentum: v = β × v + g, w = w − η × v</li><li>Adam: m = β1 × m + (1 − β1) × g, v = β2 × v + (1 − β2) × g², w = w − η × m̂ / (√v̂ + ε)</li><li>L2: L′ = L + λ × Σ w²</li></ul><ul><li>Mini-batch, momentum, Adam, regularisation</li></ul></section>
+
+<p><b>Left open</b> Numeric inputs such as pixels work now. But text is discrete symbols: how does the word “cat” become numbers a network can use?</p>
+<nav class="pn"><a href="/SI/en/s/4/" rel="prev">← Previous stop: Backpropagation</a><a href="/SI/en/s/6/" rel="next">Next stop: Word vectors →</a></nav>
+<section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><b>Training in practice</b></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + RL</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><a href="/SI/en/s/12/">Inference speed</a></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
+</main>
+<footer><p>AI, explained plainly · Derivation path</p></footer>
+</body>
+</html>
