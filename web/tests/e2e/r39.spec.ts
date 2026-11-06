@@ -46,9 +46,9 @@ async function layoutOk(p: Page) {
 
 test.describe('R39 layers', () => {
   test('home: the live layers open their first page; 学 starts at layer 1', async ({ page }) => {
-    const errs = await open(page, './?lang=zh#home');
+    const errs = await open(page, './?lang=zh#map'); // R53: the pyramid is the 地图 tab
     await expect(page.locator('.l4-lv.live')).toHaveCount(LIVE.length);
-    await page.locator('.l4-hr.pri').click(); await expect(page).toHaveURL(/#L1$/);
+    await page.locator('.l4-lv.live').first().click(); await expect(page).toHaveURL(/#L1$/);
     await page.waitForFunction(() => document.getElementById('l4')?.dataset.lx === 'L1.zh');
     expect(errs).toEqual([]);
   });

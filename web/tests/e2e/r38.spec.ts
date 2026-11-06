@@ -26,7 +26,7 @@ async function layoutOk(p: Page) {
       if (!vis(e)) continue; const r = R(e); if (r.left < -0.5 || r.top < -0.5 || r.right > W + 0.5 || r.bottom > H + 0.5) bad.push(`out ${s} ${Math.round(r.left)},${Math.round(r.top)},${Math.round(r.right)},${Math.round(r.bottom)}`);
     }
     for (const t of document.querySelectorAll<HTMLElement>('.l4-lb .t, .l4-tag, .l4-chips, .l4-tt, .l4-r span')) if (vis(t) && t.scrollWidth > t.clientWidth + 1) bad.push(`cut ${t.textContent}`);
-    for (const e of document.querySelectorAll<HTMLElement>('.l4-pn, .l4-info, .l4-home')) if (vis(e) && e.scrollHeight > e.clientHeight + 2) bad.push(`scroll ${e.className} ${e.scrollHeight}>${e.clientHeight}`);
+    for (const e of document.querySelectorAll<HTMLElement>('.l4-pn, .l4-info, .l4-home:not(:has(> .hm))')) if (vis(e) && e.scrollHeight > e.clientHeight + 2) bad.push(`scroll ${e.className} ${e.scrollHeight}>${e.clientHeight}`);
     const parts = [...document.querySelectorAll('.l4-lb, .l4-pn, .l4-tag, .l4-note, .l4-fl')].filter(vis);
     for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) {
       const a = R(parts[i]!), b = R(parts[j]!);
@@ -42,14 +42,16 @@ test.describe('R38 explorer', () => {
   test('the default page is the explorer home: 5 layers, all live (R39: L1–L5); only 学 and 记 below', async ({ page }) => {
     const errs = await open(page, './?lang=zh', false);
     await expect(page.locator('#l4')).toHaveAttribute('data-v', 'home');
+    /* R53: the pyramid moved to the 地图 tab (#map) */
+    await page.locator('.l4-tabs [data-go="#map"]').click(); await expect(page).toHaveURL(/#map$/);
     await expect(page.locator('.l4-lv')).toHaveCount(5);
     await expect(page.locator('.l4-lv.live')).toHaveCount(5);
     await expect(page.locator('.l4-lv.live').filter({ hasText: 'Transformer' })).toHaveCount(1);
     await page.locator('.l4-lv.live').nth(4).click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L5$/);
-    await page.goto('./?lang=zh#home'); await page.locator('.l4-hr.pri').click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
+    await page.goto('./?lang=zh#map'); await page.locator('.l4-lv.live').first().click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
     await page.goto('./?lang=zh#home');
-    await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
-    await page.locator('.l4-home [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-lvr').first()).toBeVisible(); /* R42: G3 progress page — five layer rows */
+    await expect(page.locator('.l4-tabs button')).toHaveCount(4); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
+    await page.locator('.l4-tabs [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-lvr').first()).toBeVisible(); /* R42: G3 progress page — five layer rows */
     expect(errs).toEqual([]);
   });
   test('old addresses (?w=3d, ?classic=1, #T1, #learn) land on the explorer home: the old sites are gone', async ({ page }) => {

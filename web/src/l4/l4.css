@@ -406,3 +406,19 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .ob-pick .ob-c b { display: block; font-size: 15px; margin-bottom: 2px; }
 .ob-pick .ob-c span { display: block; font-size: 12.5px; color: #c4d2f2; line-height: 1.4; }
 .ob-pick .ob-c.on { outline: 2px solid #ffd166; outline-offset: 1px; background: #13183a; }
+/* R53 quieter top bar on home: logo + brand, 中/EN, settings (no ☰, no ↑); the old pyramid home is the 地图 tab */
+.l4-logo { flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-left: 2px; border-radius: 9px; background: linear-gradient(135deg, #3b6cf0, #7c3aed); color: #fff; font-size: 12.5px; font-weight: 800; }
+.l4-tx:has(.l4-logo) { display: flex; align-items: center; gap: 8px; }
+.l4[data-page="home"] .l4-menu, .l4[data-page="home"] .l4-top [data-a="back"] { display: none; }
+.l4[data-page="home"] .l4-bsub { display: none; } .l4[data-page="home"] .l4-tt.l4-brand { font-size: 16px; }
+.l4[data-page="home"] .l4-hint { display: none; }
+.l4-tabs { flex: none; display: grid; grid-template-columns: repeat(4, 1fr); padding: 2px 4px env(safe-area-inset-bottom); background: #060d24; border-top: 1px solid #1f3266; }
+.l4-tabs[hidden] { display: none; }
+.l4 .l4-tabs button { min-height: 54px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: #a9b9e0; font-size: 12px; }
+.l4-tabs svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.l4 .l4-tabs button.on { color: #ffd77a; font-weight: 700; }
+.l4[data-tabs="1"] .l4-nav { display: none; }
+.l4-mh2 { margin: 4px 0 8px; font-size: 15px; color: #e6eeff; }
+.l4-mls { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 6px; margin: 10px 0 12px; }
+.l4 .l4-ml2 { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 4px 12px; border: 1px solid #2c4690; border-radius: 12px; background: #0a1532; text-align: left; }
+.l4-ml2 b { flex: none; font-size: 14px; } .l4-ml2 span { flex: 1; min-width: 0; font-size: 12px; color: #a9b9e0; }

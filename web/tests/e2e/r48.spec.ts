@@ -95,7 +95,7 @@ test.describe('R48 two views', () => {
     expect(bad).toEqual([]);
   });
   test('知识地图 #D/map: every card once, in the cell of its birth step × its layer; gold cell = the step’s own layer; entries from ☰, the chain and each stage', async ({ page }) => {
-    const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
+    const errs = await open(page, './?lang=zh#map'); const n0 = await hl(page); // R53: ☰ lives on the 地图 tab
     await page.locator('.l4-top [data-a="menu"]').click(); await page.locator('.l4-ms a[href="#D/map"]').click();
     await expect(page).toHaveURL(re('#D/map')); await px(page, 'D/map.zh');
     await expect(page.locator('.l4-top .l4-tt')).toHaveText('知识地图 · 两个坐标');

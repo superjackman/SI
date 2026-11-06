@@ -15,7 +15,7 @@ const hl = (p: Page) => p.evaluate(() => history.length);
 test.describe('R46 Back leaves the site', () => {
   test('clicks inside the site keep history.length; one Back leaves', async ({ page }) => {
     await page.goto('about:blank');
-    const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
+    const errs = await open(page, './?lang=zh#map'); const n0 = await hl(page); // R53: the pyramid is the 地图 tab
     await page.locator('.l4-lv[data-go="#L1"]').click(); await expect(page).toHaveURL(re('#L1'));
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).not.toHaveURL(re('#L1'));
     await page.locator('.l4-nav [data-a="next"]').click();

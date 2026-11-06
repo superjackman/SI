@@ -43,11 +43,12 @@ const AREAS = ['P', 'P/x1', 'P/x2', 'P/x3', 'P/x4', 'P/x5', 'P/q1', 'P/q2', 'P/q
 test.describe('R40 练记享', () => {
   test('home has 学 练 记 享 and the quick-path entry; each opens its area', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
-    await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
-    await expect(page.locator('.l4-go')).toContainText(/选深度和目标|选我的路线|10 分钟/); // R52 home: depth+goal or quick path
+    await expect(page.locator('.l4-tabs button')).toHaveCount(4); // R53: 学习 / 地图 / 练习 / 我的
+    await expect(page.locator('.hm-cta')).toContainText(/开始|继续/); // R53 home: the one gold button
     for (const [go, id] of [['#P', 'P'], ['#R', 'R'], ['#S', 'S'], ['#Q', 'Q']] as const) {
-      await page.evaluate(() => { location.hash = '#home'; }); await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
-      await page.locator(`.l4-home [data-go="${go}"]`).click();
+      const hub = go === '#S' || go === '#Q' ? '#map' : '#home';
+      await page.evaluate((h) => { location.hash = h; }, hub); await expect(page.locator('.l4-tabs button')).toHaveCount(4);
+      await page.locator(`${hub === '#map' ? '.l4-mls' : '.l4-tabs'} [data-go="${go}"]`).click();
       await page.waitForFunction((w) => document.getElementById('l4')?.dataset.px === w, `${id}.zh`);
     }
     expect(errs).toEqual([]);
@@ -137,7 +138,7 @@ test.describe('R40 练记享', () => {
     test(`layout at this size, ${lang}: home and every area fit, nothing cut, ≥12px`, async ({ page }, info) => {
       test.skip(info.project.name === 'm430', 'checked at 360×640 and 390×844');
       if (info.project.name === 'm360') await page.setViewportSize({ width: 360, height: 640 });
-      const errs = await open(page, `./?lang=${lang}#home`); await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
+      const errs = await open(page, `./?lang=${lang}#home`); await expect(page.locator('.hm .hm-cta')).toBeVisible();
       expect(await layoutOk(page), 'home').toEqual([]);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/${info.project.name}-${lang}-home.png` });
       for (const id of [...AREAS, 'S/K06.p']) {

@@ -2,7 +2,7 @@
    page text, so here it becomes a blue jump (the › becomes the round badge); one that shows something on this page
    (a card, the maths) becomes a teal ⓘ pill; gold stays for the few that do a thing (share, save). Runs after every
    render through a MutationObserver; each control is looked at once (data-g). */
-const SKIP = '.l4-mp,.l4-top,.g-nav,.l4-crumb,.g-sf,.g-dlg,.l4-ob,.l4-lb,.lx-fl,.l4-qp,.l4-ml,.g-seg,.g-chips,.l4-ms,.l4-sh,.l4-lv,.l4-hr';
+const SKIP = '.hm,.hm-sh,.l4-tabs,.l4-mls,.l4-mp,.l4-top,.g-nav,.l4-crumb,.g-sf,.g-dlg,.l4-ob,.l4-lb,.lx-fl,.l4-qp,.l4-ml,.g-seg,.g-chips,.l4-ms,.l4-sh,.l4-lv,.l4-hr';
 const CARD = /(看卡|（卡片）|\(card\)|^Card)\s*›?\s*$/i;
 const ROW = '.px-it,.px-lvr,.px-bc';
 

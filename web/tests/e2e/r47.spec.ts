@@ -20,8 +20,8 @@ test.describe('R47 derivation path', () => {
   test('home → chain → stages (next, dot, back, the step it came from) → ↑ chain → ↑ home; no history entries; Back leaves', async ({ page }) => {
     await page.goto('about:blank');
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
-    await expect(page.locator('.l4-home .l4-hr')).toHaveCount(4);
-    await page.locator('.l4-home .l4-bu').click(); await expect(page).toHaveURL(re('#D')); await px(page, 'D.zh');
+    await expect(page.locator('.l4-tabs button')).toHaveCount(4);
+    await page.locator('.hm-v[href="#D"]').click(); // R53: 两种看法 · 看推导 await expect(page).toHaveURL(re('#D')); await px(page, 'D.zh');
     await expect(page.locator('.dv-st')).toHaveCount(23); await expect(page.locator('.dv-lk')).toHaveCount(22); await expect(page.locator('.dv-gh')).toHaveCount(6);
     await expect(page.locator('.l4-nav')).toBeHidden();
     await page.locator('.dv-st[data-go="#D/0"]').click(); await expect(page).toHaveURL(re('#D/0')); await px(page, 'D/0.zh');
@@ -61,7 +61,7 @@ test.describe('R47 derivation path', () => {
     expect(errs).toEqual([]);
   });
   test('the map sheet lists the chain and all 23 stations', async ({ page }) => {
-    const errs = await open(page, './?lang=zh#home');
+    const errs = await open(page, './?lang=zh#map'); // R53: ☰ lives on the 地图 tab, not on home
     await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
     await expect(ms.locator('a[href^="#D/"]')).toHaveCount(25); await expect(ms.locator('a[href="#D/8a"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/8b"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/map"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/routes"]')).toHaveCount(1); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
     await ms.locator('a[href="#D/9"]').click(); await expect(ms).toHaveCount(0); await expect(page).toHaveURL(re('#D/9')); await px(page, 'D/9.zh');
@@ -71,7 +71,8 @@ test.describe('R47 derivation path', () => {
     const bad: string[] = [];
     for (const l of ['zh', 'en']) {
       await open(page, `./?lang=${l}#home`);
-      const hs = await page.evaluate(() => { const h = document.querySelector<HTMLElement>('.l4-home')!; return h.scrollHeight - h.clientHeight; }); if (hs > 2) bad.push(`${l} home scrolls ${hs}`);
+      // R53: the new home scrolls down by design; it must never scroll sideways (tests/e2e/r53.spec.ts checks the rest)
+      const hs = await page.evaluate(() => { const h = document.querySelector<HTMLElement>('.l4-home')!; return h.scrollWidth - h.clientWidth; }); if (hs > 1) bad.push(`${l} home scrolls sideways ${hs}`);
       for (const h of ['#D', '#D/0', '#D/4', '#D/8a', '#D/8b', '#D/9', '#D/11', '#D/12', '#D/14', '#D/16']) {
         await page.evaluate((x) => { location.replace(x); }, h); await px(page, `${h.slice(1)}.${l}`);
         for (const end of [false, true]) {

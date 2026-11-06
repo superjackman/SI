@@ -18,7 +18,7 @@ import { applyAnim } from '../store/prefs';
 import { normCrumb } from './crumb';
 import { gramOn } from './gram';
 import type { Step } from '../px/view';
-import { lastPage, layerStats, lvTag, pageLayer, pageName, pbar, pushRecent } from './progress';
+import { layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
 import { DV_ALIAS, DV_N, DV_NM, dvK, isDv } from '../dv/links';
 
@@ -37,10 +37,11 @@ export function start(doc: Document = document, win: Window = window) {
 <section class="l4-info"></section>
 <p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div>
 <nav class="l4-nav g-nav" hidden></nav>
+<nav class="l4-tabs" hidden></nav>
 <div class="l4-rot" aria-hidden="true"><div><b>⟲</b><p class="t"></p><p class="s"></p></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   gramOn(root);
-  const nav = $('.l4-nav'), stg = $('.l4-stg'), home = $('.l4-home'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
+  const nav = $('.l4-nav'), tabs = $('.l4-tabs'), stg = $('.l4-stg'), home = $('.l4-home'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
   let lang: L = useApp.getState().lang === 'en' ? 'en' : 'zh';
   const T = (k: keyof typeof UI) => tx(UI[k] as Tx, lang);
   const lines0 = (() => { try { return JSON.parse(localStorage.getItem('si.l4.my.lines') || 'null') as string[] | null; } catch { return null; } })();
@@ -86,7 +87,7 @@ export function start(doc: Document = document, win: Window = window) {
   /* the info box like the reference: four rows, a tall gold 知识卡 button on the right (the card id is in its label) */
   const infoHtml = (v: readonly string[], k: string, ls: (keyof typeof UI)[]) => `<dl>${ls.map((x, i) => `<div><dt>${T(x)}</dt><dd>${esc(v[i]!)}</dd></div>`).join('')}</dl><button type="button" class="l4-kb" data-k="${k}" aria-label="${T('kcT')} ${k}"><span>${T('kc')}</span></button>`;
   function drawTop(p: Page | null) {
-    if (!p) { txt.innerHTML = `<b class="l4-tt l4-brand">${T('brand')}<span class="l4-bsub">${T('title')}</span></b>`; return; }
+    if (!p) { txt.innerHTML = `<span class="l4-logo" aria-hidden="true">AI</span><b class="l4-tt l4-brand">${T('brand')}<span class="l4-bsub">${T('title')}</span></b>`; return; }
     /* like the reference: a title on the overview, the worked example while training, the live question (→ ?) elsewhere */
     const tt = p.kind === 'l4' ? T('topL4') : p.kind === 'tr' ? T('topTr') : p.kind === 'my' ? T('topMy') : '';
     if (tt) { txt.innerHTML = `<b class="l4-tt">${esc(tt)}</b>`; return; }
@@ -129,23 +130,23 @@ export function start(doc: Document = document, win: Window = window) {
     drawLabels(); const D: Desc = { lay, st: { ...pg.st, ...(sel && pg.kind !== 'x' ? { [sel]: 'sel' } : {}) }, back: pg.back, resOn: pg.resOn, frameLit: pg.frameLit, sel: pg.sel, flow: pg.flow };
     const s = await stage(); s.set(D);
   }
+  /* R53 the home page is its own lazy chunk (./home); the old pyramid home is now the 地图 tab (#map) */
+  let hmTok = 0;
   function drawHome() {
-    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}<i class="g-bdg" aria-hidden="true">›</i></button>`; }).join('');
-    const hr = (go: string, k: string, s: string, pri = false) => `<button type="button" class="l4-hr${pri ? ' pri' : ''}" data-go="${go}"><b>${k}</b><span>${s}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
-    /* R47 the bottom-up way in: the ground under layer 5 — 17 steps from one function up to an agent */
-    const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span></button>`;
-    home.innerHTML = `<div class="l4-pyr">${lv}</div>${bu}<div class="l4-hb">${hr('#L1', T('learn'), T('learnS'), true)}${hr('#P', tx(['练', 'Practice'], lang), tx(['实验和小测', 'Try & quiz'], lang))}${hr('#R', T('record'), T('recordS'))}${hr('#S', tx(['享', 'Share'], lang), tx(['做分享卡', 'Make cards'], lang))}</div>${goCard()}`;
+    const t = ++hmTok, l = lang; delete root.dataset.hm;
+    void import('./home').then((m) => { if (t !== hmTok || cur !== 'home' || lang !== l) return; m.home(home, { l, root, go, redraw: () => { if (cur === 'home') drawHome(); } }); }).catch(() => { /* offline: the shell still works */ });
   }
-  /* R42 G1 / G1b: a first visit gets the quick path; a returning reader gets 继续上次 with that layer's progress */
-  function goCard() {
-    const last = lastPage();
-    if (!last) return `<div class="l4-go"><div class="r"><b>${tx(['从这里开始', 'Start here'], lang)}</b><span class="m">${tx(['第一次来？', 'First visit?'], lang)}</span></div>`
-      + `<p>${tx(['选深度和目标，生成你的路线；或先花 10 分钟走一遍五层。', 'Pick a depth and a goal for your route — or take 10 minutes through all five layers.'], lang)}</p>`
-      + `<div class="r"><button type="button" class="l4-b gold big" data-go="#D/routes">${tx(['选我的路线 ›', 'Pick my route ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#Q">${tx(['10 分钟路径 ›', '10-min path ›'], lang)}</button></div></div>`;
-    const n = pageLayer(last.id), st = layerStats(seen)[n - 1]!;
-    return `<div class="l4-go"><div class="r"><b>${tx(['继续上次', 'Pick up where you left off'], lang)}</b></div>`
-      + `<div class="r l">${lvTag(n, lang)}<span>${esc(pageName(last.id, lang))} · ${tx([`看过 ${st.s}/${st.t} 页`, `${st.s}/${st.t} pages seen`], lang)}</span></div>${pbar(st.s, st.t, n)}`
-      + `<div class="r"><button type="button" class="l4-b gold big" data-go="${H(last.id)}">${tx(['继续 ›', 'Continue ›'], lang)}</button><button type="button" class="l4-b sm" data-go="#D/routes">${tx(['我的路线 ›', 'My route ›'], lang)}</button></div></div>`;
+  function drawMap() {
+    const lv = [0, 1, 2, 3, 4].map((i) => { const on = LIVE.includes(i + 1); return `<button type="button" class="l4-lv${on ? ' live' : ''}" data-go="#L${i + 1}" style="--w:${56 + i * 11}%"><span class="n">${tx(UI.lv[i]!, lang)}</span><b>${tx(UI.lvN[i]!, lang)}</b>${on ? '' : `<span class="s">${T('soon')}</span>`}<i class="g-bdg" aria-hidden="true">›</i></button>`; }).join('');
+    /* R47 the bottom-up way in: the ground under layer 5 — 23 stations from one function up to an agent */
+    const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true"><i></i><i></i><i></i></span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span></button>`;
+    const ln = (go: string, t: Tx, s: Tx, a = '') => `<button type="button" class="l4-ml2"${a ? ` data-a="${a}"` : ` data-go="${go}"`}><b>${tx(t, lang)}</b><span>${tx(s, lang)}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
+    home.innerHTML = `<h2 class="l4-mh2">${tx(['自顶向下 · 金字塔', 'Top-down: the pyramid'], lang)}</h2><div class="l4-pyr">${lv}</div>${bu}<div class="l4-mls">`
+      + ln('#D/map', ['知识地图', 'Knowledge map'], ['5 层 × 23 站，两个坐标一起看', '5 layers × 23 stops on one grid'])
+      + ln('#D/routes', ['五条学习路线', 'Five learning routes'], ['同一批站，按目标选一条', 'The same stops; pick one for your goal'])
+      + ln('#Q', ['10 分钟快速路径', '10-minute quick path'], ['走一遍五层', 'Once through all five layers'])
+      + ln('#S', ['做分享卡', 'Make share cards'], ['把一张知识卡做成图片', 'Turn a card into an image'])
+      + ln('', ['全部页面和进度', 'Every page and progress'], ['目录、看过的页、每层进度', 'Contents, pages seen, progress per layer'], 'menu') + '</div>';
   }
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
@@ -156,13 +157,13 @@ export function start(doc: Document = document, win: Window = window) {
     $('[data-a="menu"]').textContent = '☰'; $('[data-a="menu"]').setAttribute('aria-label', tx(['地图和进度', 'Map and progress'], lang));
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
-    root.dataset.page = cur;
+    root.dataset.page = cur; drawTabs();
     if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; home.hidden = true; stg.hidden = false; void renderLx(); return; }
     if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; home.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
     home.hidden = isL4; stg.hidden = !isL4;
-    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon ? '' : T('sub'); dots.innerHTML = '';
-      if (soon) drawSoon(Number(cur[1]) - 1); else drawHome(); return; }
+    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' ? '' : T('sub'); dots.innerHTML = '';
+      if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);
     crumb.innerHTML = crumbs(pg.crumb);
@@ -203,7 +204,7 @@ export function start(doc: Document = document, win: Window = window) {
       + `<span class="r"><button type="button" class="l4-b g-act2" data-go="#P/q${n}">${tx(['做第{n}层小测（{q} 题）', 'Layer {n} quiz ({q})'], lang).replace('{n}', String(n)).replace('{q}', '4')}</button></span>`;
     dots.innerHTML = '';
   };
-  const qOn = () => !!qGet()?.on && !isPx(cur) && cur !== 'home';
+  const qOn = () => !!qGet()?.on && !isPx(cur) && cur !== 'home' && cur !== 'map';
   function drawQp() {
     const q = qGet(), on = qOn(); qp.hidden = !on; hint.hidden = on; dots.hidden = on; root.dataset.q = on ? '1' : '';
     drawNav(); if (!on) return;
@@ -243,6 +244,18 @@ export function start(doc: Document = document, win: Window = window) {
     const same = (i: number, j: number) => { const p = ps[i]?.dots, q = ps[j]?.dots; return !!p && !!q && p[0] === N && q[0] === N && q[1] >= p[1]; };
     while (a > 0 && same(a - 1, a)) a--; while (b < o.length - 1 && same(b, b + 1)) b++;
     for (let i = a; i <= b; i++) if (ps[i]!.dots![1] === x) { go(lxHash(o[i]!)); return; }
+  }
+  /* R53 the 4 bottom tabs, only on the four top-level pages; a tab is a data-go, so it never adds a history entry */
+  const TABS: [string, string, Tx, string][] = [
+    ['home', '#home', ['学习', 'Learn'], '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'],
+    ['map', '#map', ['地图', 'Map'], '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7l3 9M16 7l-3 9M8.5 6h7"/>'],
+    ['P', '#P', ['练习', 'Practice'], '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
+    ['R', '#R', ['我的', 'Me'], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>'],
+  ];
+  function drawTabs() {
+    const on = TABS.some(([id]) => id === cur); tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
+    tabs.setAttribute('aria-label', tx(['主导航', 'Main'], lang));
+    tabs.innerHTML = TABS.map(([id, h, t, ic]) => `<button type="button" data-go="${h}"${id === cur ? ' class="on" aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${tx(t, lang)}</span></button>`).join('');
   }
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
@@ -299,7 +312,7 @@ export function start(doc: Document = document, win: Window = window) {
     const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}${r.card ? '~' + r.card : ''}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
-    if (!(lid || id === 'home' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
+    if (!(lid || id === 'home' || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
     if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = H(id); }
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     if (id !== cur) bump();
@@ -378,9 +391,5 @@ export function start(doc: Document = document, win: Window = window) {
   let rz = 0; win.addEventListener('resize', () => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); }); });
   useApp.subscribe((s) => { const l: L = s.lang === 'en' ? 'en' : 'zh'; if (l !== lang) { lang = l; route(); } });
   route();
-  /* R42 first visit: the 3-step welcome (lazy), only when the visit starts on the home page */
-  if (cur === 'home' && !LS.get<string | null>('si.onb', null)) void import('./onb').then((m) => {
-    const o = m.showOnb(root, lang, () => void import('../px/view').then((v) => v.qStart(go)));
-    useApp.subscribe((st) => { const l: L = st.lang === 'en' ? 'en' : 'zh'; if (root.contains(root.querySelector('.l4-ob'))) o.redraw(l); });
-  }).catch(() => { /* optional */ });
+  /* R53: no first-visit popup; depth and goal live in the home page's one-line chooser (./home sheet) */
 }
