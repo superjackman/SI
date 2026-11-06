@@ -30,7 +30,7 @@ const EXPECT: Record<string, number> = {
   m6a: 0.3472, m6b: -(ln(0.62) + ln(0.7) + ln(0.8)), m7a: -ln(0.62), m7b: -0.38, m7c: 0, m8a: -4, m8b: -3.999,
   m9b: 3.3, m10a: 0.2, m10b: (2 - 2 * 0.4 ** 4 - 2) ** 2 + 0.5, m11a: 8.5 / 3, m11b: (1.5 - 8.5 / 3) / Math.sqrt(((1.5 - 8.5 / 3) ** 2 + (1 - 8.5 / 3) ** 2 + (6 - 8.5 / 3) ** 2) / 3),
   m12c: 16, m13b: -0.1, m13c: 1.998, k11a: 0, k14a: 0.48,
-  sp1: 1, sp2: 0, se1: 4, se2: 0, ss1: 0, ss2: 0, sa1: 0, sa2: 0, sb1: 0,
+  sp1: 1, sp2: 0, se1: 4, se2: 0, se3: 0, ss1: 0, ss2: 0, ss3: 0, sa1: 0, sa2: 0, sa3: 0, sb1: 0,
 };
 
 describe('R50 self-check questions', () => {

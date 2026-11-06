@@ -39,7 +39,7 @@ test.describe('R56 micro-loop', () => {
     await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(2); await expect(page.locator('.ml-live')).toHaveCount(1);
     await page.locator('[data-ml-to="r"]').first().click(); await expect(ly).toHaveAttribute('data-ml-s', 'r'); await expect(page.locator('.ly-l').first()).toBeVisible();
     await page.locator('.ml-ss [data-ml-s="v"]').click(); await expect(ly).toHaveAttribute('data-ml-s', 'v');
-    await page.locator(`[data-ml-p="${G.pr.a}"]`).click(); await expect(page.locator('.ml-pr')).toContainText('猜对了');
+    await page.locator(`[data-ml-p="${G.pr.a}"]`).click(); await expect(page.locator('.ml-pr')).toContainText('对了');
     // a wrong answer that matches a known mistake → its why + a re-loop button to the exact layer
     const q0 = varQ(G.vk, 0), mis = q0.mis.find((m) => Math.abs(m.v - q0.a) > q0.tol)!;
     await page.locator('.ml-in').fill(num(mis.v, q0.d)); await page.locator('[data-ml-ck]').click();

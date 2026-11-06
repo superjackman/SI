@@ -36,11 +36,14 @@ test.describe('R48 two views', () => {
     /* the switch → the stage it is born in, card ringed */
     await sh.locator('.l4-vsw [data-s="dv"]').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0);
     await expect(page).toHaveURL(re('#D/4')); await px(page, 'D/4.zh');
-    await expect(page.locator('.dv-vsw [aria-checked="true"]')).toHaveText('自底向上·看推导');
+    await page.locator('.l4-top [data-a="menu"]').click();
+    await expect(page.locator('.l4-ms .dv-vsw [aria-checked="true"]')).toHaveText('自底向上·看推导');
+    await page.locator('.l4-ms [data-s="x"]').click();
     await expect(page.locator('.dv-kb.on')).toHaveCount(1); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     await page.locator('.dv-kb.on').scrollIntoViewIfNeeded(); await expect(page.locator('.dv-kb.on')).toBeInViewport();
-    /* stage switch → its layer, opened on the first card born here */
-    await page.locator('.dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[dvI(4)]!.find((k) => cardLv(k) === 5)}`));
+    /* the view switch lives in ☰; it opens this step’s layer on the card born here */
+    await page.locator('.l4-top [data-a="menu"]').click();
+    await page.locator('.l4-ms .dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[dvI(4)]!.find((k) => cardLv(k) === 5)}`));
     /* used again: K09 → step 8b (组装成 Transformer) */
     await page.evaluate((h) => { location.replace(h); }, at('K09'));
     sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator(`.l4-kst[data-n="${dvI('8b')}"]`).click();
@@ -63,7 +66,9 @@ test.describe('R48 two views', () => {
     }
     for (let i = 0; i < DV_N; i++) {
       await page.evaluate((h) => { location.replace(h); }, `#D/${dvK(i)}`); await px(page, `D/${dvK(i)}.zh`);
-      if ((await page.locator('.dv-vsw button').count()) !== 2) bad.push(`D/${i} switch`);
+      await page.locator('.l4-top [data-a="menu"]').click();
+      if ((await page.locator('.l4-ms .dv-vsw button').count()) !== 2) bad.push(`D/${i} switch`);
+      await page.locator('.l4-ms [data-s="x"]').click();
       const kb = page.locator('.dv-kb'), n = await kb.count();
       for (let j = 0; j < n; j++) { const b = kb.nth(j); if ((await b.locator('.l4-lt').count()) + (await b.locator('.dv-sb').count()) !== 1) bad.push(`D/${i} badge ${j}`); }
       if (DV_LV[i] && (await page.locator('.dv-lv').innerText()) !== `↓ 去金字塔 第${DV_LV[i]}层`) bad.push(`D/${i} lv`);
@@ -85,7 +90,10 @@ test.describe('R48 two views', () => {
       }
       for (const i of [0, 4, '8a', '8b', 10, '15a', 16]) {
         await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await px(page, `D/${i}.${l}`);
-        for (const x of await page.evaluate(contrastIssues, { root: '.dv-vsw, .dv-ks', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
+        await page.locator('.l4-top [data-a="menu"]').click();
+        for (const x of await page.evaluate(contrastIssues, { root: '.l4-ms .dv-vsw', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
+        await page.locator('.l4-ms [data-s="x"]').click();
+        for (const x of await page.evaluate(contrastIssues, { root: '.dv-ks', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
         await page.locator('.dv-ks').scrollIntoViewIfNeeded();
         for (const x of await page.evaluate(textIssues, 12)) bad.push(`${l} D/${i} ${x.k} ${x.cls} “${x.txt}”${x.why ? ' ' + x.why : ''}`);
         const w = await page.evaluate(() => { const e = document.querySelector<HTMLElement>('.l4-home')!; return [document.documentElement.scrollWidth - innerWidth, e.scrollWidth - e.clientWidth]; });

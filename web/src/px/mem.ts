@@ -118,12 +118,14 @@ export function badges(l: L): Bdg[] {
   const sd = Object.keys(so).length; B.push({ id: 'so', e: '🧩', t: z('阶段排序', 'Put in order'), how: z(`把一层的站排对顺序（${sd}/5 层）`, `Put one layer’s stops in order (${sd}/5)`), on: sd > 0 });
   return B;
 }
-/** the certificate unlocks with a whole layer or a whole route mastered; returns what to write, or null */
+/** certificate bar: any 5 mastered stations, or a whole layer, or a whole route. Nameless. */
+export const CERT_N = 5;
 export function certOf(l: L): { what: string; n: number } | null {
   const m = masteredSt(vfDone()), lm = layerMastery(m);
   const r = ROUTES.filter((x) => x.st.every((k) => m.has(String(k)))).sort((a, b) => b.st.length - a.st.length)[0];
   if (r) return { what: tx(r.n, l), n: m.size };
   const i = lm.findIndex(([s, t]) => t > 0 && s === t); if (i >= 0) return { what: tx(UI.lvN[i]!, l), n: m.size };
+  if (m.size >= CERT_N) return { what: tx([`任意 ${m.size} 站`, `any ${m.size} stops`], l), n: m.size };
   return null;
 }
 /** the badge wall + certificate + stage-sort rows, drawn into the record page */
@@ -134,7 +136,7 @@ export function wall(slot: HTMLElement, A: PxApi) {
   slot.innerHTML = `<h3>${z(`成就徽章 · ${got}/${B.length}`, `Badges · ${got}/${B.length}`)}</h3><p class="px-f">${z('徽章只看掌握（做对、点亮），不看浏览。', 'Badges count mastery (answers right, goals lit), never page views.')}</p>
 <ul class="mm-bdg">${B.map((b) => `<li class="${b.on ? 'on' : ''}"><i aria-hidden="true">${b.on ? b.e : '○'}</i><b>${esc(b.t)}</b><span>${b.on ? z('已获得', 'Earned') : esc(b.how)}</span></li>`).join('')}</ul>
 <h3>${z('结业证书', 'Certificate')}</h3>
-<div class="mm-cert">${c ? `<p>${z(`已解锁：「${esc(c.what)}」。证书不写名字，只写你真实做到的事，并附一道挑战题和二维码。`, `Unlocked: “${esc(c.what)}”. No name on it: only what you really did, plus a challenge question and a QR code.`)}</p><button type="button" class="l4-b gold" data-mm="cert">${z('生成 9:16 证书', 'Make the 9:16 certificate')}</button>` : `<p>${z('掌握一整层或一整条路线的全部站后解锁。证书不写名字，只写你真实做到的事。', 'Unlocks once you master every stop of one layer or one route. No name on it: only what you really did.')}</p>`}</div>
+<div class="mm-cert">${c ? `<p>${z(`已解锁：「${esc(c.what)}」。证书不写名字，只写你真实做到的事，并附一道挑战题和二维码。`, `Unlocked: “${esc(c.what)}”. No name on it: only what you really did, plus a challenge question and a QR code.`)}</p><button type="button" class="l4-b gold" data-mm="cert">${z('生成 9:16 证书', 'Make the 9:16 certificate')}</button>` : `<p>${z(`做对任意 ${CERT_N} 站就解锁，一整层或一整条路线也可以。证书不写名字，只写你真实做到的事。`, `Unlocks at any ${CERT_N} stops, or a whole layer, or a whole route. No name on it: only what you really did.`)}</p>`}</div>
 <h3>${z('阶段排序', 'Put each layer in order')}</h3><div class="mm-sos">${rows}</div>`;
   slot.querySelector('[data-mm="cert"]')?.addEventListener('click', () => { void cert(A); });
 }

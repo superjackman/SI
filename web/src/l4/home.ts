@@ -14,6 +14,7 @@ import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
 import { fmt, softmax } from '../vf/calc';
 import { LBG, LCOL } from './progress';
 import { rvAll, rvNext, rvPick, wrongIds } from '../px/rv';
+import { bellAsk, bellBanner, bellPing } from '../px/remind';
 
 export interface HomeApi { l: L; root: HTMLElement; go: (h: string) => void; redraw: () => void }
 /** 看懂大模型 by default (it starts at 词向量) */
@@ -28,7 +29,7 @@ export const skyP = (T: number) => softmax(SKY, T);
 export const dayNo = (t = Date.now()) => { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
 export const pickDay = <T>(pool: readonly T[], t = Date.now()) => pool[dayNo(t) % pool.length]!;
 const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
-const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句话 + 一张图', 'Line + picture'], m: ['类比 + 图 + 1 题', 'Analogy + quiz'], d: ['公式 + 推导', 'Formulas'] };
+const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句一幅', 'Line + picture'], m: ['把数算清', 'The numbers'], d: ['连式子', 'Formulas'] };
 const CIRC = ['①', '②', '③', '④', '⑤'], LYN: readonly Tx[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
@@ -73,7 +74,7 @@ ${chooser}
 ${chooser}
 <div class="hm-sec"><b>${z('我的掌握', 'What I’ve mastered')}</b><a class="hm-lk" href="#R">${z('学习记录', 'Learning record')} ›</a></div>
 <section class="hm-card hm-mst"><div class="hm-rw">${ring}<p><b>${mm}</b><span>/ ${z(`${DV_N} 站`, `${DV_N} stops`)}</span></p></div><ul class="hm-lvb">${bars}</ul>
-<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握＝该站小测全对或小目标全点亮`, `${vd.size} right · ${seen.size} stops read · mastered = every quiz right or every small goal lit`)}</p></section>
+<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握＝这一站的题都做对了`, `${vd.size} right · ${seen.size} stops read · mastered = every question on that stop is right`)}</p></section>
 ${rvCard(l)}
 <div class="hm-chf" data-hm="chf" hidden></div>`;
   }
@@ -99,7 +100,8 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 <section class="hm-card hm-ch" data-hm="ch"><p class="hm-n">${z('题目加载中…', 'Loading the question…')}</p></section>
 <footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer>`;
 
-  host.innerHTML = `<div class="hm" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-st="${back ? 'back' : 'first'}">${top}${below}</div>`;
+  const tabs = `<div class="hm-hub" role="tablist" aria-label="${z('入口', 'Entries')}"><button type="button" role="tab" class="on" data-h="tab:learn" aria-selected="true">${z('学', 'Learn')}</button><button type="button" role="tab" data-h="tab:news" aria-selected="false">${z('查资讯', 'News')}</button><button type="button" role="tab" data-h="tab:tools" aria-selected="false">${z('找工具', 'Tools')}</button></div>`;
+  host.innerHTML = `<div class="hm" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-st="${back ? 'back' : 'first'}">${tabs}${bellBanner(l)}<div data-pane="learn">${top}${below}</div><div data-pane="news" hidden></div><div data-pane="tools" hidden></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => host.querySelector<E>(s);
 
   /* the temperature demo: plain arithmetic on input, nothing moves by itself */
@@ -111,10 +113,24 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
   host.querySelector('.hm')!.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-h]'); if (!b) return; const h = b.dataset.h!;
     if (h === 'sheet') sheet(A);
+    else if (h === 'bell') void bellAsk(l).then(() => { const b = host.querySelector<HTMLElement>('[data-bell]'); if (b) b.outerHTML = bellBanner(l); });
+    else if (h.startsWith('tab:')) void hubTab(host, A, h.slice(4) as 'learn' | 'news' | 'tools');
     else if (h.startsWith('goal:')) { goalSet(h.slice(5) as GoalId); A.redraw(); }
     else if (h === 'routes') $('[data-hm="routes"]')?.scrollIntoView({ block: 'start' });
   });
   void challenge(host, A, m);
+  bellPing(l);
+}
+
+async function hubTab(host: HTMLElement, A: HomeApi, which: 'learn' | 'news' | 'tools') {
+  host.querySelectorAll<HTMLElement>('[data-h^="tab:"]').forEach((b) => { const on = b.dataset.h === `tab:${which}`; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+  for (const name of ['learn', 'news', 'tools'] as const) { const el = host.querySelector<HTMLElement>(`[data-pane="${name}"]`); if (el) el.hidden = name !== which; }
+  if (which === 'learn') return;
+  const pane = host.querySelector<HTMLElement>(`[data-pane="${which}"]`); if (!pane || pane.dataset.ready === '1') return;
+  pane.innerHTML = `<p class="hm-n">${A.l === 'en' ? 'Loading…' : '加载中…'}</p>`;
+  const hub = await import('../hub/view'); if (!pane.isConnected) return;
+  pane.innerHTML = which === 'news' ? hub.newsHtml(A.l) : hub.toolsHtml(A.l);
+  pane.dataset.ready = '1';
 }
 
 /** R56 今日复习 on the returning home: 3 questions back on the 1 / 3 / 7-day rhythm, wrong ones first */

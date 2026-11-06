@@ -2,10 +2,15 @@
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
 .ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: #e6eeff; }
 /* R54 the depth switch and the five-layer bar stay pinned to the top of the scroll box while reading; headings land below it */
-.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 10px 0 8px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; }
-.l4 .ly .g-seg.ly-dep { grid-template-columns: 1fr 1fr 1fr; }
-.ly-pg { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
-.ly-pg button { width: 100%; min-height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px; border: 1px solid #2c4690; border-bottom-width: 4px; border-radius: 8px; background: #08112b; color: #9cb3e6; font-size: 12px; line-height: 1.25; }
+.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-flow: row wrap; align-items: center; gap: 4px; margin: 0; padding: 4px 0 6px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; }
+.l4 .ly .g-seg.ly-dep { width: auto; flex: 0 1 auto; grid-template-columns: repeat(3, auto); }
+.ly .g-seg.ly-dep button { padding: 0 8px; min-height: 36px; }
+.ly-pg { list-style: none; margin: 0; padding: 0; flex: 1 1 180px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.ly-pg button { width: 100%; min-height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 2px; border: 1px solid #2c4690; border-bottom-width: 3px; border-radius: 8px; background: #08112b; color: #9cb3e6; font-size: 12px; line-height: 1.15; }
+.ly-pg button span { display: none; }
+.ly-hero .ly-life, .ml-ill .ly-life { width: 100%; height: auto; display: block; border-radius: 10px; }
+.ly[data-depth="s"] .ly-l[data-ly="1"] > :not(.ly-hero) { display: none; }
+.ly:not([data-depth="s"]) .ly-hero { display: none; }
 .ly-pg button b { font-size: 14px; }
 .ly-pg button span { white-space: nowrap; }
 .ly-pg button.done { border-bottom-color: #34d399; color: #cfe0ff; }

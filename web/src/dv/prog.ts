@@ -29,7 +29,7 @@ export const ML_KEY = 'si.ml';
 /** stations with the micro-loop and how many small goals each has. Every station on the 23-stop route. */
 export const ML_G: Readonly<Record<string, number>> = {
   '0': 3, P: 3, '1': 3, '2': 3, '3': 3, '4': 3, '5': 3, '6': 3, '7': 3, '8a': 3, '8b': 3,
-  '9': 3, E: 3, '10': 3, '11': 3, '12': 3, '13': 3, '14': 3, S: 3, '15a': 3, '15b': 3, A: 3, '16': 3,
+  '9': 3, E: 3, '10': 3, '11': 3, '12': 4, '13': 3, '14': 3, S: 3, '15a': 3, '15b': 3, A: 5, '16': 3,
 };
 export interface MlS { m: number[]; k: number[]; v: number[]; g: number; s: 'i' | 'r' | 'v'; p: number[]; f?: number[] }
 export const mlAll = (): Record<string, MlS> => { try { const v = JSON.parse(localStorage.getItem(ML_KEY) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, MlS>) : {}; } catch { return {}; } };

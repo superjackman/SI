@@ -37,6 +37,19 @@ git add -A && git commit -m "site: …" && git push
 - **规则**：只做手机版布局；按钮用图标；多处复用的文案写成 code 放在 `web/src/i18n/codes.ts`（中英对照），只用一次的文案就地写中英两份；不引用任何外部 CDN 或字体（照顾国内访问速度）。
   Rules: phone-only layout; icon buttons; shared text as codes in `web/src/i18n/codes.ts` (zh/en), one-off text inline in both languages; no external CDNs or fonts.
 
+## 每周更新资讯和工具 · Weekly news and tools
+
+门户上的「查资讯」「找工具」是两份静态 JSON，没有服务器。过期的资讯会伤信誉，所以按周改文件再发布。
+
+The News and Tools panes are two static JSON files. There is no server. Stale news hurts trust, so edit the files on a weekly cadence and deploy.
+
+1. 资讯：编辑 `web/src/hub/news.json`。每条必须有真实来源 URL、发布日期 `date`（YYYY-MM-DD）和核对日 `checked`。只写你打开来源页核对过的事实。写不出处、写排行、或编造人数，都不要加。对不上本站任何一站的条目也不要加。`st` 里的站键必须是 23 站之一。
+   News: edit `web/src/hub/news.json`. Every item needs a real source URL, a publication `date` (`YYYY-MM-DD`) and the file’s `checked` date. Write only facts you confirmed by opening the source. Do not add an item without a source, a ranking, or an invented user count. Skip items that do not map back to a station. Every key in `st` must be one of the 23 stops.
+2. 工具：编辑 `web/src/hub/tools.json`。只放真实产品。免费额度和「中国大陆能不能打开官网」按核对日填写，拿不准就写成「以官网当天为准」，不要猜。`st` 链回原理所在的站，`safe` 固定为 `S`。
+   Tools: edit `web/src/hub/tools.json`. Real products only. Free-tier notes and whether the official site opens in mainland China are as of `checked`. If you are not sure, say the site’s own page is the authority. Do not guess. `st` links the principle back to stops. `safe` stays `S`.
+3. 发布：在 `web/` 里跑 `npm test`，通过后 `npm run deploy`，再提交并推到 `main`。GitHub Pages 从仓库根目录提供 `/SI/`。
+   Ship: from `web/`, run `npm test`, then `npm run deploy`, then commit and push to `main`. GitHub Pages serves `/SI/` from the repo root.
+
 ## 搜索引擎 · Search engines (R25)
 
 每次构建都会自动生成：推导之路每站一张静态页（`s/<站键>/`、`en/s/<站键>/`，共 23 站）、两张目录页（`s/`、`en/s/`）、`sitemap.xml`（含知识卡 `c/<id>.html`）、`robots.txt`、`404.html`（生成器：`web/scripts/seo.mjs`，R52 恢复）。

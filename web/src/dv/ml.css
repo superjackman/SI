@@ -6,13 +6,15 @@
 .ml-gl { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 13.5px; color: #cfe0ff; }
 .ml-gl li { display: flex; align-items: center; gap: 4px; } .ml-gl li span { color: #9cc8ff; font-weight: 800; }
 .ml-gl li.m { color: #ffe08a; } .ml-gl li.m span { color: #ffe08a; }
-.ml-pic { display: flex; gap: 10px; align-items: flex-start; padding: 10px; border-radius: 12px; background: #0a1532; border: 1px solid #2c4690; }
+.ml-pic { display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 12px; background: #0a1532; border: 1px solid #2c4690; }
+.ml-ill { width: 100%; }
 .ml-e { flex: none; font-size: 34px; line-height: 1; }
 .ml-pic p { margin: 0; display: flex; flex-direction: column; gap: 4px; font-size: 14.5px; line-height: 1.55; }
 .ml-pic b { color: #fff; font-size: 15px; } .ml-pic span { color: #cfe0ff; }
-.ml-how { margin: 0; font-size: 13px; color: #b7c6ea; }
+.ml-how, .ml-dy { margin: 0; font-size: 13.5px; color: #d5e2ff; line-height: 1.45; }
+.ml-dy b { color: #ffe08a; } .ml-dy a { color: #9cc8ff; }
 /* the extra row in the pinned bar */
-.ml-bar { display: grid; grid-template-columns: auto 1fr; gap: 6px; align-items: stretch; }
+.ml-bar { flex: 1 1 100%; display: grid; grid-template-columns: auto 1fr; gap: 6px; align-items: stretch; }
 .ml-gs { display: flex; gap: 4px; align-items: center; }
 .ml-gs button { width: 34px; height: 44px; border-radius: 10px; border: 1px solid #2c4690; background: #08112b; color: #cfe0ff; font-size: 15px; font-weight: 800; }
 .ml-gs button.on { border-color: #ffd166; background: #1d3270; color: #fff; }
