@@ -6,14 +6,15 @@ export const VF_KEY = 'si.vf';
 const S = (n: number, k: string) => k.split('').map((c) => `s${n}${c}`);
 /** page → question ids (shared ids: a question solved on the card is solved on the stage too) */
 export const VF_Q: Record<string, string[]> = {
-  'D/0': S(0, 'ab'), 'D/1': S(1, 'abcd'), 'D/2': S(2, 'abcd'), 'D/3': S(3, 'abc'), 'D/4': S(4, 'abc'), 'D/5': S(5, 'abc'),
-  'D/6': S(6, 'ab'), 'D/7': S(7, 'ab'), 'D/8a': S(8, 'ac'), 'D/8b': S(8, 'bd'), 'D/9': S(9, 'abc'), 'D/10': S(10, 'abc'), 'D/11': S(11, 'abc'),
-  'D/12': S(12, 'abc'), 'D/13': S(13, 'ab'), 'D/14': S(14, 'ab'), 'D/15': S(15, 'abc'), 'D/16': S(16, 'ab'),
+  'D/0': S(0, 'ab'), 'D/P': ['sp1', 'sp2'], 'D/1': S(1, 'abcd'), 'D/2': S(2, 'abcd'), 'D/3': S(3, 'abc'), 'D/4': S(4, 'abc'), 'D/5': S(5, 'abc'),
+  'D/6': S(6, 'ab'), 'D/7': S(7, 'ab'), 'D/8a': S(8, 'ac'), 'D/8b': S(8, 'bd'), 'D/9': [...S(9, 'abc'), 's12c'], 'D/E': ['se1', 'se2'], 'D/10': S(10, 'abc'), 'D/11': S(11, 'abc'),
+  'D/12': S(12, 'ab'), 'D/13': S(13, 'ab'), 'D/14': S(14, 'ab'), 'D/S': ['ss1', 'ss2'], 'D/15a': S(15, 'ab'), 'D/15b': ['s15c', 'sb1'], 'D/A': ['sa1', 'sa2'], 'D/16': S(16, 'ab'),
   KM01: ['m1a', 'm1b'], KM02: ['s6a', 'm2b', 'm2c'], KM03: ['m3a', 'm3b'], KM04: ['s1d', 's7b', 'm4b'], KM05: ['m5a', 'm5b'], KM06: ['m6a', 'm6b'],
   KM07: ['m7a', 'm7b', 'm7c'], KM08: ['m8a', 'm8b', 's2d'], KM09: ['s4a', 'm9b'], KM10: ['s2a', 'm10a', 's2c', 'm10b'], KM11: ['m11a', 'm11b'],
-  KM12: ['s8a', 's7a', 'm12c'], KM13: ['s5b', 'm13b', 'm13c'],
+  KM12: ['s8a', 's7a', 'm12c'], KM13: ['s5b', 'm13b', 'm13c'], KM14: ['sp1', 'sp2'],
   K07: ['s8a', 's8c'], K11: ['k11a'], K12: ['s12c'], K13: ['s1b', 's16b'], K14: ['k14a', 's4a'], K15: ['s12c'],
-  KA07: ['s15a'], KC04: ['s9c'], KC07: ['s10a', 's10b', 's10c'], KC11: ['s12c'], KC13: ['s11a', 's11b', 's11c'], KC14: ['s12a', 's12b'],
+  KA07: ['s15a'], KA08: ['sa1'], KA09: ['s15c'], KC04: ['s9c'], KC07: ['s10a', 's10b', 's10c'], KC11: ['s12c'], KC13: ['s11a', 's11b', 's11c'], KC14: ['s12a', 's12b'], KC15: ['se1', 'se2'],
+  KB09: ['ss1', 'ss2'],
 };
 export const vfDone = (): Set<string> => { try { const v = JSON.parse(localStorage.getItem(VF_KEY) || '[]') as unknown; return new Set(Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []); } catch { return new Set(); } };
 export const vfAdd = (id: string) => { const s = vfDone(); if (s.has(id)) return; s.add(id); try { localStorage.setItem(VF_KEY, JSON.stringify([...s].sort())); } catch { /* private mode */ } };

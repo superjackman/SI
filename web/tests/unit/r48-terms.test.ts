@@ -62,7 +62,7 @@ describe('R8 shared sentences, verbatim on both views', () => {
     expect(stage(zh, 10)).toMatch(/DPO/); expect(stage(zh, 10)).toMatch(/推理/);
   });
   it('C7: stage 12 explains sampling and temperature, as a plain fact (no {~} mark)', () => {
-    const s12 = dvI(12), i = zh.st[s12]!.i.find((s) => s.startsWith('**采样与温度**'))!, j = en.st[s12]!.i.find((s) => s.startsWith('**Sampling and temperature**'))!;
+    const s12 = dvI(9), i = zh.st[s12]!.i.find((s) => s.startsWith('**采样与温度**'))!, j = en.st[s12]!.i.find((s) => s.startsWith('**Sampling and temperature**'))!;
     expect(i).toBeTruthy(); expect(j).toBeTruthy(); expect(i).not.toContain('{~'); expect(j).not.toContain('{~'); expect(zh.st[s12]!.i.length).toBe(en.st[s12]!.i.length);
   });
   it('en has no CJK outside quoted demo words', () => {

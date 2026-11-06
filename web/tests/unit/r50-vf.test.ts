@@ -30,6 +30,7 @@ const EXPECT: Record<string, number> = {
   m6a: 0.3472, m6b: -(ln(0.62) + ln(0.7) + ln(0.8)), m7a: -ln(0.62), m7b: -0.38, m7c: 0, m8a: -4, m8b: -3.999,
   m9b: 3.3, m10a: 0.2, m10b: (2 - 2 * 0.4 ** 4 - 2) ** 2 + 0.5, m11a: 8.5 / 3, m11b: (1.5 - 8.5 / 3) / Math.sqrt(((1.5 - 8.5 / 3) ** 2 + (1 - 8.5 / 3) ** 2 + (6 - 8.5 / 3) ** 2) / 3),
   m12c: 16, m13b: -0.1, m13c: 1.998, k11a: 0, k14a: 0.48,
+  sp1: 1, sp2: 0, se1: 4, se2: 0, ss1: 0, ss2: 0, sa1: 0, sa2: 0, sb1: 0,
 };
 
 describe('R50 self-check questions', () => {
@@ -40,8 +41,8 @@ describe('R50 self-check questions', () => {
     for (let i = 0; i < DV_N; i++) expect(VF_Q['D/' + dvK(i)]!.length, 'D/' + dvK(i)).toBeLessThanOrEqual(4);
     expect(Object.keys(VF_Q).filter((p) => p.startsWith('D/')).length, 'only real stations').toBe(DV_N);
     for (const p of Object.keys(VF_Q)) if (!p.startsWith('D/')) expect(CARDS.has(p), p).toBe(true);
-    // all 13 maths cards KM01–KM13 have questions
-    for (let i = 1; i <= 13; i++) expect(VF_Q['KM' + String(i).padStart(2, '0')]?.length, 'KM' + i).toBeGreaterThan(0);
+    // all 14 maths cards KM01–KM14 have questions
+    for (let i = 1; i <= 14; i++) expect(VF_Q['KM' + String(i).padStart(2, '0')]?.length, 'KM' + i).toBeGreaterThan(0);
   });
   it('every answer matches the hand computation', () => {
     expect(Object.keys(EXPECT).sort()).toEqual(Object.keys(QQ).sort());

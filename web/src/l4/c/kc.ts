@@ -1,5 +1,5 @@
 /* R39: the five-part knowledge cards, one JSON per language and per group, loaded only when a card is opened:
-   k = K01–K15 (layer 4) + KM01–KM12 (layer 5); k1 = KA01–KA06 (layer 1) + KB01–KB08 (layer 2); k3 = KC01–KC12 (layer 3).
+   k = K01–K15 (layer 4) + KM01–KM14 (layer 5); k1 = KA01–KA09 (layer 1) + KB01–KB09 (layer 2); k3 = KC01–KC15 (layer 3).
    s = [① name, ② what for, ③ made of, ④ how it works, ⑤ why so] as HTML; mk/ar = which small diagram and lit arrows. */
 import type { L } from '../txt';
 export interface Card { n: string; hl: string[]; fr: boolean | string[]; bk: boolean; no: string; mk?: 'l1' | 'l2' | 'l3'; ar?: string[]; s: [string, string, string, string, string] }
@@ -17,4 +17,4 @@ export function cards(l: L, id = 'K01'): Promise<Record<string, Card>> {
   return (cache[g + l] ??= Promise.all([LOAD[g][l](), import('../../dv/nums')]).then(([m, N]) =>
     N.deepFill((m as { default: Record<string, Card> }).default, (s) => N.fillCardText(s, l))));
 }
-export const isCard = (id: string) => /^K(0[1-9]|1[0-6])$|^KM(0[1-9]|1[0-3])$|^KA0[1-7]$|^KB0[1-8]$|^KC(0[1-9]|1[0-4])$/.test(id);
+export const isCard = (id: string) => /^K(0[1-9]|1[0-6])$|^KM(0[1-9]|1[0-4])$|^KA0[1-9]$|^KB0[1-9]$|^KC(0[1-9]|1[0-5])$/.test(id);

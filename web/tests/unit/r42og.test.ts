@@ -14,7 +14,7 @@ const HOME = ['#L4', '#L1', '#L2', '#L3', '#L4', '#L5'];
 describe('R42 card landing pages + OG pictures', () => {
   it('one page and one picture per card, nothing extra', () => {
     const ids = Object.keys(zh).sort();
-    expect(ids.length).toBe(58);
+    expect(ids.length).toBe(63);
     expect(readdirSync(join(pub, 'c')).sort()).toEqual(ids.map((i) => `${i}.html`));
     expect(readdirSync(join(pub, 'og')).sort()).toEqual(ids.map((i) => `${i}.jpg`));
   });

@@ -1,8 +1,8 @@
-/* R51 逐层展开 (layered teaching), the pilot on steps 1, 2, 8a and 8b: one concept per screen, five layers
+/* R52 逐层展开 (layered teaching) on every derivation station: one concept per screen, five layers
    ① 为什么要关心 + 类比 → ② 图 / 动画 → ③ 数字 (+ the slider demo) → ④ 公式 (each part colour-mapped to the analogy) → ⑤ 小测 + 常见误解.
    A 5-part progress bar on top; 「懂了，下一层」 reveals the next layer; the depth switch 30 秒 / 5 分钟 / 深入 caps what can be shown
    (1 / 3 / 5 layers) and is remembered in localStorage, as is how far each page has been opened. Nothing here navigates,
-   so it never adds a history entry. A lazy chunk: only the pilot pages load it. */
+   so it never adds a history entry. A lazy chunk: loaded only when a station with `ly` is opened. */
 import './ly.css';
 import { tx, type L } from '../l4/txt';
 import type { Ly, Stage } from './types';
@@ -66,6 +66,29 @@ function picBowl(l: L) {
 <circle cx="${x0}" cy="${y0}" r="4.5" fill="#ff8a80"/><path d="M${X(2)} ${Y(1) - 7}l2 5h5l-4 3 2 5-5-3-5 3 2-5-4-3h5z" fill="#ffd166"/></svg>
 <ul class="ly-leg"><li><span class="ly-dot ly-r" aria-hidden="true"></span>${z('起点 (0, 0)，横轴 w1，纵轴 w2', 'Start (0, 0); across w1, up w2')}</li><li><span class="ly-dot ly-q" aria-hidden="true"></span>${z('只动 w1：−∂L/∂w1 = 4', 'Only w1: −∂L/∂w1 = 4')}</li><li><span class="ly-dot ly-k" aria-hidden="true"></span>${z('只动 w2：−∂L/∂w2 = 4', 'Only w2: −∂L/∂w2 = 4')}</li><li><span class="ly-dot ly-v" aria-hidden="true"></span>${z('合起来：负梯度 (4, 4)，一步同时改两个', 'Together: the negative gradient (4, 4), one step changes both')}</li><li><span class="ly-c ly-q" aria-hidden="true">★ </span>${z('碗底 (2, 1)', 'the bottom (2, 1)')}</li></ul>`;
 }
+
+function picFlow(l: L, mk: Mk, pc: string[]) {
+  const z = (a: string, b: string) => tx([a, b], l);
+  const steps = pc.length ? pc : [z('一步 → 下一步', 'one step → the next')];
+  const boxes = steps.map((s, i) => `<div class="ly-fls"><span class="ly-fln">${i + 1}</span><p>${mk(s)}</p></div>${i < steps.length - 1 ? '<div class="ly-fla" aria-hidden="true">↓</div>' : ''}`).join('');
+  return `<div class="ly-flow" role="group" aria-label="${z('流程', 'Flow')}">${boxes}</div>`;
+}
+function picXor(l: L) {
+  const z = (a: string, b: string) => tx([a, b], l);
+  const pts = [[40, 40, '0,0→0'], [40, 140, '0,1→1'], [200, 40, '1,0→1'], [200, 140, '1,1→0']];
+  const dots = pts.map(([x, y, lab]) => `<circle cx="${x}" cy="${y}" r="10" fill="${lab.endsWith('0') ? '#ff8a80' : '#34d399'}"/><text x="${x}" y="${y + 28}" text-anchor="middle" fill="#9db0d8" font-size="11">${lab}</text>`).join('');
+  return `<svg class="ly-xor" viewBox="0 0 280 190" role="img" aria-label="${z('XOR：一条直线分不开', 'XOR: one line cannot separate')}"><rect x="8" y="8" width="264" height="174" rx="8" fill="#0a1736" stroke="#33508f"/>${dots}<line x1="20" y1="160" x2="220" y2="30" stroke="#ffd166" stroke-width="2" stroke-dasharray="4 3"/><text x="140" y="100" text-anchor="middle" fill="#ffd166" font-size="12">${z('直线切不开', 'a line fails')}</text></svg>
+<ul class="ly-leg"><li><span class="ly-dot ly-k" aria-hidden="true"></span>${z('输出 1', 'output 1')}</li><li><span class="ly-dot ly-r" aria-hidden="true"></span>${z('输出 0', 'output 0')}</li><li><span class="ly-c ly-q" aria-hidden="true">— </span>${z('任意直线都会把某一类切错', 'any straight cut misclassifies one class')}</li></ul>`;
+}
+function picDot(l: L) {
+  const z = (a: string, b: string) => tx([a, b], l);
+  return `<svg class="ly-dotp" viewBox="0 0 300 160" role="img" aria-label="${z('两个向量的点积', 'Dot product of two vectors')}"><line x1="40" y1="120" x2="260" y2="120" stroke="#33508f"/><line x1="40" y1="120" x2="40" y2="20" stroke="#33508f"/>
+<line x1="40" y1="120" x2="160" y2="50" stroke="#ffd166" stroke-width="3" marker-end="url(#ly-aq)"/><line x1="40" y1="120" x2="200" y2="90" stroke="#34d399" stroke-width="3"/>
+<text x="170" y="45" fill="#ffd166" font-size="12">q</text><text x="210" y="95" fill="#34d399" font-size="12">k</text>
+<text x="150" y="145" text-anchor="middle" fill="#9db0d8" font-size="12">${z('方向越近，点积越大', 'closer directions → larger dot product')}</text>
+<defs><marker id="ly-aq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ffd166"/></marker></defs></svg>`;
+}
+
 function picBlk(l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   return `<div class="ly-blk" role="group" aria-label="${z('一个解码块', 'One decoder block')}"><div class="ly-bx">${z('输入：每个词一串数（词向量）', 'In: one list of numbers per word (word vectors)')}</div>
@@ -78,11 +101,11 @@ function picBlk(l: L) {
 /** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
   const z = (a: string, b: string) => tx([a, b], l), Y = S.ly, d = depthGet(), v = shown(openGet(page), d);
-  const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : `<div class="ly-att" data-att="1"></div>`;
+  const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'flow' ? picFlow(l, mk, Y.pc) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : `<div class="ly-att" data-att="1"></div>`;
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
     `<p class="ly-hook"><b>${z('为什么要关心', 'Why care')}</b>${mk(Y.hook)}</p>${P(Y.an, mk)}<details class="ly-jv"><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
-    `${pic}${P(Y.pc, mk, 'ly-cap')}`,
+    `${pic}${Y.pic === 'flow' ? '' : P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" data-vf-part="demo"></div>`,
     `<div class="ly-fx">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p></details>`,
     `<div class="vf-slot" data-vf-part="check"></div>`,

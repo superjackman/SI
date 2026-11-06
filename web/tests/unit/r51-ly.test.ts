@@ -9,16 +9,17 @@ import { DEPTH_MAX, depthFor, depthGet, html, openGet, shown, LY_DEPTH } from '.
 import type { Ly, Stage } from '../../src/dv/types';
 
 const zh = deepFill(zh0, (s) => fillDvText(s, 'zh')), en = deepFill(en0, (s) => fillDvText(s, 'en'));
-const PILOT = ['1', '2', '8a', '8b'];
+import { DV_KEY } from '../../src/dv/links';
+const PILOT = [...DV_KEY]; // R52: every station is layered
 const CJK = /[\u3000-\u303f\u3400-\u9fff\uff00-\uffef]/;
 const all = (y: Ly) => [y.hook, ...y.an, y.jv, ...y.pc, ...y.num, ...y.fx, ...y.fe];
 const marks = (s: string) => [...s.matchAll(/⟦([a-z]):/g)].map((m) => m[1]);
 
-describe('R51 layered pilot', () => {
-  it('exactly steps 1, 2, 8a and 8b are layered, in both languages, every part filled', () => {
+describe('R52 layered teaching', () => {
+  it('every station is layered, in both languages, every part filled', () => {
     for (const D of [zh, en]) {
-      expect(D.st.map((s, i) => (s.ly ? i : -1)).filter((i) => i >= 0)).toEqual(PILOT.map(dvI));
-      for (const k of PILOT) { const y = D.st[dvI(k)]!.ly!; expect(y.hook && y.jv && y.an.length && y.pc.length && y.num.length && y.fx.length && y.fe.length).toBeTruthy(); }
+      expect(D.st.every((s) => !!s.ly)).toBe(true);
+      for (const k of PILOT) { const y = D.st[dvI(k)]!.ly!; expect(y.hook && y.jv && y.an.length && y.pc.length && y.num.length && y.fx.length && y.fe.length, k).toBeTruthy(); expect(['sm','bowl','att','blk','flow','xor','dot']).toContain(y.pic); }
     }
   });
   it('zh and en match: same picture, same number of lines, the same colour marks in the same order; no {#…} left', () => {

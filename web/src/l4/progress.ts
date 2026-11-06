@@ -13,7 +13,7 @@ export function layerPages(n: number): string[] {
 }
 export const pageLayer = (id: string): number => (isLx(id) ? layerOf(id) : id === 'L4' || /^(TR|US|MY)\d$/.test(id) || id.startsWith('X:') ? 4 : 0);
 /** cards per layer (checked against the card files by a unit test) */
-export const CARD_N = [7, 8, 14, 16, 13] as const;
+export const CARD_N = [9, 9, 15, 16, 14] as const;
 export const cardLayer = (k: string) => (k.startsWith('KA') ? 1 : k.startsWith('KB') ? 2 : k.startsWith('KC') ? 3 : k.startsWith('KM') ? 5 : 4);
 export function layerStats(seen: Iterable<string>, cards: Iterable<string> = []) {
   const s = new Set(seen), c = new Set(cards);

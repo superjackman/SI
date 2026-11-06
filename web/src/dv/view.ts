@@ -1,4 +1,4 @@
-/* R47 自底向上 · 推导之路 (#D, #D/0–16): the bottom-up chain that complements the top-down pyramid.
+/* R47 自底向上 · 推导之路 (#D, #D/<station>): the bottom-up chain that complements the top-down pyramid.
    A lazy chunk drawn into the explorer's home area with the same api as 练/记/享 (px/view), the same dark tokens,
    the cards' ①–⑤ section chips, and the one step bar. Content: ./zh.ts, ./en.ts (each its own lazy chunk). */
 import '../px/px.css';
@@ -24,8 +24,8 @@ export const content = async (l: L) => {
   const [m, N] = await Promise.all([LOAD[l](), import('./nums')]);
   return N.deepFill(m.default, (s) => N.fillDvText(s, l));
 };
-/* 读过: kept as station keys ('8a'); an older list of plain step numbers (before 8 was split) is read as the same steps, 8 = both halves */
-export const seenKeys = (v: unknown): string[] => !Array.isArray(v) ? [] : [...new Set(v.flatMap((x): string[] => typeof x === 'number' ? (x === 8 ? ['8a', '8b'] : [String(x)]) : typeof x === 'string' ? [x] : []))].filter((k) => dvI(k) >= 0);
+/* 读过: kept as station keys ('8a'); older plain step numbers: 8→both halves, 15→15a+15b */
+export const seenKeys = (v: unknown): string[] => !Array.isArray(v) ? [] : [...new Set(v.flatMap((x): string[] => typeof x === 'number' ? (x === 8 ? ['8a', '8b'] : x === 15 ? ['15a', '15b'] : [String(x)]) : typeof x === 'string' ? [x] : []))].filter((k) => dvI(k) >= 0);
 /** the stations read, as indices */
 const seenGet = (): number[] => { try { return seenKeys(JSON.parse(localStorage.getItem(DV_SEEN) || '[]')).map(dvI); } catch { return []; } };
 const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b).map(dvK))); } catch { /* private mode */ } };

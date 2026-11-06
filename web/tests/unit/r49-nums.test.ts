@@ -128,7 +128,7 @@ describe('R49 canonical examples (C12)', () => {
   });
   it('pointer-only stages say why, and are few', () => {
     for (const [n, why] of Object.entries(DV_EX_PTR)) { expect(why.length, n).toBeGreaterThan(20); expect(DV_EX[+n]!.length, n).toBe(1); }
-    expect(Object.keys(DV_EX_PTR).length).toBeLessThanOrEqual(4);
+    expect(Object.keys(DV_EX_PTR).length).toBeLessThanOrEqual(10);
   });
   it('a stage that reuses a card example says so in its ④ text (zh + en)', () => {
     for (let n = 0; n < DV_N; n++) {

@@ -13,7 +13,7 @@ export type Num = {
   /** cards that must use it */
   cards: string[];
   /** stage pages (D/n) that must use it, as step keys (8a / 8b for the two halves of step 8) */
-  st: (number | '8a' | '8b')[];
+  st: (number | 'P' | 'E' | 'S' | 'A' | '8a' | '8b' | '15a' | '15b')[];
   /** hard-coded spellings that must not appear outside this table */
   ban: RegExp[];
 };
@@ -104,22 +104,22 @@ export const NUM = {
   // ── step 12 · K15 / K12 temperature, KC14 KV cache ──
   tS: {
     zh: '4.1 / 1.3 / 1.0', en: '4.1 / 1.3 / 1.0',
-    cards: ['K15', 'K12'], st: [12],
+    cards: ['K15', 'K12'], st: [9],
     ban: [/4\.1\s*\/\s*1\.3/],
   },
   t1: {
     zh: '90% / 5.5% / 4.1%', en: '90% / 5.5% / 4.1%',
-    cards: ['K15', 'K12'], st: [12],
+    cards: ['K15', 'K12'], st: [9],
     ban: [/5\.5\s*%/],
   },
   t05: {
     zh: '99.4% / 0.4% / 0.2%', en: '99.4% / 0.4% / 0.2%',
-    cards: ['K15'], st: [12],
+    cards: ['K15'], st: [9],
     ban: [/99\.4\s*%/],
   },
   t2: {
     zh: '69% / 17% / 15%', en: '69% / 17% / 15%',
-    cards: ['K15'], st: [12],
+    cards: ['K15'], st: [9],
     ban: [/\b69\s*%/],
   },
   kvS: {
@@ -141,7 +141,7 @@ export const NUM = {
   // ── step 15 · KA07 image patches ──
   vit: {
     zh: '`(224 / 16) × (224 / 16) = 14 × 14 = 196`', en: '`(224 / 16) × (224 / 16) = 14 × 14 = 196`',
-    cards: ['KA07'], st: [15],
+    cards: ['KA07'], st: ['15a'],
     ban: [/14\s*×\s*14\s*=\s*196/],
   },
   // ── C12 · canonical examples: the card holds it, the stage page reuses it ──
@@ -153,7 +153,7 @@ export const NUM = {
   },
   p1: {
     zh: '99.8%', en: '99.8%',
-    cards: ['K13', 'KC04', 'KC11', 'K12', 'KC01'], st: [1, 9, 12],
+    cards: ['K13', 'KC04', 'KC11', 'K12', 'KC01'], st: [1, 9],
     ban: [/99\.8\s*%/],
   },
   ce0: {
@@ -231,19 +231,19 @@ export const NUM = {
   },
   smS: {
     zh: '2.0 / 1.0 / 0.1 / −0.5', en: '2.0 / 1.0 / 0.1 / −0.5',
-    cards: ['KM04'], st: [1, 7],
+    cards: ['KM04', 'KM14'], st: ['P', 1, 7],
     ban: [/2\.0[、,]\s*(绿\s*)?1\.0[、,]\s*(红\s*)?0\.1/, /2\.0 \/ 1\.0 \/ 0\.1/],
   },
   smP: {
     zh: '62.5% / 23.0% / 9.4% / 5.1%', en: '62.5% / 23.0% / 9.4% / 5.1%',
-    cards: ['KM04'], st: [1, 7],
+    cards: ['KM04', 'KM14'], st: ['P', 1, 7],
     ban: [/62\.5\s*%|23\.0\s*%|9\.3\s*%/],
   },
   // step 9 · K02 BPE merges
   bpe: {
     zh: '语料有 low、lower、lowest：“l o”最常见，合并成“lo”；再合并“lo w”成“low”；lowest 最后切成 low + est',
     en: 'the corpus has low, lower, lowest: “l o” is most common, merge to “lo”; then “lo w” to “low”; lowest ends up as low + est',
-    cards: ['K02'], st: [9],
+    cards: ['K02'], st: [6],
     ban: [/“lo w”/],
   },
   // step 10 · KC07 reward model
