@@ -22,7 +22,7 @@ export default defineConfig({
   // SI_E2E_WORKERS=<n> lowers parallel browsers on a busy machine (same tests, nothing skipped); default = Playwright's own
   ...(process.env.SI_E2E_WORKERS ? { workers: Number(process.env.SI_E2E_WORKERS) } : {}),
   reporter: [['list']],
-  retries: 1,
+  retries: 0,
   // specs start from a saved storage state (tests/e2e/onb-done.json)
   use: { baseURL: `http://localhost:${port}${base}`, locale: 'zh-CN', trace: 'off', storageState: 'tests/e2e/onb-done.json' },
   projects: [phone('m360', 360, 740), phone('m390', 390, 844), phone('m430', 430, 932)],
@@ -30,9 +30,10 @@ export default defineConfig({
     // serves the *built* dist under the real base, like GitHub Pages does; SI_E2E_SERVE=repo serves the committed
     // repo files instead (root build, next/ redirect) with a Pages-like static server (R5 cutover checks);
     // SI_E2E_ROOT=<dir> serves another directory with the same layout (a staged copy, before deploying)
-    command: process.env.SI_E2E_SERVE === 'repo' ? `node scripts/pages-serve.mjs --port ${port} --prefix ${base}${process.env.SI_E2E_ROOT ? ` --root ${process.env.SI_E2E_ROOT}` : ''}` : `npx vite preview --port ${port} --strictPort`,
+    command: process.env.SI_E2E_SERVE === 'vite' ? `npx vite preview --port ${port} --strictPort` : `node scripts/pages-serve.mjs --port ${port} --prefix ${base} --root ${process.env.SI_E2E_ROOT || 'dist'}`,
+    // default: pages-serve of dist (stable on the shared box); SI_E2E_SERVE=vite keeps the old vite preview
     url: `http://localhost:${port}${base}`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 60_000,
   },
 });
