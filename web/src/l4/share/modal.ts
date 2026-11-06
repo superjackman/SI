@@ -4,6 +4,7 @@
 import { tx, type L } from '../txt';
 import type { Card } from '../c/kc';
 import { cardData } from './card';
+import type { Data, Fmt } from './draw';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 export interface DlgO { l: L; k: string; title: string; top?: string; fmt: 'story' | 'post'; meta: string; off?: boolean; empty?: string; extra?: string }
@@ -13,7 +14,7 @@ export function dlgHtml(o: DlgO) {
 <div class="g-pv px-prev">${o.empty ? `<div class="g-em">${o.empty}</div>` : ''}</div>
 <div class="g-seg" role="radiogroup">${(['story', 'post'] as const).map((f) => `<button type="button" role="radio" aria-checked="${o.fmt === f}" class="${o.fmt === f ? 'on' : ''}" ${a('fmt:' + f)}>${esc(f === 'story' ? z('竖版 9:16', 'Story 9:16') : z('方版 4:5', 'Post 4:5'))}</button>`).join('')}</div>
 <p class="g-meta">${esc(o.meta)}</p>${o.extra ?? ''}
-<div class="g-row"><button type="button" class="l4-b g-act" ${a('save')}${d}>⬇ ${esc(z('保存图片', 'Save image'))}</button><button type="button" class="l4-b g-act" ${a('share')}${d}>⤴ ${esc(z('分享', 'Share'))}</button></div>
+<div class="g-row"><button type="button" class="l4-b g-act" ${a('save')}${d}>⬇ ${esc(z('保存图片', 'Save image'))}</button><button type="button" class="l4-b g-act" ${a('share')}${d}>⤴ ${esc(z('分享…', 'Share…'))}</button></div>
 <button type="button" class="l4-b g-act2" ${a('copy')}${d}>🔗 ${esc(z('复制链接', 'Copy link'))}</button><p class="g-st px-cp" aria-live="polite"></p></div>`;
 }
 type Nav = Navigator & { canShare?: (d: object) => boolean; share?: (d: object) => Promise<void> };
@@ -57,6 +58,39 @@ export async function cardShare(host: HTMLElement, l: L, id: string, c: Card) {
     else if (v === 'save' && blob) download(blob, src, name());
     else if (v === 'share' && blob) void shareOut(blob, name(), url, `${d.name}: ${d.idea}`, st, l);
     else if (v === 'copy') void copyLink(url, st, l);
+  });
+  addEventListener('keydown', key); await draw();
+}
+
+/** the same dialog for a station, a badge and the certificate: preview, 保存图片, 分享…, 复制链接 */
+export async function mountShare(host: HTMLElement, o: { l: L; title: string; file: string; data: Data; kind: string; lock?: boolean }) {
+  host.querySelector('.g-modal')?.remove();
+  const D = await import('./draw');
+  const m = document.createElement('div'); m.className = 'g-modal l4-shm ml-share'; host.appendChild(m);
+  let fmt: Fmt = 'story', blob: Blob | null = null, src = '', tok = 0;
+  const close = () => { m.remove(); removeEventListener('keydown', key); if (src) URL.revokeObjectURL(src); };
+  const key = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+  const draw = async () => {
+    const t = ++tok, [w, h] = fmt === 'story' ? [1080, 1920] : [1080, 1350];
+    m.innerHTML = dlgHtml({ l: o.l, k: 'm', title: o.title, fmt, meta: tx([`导出 ${w}×${h} 图片 · 扫码打开这道题`, `Exports a ${w}×${h} image · the QR opens the question`], o.l) });
+    if (o.lock) { const seg = m.querySelector<HTMLElement>('.g-seg'); if (seg) seg.hidden = true; }
+    m.querySelector<HTMLElement>('.g-x')?.focus({ preventScroll: true });
+    const cv = D.draw(o.data, fmt), b = await D.png(cv); if (t !== tok || !m.isConnected) return;
+    blob = b; if (src) URL.revokeObjectURL(src); src = URL.createObjectURL(b);
+    const pv = m.querySelector<HTMLElement>('.g-pv')!;
+    Object.assign(pv.dataset, { w: String(cv.width), h: String(cv.height), bytes: String(b.size), text: D.words(o.data), url: o.data.url, kind: o.kind });
+    pv.innerHTML = `<img alt="${esc(o.data.name)}" src="${src}">`;
+  };
+  const name = () => `${o.file}-${fmt}.png`;
+  m.addEventListener('click', (e) => {
+    e.stopPropagation(); if (e.target === m) { close(); return; }
+    const v = (e.target as HTMLElement).closest<HTMLElement>('[data-m]')?.dataset.m; if (!v) return;
+    const st = m.querySelector<HTMLElement>('.g-st');
+    if (v === 'close') close();
+    else if (v.startsWith('fmt:')) { const f = v.slice(4) as Fmt; if (f !== fmt) { fmt = f; void draw(); } }
+    else if (v === 'save' && blob) download(blob, src, name());
+    else if (v === 'share' && blob) void shareOut(blob, name(), o.data.url, `${o.data.head} ${o.data.idea}`.trim(), st, o.l);
+    else if (v === 'copy') void copyLink(o.data.url, st, o.l);
   });
   addEventListener('keydown', key); await draw();
 }

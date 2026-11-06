@@ -43,8 +43,8 @@ git add -A && git commit -m "site: …" && git push
 
 The News and Tools panes are two static JSON files. There is no server. Stale news hurts trust, so edit the files on a weekly cadence and deploy.
 
-1. 资讯：编辑 `web/src/hub/news.json`。每条必须有真实来源 URL、发布日期 `date`（YYYY-MM-DD）和核对日 `checked`。只写你打开来源页核对过的事实。写不出处、写排行、或编造人数，都不要加。对不上本站任何一站的条目也不要加。`st` 里的站键必须是 23 站之一。
-   News: edit `web/src/hub/news.json`. Every item needs a real source URL, a publication `date` (`YYYY-MM-DD`) and the file’s `checked` date. Write only facts you confirmed by opening the source. Do not add an item without a source, a ranking, or an invented user count. Skip items that do not map back to a station. Every key in `st` must be one of the 23 stops.
+1. 资讯：编辑 `web/src/hub/news.json` 的 `weeks`。新的一周追加一个 `{ week, items }`，不要删掉以前的周。每条必须有真实来源 URL、发布日期 `date`（YYYY-MM-DD）和核对日 `checked`。只写你打开来源页核对过的事实。写不出处、写排行、或编造人数，都不要加。对不上本站任何一站的条目也不要加。`st` 里的站键必须是 23 站之一。`more` 用 3 到 4 句写它和第几站的哪一个小目标有关。
+   News: edit `weeks` in `web/src/hub/news.json`. Append a `{ week, items }` for a new week and leave older weeks in the file. Every item needs a real source URL, a publication `date` (`YYYY-MM-DD`) and the file’s `checked` date. Write only facts you confirmed by opening the source. Do not add an item without a source, a ranking, or an invented user count. Skip items that do not map back to a station. Every key in `st` must be one of the 23 stops. `more` is 3–4 sentences tying the item to one stop’s small goal.
 2. 工具：编辑 `web/src/hub/tools.json`。只放真实产品。免费额度和「中国大陆能不能打开官网」按核对日填写，拿不准就写成「以官网当天为准」，不要猜。`st` 链回原理所在的站，`safe` 固定为 `S`。
    Tools: edit `web/src/hub/tools.json`. Real products only. Free-tier notes and whether the official site opens in mainland China are as of `checked`. If you are not sure, say the site’s own page is the authority. Do not guess. `st` links the principle back to stops. `safe` stays `S`.
 3. 发布：在 `web/` 里跑 `npm test`，通过后 `npm run deploy`，再提交并推到 `main`。GitHub Pages 从仓库根目录提供 `/SI/`。

@@ -9,9 +9,9 @@ import { PATH, plan, QKEY, ZH_CPM, EN_WPM, LOOK, STOP_N, STOP_CARD, stopLayer, t
 import { cards, type Card } from '../l4/c/kc';
 import { cardData, lvOf } from '../l4/share/card';
 import { dlgHtml, download, shareOut } from '../l4/share/modal';
-import { LX_N, lxFrom, lxHash, isLx } from '../lx/ids';
-import { cardLayer, layerStats, pageLayer, pageName, pbar, recent } from '../l4/progress';
-import { hashOf, parse, pickHead, Q } from '../l4/pages';
+import { LX_N, lxFrom } from '../lx/ids';
+import { cardLayer, layerStats, pbar, recent } from '../l4/progress';
+import { parse, pickHead, Q } from '../l4/pages';
 import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
 import { navBack } from '../l4/hnav';
@@ -239,8 +239,6 @@ function res(x: string) {
 function ranExp(x: string, v: string) { if (xs.rec === x) return; xs.rec = x; R.add({ k: 'exp', t: Date.now(), id: x, v }); }
 
 /* ---------- 学习进度 (R42: replaces the old record page; real local data only) ---------- */
-const pgHash = (id: string) => (isLx(id) ? lxHash(id) : hashOf(id));
-const md = (t0: number) => { const d = new Date(t0); return `${d.getMonth() + 1}/${d.getDate()}`; };
 async function record(A: PxApi) {
   A.top(`<b class="l4-tt">${t('recT')}</b>`); crumbs(A, [t('recT'), null]);
   const C = await allCards(A.l); if (!A.still()) return;
@@ -252,29 +250,27 @@ async function record(A: PxApi) {
   const ft = RV.firstTry();
   const cont = `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))} ${rdone}/${r.st.length}</span><span>${esc(z(`第 ${nx} 站 · `, `Stop ${nx} · `))}${esc(tx(DV_NM[dvI(nx)] ?? ['', ''], L_))}</span></div><button type="button" class="l4-b gold" data-go="#D/${nx}">${t('cont')}</button></div>
 <div class="px-mst">${ring}<p><b>${ms.size}</b><span>/ ${z(`${DV_N} 站掌握`, `${DV_N} stops mastered`)}</span></p><ul><li>${z(`答对 ${vd.size} 题`, `${vd.size} questions right`)}</li><li>${ft.n ? z(`首答正确率 ${ft.p}%`, `First-try accuracy ${ft.p}%`) : z('首答正确率：还没答过', 'First-try accuracy: none yet')}</li><li>${z(`读过 ${sn.size}/${DV_N} 站`, `${sn.size}/${DV_N} stops read`)}</li></ul></div>`;
-  const lv = st.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<button type="button" class="px-lvr" data-go="#L${x.n}"><span class="px-row l">${lvT(x.n, L_)}<b>${esc(tx(UI.lvN[x.n - 1]!, L_))}</b><i>${esc(z(`掌握 ${ma}/${mt} 站 · 看过 ${x.s}/${x.t} 页`, `${ma}/${mt} stops mastered · ${x.s}/${x.t} pages seen`))}</i></span>${pbar(ma, mt, x.n)}</button>`; }).join('');
+  const RULE = z('掌握＝这一站的题都做对了，或这一站的小目标都点亮。阶段排序、分享成就、证书和徽章都按掌握解锁。', 'Mastered means every question on that stop is right, or every small goal on it is lit. Ordering a layer, sharing, the certificate and the badges all use that rule.');
+  const lv = st.map((x) => { const [ma, mt] = lm[x.n - 1]!, ks = DV_KEY.filter((_, i) => DV_LV[i] === x.n), rd = ks.filter((k) => sn.has(k)).length; return `<button type="button" class="px-lvr" data-go="#L${x.n}"><span class="px-row l">${lvT(x.n, L_)}<b>${esc(tx(UI.lvN[x.n - 1]!, L_))}</b><i>${esc(z(`掌握 ${ma}/${mt} 站 · 读过 ${rd}/${mt} 站`, `${ma}/${mt} stops mastered · ${rd}/${mt} stops read`))}</i></span>${pbar(ma, mt, x.n)}</button>`; }).join('');
   const best = LAYERS.map((n) => { const b = bestOf(n as N); return `<button type="button" class="px-bc" data-go="#P/q${n}">${lvT(n, L_)}<span>${b ? `${b.right}/${b.total}${b.right * 4 >= b.total * 3 ? ' 🏅' : ''}` : t('noQz')}</span></button>`; }).join('');
   /* questions whose latest answer was wrong */
   const lastA = new Map<string, boolean>(); for (const e of lg) if (e.k === 'ans') lastA.set(e.id, e.ok);
   const wr = LAYERS.flatMap((n) => QUIZ[n].map((q, i) => ({ n, q, i })).filter(({ q }) => lastA.get(q.id) === false));
   const wrong = wr.length ? `<h3>${t('wrongT', { n: wr.length })}</h3><div class="px-rcs">${wr.map(({ n, q, i }) => `<div class="px-rc">${lvT(n, L_)}<span>${esc(t('wrongR', { i: i + 1, c: t('cardOf', { n: C[q.k]!.n }) }))}</span><button type="button" class="l4-b" data-k="${q.k}.2">${t('review')}</button></div>`).join('')}</div>` : '';
-  /* recently seen: pages, cards and quizzes, newest first */
-  type It = { t: number; k: string; h: string; go: string };
-  const its: It[] = recent().map((e) => e.k === 'p'
-    ? { t: e.t, k: t('tP'), h: `${tx(UI.lv[pageLayer(e.id) - 1] ?? ['', ''], L_)} · ${pageName(e.id, L_)}`, go: `data-go="${pgHash(e.id)}"` }
-    : { t: e.t, k: t('tC'), h: t('cardOf', { n: C[e.id]?.n ?? e.id }), go: `data-k="${e.id}"` });
-  for (const e of lg) if (e.k === 'quiz') its.push({ t: e.t, k: t('tQ'), h: `${tx(UI.lv[e.lv - 1]!, L_)}${L_ === 'en' ? ' quiz' : '小测'} ${e.right}/${e.total}`, go: `data-go="#P/q${e.lv}"` });
-  its.sort((a, b) => b.t - a.t);
-  const rc = its.slice(0, 6).map((e) => `<button type="button" class="px-rc" ${e.go}><span class="k">${esc(e.k)}</span><span class="h">${esc(e.h)}</span><i>${md(e.t)}</i></button>`).join('');
-  const ach = st.some((x) => x.t && x.s === x.t) || lg.some((e) => (e.k === 'quiz' && e.right * 4 >= e.total * 3) || e.k === 'path');
+  const rc = [...sn].slice(-6).reverse().map((k) => `<button type="button" class="px-rc" data-go="#D/${k}"><span class="k">${esc(z('站', 'stop'))}</span><span class="h">${esc(z(`第 ${k} 站`, `Stop ${k}`))} · ${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</span></button>`).join('');
+  const ach = ms.size > 0;
   A.host.innerHTML = `<div class="px px-rec">${cont}
 <h3>${esc(z(`五层掌握 · ${ms.size}/${DV_N} 站`, `Five layers · ${ms.size}/${DV_N} stops mastered`))}</h3><div class="px-lvs">${lv}</div>
 <div class="px-wall" data-px="wall"></div>
 <h3>${t('bestT')}</h3><div class="px-bcs">${best}</div>${wrong}
-<h3>${t('seenT')}</h3><div class="px-rcs">${rc || `<p class="px-sub">${t('none0')}</p>`}</div>
-<div class="px-row"><button type="button" class="l4-b" data-go="#P">${t('toP')}</button>${ach ? `<button type="button" class="l4-b gold" data-go="#S/ach">${t('shareAch')}</button>` : ''}</div><p class="px-f">${t('local')}${ach ? '' : ' ' + t('achNote')}</p></div>`;
+<h3>${z('最近读过的站', 'Stops read lately')}</h3><div class="px-rcs">${rc || `<p class="px-sub">${z('还没有读过的站，从首页开始吧。', 'No stop read yet — start from the home page.')}</p>`}</div>
+<div class="px-row"><button type="button" class="l4-b" data-go="#P">${t('toP')}</button>${ach ? `<button type="button" class="l4-b gold" data-mm="ach">${t('shareAch')}</button>` : ''}</div><p class="px-f">${esc(RULE)}</p></div>`;
   const wall = A.host.querySelector<HTMLElement>('.px-wall');
   if (wall) { const M = await import('./mem'); if (!A.still()) return; M.wall(wall, A); }
+  A.host.querySelector('[data-mm="ach"]')?.addEventListener('click', () => {
+    const k = [...ms].at(-1) ?? '0';
+    void import('../dv/share').then(({ openShare, progressLine }) => openShare(A.root, L_, k, t('shareAch'), progressLine(k, L_), 'ach', 'si-progress'));
+  });
   done(A, 'R');
 }
 

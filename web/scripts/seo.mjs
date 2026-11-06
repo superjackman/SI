@@ -37,6 +37,11 @@ const plain = (s) => String(s)
   .replace(/`([^`]+)`/g, '$1')
   .replace(/\{#[^}]+\}/g, '')
   .replace(/\{~([^}]+)\}/g, '$1')
+  .replace(/[（(][^）)]{0,40}(?:KM|KA|KB|KC|K)\d{2}[^）)]{0,20}[）)]/g, '')
+  .replace(/(?:KM|KA|KB|KC|K)\d{2}\s*卡同一例/g, '')
+  .replace(/卡上同一个例子（同一组数）/g, '同一组数')
+  .replace(/卡同一例|卡同一组/g, '')
+  .replace(/\bK(?:M|[ABC])?\d{2}\b/g, '')
   .replace(/\s+/g, ' ')
   .trim();
 export function clip(s, max) {
@@ -54,6 +59,56 @@ function cardIds(web) {
   const dir = join(web, 'public/c');
   if (!existsSync(dir)) return [];
   return readdirSync(dir).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5)).sort();
+}
+
+function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
+  const news = JSON.parse(readFileSync(join(web, 'src/hub/news.json'), 'utf8'));
+  const tools = JSON.parse(readFileSync(join(web, 'src/hub/tools.json'), 'utf8'));
+  const files = new Map(), pages = [];
+  const weeks = [...(news.weeks || [])].sort((a, b) => (a.week < b.week ? 1 : -1));
+  const items = weeks.flatMap((w) => w.items.map((it) => ({ ...it, week: w.week })));
+  const one = (L, kind, id, title, desc, body, hash) => {
+    const path = (L === 'en' ? 'en/' : '') + `s/${kind}/${id}/`;
+    const alt = { zh: `s/${kind}/${id}/`, en: `en/s/${kind}/${id}/` };
+    const trail = [[T[L].home, L === 'en' ? '?lang=en' : ''], [kind === 'news' ? (L === 'zh' ? '资讯' : 'News') : (L === 'zh' ? '工具' : 'Tools'), (L === 'en' ? 'en/' : '') + `s/${kind}/`], [title, path]];
+    const ld = { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'WebSite', name: SITE[L], url: abs('') },
+      { '@type': kind === 'news' ? 'NewsArticle' : 'WebPage', headline: title, name: title, description: desc, url: abs(path), inLanguage: L === 'zh' ? 'zh-CN' : 'en', dateModified: lm },
+    ] };
+    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: ORIGIN + base + 'og.png' })
+      + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])}</p></footer></body></html>\n`);
+    pages.push({ path, alt, lastmod: lm });
+  };
+  for (const L of ['zh', 'en']) {
+    const list = items.map((it) => `<li><a href="${base}${(L === 'en' ? 'en/' : '')}s/news/${it.id}/">${esc(it.date)} · ${esc(it.source)}</a> — ${esc(clip(L === 'zh' ? it.zh : it.en, L === 'zh' ? 80 : 120))}</li>`).join('');
+    const path = (L === 'en' ? 'en/' : '') + 's/news/';
+    const title = L === 'zh' ? '资讯' : 'News';
+    const desc = L === 'zh' ? '每周资讯，带来源和日期，并链回对应的站。往期保留。' : 'Weekly notes with a source and a date, each linked to a stop. Older weeks stay.';
+    const alt = { zh: 's/news/', en: 'en/s/news/' };
+    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, type: 'website', image: ORIGIN + base + 'og.png' })
+      + `<main><h1>${title}</h1><p>${esc(desc)}</p><ul>${list}</ul><p class="open"><a href="${appHref('news', L)}">${T[L].open}</a></p></main></body></html>\n`);
+    pages.push({ path, alt, lastmod: lm });
+    for (const it of items) {
+      const name = L === 'zh' ? it.zh : it.en;
+      const more = ((L === 'zh' ? it.more?.zh : it.more?.en) || []).map((s) => `<p>${esc(s)}</p>`).join('');
+      one(L, 'news', it.id, clip(name, 70), clip(name, L === 'zh' ? 110 : 150), `<p class="lv">${esc(it.date)} · ${esc(it.source)} · ${esc(it.week)}</p><p>${esc(name)}</p>${more}<p><a href="${esc(it.url)}">${L === 'zh' ? '来源' : 'Source'}</a></p>`, `news/${it.id}`);
+    }
+    const tlist = tools.items.map((t) => `<li><a href="${base}${(L === 'en' ? 'en/' : '')}s/tools/${t.id}/">${esc(t.name)}</a> — ${esc(L === 'zh' ? t.zh : t.en)}</li>`).join('');
+    const tp = (L === 'en' ? 'en/' : '') + 's/tools/';
+    const tt = L === 'zh' ? '工具' : 'Tools';
+    const td = L === 'zh' ? '真实产品。按写作、查资料、编程、做图、本地跑筛选。每条写明来源日期和安全提示。' : 'Real products, filtered by writing, lookup, code, pictures and running locally. Each note has a date and a safety line.';
+    files.set(tp + 'index.html', head({ L, title: `${tt} · ${SITE[L]}`, desc: td, path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, type: 'website', image: ORIGIN + base + 'og.png' })
+      + `<main><h1>${tt}</h1><p>${esc(td)}</p><ul>${tlist}</ul><p class="open"><a href="${appHref('tools', L)}">${T[L].open}</a></p></main></body></html>\n`);
+    pages.push({ path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, lastmod: lm });
+    for (const t of tools.items) {
+      const name = t.name;
+      const blurb = L === 'zh' ? t.zh : t.en;
+      const free = L === 'zh' ? t.free[0] : t.free[1];
+      const cn = L === 'zh' ? t.cn[0] : t.cn[1];
+      one(L, 'tools', t.id, name, clip(`${name}: ${blurb}`, L === 'zh' ? 110 : 150), `<p>${esc(blurb)}</p><p>${esc(free)}</p><p>${esc(cn)}</p><p><a href="${esc(t.url)}">${L === 'zh' ? '官网' : 'Site'}</a></p>`, `tools/${t.id}`);
+    }
+  }
+  return { files, pages };
 }
 
 export function buildSeo({ web, base, lastmod } = {}) {
@@ -157,6 +212,9 @@ ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(plain(
       + `<footer><p>${esc(SITE[L])}</p></footer>\n</body>\n</html>\n`);
     pages.push({ path, alt, lastmod: lm });
   }
+  const hub = loadHub(web, base, head, abs, appHref, T, SITE, lm);
+  for (const [p, html] of hub.files) files.set(p, html);
+  pages.push(...hub.pages);
   const cards = cardIds(web);
   const newest = lm;
   const url = (p, alt, mod) => `<url><loc>${abs(p)}</loc><lastmod>${mod}</lastmod>${alt ? `<xhtml:link rel="alternate" hreflang="zh-CN" href="${abs(alt.zh)}"/><xhtml:link rel="alternate" hreflang="en" href="${abs(alt.en)}"/><xhtml:link rel="alternate" hreflang="x-default" href="${abs(alt.zh)}"/>` : ''}</url>`;

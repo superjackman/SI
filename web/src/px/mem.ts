@@ -4,7 +4,7 @@
 import './mem.css';
 import { UI, tx, type L } from '../l4/txt';
 import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
-import { layerMastery, masteredSt, seenSt } from '../dv/prog';
+import { layerMastery, masteredSt } from '../dv/prog';
 import { ROUTES } from '../dv/routes';
 import { VF_Q, order, vfDone } from '../vf/ids';
 import { QQ } from '../vf/data';
@@ -65,14 +65,14 @@ async function review(A: PxApi) {
 
 /* ---------- 阶段排序 ---------- */
 async function sort(A: PxApi, n: number) {
-  const l = A.l, z = (a: string, b: string) => tx([a, b], l), ks = lyKs(n), sn = seenSt(), read = ks.filter((k) => sn.has(k)).length;
+  const l = A.l, z = (a: string, b: string) => tx([a, b], l), ks = lyKs(n), m = masteredSt(vfDone()), read = ks.filter((k) => m.has(k)).length;
   const lvN = tx(UI.lvN[n - 1]!, l);
   A.top(`<b class="l4-tt">${z(`阶段排序 · 第 ${n} 层`, `Put in order · layer ${n}`)}</b>`);
   A.crumb([[z('首页', 'Home'), '#home'], [z('学习记录', 'Record'), '#R'], [z('阶段排序', 'Order'), null]]); A.step(null);
   const lang = l === 'en' ? 'en' : 'zh-CN';
   if (read < ks.length) {
-    const first = ks.find((k) => !sn.has(k))!;
-    A.host.innerHTML = `<div class="px mm" lang="${lang}"><section class="mm-card"><b>🔒 ${z(`读完第 ${n} 层「${lvN}」的 ${ks.length} 站后解锁`, `Unlocks after the ${ks.length} stops of layer ${n}, “${lvN}”`)}</b><p>${z(`已读 ${read}/${ks.length} 站。`, `${read}/${ks.length} read.`)}</p></section>
+    const first = ks.find((k) => !m.has(k))!;
+    A.host.innerHTML = `<div class="px mm" lang="${lang}"><section class="mm-card"><b>🔒 ${z(`掌握第 ${n} 层「${lvN}」的 ${ks.length} 站后解锁`, `Unlocks after the ${ks.length} stops of layer ${n}, “${lvN}”, are mastered`)}</b><p>${z(`已掌握 ${read}/${ks.length} 站。`, `${read}/${ks.length} mastered.`)}</p><p>${z('掌握＝这一站的题都做对了，或这一站的小目标都点亮。', 'Mastered means every question on that stop is right, or every small goal on it is lit.')}</p></section>
 <div class="px-row"><button type="button" class="l4-b gold" data-go="#D/${first}">${z(`去第 ${first} 站`, `Go to stop ${first}`)} ›</button></div></div>`;
     A.host.scrollTop = 0; fin(A, `R/so${n}`); return;
   }
@@ -130,15 +130,20 @@ export function certOf(l: L): { what: string; n: number } | null {
 }
 /** the badge wall + certificate + stage-sort rows, drawn into the record page */
 export function wall(slot: HTMLElement, A: PxApi) {
-  const l = A.l, z = (a: string, b: string) => tx([a, b], l), B = badges(l), got = B.filter((b) => b.on).length, c = certOf(l), so = soAll(), sn = seenSt();
-  const rows = [1, 2, 3, 4, 5].map((n) => { const ks = lyKs(n), rd = ks.filter((k) => sn.has(k)).length, ok = rd === ks.length;
-    return `<button type="button" class="mm-so${so[String(n)] ? ' on' : ''}" data-go="#R/so${n}"><b>${z(`第 ${n} 层`, `Layer ${n}`)} · ${esc(tx(UI.lvN[n - 1]!, l))}</b><span>${so[String(n)] ? z('排对过 ✓', 'done ✓') : ok ? z(`${ks.length} 站 · 去排序 ›`, `${ks.length} stops · order them ›`) : z(`🔒 读完 ${rd}/${ks.length} 站解锁`, `🔒 read ${rd}/${ks.length} to unlock`)}</span></button>`; }).join('');
-  slot.innerHTML = `<h3>${z(`成就徽章 · ${got}/${B.length}`, `Badges · ${got}/${B.length}`)}</h3><p class="px-f">${z('徽章只看掌握（做对、点亮），不看浏览。', 'Badges count mastery (answers right, goals lit), never page views.')}</p>
-<ul class="mm-bdg">${B.map((b) => `<li class="${b.on ? 'on' : ''}"><i aria-hidden="true">${b.on ? b.e : '○'}</i><b>${esc(b.t)}</b><span>${b.on ? z('已获得', 'Earned') : esc(b.how)}</span></li>`).join('')}</ul>
+  const l = A.l, z = (a: string, b: string) => tx([a, b], l), B = badges(l), got = B.filter((b) => b.on).length, c = certOf(l), so = soAll();
+  const rows = [1, 2, 3, 4, 5].map((n) => { const ks = lyKs(n), rd = ks.filter((k) => masteredSt(vfDone()).has(k)).length, ok = rd === ks.length;
+    return `<button type="button" class="mm-so${so[String(n)] ? ' on' : ''}" data-go="#R/so${n}"><b>${z(`第 ${n} 层`, `Layer ${n}`)} · ${esc(tx(UI.lvN[n - 1]!, l))}</b><span>${so[String(n)] ? z('排对过 ✓', 'done ✓') : ok ? z(`${ks.length} 站 · 去排序 ›`, `${ks.length} stops · order them ›`) : z(`🔒 掌握 ${rd}/${ks.length} 站解锁`, `🔒 master ${rd}/${ks.length} to unlock`)}</span></button>`; }).join('');
+  slot.innerHTML = `<h3>${z(`成就徽章 · ${got}/${B.length}`, `Badges · ${got}/${B.length}`)}</h3><p class="px-f">${z('掌握＝这一站的题都做对了，或这一站的小目标都点亮。阶段排序、分享成就、证书和徽章都按掌握解锁。', 'Mastered means every question on that stop is right, or every small goal on it is lit. Ordering a layer, sharing, the certificate and the badges all use that rule.')}</p>
+<ul class="mm-bdg">${B.map((b) => `<li class="${b.on ? 'on' : ''}"><i aria-hidden="true">${b.on ? b.e : '○'}</i><b>${esc(b.t)}</b><span>${b.on ? z('已获得', 'Earned') : esc(b.how)}</span>${b.on ? `<button type="button" class="l4-b sm" data-mm="bdg" data-bid="${esc(b.id)}">${z('分享…', 'Share…')}</button>` : ''}</li>`).join('')}</ul>
 <h3>${z('结业证书', 'Certificate')}</h3>
 <div class="mm-cert">${c ? `<p>${z(`已解锁：「${esc(c.what)}」。证书不写名字，只写你真实做到的事，并附一道挑战题和二维码。`, `Unlocked: “${esc(c.what)}”. No name on it: only what you really did, plus a challenge question and a QR code.`)}</p><button type="button" class="l4-b gold" data-mm="cert">${z('生成 9:16 证书', 'Make the 9:16 certificate')}</button>` : `<p>${z(`做对任意 ${CERT_N} 站就解锁，一整层或一整条路线也可以。证书不写名字，只写你真实做到的事。`, `Unlocks at any ${CERT_N} stops, or a whole layer, or a whole route. No name on it: only what you really did.`)}</p>`}</div>
 <h3>${z('阶段排序', 'Put each layer in order')}</h3><div class="mm-sos">${rows}</div>`;
   slot.querySelector('[data-mm="cert"]')?.addEventListener('click', () => { void cert(A); });
+  slot.querySelectorAll<HTMLElement>('[data-mm="bdg"]').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.bid ?? '', one = badges(l).find((x) => x.id === id); if (!one?.on) return;
+    const m = masteredSt(vfDone()), k = [...m].at(-1) ?? '0';
+    void import('../dv/share').then(({ openShare }) => openShare(A.root, l, k, z('分享这一枚', 'Share this badge'), one.t, 'badge', `si-badge-${id}`));
+  }));
 }
 
 /** the friend link: the sharer's first-try accuracy and stops mastered ride in the URL (no server) */
@@ -161,25 +166,6 @@ async function cert(A: PxApi) {
     pts: [z(`挑战你：${qText}`, `Your challenge: ${qText}`).slice(0, 90), z('答对才揭晓讲解', 'The explanation unlocks when you get it right'), z('看看你的首答能不能比我高', 'See if your first try beats mine')],
     sub: z('一层层看懂 AI', 'AI, layer by layer'),
   };
-  const box = document.createElement('div'); box.className = 'g-modal l4-shm'; A.root.appendChild(box);
-  const { dlgHtml, download, shareOut, copyLink } = await import('../l4/share/modal');
-  let blob: Blob | null = null, src = '';
-  const keyH = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
-  function close() { box.remove(); removeEventListener('keydown', keyH); if (src) URL.revokeObjectURL(src); }
-  box.innerHTML = dlgHtml({ l, k: 'm', title: z('结业证书', 'Certificate'), fmt: 'story', meta: z('导出 1080×1920 · 不写名字 · 扫码直达挑战题', 'Exports 1080×1920 · no name · the QR opens the challenge') });
-  const seg = box.querySelector<HTMLElement>('.g-seg'); if (seg) seg.hidden = true;
-  const cv = D.draw(d, 'story'); blob = await D.png(cv); if (!box.isConnected) return; src = URL.createObjectURL(blob);
-  const pv = box.querySelector<HTMLElement>('.g-pv')!;
-  Object.assign(pv.dataset, { w: String(cv.width), h: String(cv.height), bytes: String(blob.size), text: D.words(d), url, kind: 'cert' });
-  pv.innerHTML = `<img alt="${z('结业证书', 'Certificate')}" src="${src}">`;
-  box.addEventListener('click', (e) => {
-    e.stopPropagation(); if (e.target === box) { close(); return; }
-    const v = (e.target as HTMLElement).closest<HTMLElement>('[data-m]')?.dataset.m; if (!v) return;
-    const st = box.querySelector<HTMLElement>('.g-st');
-    if (v === 'close') close();
-    else if (v === 'save' && blob) download(blob, src, 'si-certificate.png');
-    else if (v === 'share' && blob) void shareOut(blob, 'si-certificate.png', url, d.name, st, l);
-    else if (v === 'copy') void copyLink(url, st, l);
-  });
-  addEventListener('keydown', keyH);
+  const { mountShare } = await import('../l4/share/modal');
+  await mountShare(A.root, { l, title: z('结业证书', 'Certificate'), file: 'si-certificate', data: d, kind: 'cert', lock: true });
 }

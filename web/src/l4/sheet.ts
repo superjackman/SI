@@ -41,7 +41,7 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
   const dv = DV_OF[id];
   /* R48 换个角度看: the same card seen bottom-up — the step it is born in (round 第n步 badge), the question it answers,
      the other steps that use it again, and the cards born with it in the same layer (square 第n层 badges) */
-  const zz = (a: string, b: string) => tx([a, b], l), st = (n: number) => `<span class="dv-sb">${zz(`第 ${dvK(n)} 步`, `Step ${dvK(n)}`)}</span>`;
+  const zz = (a: string, b: string) => tx([a, b], l), st = (n: number) => `<span class="dv-sb">${zz(`第 ${dvK(n)} 站`, `Stop ${dvK(n)}`)}</span>`;
   const lvB = (k: string) => { const n = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`; };
   const sib = dv == null ? [] : DV_BORN[dv]!.filter((k) => k !== id && cardLv(k) === cardLv(id) && all[k]).slice(0, 4);
   const also = dv == null ? [] : DV_ALSO[id]!;

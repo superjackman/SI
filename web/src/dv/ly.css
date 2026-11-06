@@ -2,17 +2,19 @@
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
 .ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: #e6eeff; }
 /* R54 the depth switch and the five-layer bar stay pinned to the top of the scroll box while reading; headings land below it */
-.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-flow: row wrap; align-items: center; gap: 4px; margin: 0; padding: 4px 0 6px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; }
-.l4 .ly .g-seg.ly-dep { width: auto; flex: 0 1 auto; grid-template-columns: repeat(3, auto); }
-.ly .g-seg.ly-dep button { padding: 0 8px; min-height: 36px; }
-.ly-pg { list-style: none; margin: 0; padding: 0; flex: 1 1 180px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
-.ly-pg button { width: 100%; min-height: 36px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #9cb3e6; }
-.ly-pg button i { width: 8px; height: 8px; border-radius: 50%; background: #5d74aa; }
+.ly-top { position: sticky; top: -4px; z-index: 3; display: flex; flex-flow: row nowrap; align-items: center; gap: 4px; margin: 0; padding: 4px 0 6px; background: #050c22; border-bottom: 1px solid #1b2a55; box-shadow: 0 6px 10px -6px #000c; min-width: 0; max-width: 100%; }
+.l4 .ly .g-seg.ly-dep { width: auto; flex: 0 0 auto; grid-template-columns: repeat(3, auto); }
+.ly .g-seg.ly-dep button { padding: 0 8px; min-height: 44px; font-size: 13px; white-space: nowrap; }
+.ly-pg { list-style: none; margin: 0; padding: 0; flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; }
+.ly-pg button { width: 100%; min-height: 44px; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #e6eeff; }
+.ly-pg button b { font-size: 13px; font-weight: 700; line-height: 1; }
+.ly-pg button { overflow: hidden; }
+.ly-pg button i { width: 8px; max-width: 100%; height: 8px; border-radius: 50%; background: #5d74aa; }
 .ly-hero .ly-life, .ml-ill .ly-life { width: 100%; height: auto; display: block; border-radius: 10px; }
 .ly[data-depth="s"] .ly-l[data-ly="1"] > :not(.ly-hero) { display: none; }
 .ly:not([data-depth="s"]) .ly-hero { display: none; }
 .ly-pg button.done i { background: #34d399; }
-.ly-pg button.on i { width: 10px; height: 10px; background: #ffd166; box-shadow: 0 0 0 3px #1d3270; }
+.ly-pg button.on i { width: 10px; max-width: 100%; height: 10px; background: #ffd166; box-shadow: 0 0 0 3px #1d3270; }
 .ly-pg button.out i { background: transparent; box-shadow: inset 0 0 0 1.5px #8ea0cc; }
 .ly-l { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid #2c4690; border-radius: 12px; background: #0a1532e6; }
 .ly-l[hidden] { display: none; }

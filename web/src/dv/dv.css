@@ -18,8 +18,24 @@
 .dv-lk::before { content: '↓'; position: absolute; left: -8px; bottom: -3px; font-size: 13px; color: #ffd166; line-height: 1; }
 .dv-lk span { display: inline-block; margin-right: 6px; padding: 0 6px; border: 1px solid #c99a2e; border-radius: 8px; color: #ffd166; font-weight: 700; }
 /* a stage page */
-.dv-hd { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.dv-so { flex: 1; min-width: 0; font-size: 12.5px; color: #c4d2f2; line-height: 1.4; }
+.dv-sum { display: block; margin: 0; font-size: 13px; color: #c4d2f2; line-height: 1.45; max-width: 100%; overflow-wrap: anywhere; }
+.dv-sum .l4-lt { margin-right: 8px; }
+.dv-sum span { overflow-wrap: anywhere; }
+.dv-first { margin: 0; font-size: 15px; line-height: 1.55; color: #e6eeff; overflow-wrap: anywhere; }
+.dv-morph { display: flex; flex-direction: column; gap: 6px; max-width: 100%; min-width: 0; }
+.dv-morn { position: relative; min-height: 80px; max-width: 100%; overflow: hidden; }
+.dv-mb { position: absolute; inset: 0; opacity: var(--m, 0); overflow: hidden; }
+.dv-ma { opacity: calc(1 - var(--m, 0)); max-width: 100%; }
+.dv-lead, .dv-first, .ml-goal, .ml-pic { max-width: 100%; min-width: 0; }
+.dv-mcap { margin: 0; min-height: 2.6em; font-size: 13px; color: #e6eeff; }
+.dv-mcap .b { display: none; }
+.dv-morph[data-at="math"] .dv-mcap .a { display: none; }
+.dv-morph[data-at="math"] .dv-mcap .b { display: inline; }
+.dv-msl { display: grid; gap: 4px; font-size: 13px; color: #ffe08a; max-width: 100%; min-width: 0; }
+.dv-msl span { overflow-wrap: anywhere; }
+.dv-msl input { width: 100%; min-width: 0; margin: 0; min-height: 44px; accent-color: #ffd77a; }
+.dv-lead { margin: 0; }
+.dv, .dv-sp, .ly { min-width: 0; max-width: 100%; }
 .dv-from { display: flex; flex-direction: column; gap: 2px; width: 100%; margin: 0; padding: 6px 10px; border: 1px solid #c99a2e; border-radius: 10px; background: #13183a; text-align: left; color: #dbe6ff; }
 .dv-from span { font-size: 12px; color: #ffd77a; } .dv-from b { font-size: 13px; line-height: 1.4; }
 button.dv-from span::before { content: '‹ '; }
@@ -98,7 +114,7 @@ button.dv-from span::before { content: '‹ '; }
 .dv-th { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .dv-th b { font-size: 15px; color: #ffe08a; } .dv-th span { font-size: 12.5px; color: #b7c6ea; }
 .dv-take ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 6px; }
-.dv-tp { margin: 0; display: block; padding: 8px 10px; border-radius: 10px; background: #0a1532; font-size: 14px; } .dv-tp > b { display: block; font-weight: 400; text-wrap: pretty; } .dv-tp span { display: block; font-size: 12.5px; color: #ffe08a; }
+.dv-tp { margin: 0; display: block; padding: 8px 10px; border-radius: 10px; background: #0a1532; font-size: 14px; } .dv-tp > b { display: flex; flex-direction: column; gap: 2px; font-weight: 400; } .dv-tp > span { display: block; font-size: 13px; color: #ffe08a; } .dv-ps { display: block; text-wrap: pretty; color: #e6eeff; font-size: 14px; }
 .dv-cl { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
 .dv-cn { display: flex; align-items: baseline; gap: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--c); border-radius: 10px; background: #08112b; color: #e6eeff; text-align: left; line-height: 1.3; }
 .dv-cn span { flex: none; font-size: 12.5px; color: #b7c6ea; } .dv-cn b { min-width: 0; font-size: 14px; font-weight: 700; }
