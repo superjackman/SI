@@ -24,7 +24,9 @@
 .dv-first { margin: 0; font-size: 15px; line-height: 1.55; color: #e6eeff; overflow-wrap: anywhere; }
 .dv-morph { display: flex; flex-direction: column; gap: 6px; max-width: 100%; min-width: 0; }
 .dv-morn { position: relative; min-height: 80px; max-width: 100%; overflow: hidden; }
-.dv-mb { position: absolute; inset: 0; opacity: var(--m, 0); overflow: hidden; }
+.dv-morn .ly-life { display: block; width: 100%; height: auto; }
+.dv-mb { position: absolute; inset: 0; opacity: var(--m, 0); overflow: hidden; pointer-events: none; }
+.dv-mb .ly-life { width: 100%; height: 100%; }
 .dv-ma { opacity: calc(1 - var(--m, 0)); max-width: 100%; }
 .dv-lead, .dv-first, .ml-goal, .ml-pic { max-width: 100%; min-width: 0; }
 .dv-mcap { margin: 0; min-height: 2.6em; font-size: 13px; color: #e6eeff; }
