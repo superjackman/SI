@@ -22,12 +22,15 @@ export const seenSt = (): Set<string> => {
   if (!Array.isArray(v)) return new Set();
   return new Set(v.flatMap((x): string[] => typeof x === 'number' ? (x === 8 ? ['8a', '8b'] : x === 15 ? ['15a', '15b'] : [String(x)]) : typeof x === 'string' ? [x] : []).filter((k) => dvI(k) >= 0));
 };
-/* R56 调查 → 推理 → 验证 micro-loop (pilot stations): each station has small goals; a small goal is mastered after two
+/* R56/R57 调查 → 推理 → 验证 micro-loop: every station has small goals; a small goal is mastered after two
    right answers in a row on its 验证 questions. State per page in si.ml: { m: 0/1 per goal, k: run of right answers,
    v: variant index, g: current goal, s: 'i' | 'r' | 'v' step, p: picked 调查 option per goal (−1 none) } */
 export const ML_KEY = 'si.ml';
-/** stations with the micro-loop and how many small goals each has */
-export const ML_G: Readonly<Record<string, number>> = { '1': 3, '2': 3, '8a': 3 };
+/** stations with the micro-loop and how many small goals each has. Every station on the 23-stop route. */
+export const ML_G: Readonly<Record<string, number>> = {
+  '0': 3, P: 3, '1': 3, '2': 3, '3': 3, '4': 3, '5': 3, '6': 3, '7': 3, '8a': 3, '8b': 3,
+  '9': 3, E: 3, '10': 3, '11': 3, '12': 3, '13': 3, '14': 3, S: 3, '15a': 3, '15b': 3, A: 3, '16': 3,
+};
 export interface MlS { m: number[]; k: number[]; v: number[]; g: number; s: 'i' | 'r' | 'v'; p: number[]; f?: number[] }
 export const mlAll = (): Record<string, MlS> => { try { const v = JSON.parse(localStorage.getItem(ML_KEY) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, MlS>) : {}; } catch { return {}; } };
 export const mlGet = (k: string): MlS => {

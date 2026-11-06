@@ -2,9 +2,10 @@ import { test, expect, type Page } from '@playwright/test';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
 import { ML } from '../../src/dv/mld';
+import { DV_KEY } from '../../src/dv/links';
 import { varQ } from '../../src/vf/var';
 import { QQ } from '../../src/vf/data';
-/* R56 P0: one ledger (pager 「第 n 站 · m/23」), the 调查 → 推理 → 验证 micro-loop on stops 1 / 2 / 8a with a wrong answer
+/* R56/R57: one ledger (pager 「第 n 站 · m/23」), the 调查 → 推理 → 验证 micro-loop on every stop with a wrong answer
    re-looping to the exact layer and two right variants mastering a small goal, the memory kit (3 takeaways + one picture,
    the prev / this / next chain, 今日复习 on home and #R/rv, 阶段排序), badges from mastery, the nameless certificate and
    the friend landing page that shows the sharer's first-try accuracy from the URL. No in-site move adds a history entry. */
@@ -67,11 +68,46 @@ test.describe('R56 micro-loop', () => {
     await expect(page.locator('[data-att]')).toBeVisible();
     expect(errs).toEqual([]);
   });
+  test('stop 0: two right variants light the first small goal', async ({ page }) => {
+    const errs = await open(page, './?lang=zh#D/0');
+    const G = ML['0']!.goals[0]!;
+    await page.locator('.ml-ss [data-ml-s="v"]').click();
+    await page.locator(`[data-ml-p="${G.pr.a}"]`).click();
+    for (const i of [0, 1]) {
+      const q = varQ(G.vk, i);
+      await page.locator('.ml-in').fill(num(q.a, q.d)); await page.locator('[data-ml-ck]').click();
+      await expect(page.locator('.ml-fb.ok')).toBeVisible();
+      if (i === 0) await page.locator('[data-ml-again]').click();
+    }
+    await expect(page.locator('button[data-ml-g="0"]')).toHaveClass(/m/);
+    await expect(page.locator('.dv-take li')).toHaveCount(3);
+    expect(errs).toEqual([]);
+  });
+  test('every station: a wrong guess shows two dead ends, a matched miss re-loops to 推理', async ({ page }) => {
+    test.setTimeout(180_000);
+    const errs = await open(page, './?lang=zh#D/0');
+    for (const k of DV_KEY) {
+      await page.evaluate(() => localStorage.removeItem('si.ml'));
+      await go(page, `#D/${k}`); await px(page, `D/${k}.zh`);
+      await expect(page.locator('.ml-goal')).toBeVisible();
+      await expect(page.locator('.dv-take li')).toHaveCount(3);
+      await page.locator('[data-ml-o="0"]').click();
+      await expect(page.locator('.ml-dead')).toHaveCount(2);
+      await page.locator('.ml-ss [data-ml-s="v"]').click();
+      const q = varQ(ML[k]!.goals[0]!.vk, 0);
+      const mis = q.mis.find((m) => Math.abs(m.v - q.a) > q.tol)!;
+      await page.locator('.ml-in').fill(num(mis.v, q.d)); await page.locator('[data-ml-ck]').click();
+      await expect(page.locator('.ml-re')).toHaveAttribute('data-ml-ly', String(mis.ly));
+      await page.locator('.ml-re').click();
+      await expect(page.locator('.ly.ml')).toHaveAttribute('data-ml-s', 'r');
+    }
+    expect(errs).toEqual([]);
+  });
 });
 
 test.describe('R56 memory + badges + sharing', () => {
   test('今日复习: a wrong answer shows on home, #R/rv clears it; the wrong book empties; 错题清零 badge; no history entries', async ({ page }) => {
-    await page.addInitScript(() => { if (sessionStorage.getItem('r56')) return; sessionStorage.setItem('r56', '1'); localStorage.setItem('si.ly.depth', 'd'); localStorage.setItem('si.ly.open', JSON.stringify({ 'D/0': 5 })); });
+    await page.addInitScript(() => { if (sessionStorage.getItem('r56')) return; sessionStorage.setItem('r56', '1'); localStorage.setItem('si.ly.depth', 'd'); localStorage.setItem('si.ly.open', JSON.stringify({ 'D/0': 5 })); localStorage.setItem('si.ml', JSON.stringify({ '0': { m: [0, 0, 0], k: [0, 0, 0], v: [0, 0, 0], g: 0, s: 'r', p: [-1, -1, -1] } })); });
     const errs = await open(page, './?lang=zh#D/0'); const h0 = await hl(page);
     const q = page.locator('.vf-q').first(); await q.scrollIntoViewIfNeeded(); const id = (await q.getAttribute('data-q'))!, Q = QQ[id]!;
     if (Q.o) await q.locator(`[data-vf="pick:${Q.a === 0 ? 1 : 0}"]`).click(); else { await q.locator('.vf-in').fill('99999'); await q.locator('.vf-ck').click(); }
@@ -126,7 +162,7 @@ test.describe('R56 reads on this phone', () => {
     const bad: string[] = [];
     for (const l of ['zh', 'en'] as const) {
       await open(page, `./?lang=${l}#D/0`);
-      for (const k of ['1', '2', '8a']) {
+      for (const k of ['0', '1', '2', '8a', '11', 'S']) {
         await page.evaluate(() => localStorage.removeItem('si.ml')); await go(page, `#D/${k}`); await px(page, `D/${k}.${l}`);
         await page.locator('[data-ml-o="0"]').click(); await page.locator('.ml-i').evaluate((e) => e.scrollIntoView({ block: 'start' }));
         await readable(page, `${l} ${k} 调查`, '.ml-goal, .ml-bar, .ml-i', bad);

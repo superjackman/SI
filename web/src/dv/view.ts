@@ -88,8 +88,8 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
 }
 
 /* R56 记忆四件套 ①②: 本站只带走 3 句 + one picture, and the chain line 上一站 → 这站 → 下一站 with the layer it lands on.
-   The pilot stations have hand-written lines (./mld); the others take the first sentence of their idea, mechanism and
-   what they leave open. */
+   Every station has hand-written lines (./mld). If a station ever has none, the fallback is the first sentence of its
+   idea, its mechanism and what it leaves open. */
 const first = (s: string) => { const m = /^(.+?[。．.!?！？])(\s|$)/.exec(s); return (m ? m[1]! : s).trim(); };
 // R56: keep the last few glyphs of a takeaway together (no one-glyph last line)
 const glueT = (h: string) => h.replace(/((?:&[a-z#0-9]+;|[^<>&\s]){1,4})$/, '<span class="nw">$1</span>');
