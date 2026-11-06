@@ -146,7 +146,7 @@ export function start(doc: Document = document, win: Window = window) {
     /* R47 the bottom-up way in: the ground under layer 5 — 23 stations from one function up to an agent */
     const bu = `<button type="button" class="l4-bu g-rj" data-go="#D"><span class="ic" aria-hidden="true">↑</span><span class="t"><b>${tx(['自底向上 · 推导之路', 'Bottom-up: the derivation path'], lang)}</b><span>${tx(['23 站：从一个数学函数搭到 Agent 与应用', '23 stations from one function to agents and apps'], lang)}</span></span></button>`;
     const ln = (go: string, t: Tx, s: Tx, a = '') => `<button type="button" class="l4-ml2"${a ? ` data-a="${a}"` : ` data-go="${go}"`}><b>${tx(t, lang)}</b><span>${tx(s, lang)}</span><i class="g-bdg" aria-hidden="true">›</i></button>`;
-    home.innerHTML = `<div class="l4-mapw"><h2 class="l4-mh2">${tx(['自顶向下 · 五层结构', 'Top-down: five layers'], lang)}</h2><p class="l4-msub">${tx(['从宏观到微观：每一层都是把上一层拆开来看。点一层进去。', 'From the big picture to the details: each layer opens up the one above. Tap a layer.'], lang)}</p><ol class="l4-pyr">${lv}</ol>${bu}<div class="l4-mls">`
+    home.innerHTML = `<div class="l4-mapw"><h2 class="l4-mh2">${tx(['自顶向下 · 五层结构', 'Top-down: five layers'], lang)}</h2><p class="l4-msub">${tx(['从宏观到微观：每一层都是把上一层拆开来看。点某一层，进去细看。', 'From the big picture to the details: each layer opens up the one above. Tap a layer to look inside.'], lang)}</p><ol class="l4-pyr">${lv}</ol>${bu}<div class="l4-mls">`
       + ln('#D/map', ['知识地图', 'Knowledge map'], ['5 层 × 23 站，两个坐标一起看', '5 layers × 23 stops on one grid'])
       + ln('#D/routes', ['五条学习路线', 'Five learning routes'], ['同一批站，按目标选一条', 'The same stops; pick one for your goal'])
       + ln('#Q', ['10 分钟快速路径', '10-minute quick path'], ['走一遍五层', 'Once through all five layers'])

@@ -9,7 +9,7 @@ import { DV_ALSO, DV_BORN, DV_E, DV_FOCUS, DV_NM, DV_OF, cardLv, dvK } from '../
 import { LBG } from './progress';
 import { hasVf } from '../vf/ids';
 
-const MINI: Record<Nd, [string, string]> = { in: ['输入', 'Input'], tok: ['分词', 'Tokenize'], emb: ['词向量+位置', 'Embed+pos'], att: ['多头注意力', 'Attention'], an1: ['加+归一化', 'Add+Norm'], ffn: ['前馈网络', 'Feed-forward'], an2: ['加+归一化', 'Add+Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['概率', 'Odds'] };
+const MINI: Record<Nd, [string, string]> = { in: ['输入', 'Input'], tok: ['分词', 'Tokenize'], emb: ['词向量+位置', 'Embed+pos'], att: ['多头注意力', 'Attention'], an1: ['加+归一化', 'Add+Norm'], ffn: ['前馈网络', 'Feed-forward'], an2: ['加+归一化', 'Add+Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['概率', 'Probability'] };
 function mini(c: Card, l: L) {
   if (c.mk) return lxMini({ mk: c.mk, hl: c.hl, ar: c.ar ?? [], fr: c.fr }, l);
   const w = 104, bh = 17, g = 4, top = 6; let s = '', y = top; const pos = {} as Record<Nd, number>;

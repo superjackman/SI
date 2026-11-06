@@ -73,7 +73,7 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
   const st = vfStat(page, d0), s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
     + (ids.length ? `<section class="vf-b vf-qz"><h3 class="vf-h"><span class="vf-ic">✎</span>${z('自己算一算', 'Work it out')}<span class="vf-pc${st.s === st.t ? ' all' : ''}">${pcT(st.s, st.t, l)}</span></h3><p class="vf-sub">${z('先自己算，再填进去：答错会给提示，随时可以看解答。', 'Work it out first, then type it in: a miss gives a hint, and the working is always one tap away.')}</p><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
-    + (mc.length ? `<section class="vf-b vf-mc"><h3 class="vf-h"><span class="vf-ic">⚠</span>${z('常见误解', 'Common misconceptions')}</h3>${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解', 'Myth')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实', 'Actually')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
+    + (mc.length ? `<section class="vf-b vf-mc"><h3 class="vf-h"><span class="vf-ic">⚠</span>${z('常见误解', 'Common misconceptions')}</h3>${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
     + '</div>';
   const pc = slot.querySelector<HTMLElement>('.vf-pc');
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {

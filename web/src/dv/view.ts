@@ -93,7 +93,7 @@ function chain(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: strin
     const n = DV_LV[i]!;
     if (n !== last) { last = n; h += `<div class="dv-gh" style="--c:${col(i)}">${lvT(i, l)}<b>${n ? esc(tx(UI.lvN[n - 1]!, l)) : z('串起全链路', 'The whole chain')}</b>${n ? `<button type="button" class="dv-gp" data-go="#L${n}">${z('金字塔 ›', 'Pyramid ›')}</button>` : ''}</div>`; }
     h += `<button type="button" class="dv-st g-rj${mastered(i) ? ' mastered' : seen.has(i) ? ' seen' : ''}" data-go="${hD(i)}" style="${cv(i)}"><span class="dv-n">${dvK(i)}</span><span class="dv-t"><b>${esc(S.n)}</b><i>${esc(S.s)}</i></span>${qt(i)}${mastered(i) ? '<em aria-label="mastered">★</em>' : seen.has(i) ? '<em aria-label="✓">✓</em>' : ''}</button>`;
-    if (S.e) h += `<div class="dv-lk"><span>${z('遗留', 'Left open')}</span>${esc(S.e)}</div>`;
+    if (S.e) h += `<div class="dv-lk"><span>${z('遗留问题', 'Left open')}</span>${esc(S.e)}</div>`;
   });
   const nx = [...Array(DV_N).keys()].find((i) => !mastered(i)) ?? [...Array(DV_N).keys()].find((i) => !seen.has(i)), go = nx ?? 0;
   A.host.innerHTML = `<div class="px dv dv-ch"><p class="px-sub">${esc(D.sub)}</p>

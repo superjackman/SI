@@ -10,11 +10,11 @@ export const isNd = (s: string): s is Nd => (NODES as readonly string[]).include
 export const LAB: Record<Nd, Tx> = {
   in: ['输入文字', 'Input text'], tok: ['分词', 'Tokenize'], emb: ['词向量 ⊕ 位置编码', 'Embed ⊕ position'],
   att: ['带遮罩的多头注意力', 'Masked attention'], an1: ['加 + 归一化', 'Add + Norm'], ffn: ['前馈网络', 'Feed-forward'],
-  an2: ['加 + 归一化', 'Add + Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['下一个字的概率', 'Next-char odds'],
+  an2: ['加 + 归一化', 'Add + Norm'], lin: ['线性层', 'Linear'], sm: ['Softmax', 'Softmax'], out: ['下一个字的概率', 'Next-char probability'],
 };
 /** shorter names for when the diagram is compressed to the left and the full name does not fit (same meaning) */
 export const LAB_S: Partial<Record<Nd, Tx>> = {
-  att: ['遮罩多头注意力', 'Masked attn'], emb: ['词向量⊕位置', 'Embed ⊕ pos'], out: ['下个字概率', 'Next odds'], in: ['输入文字', 'Input'],
+  att: ['遮罩多头注意力', 'Masked attn'], emb: ['词向量⊕位置', 'Embed ⊕ pos'], out: ['下个字概率', 'Next probability'], in: ['输入文字', 'Input'],
   tok: ['分词', 'Tokenize'], ffn: ['前馈网络', 'Feed-fwd'], an1: ['加+归一化', 'Add+Norm'], an2: ['加+归一化', 'Add+Norm'],
 };
 /** boxes with a "+": tapping opens them in place */
@@ -41,7 +41,7 @@ export const NODE_INFO: Record<Nd, Info> = {
   ffn: [['把每个字的信息再提炼一遍', 'Refines each char’s information'], ['放大层、激活函数、缩回层', 'Expand, activation, shrink'], ['放大 4 倍 → 去掉没用的 → 缩回', '×4 wider → drop negatives → shrink'], ['激活函数让它能学复杂规律', 'The activation allows complex rules']],
   an2: [['保住原信息，让数字不乱跑', 'Keeps the input, keeps numbers in range'], ['残差（加回输入）+ 层归一化', 'Residual add + layer norm'], ['注意力、前馈后面各跟一个', 'One after attention, one after FFN'], ['层叠多了也稳定，训练更容易', 'Deep stacks stay stable']],
   lin: [['给字典里每个字打一个原始分', 'Gives every dictionary char a raw score'], ['一张 16 × 14 的权重表', 'A 16 × 14 weight table'], ['最后一个字的 16 个数乘这张表', 'Last char’s 16 numbers × the table'], ['一次乘法就给所有字打完分', 'One multiply scores every char']],
-  sm: [['把分数变成加起来 100% 的概率', 'Turns scores into odds that sum to 100%'], ['eˣ，再除以总和', 'eˣ, then divide by the sum'], ['每个分数取 eˣ，再除以总和', 'Take eˣ of each, divide by the total'], ['都变正数，高分更突出', 'All positive; high scores stand out']],
+  sm: [['把分数变成加起来 100% 的概率', 'Turns scores into probabilities that sum to 100%'], ['eˣ，再除以总和', 'eˣ, then divide by the sum'], ['每个分数取 eˣ，再除以总和', 'Take eˣ of each, divide by the total'], ['都变正数，高分更突出', 'All positive; high scores stand out']],
   out: [['每个字是下一个字的可能性', 'How likely each char comes next'], ['14 个百分比，加起来 100%', '14 percentages adding to 100%'], ['选最高的，接回输入再猜', 'Pick the top one, append, repeat'], ['一次一个字，循环写成整段', 'One char at a time, looping']],
 };
 export const UI = {

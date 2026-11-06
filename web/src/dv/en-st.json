@@ -1,7 +1,7 @@
 {
   "t": "Bottom-up · the derivation path",
   "sub": "Brick by brick: each step answers what the last left open. From a mathematical function through probability, loss and gradients up to large models, safety and applications — climbing the pyramid from layer 5 to layer 1.",
-  "how": "The pyramid answers “what it looks like and why”; this chain answers “how it was forced into being”. Lines marked {~empirical} are experimental regularities, not theorems; applications move fast, so we only name stable types. Each step unfolds as hook → picture → numbers → formula → check, with depth 30s / 5min / deep.",
+  "how": "The pyramid answers “what it looks like and why”; this chain answers “how it was forced into being”. Lines marked {~empirical} are experimental regularities, not theorems; applications move fast, so we only name stable types. Each step unfolds as analogy → picture → numbers → formula → check, with depth 30s / 5min / deep.",
   "st": [
     {
       "n": "Learn a function from examples",
@@ -628,7 +628,7 @@
       }
     },
     {
-      "n": "Post-training: SFT + RL",
+      "n": "Post-training: SFT, alignment and reasoning",
       "s": "SFT, RLHF/DPO, reasoning RL",
       "e": "Customising it costs too much",
       "q": "Make it follow instructions, be helpful and safe — and learn to think before answering.",

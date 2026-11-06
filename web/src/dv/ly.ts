@@ -24,11 +24,11 @@ const openSet = (page: string, n: number) => { const o = openAll(); o[page] = n;
 /** layers shown = what was opened, capped by the depth */
 export const shown = (open: number, d: Depth) => Math.max(1, Math.min(open, DEPTH_MAX[d]));
 
-const NAME: readonly (readonly [string, string])[] = [['类比', 'Hook'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
+const NAME: readonly (readonly [string, string])[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
 const HEAD: readonly (readonly [string, string])[] = [['为什么要关心 · 生活类比', 'Why care · an everyday analogy'], ['看图', 'See it'], ['算一算真实的数', 'The real numbers'], ['公式：每一块对应刚才的类比', 'The formula: each part maps back to the analogy'], ['小测 + 常见误解', 'Check yourself + common misconceptions']];
 const NXT: readonly (readonly [string, string])[] = [['懂了，看图', 'Got it: see the picture'], ['懂了，看数字', 'Got it: the numbers'], ['懂了，看公式', 'Got it: the formula'], ['懂了，做小测', 'Got it: check yourself']];
 const CIRC = ['①', '②', '③', '④', '⑤'];
-const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 s'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
+const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 
 type Mk = (s: string) => string;
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -98,7 +98,7 @@ function picBlk(l: L) {
 <div class="ly-bs"><span class="ly-bn">${z('× N 层', '× N layers')}</span>
 <div class="ly-br c">${z('归一化', 'Normalise')}</div><div class="ly-br q">${z('多头注意力：词和词交流', 'Multi-head attention: words talk')}<small class="ly-c ly-r">${z('位置：RoPE 旋转 q、k', 'Position: RoPE rotates q, k')}</small></div><div class="ly-ba">${z('⊕ 加回输入（残差）', '⊕ add back the input (residual)')}</div>
 <div class="ly-br c">${z('归一化', 'Normalise')}</div><div class="ly-br k">${z('FFN：每个词各自消化', 'FFN: each word thinks alone')}</div><div class="ly-ba">${z('⊕ 加回（残差）', '⊕ add back (residual)')}</div></div>
-<div class="ly-bx">${z('输出头 → 下一个词元的概率', 'Output head → odds for the next token')}</div></div>`;
+<div class="ly-bx">${z('输出头 → 下一个词元的概率', 'Output head → probability of the next token')}</div></div>`;
 }
 
 /** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */

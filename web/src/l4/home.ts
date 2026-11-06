@@ -27,8 +27,8 @@ export const skyP = (T: number) => softmax(SKY, T);
 export const dayNo = (t = Date.now()) => { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
 export const pickDay = <T>(pool: readonly T[], t = Date.now()) => pool[dayNo(t) % pool.length]!;
 const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
-const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句话 + 一张图', 'Line + picture'], m: ['类比 + 图 + 1 题', 'Analogy + quiz'], d: ['公式 + 推导', 'Formulas'] };
-const CIRC = ['①', '②', '③', '④', '⑤'], LYN: readonly Tx[] = [['类比', 'hook'], ['图', 'picture'], ['数字', 'numbers'], ['公式', 'formula'], ['小测', 'check']];
+const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句话 + 一张图', 'One line + one picture'], m: ['类比 + 图 + 数字 + 1 题', 'Analogy + picture + numbers + 1 quiz'], d: ['公式 + 推导 + 小测', 'Formulas + derivation + check'] };
+const CIRC = ['①', '②', '③', '④', '⑤'], LYN: readonly Tx[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
 const openOf = (page: string) => { try { const n = Number((JSON.parse(localStorage.getItem('si.ly.open') || '{}') as Record<string, unknown>)[page]); return Number.isInteger(n) && n >= 1 && n <= 5 ? n : 0; } catch { return 0; } };
@@ -39,13 +39,13 @@ export function home(host: HTMLElement, A: HomeApi) {
   const d = depthGet(), r = goalNow(), seen = seenSt(), vd = vfDone(), m = masteredSt(vd), back = isBack();
   const nxt = routeNext(r, m, seen), mins = (n: number) => z(`约 ${routeMin(n, d)} 分钟`, `about ${routeMin(n, d)} min`);
   const rMeta = (x: Route) => `${esc(tx(x.n, l))} · ${z(`${x.st.length} 站`, `${x.st.length} stops`)} · ${mins(x.st.length)}`;
-  const chooser = `<p class="hm-pick">${z('我想', 'I want to')} <button type="button" class="hm-dd" data-h="sheet" aria-haspopup="dialog">${esc(tx(r.n, l))} <i aria-hidden="true">▾</i></button>${z('，每站', ', per stop')} <button type="button" class="hm-dd" data-h="sheet" aria-haspopup="dialog">${esc(tx(DLAB[d], l))} <i aria-hidden="true">▾</i></button></p>`;
+  const chooser = `<p class="hm-pick">${z('我想', 'I want to')} <button type="button" class="hm-dd" data-h="sheet" aria-haspopup="dialog">${esc(tx(r.n, l))} <i aria-hidden="true">▾</i></button>${z('，每站', ', each stop')} <button type="button" class="hm-dd" data-h="sheet" aria-haspopup="dialog">${esc(tx(DLAB[d], l))} <i aria-hidden="true">▾</i></button></p>`;
 
   /* ---------- the top: first visit or returning ---------- */
   let top: string;
   if (!back) {
     const p = skyP(1);
-    top = `<section class="hm-hero"><p class="hm-k">${z('零基础 · 每站 5 分钟 · 不用注册', 'No background · 5 min a stop · no sign-up')}</p>
+    top = `<section class="hm-hero"><p class="hm-k">${z('零基础 · 每站 5 分钟 · 不用注册', 'No prior knowledge · 5 min per stop · no sign-up')}</p>
 <h1 class="hm-h">${z('从一道小学算术，', 'From grade-school arithmetic')}<span>${z('一路搭到 ChatGPT', 'all the way to ChatGPT')}</span></h1>
 <p class="hm-s">${z(`${DV_N} 站讲透 AI 是怎么“想”出下一个字的，每一站都能自己动手算一遍。`, `${DV_N} stops on how AI “thinks up” the next word, and every stop lets you work it out yourself.`)}</p></section>
 <section class="hm-card hm-demo" data-hm="demo"><div class="hm-dh"><b>${z('天空是', 'The sky is')} <span class="hm-q">？</span></b><span class="hm-chip">${z('拖一拖', 'Drag')} · ${z('温度', 'temp')} <output>1.0</output></span></div>
@@ -59,7 +59,7 @@ ${chooser}
 <div class="hm-chips" role="radiogroup" aria-label="${z('路线', 'Route')}">${ROUTES.map((x) => `<button type="button" role="radio" aria-checked="${x.id === r.id}" class="hm-rc${x.id === r.id ? ' on' : ''}" data-h="goal:${x.id}" style="--c:${x.c}"><i aria-hidden="true"></i><b>${esc(tx(x.n, l))}</b><span>${z(`${x.st.length} 站`, `${x.st.length} stops`)}${x.id === r.id ? z(' · 已选', ' · chosen') : ''}</span></button>`).join('')}</div>`;
   } else {
     const done = r.st.filter((k) => m.has(String(k))).length, page = `D/${nxt}`, op = openOf(page), q = VF_Q[page] ?? [], qLeft = q.filter((id) => !vd.has(id)).length;
-    const where = op ? z(`上次看到 ${CIRC[op - 1]} ${tx(LYN[op - 1]!, 'zh')}层，还差 ${5 - op} 层`, `Last at ${CIRC[op - 1]} ${tx(LYN[op - 1]!, 'en')}, ${5 - op} layer${5 - op === 1 ? '' : 's'} to go`) : z('这一站还没开始', 'Not started yet');
+    const where = op ? z(`上次看到 ${CIRC[op - 1]} ${tx(LYN[op - 1]!, 'zh')}，还差 ${5 - op} 层`, `Last at ${CIRC[op - 1]} ${tx(LYN[op - 1]!, 'en')}, ${5 - op} layer${5 - op === 1 ? '' : 's'} to go`) : z('这一站还没开始', 'Not started yet');
     const how = qLeft ? z(`，读完做对 ${qLeft} 道小测就算掌握。`, `; get ${qLeft} quiz question${qLeft === 1 ? '' : 's'} right to master it.`) : z('。', '.');
     const metro = r.st.map((k) => { const key = String(k), c = m.has(key) ? 'done' : key === nxt ? 'cur' : seen.has(key) ? 'seen' : ''; return `<li class="${c}"><i aria-hidden="true"></i><span>${key}</span></li>`; }).join('');
     const ls = layerMastery(m), mm = m.size;
@@ -72,7 +72,7 @@ ${chooser}
 ${chooser}
 <div class="hm-sec"><b>${z('我的掌握', 'What I’ve mastered')}</b><a class="hm-lk" href="#R">${z('学习记录', 'Learning record')} ›</a></div>
 <section class="hm-card hm-mst"><div class="hm-rw">${ring}<p><b>${mm}</b><span>/ ${z(`${DV_N} 站`, `${DV_N} stops`)}</span></p></div><ul class="hm-lvb">${bars}</ul>
-<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握 = 这一站的小测全对`, `${vd.size} right · ${seen.size} stops read · mastered = every quiz on the stop right`)}</p></section>
+<p class="hm-n hm-mn">${z(`答对 ${vd.size} 题 · 读过 ${seen.size} 站 · 掌握＝该站小测全对`, `${vd.size} right · ${seen.size} stops read · mastered = every quiz on the stop right`)}</p></section>
 <div class="hm-chf" data-hm="chf" hidden></div>`;
   }
 
@@ -155,7 +155,7 @@ export function sheet(A: HomeApi) {
   const draw = () => {
     const d = depthGet(), r = goalNow(), jv = jvGet();
     el.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${z('调整我的学法', 'Adjust how I learn')}</b><span class="hm-shm">${z('随时可改 · 只存在本机', 'Change anytime · kept on this device')}</span></header><div class="l4-sbody">
-<h3 class="hm-sht">${z('每站学多深', 'How deep per stop')}</h3><div class="hm-dep" role="radiogroup" aria-label="${z('每站学多深', 'How deep per stop')}">${(['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" aria-checked="${k === d}" class="${k === d ? 'on' : ''}" data-s="d:${k}"><b>${esc(tx(DLAB[k], l))}</b><span>${esc(tx(DSUB[k], l))}</span></button>`).join('')}</div>
+<h3 class="hm-sht">${z('每站学多深', 'How deep at each stop')}</h3><div class="hm-dep" role="radiogroup" aria-label="${z('每站学多深', 'How deep at each stop')}">${(['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" aria-checked="${k === d}" class="${k === d ? 'on' : ''}" data-s="d:${k}"><b>${esc(tx(DLAB[k], l))}</b><span>${esc(tx(DSUB[k], l))}</span></button>`).join('')}</div>
 <h3 class="hm-sht">${z('为了什么学', 'What for')}</h3><div class="hm-gl" role="radiogroup" aria-label="${z('为了什么学', 'What for')}">${ROUTES.map((x) => `<button type="button" role="radio" aria-checked="${x.id === r.id}" class="${x.id === r.id ? 'on' : ''}" data-s="g:${x.id}" style="--c:${x.c}"><i aria-hidden="true"></i><span><b>${esc(tx(x.n, l))}</b><small>${z(`${x.st.length} 站`, `${x.st.length} stops`)} · ${z(`约 ${routeMin(x.st.length, d)} 分钟`, `about ${routeMin(x.st.length, d)} min`)}</small></span><em aria-hidden="true"></em></button>`).join('')}</div>
 <div class="l4-srow hm-jv"><span>${z('我是程序员', 'I’m a programmer')}<small>${z('类比优先用代码说（注意力 ≈ 软的 HashMap.get）', 'Analogies in code first (attention ≈ a soft HashMap.get)')}</small></span><button type="button" class="l4-sw${jv ? ' on' : ''}" role="switch" aria-checked="${jv}" aria-label="${z('我是程序员', 'I’m a programmer')}" data-s="jv"><i></i></button></div>
 </div><footer class="l4-sf"><button type="button" class="hm-cta" data-s="go">${z('按这条路线开始', 'Start this route')} ›</button></footer></div>`;

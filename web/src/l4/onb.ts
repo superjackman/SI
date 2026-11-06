@@ -34,7 +34,7 @@ export function showOnb(host: HTMLElement, l: L, quick: () => void) {
   ];
   const draw = () => {
     const body = st === 1
-      ? `<p class="ob-k">${z(['欢迎', 'Welcome'])}</p><h2>${z(['你想学多深？', 'How deep do you want to go?'])}</h2><p class="ob-m">${z(['同一批内容，只是展开多少不同。之后随时能改。', 'Same content; only how much is opened differs. Change anytime later.'])}</p>
+      ? `<p class="ob-k">${z(['开始之前', 'Before you start'])}</p><h2>${z(['你想学多深？', 'How deep do you want to go?'])}</h2><p class="ob-m">${z(['同一批内容，只是展开多少不同。之后随时能改。', 'Same content; only how much is opened differs. Change anytime later.'])}</p>
 <div class="ob-pick">${DEPTHS.map((d) => `<button type="button" class="ob-c${depth === d.id ? ' on' : ''}" data-o="depth:${d.id}"><b>${esc(z(d.n))}</b><span>${esc(z(d.s))}</span></button>`).join('')}</div>`
       : `<h2>${z(['你为什么学？', 'Why are you learning?'])}</h2><p class="ob-m">${z(['选一条路线，站点按推导顺序；同一批站，不同地铁线。', 'Pick a route. Stops follow derivation order — same stations, different metro lines.'])}</p>
 <div class="ob-pick">${ROUTES.map((r) => `<button type="button" class="ob-c${goal === r.id ? ' on' : ''}" data-o="goal:${r.id}" style="--c:${r.c}"><b>${esc(tx(r.n, l))}</b><span>${esc(tx(r.s, l))}</span></button>`).join('')}</div>`;
