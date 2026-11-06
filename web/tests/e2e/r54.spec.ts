@@ -5,7 +5,7 @@ import { textIssues } from './small-text.js';
    equal-width rows with a title, a one-line summary, the card count and progress; no trapezoids, no pyramid shape.
    (2) on a layered stage page the depth switch and the five-layer bar stay pinned at the top of the scroll box, and a
    layer opened from the bar lands just below them, nothing covered. No in-site move adds a history entry. */
-const ORIGIN = 'http://localhost:4173';
+const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
 test.use({ storageState: { cookies: [], origins: [{ origin: ORIGIN, localStorage: DONE }] } });
 async function open(p: Page, q: string) {
