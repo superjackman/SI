@@ -7,7 +7,7 @@ import { UI, tx, type L } from '../l4/txt';
 import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
-import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_OF, DV_SEEN, DV_USES, cardLv, dvI, dvK, posLabel } from './links';
+import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_SEEN, cardLv, dvI, dvK, posLabel } from './links';
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
@@ -15,7 +15,6 @@ import { ML_G, masteredSt, seenSt, stationMin } from './prog';
 import { stripIds } from './plain';
 import { morph, morphWire } from './morph';
 import { outlineHtml, railHtml, railWire } from './rail';
-import { tx as cx } from '../i18n/L';
 
 const LC = ['var(--lv1)', 'var(--lv2)', 'var(--lv3)', 'var(--lv4)', 'var(--lv5)'], GOLD = 'var(--highlight)';
 const col = (i: number) => { const n = DV_LV[i]!; return n ? LC[n - 1]! : GOLD; };
@@ -40,8 +39,8 @@ const stepNo = (i: number, l: L) => posLabel(i, l === 'en' ? 'en' : 'zh');
 /** #D/<key> of station i */
 const hD = (i: number) => `#D/${dvK(i)}`;
 /** end of a station: the reason to continue, then the next stop, then share and backup. No dialog. */
-export function stationEnd(lo: string, next: string, share: string, backup: string): string {
-  return `<section class="dv-end" data-st-end="1"><p class="dv-lo">${lo}</p>${next}<div class="px-row dv-end-do"><button type="button" class="l4-b" data-st-share="1">${share}</button><button type="button" class="l4-b" data-go="#R">${backup}</button></div></section>`;
+export function stationEnd(lo: string, next: string): string {
+  return `<section class="dv-end" data-st-end="1"><p class="dv-lo">${lo}</p>${next}</section>`;
 }
 
 export async function dv(id: string, A: PxApi) {
@@ -55,7 +54,7 @@ export async function dv(id: string, A: PxApi) {
   const C: Record<string, Card> = { ...(await cards(l, 'K01')), ...(await cards(l, 'KA01')), ...(await cards(l, 'KC01')) }; if (!A.still()) return;
   /* the station count sits in the page title and in .dv-pos, both in the reading column’s frame, so a wide layout still shows it when the bottom pager is not the place to look */
   A.top(`<b class="l4-tt">${stepNo(i, l)} · ${esc(S.n)}</b>`);
-  A.crumb([[z('首页', 'Home'), '#home'], [name, '#D'], [`${stepNo(i, l)} · ${S.n}`, null]]);
+  A.crumb([[z('学习', 'Learn'), '#home'], [`${stepNo(i, l)} · ${S.n}`, null]]);
   const sec = (c: number, h: string, body: string) => body ? `<section class="l4-ks"><h3 class="l4-kh c${c}">${h}</h3><div class="l4-kbd">${body}</div></section>` : '';
   const ul = (xs: string[]) => xs.length ? `<ul>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '';
   const prev = i > 0 ? D.st[i - 1]! : null, next = i < DV_N - 1 ? D.st[i + 1]! : null, n = DV_LV[i]!;
@@ -64,12 +63,12 @@ export async function dv(id: string, A: PxApi) {
   const from = !prev ? `<p class="dv-from s"><span>${z('起点', 'The start')}</span><b>${z('地基：一个能调的函数', 'The foundation: a function you can tune')}</b></p>`
     : prevSeen ? `<button type="button" class="dv-from" data-go="${hD(i - 1)}"><span>${z(`${stepNo(i - 1, l)}留下的问题`, `Left open by ${stepNo(i - 1, l)}`)}</span><b>${esc(prev.e)}</b></button>`
     : `<p class="dv-from s"><span>${z('从这里接上', 'Pick up here')}</span><b>${esc(bridge)}</b></p>`;
-  const nxt = next ? `<button type="button" class="l4-b g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`下一站 · ${stepNo(i + 1, l)} · `, `Next · ${stepNo(i + 1, l)} · `)}${esc(next.n)}</button>`
-    : `<div class="dv-end"><button type="button" class="l4-b g-jump" data-fwd="1" data-go="#D">${z('回链路', 'Back to the chain')}</button><a class="dv-quiet" href="#map">${z('看五层结构', 'The five layers')}</a></div>`;
+  const layerShift = next && DV_LV[i] !== DV_LV[i + 1] ? `<p class="st-nextlay">${z(`下一层从「${next.n}」接上。`, `The next layer starts with “${next.n}”.`)}</p>` : '';
+  const nxt = next ? `${layerShift}<button type="button" class="l4-b g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`下一站 · ${stepNo(i + 1, l)} · `, `Next · ${stepNo(i + 1, l)} · `)}${esc(next.n)}</button>`
+    : `<button type="button" class="l4-b g-jump" data-fwd="1" data-go="#me">${z('回到我的进度', 'Back to my progress')} ›</button>`;
   /* R48 cards both ways: born here (square 第n层 badge = the card's pyramid layer) / used again here (round 第n步 badge = where it was born) */
   const kb = (k: string, badge: string) => `<button type="button" class="l4-b g-info dv-kb" data-k="${k}">${badge}<span class="dv-kn">${esc(C[k]!.n)}</span></button>`;
   const lvB = (k: string) => { const c = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[c - 1]}">${tx(UI.lv[c - 1]!, l)}</span>`; };
-  const born = DV_BORN[i]!.filter((k) => C[k]).map((k) => kb(k, lvB(k))).join(''), uses = DV_USES[i]!.filter((k) => C[k]).map((k) => kb(k, `<span class="dv-sb">${posLabel(DV_OF[k]!, l === 'en' ? 'en' : 'zh')}</span>`)).join('');
   const exK = DV_EX[i]!.length ? `<p class="dv-exh">${z('同一组数', 'The same numbers')}</p><div class="dv-kg dv-ex">${DV_EX[i]!.filter((k) => C[k]).map((k) => kb(k, lvB(k))).join('')}</div>` : '';
   const top0 = DV_BORN[i]!.find((k) => cardLv(k) === n), tdh = n ? `#L${n}${top0 ? '~' + top0 : ''}` : '#home';
   /* R51 the layered pilot: ① hook → ⑤ check replaces ①–④ + 动手验证 + 验证 (lazy chunk ./ly) */
@@ -81,7 +80,7 @@ export async function dv(id: string, A: PxApi) {
   const hook = S.ly?.hook ? mk(S.ly.hook) : mk((S.i[0] ?? S.q).split(/[。！？.!?]/)[0] ?? S.q);
   const finished = masteredSt().has(dvK(i));
   const seenNow = seenSt();
-  const tabs = `<nav class="st-tabs" aria-label="${z('这一站的段落', 'Parts of this stop')}"><a href="#life" aria-current="true">${z('生活画面', 'Scene')}</a><a href="#fig">${z('图', 'Picture')}</a><a href="#formula">${z('公式', 'Formula')}</a><a href="#code">${z('代码', 'Code')}</a></nav>`;
+  const tabs = `<nav class="st-tabs" aria-label="${z('这一站的段落', 'Parts of this stop')}"><a href="#life" aria-current="true">${z('生活画面', 'Scene')}</a><a href="#fig">${z('图', 'Picture')}</a><a href="#formula">${z('公式', 'Formula')}</a><a href="#code">${z('代码', 'Code')}</a><a href="#q">${z('这一问', 'This question')}</a></nav>`;
   A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<div class="st-main">
 ${tabs}
 <p class="dv-pos">${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}</p>
@@ -90,14 +89,13 @@ ${tabs}
 <p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<div class="st-stage"><figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure></div><p class="dv-first">${hook}</p>
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
 ${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
-<section class="l4-ks dv-later"><h3 class="l4-kh c5">${next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next')}</h3><div class="l4-kbd">${stationEnd(mk(S.lo), nxt, esc(cx('end.share', l)), esc(cx('end.backup', l)))}</div></section>
+<section class="l4-ks dv-later"><h3 class="l4-kh c5">${next ? z('接下来', 'Next') : z('这一站走完了', 'This stop is the last')}</h3><div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
-${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="button" class="l4-b g-act" data-go="#D/ch/${dvK(i)}">${z('✎ 分享挑战题：让朋友算一算', '✎ Share a challenge: let a friend try')}</button></div>` : ''}
-<div class="dv-ks"><h3>${z('换个角度看 · 金字塔里的卡', 'Another angle · cards in the pyramid')}</h3>${born ? `<h4>${z('本步诞生的卡', 'Born in this step')}</h4><div class="dv-kg">${born}</div>` : ''}${uses ? `<h4>${z('本步也用到', 'Also used here')}</h4><div class="dv-kg">${uses}</div>` : ''}<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('在知识地图里看这一步', 'This step on the knowledge map')}</button>${n ? `<button type="button" class="l4-b dv-lv" data-go="#L${n}">${z(`↓ 去金字塔 第${n}层`, `↓ To the pyramid · layer ${n}`)}</button>` : ''}</div></div>${railHtml(dvK(i), S, l)}</div>`;
+</div>${railHtml(dvK(i), S, l)}</div>`;
   A.host.scrollTop = 0; seenAdd(i);
   let fk: string | null = null; try { fk = sessionStorage.getItem(DV_FOCUS); sessionStorage.removeItem(DV_FOCUS); } catch { /* private mode */ }
-  A.host.querySelector('.dv-ks .dv-mp')?.addEventListener('click', () => { try { sessionStorage.setItem(DV_FOCUS, `s${dvK(i)}`); } catch { /* private mode */ } });
+  A.host.querySelector('[data-st-share]')?.addEventListener('click', () => { /* share is the inline link row */ });
   const fb = fk ? A.host.querySelector<HTMLElement>(`.dv-ks .dv-kb[data-k="${fk}"]`) : null; if (fb) { fb.classList.add('on'); fb.scrollIntoView({ block: 'center' }); }
   /* R50 验证优化: demo + 自己算一算 + 常见误解, lazy (first load untouched); re-centre a focused card once it has grown */
   const slot = LY ? null : A.host.querySelector<HTMLElement>('.vf-slot');
@@ -105,10 +103,6 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   if (MLm) MLm.wire(A.host, dvK(i), l, mk, prevSeen ? (prev?.e ?? '') : '', prevSeen && i > 0 ? dvK(i - 1) : '');
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
   A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, hold: true, txt: stepNo(i, l) });
-  A.host.querySelector('[data-st-share]')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    void import('./share').then(({ openShare, progressLine }) => openShare(A.root, l, dvK(i), cx('end.share', l), progressLine(dvK(i), l), 'stop', `si-stop-${dvK(i)}`));
-  });
   const ly = A.host.querySelector('.ly');
   const lead = A.host.querySelector('.dv-lead');
   if (ly && lead) ly.prepend(lead);

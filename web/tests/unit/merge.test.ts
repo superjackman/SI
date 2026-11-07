@@ -79,9 +79,8 @@ describe('week on the home page and the end of a station', () => {
     expect(html).not.toMatch(/先猜|调查|推理|验证|选图|选公式/);
   });
   it('puts the reason to continue before share and backup, and does not open a dialog', () => {
-    const html = stationEnd('<p>下一步要解决留下的问题。</p>', '<a href="#D/7">下一站</a>', '分享这一站', '备份进度');
-    expect(html.indexOf('留下的问题')).toBeLessThan(html.indexOf('data-st-share'));
-    expect(html.indexOf('下一站')).toBeLessThan(html.indexOf('备份进度'));
+    const html = stationEnd('<p>下一步要解决留下的问题。</p>', '<a href="#D/7">下一站</a>');
+    expect(html.indexOf('留下的问题')).toBeLessThan(html.indexOf('下一站'));
     expect(html).not.toContain('g-modal');
     expect(html).not.toMatch(/先猜|调查|推理|验证/);
   });

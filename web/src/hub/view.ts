@@ -63,7 +63,6 @@ function readOf(st: string[], l: L) {
   const links = st.map((k) => `<a href="#D/${k}">${esc(stN(k, l))}</a>`).join(z('、', ', '));
   return `<p class="hb-r">${z(`读懂度 ${got}/${st.length}`, `Read ${got}/${st.length}`)} · ${links}</p>`;
 }
-const shareBtn = (kind: string, id: string, l: L) => `<button type="button" class="l4-b hb-sh" data-sh="${esc(kind)}:${esc(id)}">${esc(cx('share.item', l))}</button>`;
 function goalLink(it: NewsItem, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   return `<p class="hb-r"><a href="#D/${it.goal}">${z(dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'zh') : it.goal, dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'en') : it.goal)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
@@ -73,7 +72,7 @@ function newsItem(it: NewsItem, l: L, checked: string, linked: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
   const body = esc(l === 'en' ? it.en : it.zh);
   const more = (l === 'en' ? it.more.en : it.more.zh).map((s) => `<p>${esc(s)}</p>`).join('');
-  return `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${linked ? `<a href="#news/${esc(it.id)}">${body}</a>` : body}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p>${shareBtn('news', it.id, l)}</article>`;
+  return `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${linked ? `<a href="#news/${esc(it.id)}">${body}</a>` : body}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p></article>`;
 }
 /** `src` is the weeks file. Older weeks are a list only when there is more than one. */
 export function newsFrom(src: { checked: string; weeks: { week: string; items: NewsItem[] }[] }, l: L, item = ''): string {
@@ -113,7 +112,7 @@ function facets(t: Tool) {
 function toolCard(t: Tool, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   const f = facets(t);
-  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}" data-lic="${f.lic}" data-host="${f.host}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
+  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}" data-lic="${f.lic}" data-host="${f.host}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p></article>`;
 }
 export function toolsHtml(l: L, item = ''): string {
   const z = (a: string, b: string) => tx([a, b], l);

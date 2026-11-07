@@ -44,7 +44,8 @@
   .pt-brand b { letter-spacing: 0.14em; font-size: 18px; }
   .pt-name { color: var(--on-navy); font-size: 14px; }
   .pt-links, .pt-more { display: flex; gap: 2px; flex: none; align-items: center; }
-  .pt-links a, .pt-more a { color: var(--on-navy); text-decoration: none; padding: 8px 12px; font-size: 15px; }
+  .pt-links a, .pt-more a, .pt-set { color: var(--on-navy); text-decoration: none; padding: 8px 12px; font-size: 15px; }
+  html.l4-mode .l4 a.hm-cta { background: var(--navy); color: var(--on-navy); }
   .pt-links a[aria-current="page"], .pt-more a[aria-current="page"] { color: var(--on-navy); box-shadow: inset 0 -2px 0 var(--on-navy); }
   .pt-links a:hover, .pt-more a:hover { color: var(--on-navy); }
   .pt-search { display: flex; margin-left: auto; }

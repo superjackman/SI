@@ -66,14 +66,14 @@ test('each starter project at this width', async ({ page }) => {
 test('home week and import preview at this width', async ({ page }) => {
   test.setTimeout(90_000);
   await page.addInitScript(() => localStorage.setItem('si.dv.seen', '["6"]'));
-  const errs = await open(page, './?lang=zh#home');
+  const errs = await open(page, './?lang=zh#me');
   const week = page.locator('[data-week="empty"]');
   await expect(week).toBeVisible({ timeout: 20000 });
   await expect(week).toContainText('这一周');
   await expect(week).toContainText('这周还没有做题');
   await shot(page, 'home-week');
 
-  await page.goto('./?lang=zh#R');
+  await page.goto('./?lang=zh#me');
   await page.waitForTimeout(400);
   const code = await page.evaluate(() => {
     const json = JSON.stringify({ v: 1, d: { 'si.dv.seen': '["13"]', 'si.rv': '{"qb":{"b":0,"due":4,"t":4,"w":0,"f":1}}' } });

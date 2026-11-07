@@ -2,7 +2,6 @@
 import './work.css';
 import works from './works.json';
 import { tx, type L } from '../l4/txt';
-import { tx as cx } from '../i18n/L';
 import { DV_NM, dvI } from '../dv/links';
 import type { PxApi } from '../px/view';
 import { ASK0, askStep, fareTests, kbAnswer, KB_Q, NOTES, type AskState, type FareRule } from './run';
@@ -92,21 +91,9 @@ export async function work(id: string, A: PxApi) {
   A.top(`<b class="l4-tt">${esc(bi([it.zh, it.en], l))}</b>`);
   A.crumb([[z('首页', 'Home'), '#home'], [z('作品', 'Projects'), '#W'], [bi([it.zh, it.en], l), null]]);
   let qid = 'bus', ask: AskState = { ...ASK0 }, rule: FareRule = 'bug';
-  const lines = () => {
-    if (it.id === 'kb') {
-      const { q, note } = kbAnswer(qid);
-      const name = q ? (l === 'en' ? q.en : q.zh) : '';
-      const ans = q ? (l === 'en' ? q.enA : q.zhA) : '';
-      return [name, ans, note ? (l === 'en' ? `Note ${note.id}` : `纸条 ${note.id}`) : (l === 'zh' ? '没有对上的纸条' : 'No note matched')];
-    }
-    if (it.id === 'ask') return [ask.failed ? z('没有问就标成发出', 'Marked sent without asking') : ask.sent ? z('问过之后发出', 'Sent after asking') : z('还停在问你', 'Still waiting for you'), z('样本，不是真的邮件', 'A sample, not a real mail'), ''];
-    const rows = fareTests(rule), n = rows.filter((r) => r.ok).length;
-    return [z(`${n}/2 道对上了`, `${n}/2 matched`), rows.map((r) => `${r.km}→${r.got}`).join(' '), rule];
-  };
   const paint = () => {
     const body = it.id === 'kb' ? kbBody(l, qid) : it.id === 'ask' ? askBody(l, ask) : fixBody(l, rule);
-    const share = `<button type="button" class="l4-b gold" data-wk-share="1">${esc(cx('work.save', l))}</button>`;
-    A.host.innerHTML = shell(it, l, tab, body + share);
+    A.host.innerHTML = shell(it, l, tab, body);
     A.step({
       n: 3, i: tab, keys: ['1', '2', '3'], txt: z(`作品 ${tab + 1} / 3`, `Project ${tab + 1} / 3`),
       pv: z('上一页', 'Back'), nx: z('下一页', 'Next'),
@@ -124,14 +111,6 @@ export async function work(id: string, A: PxApi) {
     if (b.dataset.wkQ) { qid = b.dataset.wkQ; paint(); return; }
     if (b.dataset.wkAsk) { ask = askStep(ask, b.dataset.wkAsk as 'ask' | 'skip' | 'yes' | 'no'); paint(); return; }
     if (b.dataset.wkFare) { rule = b.dataset.wkFare as FareRule; paint(); return; }
-    if (b.dataset.wkShare) {
-      const url = `${location.origin}${location.pathname}?lang=${l}#W/${it.id}`;
-      void import('../l4/share/modal').then(async (modal) => {
-        const D = await import('../l4/share/draw');
-        const data = workCard(it, l, lines().filter(Boolean), url, tx(D.SITE_N, l));
-        await modal.mountShare(A.root, { l, title: cx('work.save', l), file: `si-work-${it.id}`, data, kind: 'work' });
-      });
-    }
   };
   paint();
 }

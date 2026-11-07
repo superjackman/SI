@@ -42,7 +42,7 @@ test('stations 6, 7 and 10: the check is that part’s own question, and a wrong
   await pr.locator(`[data-ml-p="${wrong}"]`).click();
   await expect(pr.locator('.ml-dead')).toHaveCount(1);
   await expect(pr.locator('.ml-live')).toHaveCount(0);
-  await expect(pr).toContainText('还可以再选');
+  await expect(pr).toContainText('对不上这道题里的数');
   await expect(pr).not.toContainText('对了');
   await pr.locator(`[data-ml-p="${own.a}"]`).click();
   await expect(pr.locator('.ml-live')).toHaveCount(1);

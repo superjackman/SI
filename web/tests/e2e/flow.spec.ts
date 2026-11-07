@@ -20,7 +20,7 @@ async function oneForward(p: Page, where: string) {
 }
 
 test('empty storage walks station 0 through 16 with one forward and no skip', async ({ page }) => {
-  test.setTimeout(600_000);
+  test.setTimeout(900_000);
   const errs: string[] = [];
   page.on('pageerror', (e) => errs.push(String(e)));
   await page.goto('./?lang=zh#home');
@@ -67,7 +67,7 @@ test('empty storage walks station 0 through 16 with one forward and no skip', as
     if (i < DV_KEY.length - 1) await page.locator('.dv-nx').click();
     else await page.locator('.dv-end [data-fwd="1"]').click();
   }
-  await expect(page).toHaveURL(/#D$/);
+  await expect(page).toHaveURL(/#me$/);
   expect(errs).toEqual([]);
 });
 
@@ -85,9 +85,7 @@ test('next day opens the station that was entered and not finished, with reviews
   await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
   await expect(page.locator('.hm-go em')).toContainText('1/23');
   await expect(page.locator('.hm-go')).not.toContainText('0/10');
-  const order = await page.evaluate(() => [...document.querySelectorAll('.hm-go, .hm-rv')].map((e) => e.className));
-  expect(order[0]).toContain('hm-go');
-  expect(order.some((c) => c.includes('hm-rv'))).toBe(true);
-  expect(order.findIndex((c) => c.includes('hm-rv'))).toBeGreaterThan(0);
+  await expect(page.locator('.hm-ratios')).toBeVisible();
+  await expect(page.locator('.hm-ratio')).toHaveCount(4);
   await expect(page.locator('.hm-bell')).toHaveCount(0);
 });

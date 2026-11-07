@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 /* Phone is a single column that must not scroll sideways. Desktop is the real layout. */
-const pages = ['#home', '#D/2', '#P', '#R', '#tools', '#news', '#map'];
+const pages = ['#home', '#D/2', '#review', '#me', '#tools', '#news', '#settings', '#map', '#P', '#L4'];
 
 test('390: home, station, practice, progress, tools, news and the map do not scroll sideways', async ({ page }) => {
   await page.goto('./?lang=zh#home');

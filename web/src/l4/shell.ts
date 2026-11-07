@@ -6,10 +6,10 @@ import './portal.css';
 import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
-import { FRAME, LAB, LAB_S, NODES, NODE_INFO, NODE_K, PLUS, RES, K_MATH, STEPN, UI, tx, type L, type Nd, type Tx } from './txt';
+import { FRAME, LAB, LAB_S, NODES, NODE_INFO, NODE_K, PLUS, RES, K_MATH, UI, tx, type L, type Nd, type Tx } from './txt';
 import { MY_DEFAULT, ORDER, Q, fixLines, X_ORDER, hashOf, page, parse, validX, xHash, type Ans, type Ctx, type My, type Page } from './pages';
 import type { Stage } from './scene3d';
-import { LIVE, LX, LX_N, LX_SEL, isLx, layerOf, lxFrom, lxHash, lxPrev } from '../lx/ids';
+import { LIVE, LX, LX_SEL, isLx, layerOf, lxFrom, lxHash, lxPrev } from '../lx/ids';
 import type { LxPg } from '../lx/types';
 import type { Demo } from './tf/core';
 import type { Trace } from './tf/model';
@@ -19,10 +19,11 @@ import { applyAnim } from '../store/prefs';
 import { normCrumb } from './crumb';
 import { gramOn } from './gram';
 import type { Step } from '../px/view';
-import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
+import { LBG, LCOL, layerStats, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
-import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv, posLabel } from '../dv/links';
+import { DV_ALIAS, isDv } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
+import { redirectTo } from './go';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q|W)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
@@ -34,7 +35,7 @@ export function start(doc: Document = document, win: Window = window) {
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
   try { const th = localStorage.getItem('si.theme'); if (th === 'dark') doc.documentElement.dataset.theme = 'dark'; } catch { /* private mode */ }
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><nav class="pt-more" aria-label="学习入口"><a href="#map" data-pt="map">地图</a><a href="#P" data-pt="prac">练习</a><a href="#R" data-pt="me">我的</a></nav><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  root.innerHTML = `<header class="l4-top"><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#review" data-pt="review">复习</a><a href="#me" data-pt="me">我的</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><a class="pt-set" href="#settings" data-pt="set">设置</a></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
 <main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden><div class="l4-body"></div><footer class="pt-foot" hidden></footer></div></main>
 <div class="l4-ent" hidden></div>
@@ -167,18 +168,18 @@ export function start(doc: Document = document, win: Window = window) {
     const zh = lang !== 'en';
     const name = root.querySelector<HTMLElement>('.pt-name'); if (name) name.textContent = zh ? '大白话拆解 AI' : 'AI, explained plainly';
     const lab: Record<string, string> = zh
-      ? { learn: '学习', tools: '工具', news: '资讯', work: '项目', map: '地图', prac: '练习', me: '我的' }
-      : { learn: 'Learn', tools: 'Tools', news: 'News', work: 'Projects', map: 'Map', prac: 'Practice', me: 'Me' };
+      ? { learn: '学习', review: '复习', me: '我的', tools: '工具', news: '资讯', work: '项目', set: '设置' }
+      : { learn: 'Learn', review: 'Review', me: 'Me', tools: 'Tools', news: 'News', work: 'Projects', set: 'Settings' };
     root.querySelectorAll<HTMLAnchorElement>('[data-pt]').forEach((a) => {
       const k = a.dataset.pt || '';
       a.textContent = lab[k] || a.textContent;
-      const on = k === 'learn' ? cur === 'home' || cur.startsWith('D') || cur.startsWith('L')
+      const on = k === 'learn' ? cur === 'home' || cur.startsWith('D/')
+        : k === 'review' ? cur === 'review'
+        : k === 'me' ? cur === 'me'
         : k === 'tools' ? cur === 'tools' || cur.startsWith('tools/')
         : k === 'news' ? cur === 'news' || cur.startsWith('news/')
         : k === 'work' ? cur === 'W' || cur.startsWith('W/')
-        : k === 'map' ? cur === 'map'
-        : k === 'prac' ? cur === 'P' || cur.startsWith('P/')
-        : k === 'me' ? cur === 'R' || cur.startsWith('R/')
+        : k === 'set' ? cur === 'settings'
         : false;
       if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
@@ -186,19 +187,23 @@ export function start(doc: Document = document, win: Window = window) {
     if (q) { q.placeholder = zh ? '搜索站、工具、资讯' : 'Search stops, tools, news'; q.setAttribute('aria-label', q.placeholder); }
     const nav = root.querySelector('nav.pt-links'); if (nav) nav.setAttribute('aria-label', zh ? '主导航' : 'Main');
     const foot = root.querySelector<HTMLElement>('.pt-foot');
-    const showFoot = cur === 'home' || cur === 'about' || cur === 'news' || cur.startsWith('news/') || cur === 'tools' || cur.startsWith('tools/') || cur === 'W' || cur.startsWith('W/');
+    const showFoot = cur === 'home' || cur === 'review' || cur === 'me' || cur === 'search' || cur === 'settings' || cur === 'news' || cur.startsWith('news/') || cur === 'tools' || cur.startsWith('tools/') || cur === 'W' || cur.startsWith('W/');
     if (foot) {
       foot.hidden = !showFoot;
       foot.innerHTML = zh
-        ? `<div><h2>关于</h2><p>这个站由 GitHub 仓库 superjackman/SI 的所有者维护。</p><p><button type="button" data-a="menu">目录</button></p></div><div><h2>来源说明</h2><p>站里的数字来自同一张数表。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。</p></div><div><h2>更新时间</h2><p>资讯与工具目录核对于 2026-11-06。工具对照核对于 2026-11-07。</p></div>`
-        : `<div><h2>About</h2><p>This site is maintained by the owner of the GitHub repository superjackman/SI.</p><p><button type="button" data-a="menu">Contents</button></p></div><div><h2>Sources</h2><p>Numbers come from one table. News and tools name a source, a date and the day they were checked.</p></div><div><h2>Updated</h2><p>News and the tool list were checked on 2026-11-06. The tool comparison was checked on 2026-11-07.</p></div>`;
+        ? `<div><h2>SI</h2><p>一个数学函数，搭到大模型、安全与应用。23 站都在这个页面里。</p></div><div><h2>学习</h2><p><a href="#home">从第 1 站开始</a><br><a href="#review">复习</a><br><a href="#me">我的进度</a></p></div><div><h2>旁边</h2><p><a href="#tools">工具</a><br><a href="#news">资讯</a><br><a href="#W">项目</a></p></div>`
+        : `<div><h2>SI</h2><p>From one function, up to models, safety and use. All 23 stops live here.</p></div><div><h2>Learn</h2><p><a href="#home">Start at stop 1</a><br><a href="#review">Review</a><br><a href="#me">Progress</a></p></div><div><h2>Also</h2><p><a href="#tools">Tools</a><br><a href="#news">News</a><br><a href="#W">Projects</a></p></div>`;
     }
   }
+  const isDesk = (id: string) => id === 'review' || id === 'me' || id === 'search' || id === 'settings';
+  function drawDesk() {
+    const t = ++hmTok, l = lang, id = cur;
+    pageScroll.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = '';
+    void import('./desk').then((m) => { if (t !== hmTok || cur !== id || lang !== l) return; m.paint(home, id, l, root, () => { if (cur === id) render(); }); });
+  }
   function render() {
-    root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
+    root.dataset.lang = lang;
     paintPortal();
-    $('[data-a="set"]').textContent = '⚙'; $('[data-a="set"]').setAttribute('aria-label', tx(['设置', 'Settings'], lang)); $('[data-a="back"]').textContent = '↑'; $('[data-a="back"]').setAttribute('aria-label', tx(['返回上一级', 'Up one level'], lang));
-    $('[data-a="menu"]').textContent = '☰'; $('[data-a="menu"]').setAttribute('aria-label', tx(['地图和进度', 'Map and progress'], lang));
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
     root.dataset.page = cur; drawTabs();
@@ -206,7 +211,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; pageScroll.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
     pageScroll.hidden = isL4; stg.hidden = !isL4;
-    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || isHub(cur) || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
+    if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = '';
+      if (isDesk(cur)) { drawDesk(); return; }
       if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
     pg = page(cur, ctx()); drawTop(pg);
@@ -292,14 +298,14 @@ export function start(doc: Document = document, win: Window = window) {
   /* R53 the 4 bottom tabs, only on the four top-level pages; a tab is a data-go, so it never adds a history entry */
   const TABS: [string, string, Tx, string][] = [
     ['home', '#home', ['学习', 'Learn'], '<path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>'],
-    ['map', '#map', ['地图', 'Map'], '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7l3 9M16 7l-3 9M8.5 6h7"/>'],
-    ['P', '#P', ['练习', 'Practice'], '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
-    ['R', '#R', ['我的', 'Me'], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>'],
+    ['review', '#review', ['复习', 'Review'], '<path d="M4 5h16v11H9l-5 4z"/>'],
+    ['me', '#me', ['我的', 'Me'], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>'],
+    ['tools', '#tools', ['工具', 'Tools'], '<path d="M4 8h16v10H4z"/>'],
   ];
   function drawTabs() {
-    const on = TABS.some(([id]) => id === cur) || isHub(cur) || cur === 'about'; tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
+    const on = TABS.some(([id]) => id === cur) || isHub(cur) || cur === 'home' || cur === 'search' || cur === 'settings'; tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
     tabs.setAttribute('aria-label', tx(['主导航', 'Main'], lang));
-    const homeOn = cur === 'home' || cur === 'about' || isHub(cur);
+    const homeOn = cur === 'home' || cur === 'search' || cur === 'settings';
     tabs.innerHTML = TABS.map(([id, h, t, ic]) => { const here = id === 'home' ? homeOn : id === cur; return `<button type="button" data-go="${h}"${here ? ' class="on" aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${tx(t, lang)}</span></button>`; }).join('');
   }
   function drawNav() {
@@ -322,52 +328,18 @@ export function start(doc: Document = document, win: Window = window) {
 
   /* ---------- sheets: card, map, progress ---------- */
   let cardFor = '';
-  async function card(id: string | null) {
-    root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); if (!id) { cardFor = ''; return; }
-    const [k, p] = id.split('.') as [string, string | undefined]; pushRecent(k, 'c'); opened.add(k); LS.set('si.l4.cards', [...opened]);
-    const m = await import('./sheet'); cardFor = id;
-    const j = qOn() ? PATH.findIndex(([h, c]) => c === k && stopOf(h) === cur) : -1;
-    await m.openCard(root, lang, k, p === '2' ? 2 : 1, (s) => go(H(cur) + (s ? '~' + s : '')), `${location.origin}${location.pathname}?lang=${lang}${H(cur)}`, j >= 0 ? { i: j + 1, n: PATH.length, next: qNext } : undefined);
-  }
-  function list(title: string, body: string, tabs?: [string, string][], alt?: string) {
-    root.querySelector('.l4-sheet:not(.l4-set)')?.remove(); const e = doc.createElement('div'); e.className = 'l4-sheet l4-ms'; e.setAttribute('role', 'dialog'); e.setAttribute('aria-label', title);
-    e.innerHTML = `<div class="l4-sin"><header class="l4-sh"><b class="l4-kn">${title}</b></header><div class="l4-sbody">${tabs ? `<div class="g-seg" role="tablist">${tabs.map(([k, t], i) => `<button type="button" role="tab" data-t="${k}" class="${i ? '' : 'on'}" aria-selected="${!i}">${esc(t)}</button>`).join('')}</div>` : ''}<div class="l4-mb">${body}</div></div><footer class="l4-sf"><button type="button" class="l4-b" data-s="x">${T('close')}</button></footer></div>`;
-    e.addEventListener('click', (ev) => {
-      const t = ev.target as HTMLElement, tb = t.closest<HTMLElement>('[data-t]');
-      if (tb && tabs) { e.querySelectorAll('[data-t]').forEach((x) => { x.classList.toggle('on', x === tb); x.setAttribute('aria-selected', String(x === tb)); }); e.querySelector('.l4-mb')!.innerHTML = (tb.dataset.t === tabs[0]![0] ? body : alt) ?? ''; return; }
-      const g = t.closest<HTMLElement>('[data-go]'); if (g) { e.remove(); go(g.dataset.go!); return; }
-      if (t === e || t.closest('[data-s="x"]') || t.closest('a')) e.remove();
-    }); root.appendChild(e);
-  }
-  const li = (id: string, label: string) => `<a href="${H(id)}" class="${id === cur ? 'here' : seen.has(id) ? 'seen' : ''}">${esc(label)}${id === cur ? ` <em>${T('here')}</em>` : ''}</a>`;
-  function mapSheet() {
-    const stats = layerStats(seen), lh = (n: number) => { const x = stats[n - 1]!; return `<h4 class="l4-mh">${esc(`${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)}`)}${pbar(x.s, x.t, n)}<span class="m">${x.s === x.t ? tx(['看完 ✓', 'All seen ✓'], lang) : tx([`看过 ${x.s}/${x.t}`, `${x.s}/${x.t} seen`], lang)}</span></h4>`; };
-    const sec = (t: string, ids: string[], ns: Tx[], n = 0) => `${n ? lh(n) : `<h4>${esc(t)}</h4>`}<div class="l4-ml">${ids.map((id, i) => li(id, tx(ns[i]!, lang))).join('')}</div>`;
-    const xs = X_ORDER.map((p) => 'X:' + p), xn: Tx[] = [LAB.att, ['Q·K 打分', 'Q·K scores'], ['一个数', 'One number'], ['多头', 'Heads'], ['遮罩', 'Mask'], LAB.ffn, LAB.an1];
-    const lxs = (n: 1 | 2 | 3 | 5) => LIVE.includes(n) ? sec('', LX[n], LX[n].map((id) => [tx(LX_N[id]!, 'zh').replace(/^M\d\s+/, ''), tx(LX_N[id]!, 'en').replace(/^M\d\s+/, '')] as Tx), n) : '';
-    const soonL = [1, 2, 3, 5].filter((n) => !LIVE.includes(n)).map((n) => `<a href="#L${n}">${tx(UI.lv[n - 1]!, lang)} ${tx(UI.lvN[n - 1]!, lang)} <em>${T('soon')}</em></a>`).join('');
-    const opened = new Set(LS.get<string[]>('si.l4.cards', [])), ps = layerStats(seen, opened);
-    const lm = layerMastery(masteredSt());
-    const prog = `<div class="l4-mpg">${ps.map((x) => { const [ma, mt] = lm[x.n - 1]!; return `<div class="rw">${lvTag(x.n, lang)}${pbar(ma, mt, x.n)}<span class="m">${esc(tx([`掌握 ${ma}/${mt} 站`, `${ma}/${mt} stops mastered`], lang))}</span></div>`; }).join('')}<button type="button" class="l4-b g-jump" data-go="#R">${tx(['看完整学习进度', 'See full progress'], lang)}</button></div>`;
-    const onSt = /^D\/(?!map$|routes$|ch)/.test(cur), td = root.dataset.topdown || '#map';
-    const vsw = onSt ? `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${tx(['换个角度看', 'Another angle'], lang)}"><button type="button" role="radio" aria-checked="false" data-go="${td}">${tx(['自顶向下·看结构', 'Top-down · structure'], lang)}</button><button type="button" role="radio" aria-checked="true" class="on">${tx(['自底向上·看推导', 'Bottom-up · derivation'], lang)}</button></div>` : '';
-    list(T('mapT'), vsw + `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
-      + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
-      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${posLabel(i, lang === 'en' ? 'en' : 'zh')} · ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
+  async function card(_id: string | null) {
+    root.querySelector('.l4-sheet')?.remove(); cardFor = '';
   }
   /* ---------- routing ---------- */
   function route() {
-    const sp = new URLSearchParams(win.location.search);
-    if (sp.has('fa') && sp.has('fm')) {
-      const h = win.location.hash, m = /^#D\/(?!ch\/)([^/?#]+)$/.exec(h), cq = sp.get('cq') || (m ? m[1] : '');
-      if (cq && dvI(cq) >= 0 && !/^#D\/ch\//.test(h)) { navTo(win, `#D/ch/${cq}`); return; }
-    }
     const r = parse(win.location.hash); let id = r.id; const lid = lxFrom(id);
     /* R51: an old single-step link (#D/8) opens the station that replaced it, rewriting the address (no new entry) */
-    const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}${r.card ? '~' + r.card : ''}`); return; }
+    const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}`); return; }
+    const jumped = redirectTo(id); if (jumped) { navTo(win, `#${jumped}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
-    if (!(lid || id === 'home' || id === 'about' || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
+    if (!(lid || id === 'home' || isDesk(id) || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
     if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = H(id); }
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     if (id !== cur) bump();
@@ -385,8 +357,12 @@ export function start(doc: Document = document, win: Window = window) {
     const f = (e.target as HTMLElement).closest?.('.pt-search'); if (!f) return;
     e.preventDefault();
     const box = root.querySelector<HTMLInputElement>('.pt-q');
-    const typed = box?.value ?? '';
-    void import('../search/ui').then((m) => { m.openSearch(root, lang, box); const inp = root.querySelector<HTMLInputElement>('.si-q'); if (inp && typed) { inp.value = typed; inp.dispatchEvent(new Event('input', { bubbles: true })); } });
+    const typed = (box?.value ?? '').trim();
+    const u = new URL(win.location.href);
+    if (typed) u.searchParams.set('q', typed); else u.searchParams.delete('q');
+    u.hash = '#search';
+    try { win.history.replaceState(win.history.state, '', u.pathname + u.search + u.hash); } catch { /* private */ }
+    win.dispatchEvent(new Event('hashchange'));
   });
   root.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
@@ -406,11 +382,10 @@ export function start(doc: Document = document, win: Window = window) {
       case 'prev': run(stepNow?.prev); break;
       case 'next': run(stepNow?.next); break;
       case 'dot': stepNow?.dot?.(Number(b.dataset.i)); break;
-      case 'menu': mapSheet(); break;
+      case 'menu': break;
       case 'lang': lang = lang === 'zh' ? 'en' : 'zh'; useApp.getState().setLang(lang); route(); break;
-      case 'math': if (mp.dataset.k) go(H(cur) + '~' + mp.dataset.k); break;
-      case 'set': void import('./settings').then((m) => { const s = m.openSettings(root, { lang: () => lang, setLang: (l) => { lang = l; useApp.getState().setLang(l); route(); s.redraw(); }, anim: () => { if (pg) void drawStage(); else if (lxOn(cur)) void renderLx(); },
-        cleared: () => { seen.clear(); opened.clear(); render(); } }); }); break;
+      case 'math': break;
+      case 'set': go('#settings'); break;
       case 'qx': { const q = qGet(); if (q) LS.set(QKEY, { ...q, on: false }); drawQp(); break; }
     }
   });

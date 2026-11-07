@@ -147,6 +147,24 @@ html[data-anim="off"] .hm-bt i { transition: none; }
 .hm-rvl { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
 .hm-rvl li { display: flex; align-items: baseline; gap: 8px; padding: 6px 10px; border-radius: 10px; background: var(--card); }
 .hm-rvl li span { flex: none; font-size: 12.5px; color: var(--link); } .hm-rvl li span.w { color: var(--bad); } .hm-rvl li b { min-width: 0; font-size: 14.5px; color: var(--ink); font-weight: 600; }
+.hm-ratios { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+.hm-ratio { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+.hm-ratio b { display: block; font-size: 28px; line-height: 1.2; font-weight: 600; color: var(--ink); }
+.hm-ratio span, .hm-ratio i { display: block; color: var(--ink); font-style: normal; font-size: 14px; }
+.hm-ratio .bar { height: 8px; background: var(--line); border-radius: 4px; margin-top: 8px; overflow: hidden; }
+.hm-ratio .bar u { display: block; height: 100%; background: var(--navy); text-decoration: none; }
+.hm-desk { padding: 8px 8px 32px; max-width: 880px; }
+.set-row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); align-items: start; }
+.pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 2px; padding: 8px 14px; font: inherit; }
+.pill.on { background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
+.si-page .si-hit { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--ink); }
+.share-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.share-row code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); }
+.gloss { margin: 10px 0; padding: 10px 12px; background: var(--mark-bg); border-radius: 6px; }
+.gloss summary { cursor: pointer; color: var(--ink); }
+.st-nextlay { margin: 8px 0; color: var(--ink); }
+html.l4-mode .l4 a.hm-cta { background: var(--navy); color: var(--on-navy); }
 .hm-cta2 { min-height: 48px; border: 1px solid var(--highlight); border-radius: 12px; background: var(--card); color: var(--highlight); font-size: 15px; font-weight: 700; }
 .hm-wb { font-size: 12.5px; color: var(--bad); }
 @media (max-width: 1023px) {

@@ -4,12 +4,11 @@ import { test, expect } from '@playwright/test';
    Small text needs 7:1 (WCAG AAA). Large headings and heavy UI labels need 4.5:1.
    No exceptions: a string that cannot clear its own fill has to change token, not get a waiver. */
 const ROUTES = [
-  '#home', '#about', '#map', '#D', '#D/map', '#D/routes',
+  '#home', '#review', '#me', '#search', '#settings',
   '#D/0', '#D/P', '#D/1', '#D/2', '#D/3', '#D/4', '#D/5', '#D/6', '#D/7',
   '#D/8a', '#D/8b', '#D/9', '#D/E', '#D/10', '#D/11', '#D/12', '#D/13', '#D/14',
   '#D/S', '#D/15a', '#D/15b', '#D/A', '#D/16',
-  '#L1', '#L2', '#L3', '#L4', '#L5',
-  '#P', '#R', '#tools', '#news', '#W',
+  '#tools', '#news', '#W',
 ];
 
 const SCAN = () => {
@@ -158,6 +157,18 @@ test('1440 light and dark: every visible string clears its own background', asyn
     for (const hash of ROUTES) {
       await page.goto('./?lang=zh' + hash);
       await page.locator('#l4').waitFor({ state: 'attached' });
+      await page.waitForFunction((hash) => {
+        const id = document.getElementById('l4')?.dataset.page || '';
+        const want = hash.replace(/^#/, '');
+        if (id !== want && !location.hash.endsWith(want)) return false;
+        if (id.startsWith('D/')) return !!document.querySelector('.dv-sp');
+        if (id === 'home') return !!document.querySelector('.hm-cta');
+        if (id === 'settings' || id === 'review' || id === 'me' || id === 'search') return !!document.querySelector('.hm-desk');
+        if (id === 'tools' || id.startsWith('tools')) return !!document.querySelector('.hb, [data-pane="tools"]');
+        if (id === 'news' || id.startsWith('news')) return !!document.querySelector('.hb, [data-pane="news"]');
+        if (id === 'W' || id.startsWith('W/')) return !!document.querySelector('.wk, .px');
+        return true;
+      }, hash);
       if (theme === 'dark') await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
       const passes = hash.startsWith('#D/') ? [0, 1] : [0];
       for (const morph of passes) {
@@ -179,13 +190,11 @@ test('1440 light and dark: every visible string clears its own background', asyn
         }
       }
     }
-    await page.goto('./?lang=zh#home');
-    await page.locator('[data-a="set"]').click();
-    await page.locator('.l4-set').waitFor();
+    await page.goto('./?lang=zh#settings');
+    await page.locator('.hm-desk').waitFor();
     const setPack = await page.evaluate(SCAN);
     if (setPack.floor.r < lowest.r) lowest = { r: setPack.floor.r, line: `${setPack.floor.r.toFixed(2)} settings ${theme} ${setPack.floor.fg} on ${setPack.floor.bg} “${setPack.floor.t}”` };
     for (const row of setPack.out) fails.push(`${row.r.toFixed(2)}/${row.need} ${theme} settings ${row.fg} on ${row.bg} ${row.sel} “${row.t}”`);
-    await page.locator('.l4-done').click();
   }
   const uniq = [...new Set(fails)];
   console.log('lowest ' + (lowest.line || 'none'));

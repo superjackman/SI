@@ -29,10 +29,5 @@ export function installFS() {
   if (inWx || installed() || !coarse() || self !== top) return;
   /* R56 softer: never on the first page. Once the reader moves on to a second page, wait a moment and ask once,
      as a small bar above the bottom tabs (si.fs.ask remembers it was asked, whatever the answer) */
-  if (canFS() ? ls('si.fs') === '0' || ls('si.fs.ask') === '1' : !!ls('si.a2hs')) return;
-  const later = () => { removeEventListener('hashchange', later); setTimeout(() => {
-    if (canFS()) { if (!fsEl()) void import('./a2hs').then((m) => m.askFS(enterFS)).catch(() => { /* optional */ }); }
-    else tip();
-  }, 1500); };
-  addEventListener('hashchange', later);
+  return;
 }

@@ -33,11 +33,11 @@ export function wrap(k: string, lyHtml: string, l: L, mk: Mk): string {
 <h3 class="ml-gt">${esc(tx(M.goal, l))}</h3><ol class="ml-gl">${goals}</ol>
 <div class="ml-pic"><p><b>${t(M.pic.t)}</b><span>${t(M.pic.s)}</span></p></div>
 ${(() => { const d = diaryLine(k, l); return d ? `<p class="ml-dy"><b>${esc(d.year)} · ${esc(d.who)}</b> ${esc(d.why)} <a href="${esc(d.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : ''; })()}
-</section><p class="ml-sharep"><button type="button" class="l4-b sm" data-ml-share="1">${z('分享这一站', 'Share this stop')}</button></p>`;
+</section><p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
   const bar = `<div class="ml-bar"><div class="ml-gs" role="radiogroup" aria-label="${z('进度', 'Progress')}">${M.goals.map((_, i) => `<button type="button" role="radio" data-ml-g="${i}" aria-checked="false"><i aria-hidden="true"></i></button>`).join('')}</div></div>`;
   let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
   h = h.replace('</ol></div></div>', `</ol>${bar}</div></div>`);
-  h = h.replace(/(<\/div><\/div>)(<section class="ly-l")/, `$1<section class="ml-p ml-i" aria-live="polite"></section><section class="ml-p ml-rz"></section>$2`);
+  h = h.replace(/(<\/div><\/div>)(<section class="ly-l")/, `$1<section class="ml-p ml-i" id="q" aria-live="polite"></section><section class="ml-p ml-rz"></section>$2`);
   h = h.replace('<div class="ly-nx"></div>', '<div class="ly-nx"></div><div class="ml-rze"></div><section class="ml-p ml-v" aria-live="polite"></section>');
   return card + h;
 }
@@ -70,7 +70,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     }).join('');
     const shown = solved ? g.why.map((_, i) => i) : wrongs;
     const whyBits = shown.map((i) => i === g.a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(g.why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(g.why[i]!)}</p>`).join('');
-    const why = shown.length ? `<div class="ml-why">${whyBits}</div>${solved ? `<button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-to="r">${z('继续 ›', 'Continue ›')}</button>` : `<p class="ml-n">${z('这一条走不通。还可以再选。', 'That way does not work. You can choose again.')}</p>`}` : '';
+    const why = shown.length ? `<div class="ml-why">${whyBits}</div>${solved ? `<button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-to="r">${z('继续 ›', 'Continue ›')}</button>` : ''}` : '';
     $('.ml-i').innerHTML = `<h3 class="ml-h">${esc(tx(g.t, l))}</h3>${from}<p class="ml-pv2">${t(g.pv)}</p>
 <p class="ml-q">${t(g.q)}</p><div class="ml-ops"${solved ? '' : ' data-fwd="1"'}>${ops}</div>${why}`;
   };
@@ -114,12 +114,12 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     }).join('');
     const shown = solved ? why.map((_, i) => i) : wrongs;
     const bits = shown.map((i) => i === a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(why[i]!)}</p>`).join('');
-    const foot = bits ? `<div class="ml-why">${bits}</div>${solved ? `<p class="ml-n">${z('✓ 对了。', '✓ Right.')}</p>` : `<p class="ml-n">${z('这一条走不通。还可以再选。', 'That way does not work. You can choose again.')}</p>`}` : '';
+    const foot = bits ? `<div class="ml-why">${bits}</div>${solved ? `<p class="ml-n">${z('✓ 对了。', '✓ Right.')}</p>` : ''}` : '';
     return `<div class="ml-pr"><p class="ml-q">${t(q)}</p><div class="ml-ops">${ops}</div>${foot}</div>`;
   };
   const prBlock = () => {
     const g0 = M.goals[S.g]!;
-    const why = g0.pr.o.map((o, i) => (i === g0.pr.a ? g0.pr.why : [`「${tx(o, 'zh')}」对不上这道题里的数。还可以再选。`, `“${tx(o, 'en')}” does not match the numbers in this question. You can choose again.`] as T));
+    const why = g0.pr.o.map((o, i) => (i === g0.pr.a ? g0.pr.why : [`「${tx(o, 'zh')}」对不上这道题里的数。`, `“${tx(o, 'en')}” does not match the numbers in this question.`] as T));
     return mcq(g0.pr.q, g0.pr.o, g0.pr.a, why, prW[S.g] ?? [], pred[S.g] === g0.pr.a);
   };
   const paintPr = () => { const el = root.querySelector('.ml-pr'); if (el) el.outerHTML = prBlock(); };
@@ -204,10 +204,12 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     paintPr();
   }, true);
   draw();
+  const url = `${location.origin}${location.pathname}${location.search}#D/${k}`;
+  const slot = host.querySelector('[data-share-url]'); if (slot) slot.textContent = url;
   host.querySelector('[data-ml-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();
-    const box = (host.closest('#l4') ?? host) as HTMLElement;
-    void import('./share').then(({ openShare, progressLine }) => openShare(box, l, k, z('分享这一站', 'Share this stop'), progressLine(k, l), 'stop', `si-stop-${k}`));
+    const clip = navigator.clipboard?.writeText(url);
+    if (clip) void clip.catch(() => { /* clipboard blocked */ });
   });
   addEventListener('resize', setTop, { passive: true });
 }

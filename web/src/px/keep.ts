@@ -29,7 +29,7 @@ export function keepHtml(l: L): string {
 <p class="px-msg" data-code="msg" role="status"></p><textarea class="px-code-out" data-code="out" rows="3" readonly hidden></textarea></section>`;
 }
 
-function shareData(l: L, url: string, site: string): Data {
+export function shareData(l: L, url: string, site: string): Data {
   const m = weekModel(), names = m.mastered.map((k) => stName(k, l));
   const line = m.empty
     ? cx('week.empty', l)
@@ -86,11 +86,8 @@ export function wireKeep(host: HTMLElement, l: L, root: HTMLElement) {
     const l0 = lang;
     if (b.dataset.wk === 'share') {
       e.stopPropagation();
-      const url = `${location.origin}${location.pathname}?lang=${l0}#R`;
-      void import('../l4/share/modal').then(async (modal) => {
-        const D = await import('../l4/share/draw');
-        await modal.mountShare(rootEl!, { l: l0, title: cx('week.share', l0), file: 'si-week', data: shareData(l0, url, tx(D.SITE_N, l0)), kind: 'week' });
-      });
+      const url = `${location.origin}${location.pathname}?lang=${l0}#me`;
+      say(url);
       return;
     }
     const c = b.dataset.code; if (!c || c === 'pick') return;

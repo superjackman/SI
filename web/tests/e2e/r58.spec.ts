@@ -42,18 +42,12 @@ test.describe('hub, reminder, certificate, demos', () => {
       const st = { m: [1, 1, 1], k: [2, 2, 2], v: [0, 0, 0], g: 0, s: 'v', p: [0, 0, 0] };
       localStorage.setItem('si.ml', JSON.stringify({ '0': st, P: st, '1': st, '2': st, '3': st }));
     });
-    const errs = await open(page, './?lang=zh#home');
-    await expect(page.locator('.hm-rv')).toContainText('上次错');
-    await expect(page.locator('.hm-cta')).toBeVisible();
-    if (await page.locator('[data-h="tab:learn"]').isVisible()) await page.locator('[data-h="tab:learn"]').click();
-    else await page.locator('.pt-links a[href="#home"]').click();
-    await page.evaluate(() => { location.hash = '#R'; });
-    await px(page, 'R.zh');
-    await expect(page.locator('[data-mm="cert"]')).toBeVisible();
-    await page.locator('[data-mm="cert"]').click();
-    const pv = page.locator('.g-pv');
-    await expect(pv).toHaveAttribute('data-kind', 'cert');
-    expect(await pv.getAttribute('data-text')).not.toMatch(/你好|欢迎/);
+    const errs = await open(page, './?lang=zh#review');
+    await expect(page.locator('.vf-slot, .hm-h').first()).toBeVisible();
+    await expect(page.locator('[role="dialog"]')).toHaveCount(0);
+    await page.goto('./?lang=zh#me');
+    await expect(page.locator('.hm-ratios')).toBeVisible();
+    await expect(page.locator('[data-mm="cert"]')).toHaveCount(0);
     expect(errs).toEqual([]);
   });
   test('station 1 drag can pause, and the page does not say 先猜 or 调查', async ({ page }) => {
@@ -76,34 +70,16 @@ test.describe('hub, reminder, certificate, demos', () => {
     await expect(play).toHaveAttribute('aria-pressed', 'false');
     expect(errs).toEqual([]);
   });
-  test('share this stop: the card, title and link stay inside the sheet', async ({ page }) => {
+  test('share this stop: the link sits in the page, not a dialog', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/0');
-    const spill = async (tag: string) => {
-      await page.locator('[data-ml-share]').click();
-      const sheet = page.locator('.ml-share');
-      await expect(sheet).toBeVisible();
-      await expect(sheet.getByRole('button', { name: /保存图片|Save image/ })).toBeVisible();
-      await expect(sheet.getByRole('button', { name: /复制链接|Copy link/ })).toBeVisible();
-      await expect(sheet.getByRole('button', { name: /分享…|Share…/ })).toBeVisible();
-      await expect(sheet.locator('img')).toBeVisible();
-      await page.waitForFunction(() => { const img = document.querySelector<HTMLImageElement>('.ml-share img'); return !!img && img.complete && img.naturalWidth > 0; });
-      const bad = await sheet.evaluate((root) => {
-        const view = root.getBoundingClientRect(), out: string[] = [];
-        if (view.width > innerWidth + 1) out.push(`sheet ${Math.round(view.width)} > ${innerWidth}`);
-        for (const el of root.querySelectorAll<HTMLElement>('.g-dh, .g-pv img, .g-row, .g-meta')) {
-          const r = el.getBoundingClientRect();
-          const name = el.className || el.tagName;
-          if (r.right > innerWidth + 1 || r.left < -1) out.push(`${name} x ${Math.round(r.left)}–${Math.round(r.right)}`);
-        }
-        return out;
-      });
-      expect(bad, tag).toEqual([]);
-      await sheet.locator('[data-m="close"]').click();
-      await expect(sheet).toHaveCount(0);
-    };
-    await spill('zh 0');
+    const row = page.locator('.ml-sharep');
+    await expect(row).toBeVisible();
+    await expect(row.locator('[data-share-url]')).toContainText('#D/0');
+    await expect(row.getByRole('button', { name: /复制链接|Copy link/ })).toBeVisible();
+    await row.locator('[data-ml-share]').click();
+    await expect(page.locator('[role="dialog"]')).toHaveCount(0);
     await open(page, './?lang=en#D/15b');
-    await spill('en 15b');
+    await expect(page.locator('.ml-sharep [data-share-url]')).toContainText('#D/15b');
     expect(errs).toEqual([]);
   });
   test('a tool filter is part of the address and survives refresh and back', async ({ page }) => {

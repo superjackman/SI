@@ -44,10 +44,7 @@ test.describe('R51 layers', () => {
     await go(page, '#D/1'); await px(page, 'D/1.zh'); await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-dep [data-ly-d="d"]')).toHaveAttribute('aria-checked', 'true');
     await page.locator('.ly-dep [data-ly-d="d"]').click(); await expect(vis(page)).toHaveCount(5);
     await expect(page.locator('.ly-sm')).toContainText('62.5%');
-    // the two-view switch, the map link and the next step still work
-    await page.locator('[data-a="menu"]:visible').first().click();
-    await expect(page.locator('.l4-ms .dv-vsw [data-go^="#L"]')).toBeVisible();
-    await page.locator('.l4-ms [data-s="x"]').click();
+    await expect(page.locator('[role=dialog]')).toHaveCount(0);
     await expect(page.locator('.dv-nx')).toBeHidden();
     expect(await hl(page)).toBe(h0);
     expect(errs).toEqual([]);
