@@ -33,6 +33,7 @@ test('empty storage walks station 0 through 16 with one forward and no skip', as
   for (let i = 0; i < DV_KEY.length; i++) {
     const k = DV_KEY[i]!;
     await expect(page).toHaveURL(new RegExp(`#D/${k}$`));
+    await page.waitForFunction((key) => document.querySelector('.ly.ml')?.getAttribute('data-ml-k') === key, k);
     await expect(page.locator('.ml-q').first()).toBeInViewport();
     await expect(page.locator('.dv-lead')).toBeInViewport();
     await expect(page.locator('.ml-dy:visible')).toHaveCount(0);
