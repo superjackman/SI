@@ -47,7 +47,7 @@
 
 <section><ul><li>Forward values → backward gradients → every ∂L/∂w.</li></ul></section>
 
-<section><ul><li>dL/dx = 0.5 × 3 × 2 = 3; see the ReLU toy numbers on this page.</li><li>Chain rule : dL/dx = 0.5 × 3 × 2 = 3; now a small network with a ReLU.</li><li>y = w2 × ReLU(w1 × x), L = (y − t)², with x = 1, w1 = 2, w2 = 3, t = 5.</li><li>Forward: h = 2, y = 6, L = 1. Backward: dL/dy = 2(6 − 5) = 2.</li><li>dL/dw2 = 2 × h = 4; dL/dh = 2 × w2 = 6, and h &gt; 0 so dh/dw1 = x = 1, giving dL/dw1 = 6.</li></ul></section>
+<section><ul><li>dL/dx = 0.5 × 3 × 2 = 3. Once a ReLU is in the chain, the slope still has to cross that bend.</li><li>Chain rule : dL/dx = 0.5 × 3 × 2 = 3; now a small network with a ReLU.</li><li>y = w2 × ReLU(w1 × x), L = (y − t)², with x = 1, w1 = 2, w2 = 3, t = 5.</li><li>Forward: h = 2, y = 6, L = 1. Backward: dL/dy = 2(6 − 5) = 2.</li><li>dL/dw2 = 2 × h = 4; dL/dh = 2 × w2 = 6, and h &gt; 0 so dh/dw1 = x = 1, giving dL/dw1 = 6.</li></ul></section>
 
 <section><ul><li>dL/dx = dL/df × df/dx</li><li>residual y = x + F(x) → a path with derivative 1</li><li>dL/dx = dL/df3 × df3/df2 × df2/df1 × df1/dx</li><li>Residual: y = x + F(x), so dy/dx = 1 + dF/dx</li></ul><ul><li>upstream</li><li>local</li><li>further back</li></ul></section>
 

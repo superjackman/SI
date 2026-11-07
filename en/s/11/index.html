@@ -47,7 +47,7 @@
 
 <section><ul><li>Frozen W ∥ side path B×A; or INT4 weights.</li></ul></section>
 
-<section><ul><li>Full 4096 × 4096 = 16,777,216 vs LoRA 2 × 4096 × 8 = 65,536, about 0.39%; 7B INT4 ≈ 16 bits (FP16) ≈ 14 GB, 8 bits ≈ 7 GB, 4 bits (INT4) ≈ 3.5 GB parameters only, plus a few scale values.</li><li>Same as card : a 4096 × 4096 matrix: full fine-tuning changes 4096 × 4096 = 16,777,216 parameters; LoRA with r = 8 trains only 2 × 4096 × 8 = 65,536, about 0.39%.</li><li>A 7-billion (7B) parameter model: 16 bits (FP16) ≈ 14 GB, 8 bits ≈ 7 GB, 4 bits (INT4) ≈ 3.5 GB parameters only, plus a few scale values.</li></ul></section>
+<section><ul><li>The full matrix holds 4096 × 4096 = 16,777,216 numbers; the side path trains 2 × 4096 × 8 = 65,536, about 0.39%. Memory for seven billion parameters, by bit width: 16 bits (FP16) ≈ 14 GB, 8 bits ≈ 7 GB, 4 bits (INT4) ≈ 3.5 GB parameters only, plus a few scale values.</li><li>Same as card : a 4096 × 4096 matrix: full fine-tuning changes 4096 × 4096 = 16,777,216 parameters; LoRA with r = 8 trains only 2 × 4096 × 8 = 65,536, about 0.39%.</li><li>A 7-billion (7B) parameter model: 16 bits (FP16) ≈ 14 GB, 8 bits ≈ 7 GB, 4 bits (INT4) ≈ 3.5 GB parameters only, plus a few scale values.</li></ul></section>
 
 <section><ul><li>W′ = W + BA</li><li>x ≈ q × s</li><li>W′ = W + B × A, B is d × r, A is r × k, r ≪ d, k</li><li>Quantise: q = round(x / s), restore x ≈ q × s (s is often per group or per channel)</li></ul><ul><li>frozen W</li><li>low-rank update</li><li>fewer bits</li></ul></section>
 
