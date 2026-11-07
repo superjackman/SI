@@ -30,6 +30,9 @@
 .ly.ml[data-ml-s="i"] > .ly-l, .ly.ml[data-ml-s="i"] > .ly-nx, .ly.ml[data-ml-s="i"] .ly-dep, .ly.ml[data-ml-s="i"] .ly-pg, .ly.ml[data-ml-s="i"] .ml-lys, .ly.ml[data-ml-s="i"] > .ml-rz, .ly.ml[data-ml-s="i"] > .ml-rze, .ly.ml[data-ml-s="i"] > .ml-v,
 .ly.ml[data-ml-s="v"] > .ly-l, .ly.ml[data-ml-s="v"] > .ly-nx, .ly.ml[data-ml-s="v"] .ly-dep, .ly.ml[data-ml-s="v"] .ly-pg, .ly.ml[data-ml-s="v"] .ml-lys, .ly.ml[data-ml-s="v"] > .ml-rz, .ly.ml[data-ml-s="v"] > .ml-rze, .ly.ml[data-ml-s="v"] > .ml-i,
 .ly.ml[data-ml-s="r"] > .ml-i, .ly.ml[data-ml-s="r"] > .ml-v { display: none; }
+/* the slider this part asks about stays on the same screen; the rest of that layer does not */
+.ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] { display: flex; }
+.ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] > :not([data-vf-part="demo"]) { display: none; }
 .ly.ml .ly-h, .ly.ml .ml-p { scroll-margin-top: calc(var(--lyt, 64px) + 6px); }
 .ml-p { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid #2c4690; border-radius: 12px; background: #0a1532e6; }
 .ml-h { margin: 0; font-size: 16px; line-height: 1.4; color: #fff; font-weight: 800; }
@@ -47,6 +50,7 @@
 .ml-dead { border: 1px dashed #f87171; background: #1f0f1f; color: #fde2e2; } .ml-dead b { display: block; color: #fca5a5; }
 .ml-live { border: 1px dashed #34d399; background: #0b2420; color: #d1fae5; } .ml-live b { display: block; color: #7ef0b0; }
 .ml-go { min-height: 48px; font-size: 15px; font-weight: 700; }
+.ml-ck.g-act { min-height: 44px; }
 .ml-rl { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; }
 .ml-lyh { margin: 0; font-size: 13px; color: #b7c6ea; }
 .ml-lys { display: flex; flex-wrap: wrap; gap: 6px; max-width: 100%; } .ml-lys .l4-b { min-height: 44px; }

@@ -1,4 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
+import { pathMin } from '../../src/dv/prog';
+import { DV_KEY } from '../../src/dv/links';
 import { contrastIssues } from './contrast.js';
 import { textIssues } from './small-text.js';
 /* R53 the new home page: value line, live 天空是？ demo, one-line chooser + sheet, one gold button, 继续上次 + 我的掌握
@@ -17,7 +19,7 @@ async function open(p: Page, q: string, ls: Record<string, string> = {}) {
 const hl = (p: Page) => p.evaluate(() => history.length);
 
 test.describe('R53 home', () => {
-  test('first visit: value line, demo, chooser, one gold button to 词向量, no popup, no greeting, quiet top bar, 4 tabs', async ({ page }) => {
+  test('first visit: value line, demo, chooser, one gold button to station 0, no popup, no greeting, quiet top bar, 4 tabs', async ({ page }) => {
     await page.goto('about:blank');
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('#l4')).toHaveAttribute('data-hm', 'first.zh');
@@ -26,8 +28,9 @@ test.describe('R53 home', () => {
     expect(await page.locator('#l4').innerText()).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|Good (morning|evening)/);
     await expect(page.locator('.hm-k')).toContainText('零基础');
     await expect(page.locator('.hm-h')).toContainText('一路搭到 ChatGPT');
-    await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveText(/现在做一道/);
-    await expect(page.locator('.hm-start')).toHaveAttribute('data-go', '#D/6');
+    await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
+    await expect(page.locator('.hm-cta')).toContainText('用样本找函数');
+    await expect(page.locator('.hm-start')).toHaveCount(0);
     await expect(page.locator('.l4-top [data-a="menu"]')).toBeHidden(); await expect(page.locator('.l4-top [data-a="back"]')).toBeHidden();
     await expect(page.locator('.l4-top [data-a="set"]')).toBeVisible(); await expect(page.locator('.l4-top [data-a="lang"]')).toBeVisible();
     await expect(page.locator('.l4-tabs button')).toHaveCount(4); await expect(page.locator('.l4-tabs button.on')).toHaveText('学习');
@@ -36,12 +39,12 @@ test.describe('R53 home', () => {
     await page.locator('[data-h="T"]').fill('3'); await expect(page.locator('.hm-demo output')).toHaveText('3.0');
     const p3 = await page.locator('.hm-bar b').first().innerText(); expect(parseInt(p3)).toBeLessThan(parseInt(p1));
     // choosing a route on home changes the button, not the address
-    await page.locator('.hm-rc[data-h="goal:derive"]').click(); await expect(page.locator('.hm-start')).toHaveText(/用样本找函数/);
-    await expect(page.locator('.hm-cta')).toHaveText(/现在做一道/);
+    await page.locator('.hm-rc[data-h="goal:derive"]').click(); await expect(page.locator('.hm-cta')).toHaveText(/用样本找函数/);
+    await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
     await expect(page).toHaveURL(/#home$/); expect(await page.evaluate(() => localStorage.getItem('si.goal'))).toBe('derive');
     // tabs: no history entries, Back leaves the site
     for (const h of ['#map', '#P', '#R', '#home']) { await page.locator(`.l4-tabs [data-go="${h}"]`).click(); await expect(page).toHaveURL(new RegExp(h + '$')); await expect(page.locator('.l4-tabs button.on')).toHaveAttribute('data-go', h); }
-    await page.locator('.hm-start').click(); await expect(page).toHaveURL(/#D\/0$/); await expect(page.locator('.l4-tabs')).toBeHidden();
+    await page.locator('.hm-cta').click(); await expect(page).toHaveURL(/#D\/0$/); await expect(page.locator('.l4-tabs')).toBeHidden();
     expect(await hl(page)).toBe(n0);
     await page.goBack(); await expect(page).toHaveURL('about:blank');
     expect(errs).toEqual([]);
@@ -61,7 +64,7 @@ test.describe('R53 home', () => {
   });
   test('routes on one axis: five lines, 换这条 switches without navigating; 两种看法 open the pyramid and the chain', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
-    await expect(page.locator('.hm-rt')).toHaveCount(5); await expect(page.locator('.hm-rt.on')).toHaveCount(1); await expect(page.locator('.hm-rt.on b')).toHaveText('看懂大模型');
+    await expect(page.locator('.hm-rt')).toHaveCount(5); await expect(page.locator('.hm-rt.on')).toHaveCount(0);
     await expect(page.locator('.hm-rt').nth(1).locator('circle')).toHaveCount(10);
     await page.locator('.hm-rt [data-h="goal:agent"]').click(); await expect(page.locator('.hm-rt.on b')).toHaveText('做 Agent'); await expect(page).toHaveURL(/#home$/);
     await page.locator('.hm-v[href="#map"]').click(); await expect(page).toHaveURL(/#map$/); await expect(page.locator('.l4-lv')).toHaveCount(5);
@@ -83,7 +86,7 @@ test.describe('R53 home', () => {
     const errs = await open(page, './?lang=zh#home');
     await page.locator('.hm-dd').nth(1).click(); const sh = page.locator('.hm-sh'); await expect(sh).toBeVisible();
     await sh.locator('[data-s="d:d"]').click(); expect(await page.evaluate(() => localStorage.getItem('si.ly.depth'))).toBe('d');
-    await expect(page.locator('.hm-dd').nth(1)).toContainText('深入'); await expect(page.locator('.hm-meta')).toContainText('约 120 分钟');
+    await expect(page.locator('.hm-dd').nth(1)).toContainText('深入'); await expect(page.locator('.hm-meta')).toContainText(`约 ${pathMin(DV_KEY)} 分钟`);
     await sh.locator('[data-s="g:interview"]').click(); await expect(sh.locator('[data-s="g:interview"]')).toHaveAttribute('aria-checked', 'true');
     await sh.locator('[data-s="jv"]').click(); expect(await page.evaluate(() => localStorage.getItem('si.ly.jv'))).toBe('1');
     await sh.locator('[data-s="go"]').click(); await expect(sh).toHaveCount(0); await expect(page).toHaveURL(/#D\/1$/);

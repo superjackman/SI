@@ -12,10 +12,13 @@ export const depthSet = (d: Depth) => { try { localStorage.setItem(LY_DEPTH, d);
 /** 我是程序员: open the 「换个说法」 code analogy by default */
 export const jvGet = () => { try { return localStorage.getItem(LY_JV) === '1'; } catch { return false; } };
 export const jvSet = (on: boolean) => { try { localStorage.setItem(LY_JV, on ? '1' : '0'); } catch { /* private mode */ } };
-/** minutes per station at each depth (30 秒 · 5 分钟 · 深入 ≈ 12 分钟) */
+/** minutes per station at each depth (30 秒 · 5 分钟 · 深入 ≈ 12 分钟). Depth still only caps how much text opens. */
 export const DEPTH_MIN: Readonly<Record<Depth, number>> = { s: 0.5, m: 5, d: 12 };
 /** a route's time: stations × depth, rounded to whole minutes (at least 1) */
 export const routeMin = (n: number, d: Depth) => Math.max(1, Math.round(n * DEPTH_MIN[d]));
+/** one small goal: a choice, the explanation, a prediction, and two numbers. The picture on the way in is the extra minute. */
+export const SUB_MIN = 4;
+export const stationMin = (goals: number) => 1 + Math.max(0, goals) * SUB_MIN;
 /** 读过: station keys; older plain step numbers 8 → 8a + 8b, 15 → 15a + 15b */
 export const seenSt = (): Set<string> => {
   let v: unknown = []; try { v = JSON.parse(localStorage.getItem(DV_SEEN) || '[]'); } catch { /* bad json */ }
@@ -31,6 +34,8 @@ export const ML_G: Readonly<Record<string, number>> = {
   '0': 3, P: 3, '1': 3, '2': 3, '3': 3, '4': 3, '5': 3, '6': 3, '7': 3, '8a': 3, '8b': 3,
   '9': 3, E: 3, '10': 3, '11': 3, '12': 4, '13': 3, '14': 3, S: 3, '15a': 3, '15b': 3, A: 5, '16': 3,
 };
+/** minutes for a list of stations, from how many small goals each one has */
+export const pathMin = (st: readonly (string | number)[]) => st.reduce<number>((s, k) => s + stationMin(ML_G[String(k)] ?? 3), 0);
 export interface MlS { m: number[]; k: number[]; v: number[]; g: number; s: 'i' | 'r' | 'v'; p: number[]; f?: number[]; c?: number[]; w?: number[][] }
 const rows = (a: unknown, n: number): number[][] => Array.from({ length: n }, (_, i) => (Array.isArray(a) && Array.isArray((a as unknown[])[i]) ? ((a as number[][])[i]!).filter((x) => typeof x === 'number') : []));
 export const mlAll = (): Record<string, MlS> => { try { const v = JSON.parse(localStorage.getItem(ML_KEY) || '{}') as unknown; return v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, MlS>) : {}; } catch { return {}; } };

@@ -49,7 +49,7 @@ test.describe('R48 two views', () => {
     sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator(`.l4-kst[data-n="${dvI('8b')}"]`).click();
     await expect(page).toHaveURL(re('#D/8b')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     /* the ring is one-shot: a later visit does not ring again */
-    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).toHaveURL(re('#D/8b'));
+    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav .g-dots [aria-label="第 8b 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/8b'));
     await expect(page.locator('.dv-kb.on')).toHaveCount(0);
     expect(await hl(page)).toBe(n0);
     expect(errs).toEqual([]);

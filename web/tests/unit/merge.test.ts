@@ -74,7 +74,8 @@ describe('week on the home page and the end of a station', () => {
     expect(html).toContain('data-week="empty"');
     expect(html).toContain('这一周');
     expect(html).toContain('这周还没有做题');
-    expect(html).toContain('data-go="#D/');
+    expect(html).toContain('href="#R"');
+    expect(html).not.toContain('data-go=');
     expect(html).not.toMatch(/先猜|调查|推理|验证|选图|选公式/);
   });
   it('puts the reason to continue before share and backup, and does not open a dialog', () => {

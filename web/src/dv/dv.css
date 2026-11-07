@@ -43,7 +43,7 @@
 button.dv-from span::before { content: '‹ '; }
 .dv .l4-ks { margin: 0; } .dv .l4-kbd li + li { margin-top: 3px; } .dv .l4-kbd { overflow-wrap: anywhere; }
 .dv-lo { margin: 0 0 8px; }
-.dv .dv-nx { width: 100%; min-height: 40px; white-space: normal; text-align: left; justify-content: space-between; padding: 4px 10px; line-height: 1.35; }
+.dv .dv-nx { width: 100%; min-height: 44px; white-space: normal; text-align: left; justify-content: space-between; padding: 4px 10px; line-height: 1.35; }
 .dv-ap { display: inline-block; margin: 0 2px; padding: 0 5px; border: 1px dashed #ffb347; border-radius: 8px; color: #ffb347; font-size: 12px; font-weight: 600; line-height: 1.4; white-space: nowrap; }
 .dv-do { margin: 0; padding: 7px 10px; border: 1px solid #1f8a63; border-radius: 10px; background: #052e22; font-size: 12.5px; line-height: 1.5; color: #dbe6ff; }
 .dv-do b { display: block; color: #7ef0b0; font-size: 12.5px; }
@@ -105,11 +105,29 @@ button.dv-from span::before { content: '‹ '; }
 
 
 /* R52: keep the stage page from forcing .l4-home to scroll sideways at 360 */
-.dv.dv-sp { max-width: 100%; overflow-x: clip; }
+/* the station sits in the reading column: full width on a phone, a centered measure on a wide window, so the count and the one forward action stay with the question */
+.dv.dv-sp { width: 100%; max-width: 760px; margin-inline: auto; overflow-x: clip; }
 .dv .dv-hd { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; max-width: 100%; }
 .dv .dv-so { min-width: 0; overflow-wrap: anywhere; }
 .dv .g-seg.dv-vsw { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 /* R56 记忆: 本站只带走 3 句 + 串起来 */
+.dv-pos { margin: 0; font-size: 13px; font-weight: 700; color: #ffd77a; }
+.dv-quiet { display: block; margin: 8px 0 0; font-size: 14px; color: #9cc8ff; }
+.dv-sp[data-done="0"] .dv-take,
+.dv-sp[data-done="0"] .dv-chn,
+.dv-sp[data-done="0"] .dv-nx,
+.dv-sp[data-done="0"] .dv-end,
+.dv-sp[data-done="0"] .ml-dy,
+.dv-sp[data-done="0"] .dv-later { display: none; }
+.dv-sp:has(.ly[data-ml-s="i"]) .ml-goal,
+.dv-sp:has(.ly[data-ml-s="i"]) .dv-first,
+.dv-sp:has(.ly[data-ml-s="i"]) .dv-sum { display: none; }
+.dv-sp:has(.ly[data-ml-s="i"]) { display: flex; flex-direction: column; }
+.dv-sp:has(.ly[data-ml-s="i"]) > * { order: 10; }
+.dv-sp:has(.ly[data-ml-s="i"]) > .dv-pos { order: 1; }
+.dv-sp:has(.ly[data-ml-s="i"]) > .dv-from { order: 2; }
+.dv-sp:has(.ly[data-ml-s="i"]) > .ly { order: 3; }
+.dv-sp:has(.ly[data-ml-s="i"]) > .dv-lead { order: 4; }
 .dv-take, .dv-chn { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 14px; color: #e6eeff; font-size: 15px; line-height: 1.6; }
 .dv-take { border: 1px solid #c99a2e; background: linear-gradient(#1d1a3a, #121a3c); }
 .dv-chn { border: 1px solid #2c4690; background: #0a1532e6; }

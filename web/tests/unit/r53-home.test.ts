@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach } from 'vitest';
-import { DEF_GOAL, goalNow, home, isBack, pickDay, skyP, SKY } from '../../src/l4/home';
-import { DEPTH_MIN, depthGet, jvGet, layerMastery, masteredSt, routeMin, seenSt } from '../../src/dv/prog';
-import { ROUTES, routeNext } from '../../src/dv/routes';
+import { goalNow, home, isBack, pickDay, skyP, SKY } from '../../src/l4/home';
+import { DEPTH_MIN, depthGet, jvGet, layerMastery, masteredSt, pathMin, routeMin, seenSt, stationMin } from '../../src/dv/prog';
+import { ROUTES, pathOf, routeNext } from '../../src/dv/routes';
 import { DV_KEY, DV_N, DV_NM, dvI } from '../../src/dv/links';
 import { VF_Q } from '../../src/vf/ids';
 import { CH } from '../../src/dv/ch';
@@ -11,13 +11,14 @@ import { QQ } from '../../src/vf/data';
 const api = (root: HTMLElement) => ({ l: 'zh' as const, root, go: () => {}, redraw: () => {} });
 describe('R53 home', () => {
   beforeEach(() => localStorage.clear());
-  it('defaults: route 看懂大模型 starting at 词向量, depth 5 分钟, programmer off, not returning', () => {
-    expect(DEF_GOAL).toBe('model'); expect(goalNow().id).toBe('model');
-    const nx = routeNext(goalNow(), new Set(), new Set()); expect(nx).toBe('6'); expect(DV_NM[dvI(nx)]![0]).toBe('词向量');
+  it('defaults: no route picked, the walk starts at station 0, depth 5 分钟, programmer off, not returning', () => {
+    expect(goalNow()).toBeNull(); expect(pathOf().chosen).toBe(false); expect(pathOf().st).toEqual(DV_KEY);
+    const nx = routeNext(pathOf(), new Set(), new Set()); expect(nx).toBe('0'); expect(DV_NM[dvI(nx)]![0]).toBe('用样本找函数');
+    expect(stationMin(3)).toBe(13); expect(pathMin(DV_KEY)).toBe(pathMin([...DV_KEY]));
     expect(depthGet()).toBe('m'); expect(jvGet()).toBe(false); expect(isBack()).toBe(false);
   });
   it('a chosen route alone is not returning; a read station or a right answer is', () => {
-    localStorage.setItem('si.goal', 'agent'); expect(isBack()).toBe(false); expect(goalNow().id).toBe('agent');
+    localStorage.setItem('si.goal', 'agent'); expect(isBack()).toBe(false); expect(goalNow()!.id).toBe('agent');
     localStorage.setItem('si.dv.seen', JSON.stringify([8, '2'])); expect([...seenSt()].sort()).toEqual(['2', '8a', '8b']); expect(isBack()).toBe(true);
   });
   it('time = stops × depth; mastery = every question of a station right; layer bars cover the 22 layered stations', () => {
@@ -46,7 +47,8 @@ describe('R53 home', () => {
       if (!back) {
         expect(host.textContent).toContain('零基础');
         expect(host.textContent).toContain('一路搭到 ChatGPT');
-        expect(host.querySelector('.hm-cta')!.textContent).toContain('现在做一道');
+        expect(host.querySelector('.hm-cta')!.textContent).toContain('用样本找函数');
+        expect(host.textContent).toContain('现在做一道');
       }
       expect(host.textContent).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|连续 \d+ 天/);
       expect(host.querySelectorAll('.hm-rt').length).toBe(5); expect(host.querySelectorAll('.hm-v').length).toBe(2);

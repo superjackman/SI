@@ -40,7 +40,8 @@ test.describe('hub, reminder, certificate, demos', () => {
       localStorage.setItem('si.ml', JSON.stringify({ '0': st, P: st, '1': st, '2': st, '3': st }));
     });
     const errs = await open(page, './?lang=zh#home');
-    await expect(page.locator('[data-bell]')).toContainText('复习到期');
+    await expect(page.locator('.hm-rv')).toContainText('上次错');
+    await expect(page.locator('.hm-cta')).toBeVisible();
     await page.locator('[data-h="tab:learn"]').click();
     await page.evaluate(() => { location.hash = '#R'; });
     await px(page, 'R.zh');

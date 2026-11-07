@@ -28,16 +28,15 @@ test.describe('R51 layers', () => {
     await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-l[data-ly="1"]')).toContainText('梯度下降');
     expect((await page.locator('.ly-top, .ml-bar, .ly-h').allInnerTexts()).join('\n')).not.toMatch(/为什么要关心|算一下|接着看|问题|[①②③④⑤]/);
     await expect(page.locator('.ly-pg button')).toHaveCount(5);
-    await page.locator('.ly-go').click(); await expect(vis(page)).toHaveCount(2); await expect(page.locator('.ly-bowl')).toBeVisible();
-    await page.locator('.ly-go').click(); await expect(vis(page)).toHaveCount(3); await expect(page.locator('.ly-l[data-ly="3"] .vf-dm[data-dm="gd"]')).toBeVisible();
+    await page.locator('[data-ly-go="2"]').click(); await expect(vis(page)).toHaveCount(2); await expect(page.locator('.ly-bowl')).toBeVisible();
+    await page.locator('[data-ly-go="3"]').click(); await expect(vis(page)).toHaveCount(3); await expect(page.locator('.ly-l[data-ly="3"] .vf-dm[data-dm="gd"]')).toBeVisible();
     await expect(page.locator('.vf-qz')).toBeHidden();
-    await expect(page.locator('.ly-go')).toContainText('深入');
-    await page.locator('.ly-go').click(); await expect(vis(page)).toHaveCount(4); await expect(page.locator('.ly-dep [data-ly-d="d"]')).toHaveAttribute('aria-checked', 'true');
+    await page.locator('[data-ly-go="4"]').click(); await expect(vis(page)).toHaveCount(4); await expect(page.locator('.ly-dep [data-ly-d="d"]')).toHaveAttribute('aria-checked', 'true');
     await expect(page.locator('.ly-fx .ly-q')).toContainText('∂L/∂w1');
     await page.locator('.ly-pg [data-ly-go="5"]').click(); await expect(vis(page)).toHaveCount(5); await expect(page.locator('.vf-qz')).toBeVisible();
     await expect(page.locator('.ly-end')).toBeVisible();
     // 30 秒 shows only ①, and switching back up keeps what was opened
-    await page.locator('.ly-dep [data-ly-d="s"]').click(); await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-go')).toContainText('5 分钟');
+    await page.locator('.ly-dep [data-ly-d="s"]').click(); await expect(vis(page)).toHaveCount(1); await expect(page.locator('.ly-dep [data-ly-d="s"]')).toHaveAttribute('aria-checked', 'true');
     await page.locator('.ly-dep [data-ly-d="d"]').click(); await expect(vis(page)).toHaveCount(5);
     expect(await page.evaluate(() => [localStorage.getItem('si.ly.depth'), JSON.parse(localStorage.getItem('si.ly.open') || '{}')['D/2']])).toEqual(['d', 5]);
     await page.reload(); await page.locator('#l4').waitFor({ state: 'attached' }); await px(page, 'D/2.zh'); await expect(vis(page)).toHaveCount(5);
@@ -49,7 +48,7 @@ test.describe('R51 layers', () => {
     await page.locator('.l4-top [data-a="menu"]').click();
     await expect(page.locator('.l4-ms .dv-vsw [data-go^="#L"]')).toBeVisible();
     await page.locator('.l4-ms [data-s="x"]').click();
-    await expect(page.locator('.dv-ks .dv-mp')).toBeVisible(); await expect(page.locator('.dv-nx')).toContainText('第 2 站');
+    await expect(page.locator('.dv-nx')).toBeHidden();
     expect(await hl(page)).toBe(h0);
     expect(errs).toEqual([]);
   });

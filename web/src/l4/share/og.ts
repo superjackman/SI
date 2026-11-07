@@ -2,6 +2,7 @@
    Only scripts/og-cards.mjs imports this (in a browser, through Vite's dev server); the app never loads it. */
 import { qr } from './qr';
 import { fit, font, rr, wrap, type Data } from './draw';
+import { stationMin } from '../../dv/prog';
 
 const W = 1200, H = 630;
 const LV: [string, string, string][] = [['第1层', '我怎么用 AI', '#0891b2'], ['第2层', 'AI 助手怎么工作', '#0d9488'], ['第3层', '大模型怎么得来', '#4f46e5'], ['第4层', 'Transformer 内部', '#2563eb'], ['第5层', '背后的数学', '#7c3aed']];
@@ -17,7 +18,7 @@ export function site(ic: CanvasImageSource): HTMLCanvasElement {
   g.drawImage(ic, 64, 124, 104, 104);
   g.fillStyle = '#fff'; g.font = font(92, 900); g.fillText('大白话拆解 AI', 60, 248);
   g.fillStyle = '#ffd34d'; g.font = font(46, 800); g.fillText('从一道小学算术，一路搭到 ChatGPT', 64, 362);
-  g.fillStyle = '#c8d6ff'; g.font = font(29, 500); g.fillText('零基础 · 每站 5 分钟 · 不用注册', 64, 452); g.fillText('现在做一道', 64, 496);
+  g.fillStyle = '#c8d6ff'; g.font = font(29, 500); g.fillText(`零基础 · 三题的站约 ${stationMin(3)} 分钟 · 不用注册`, 64, 452); g.fillText('从第 0 站开始', 64, 496);
   LV.forEach(([n, t, c], i) => {
     const w = 250 + i * 40, x = 960 - w / 2, y = 112 + i * 66, bar = g.createLinearGradient(x, 0, x + w, 0);
     bar.addColorStop(0, c); bar.addColorStop(1, '#1e3a8a'); g.fillStyle = bar; rr(g, x, y, w, 52, 10); g.fill();
