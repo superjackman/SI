@@ -7,7 +7,8 @@ import { canFS, fsEl, installed, toggleFS } from '../boot/fs';
 
 export interface SetApi { lang: () => L; setLang: (l: L) => void; anim: () => void; cleared: () => void }
 const T = {
-  t: ['设置', 'Settings'], lang: ['语言', 'Language'], anim: ['动画', 'Animation'], animS: ['关掉后画面不再动，3D 也停住', 'Off: nothing moves, the 3D stays still'],
+  t: ['设置', 'Settings'], lang: ['语言', 'Language'], look: ['外观', 'Appearance'], lookS: ['纸色是默认。深色只在这里打开。', 'Paper is the default. Dark is only switched on here.'],
+  anim: ['动画', 'Animation'], animS: ['关掉后画面不再动，3D 也停住', 'Off: nothing moves, the 3D stays still'],
   fs: ['全屏', 'Full screen'], fsS: ['藏起地址栏，画面更大。iPhone 的 Safari 不支持网页全屏，可用「分享 → 添加到主屏幕」', 'Hides the address bar for a bigger page. iPhone Safari has no web full screen: use Share → Add to Home Screen'],
   fsI: ['已从主屏幕打开，本来就是全屏', 'Opened from the home screen: already full screen'],
   clr: ['清除学习记录', 'Clear learning record'], clrQ: ['确定清除？', 'Clear everything?'],
@@ -21,9 +22,11 @@ export function openSettings(host: HTMLElement, api: SetApi) {
   let ask = false, msg = '';
   const draw = () => {
     const l = api.lang(), z = (k: keyof typeof T) => tx(T[k] as readonly [string, string], l), on = animOn(), inst = installed(), fs = inst || !!fsEl();
+    const dark = document.documentElement.dataset.theme === 'dark';
     el.setAttribute('aria-label', z('t'));
     el.innerHTML = `<div class="l4-sin"><header class="l4-sh l4-sth"><b class="l4-kn">${z('t')}</b></header><div class="l4-sbody">
 <div class="l4-srow"><span>${z('lang')}</span><span class="l4-seg" role="group" aria-label="${z('lang')}"><button type="button" data-v="zh" aria-pressed="${l === 'zh'}"${l === 'zh' ? ' class="on"' : ''}>中文</button><button type="button" data-v="en" aria-pressed="${l === 'en'}"${l === 'en' ? ' class="on"' : ''}>English</button></span></div>
+<div class="l4-srow"><span>${z('look')}<small>${z('lookS')}</small></span><button type="button" class="l4-sw${dark ? ' on' : ''}" role="switch" aria-checked="${dark}" aria-label="${z('look')}" data-v="theme"><i></i></button></div>
 <div class="l4-srow"><span>${z('anim')}<small>${z('animS')}</small></span><button type="button" class="l4-sw${on ? ' on' : ''}" role="switch" aria-checked="${on}" aria-label="${z('anim')}" data-v="anim"><i></i></button></div>
 <div class="l4-srow"><span>${z('fs')}<small>${z(inst ? 'fsI' : 'fsS')}</small></span><button type="button" class="l4-sw${fs ? ' on' : ''}" role="switch" aria-checked="${fs}" aria-label="${z('fs')}" data-v="fs"${inst ? ' disabled' : ''}><i></i></button></div>
 <div class="l4-srow"><span>${z('clr')}</span><button type="button" class="l4-clr" data-v="clr">${z('clr')}</button></div>
@@ -38,6 +41,12 @@ ${msg ? `<p class="l4-sok" role="status">${msg}</p>` : ''}
     e.stopPropagation(); const t = e.target as HTMLElement; if (t === el) { close(); return; }
     const v = t.closest<HTMLElement>('[data-v]')?.dataset.v; if (!v) return;
     if (v === 'zh' || v === 'en') { if (v !== api.lang()) api.setLang(v); msg = ''; }
+    else if (v === 'theme') {
+      const next = document.documentElement.dataset.theme === 'dark' ? '' : 'dark';
+      if (next) document.documentElement.dataset.theme = next; else delete document.documentElement.dataset.theme;
+      try { localStorage.setItem('si.theme', next || 'light'); } catch { /* private mode */ }
+      msg = '';
+    }
     else if (v === 'anim') { setAnim(!animOn()); api.anim(); msg = ''; }
     else if (v === 'fs') { if (!canFS()) { close(); toggleFS(); return; } toggleFS(); msg = ''; }
     else if (v === 'clr') { ask = true; msg = ''; }

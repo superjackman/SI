@@ -46,7 +46,7 @@ describe('R53 home', () => {
       expect(host.querySelectorAll('.hm-cta').length).toBe(1);
       if (!back) {
         expect(host.textContent).toContain('零基础');
-        expect(host.textContent).toContain('一路搭到 ChatGPT');
+        expect(host.textContent).toContain('从一个数学函数出发，搭到大模型、安全与应用');
         expect(host.querySelector('.hm-cta')!.textContent).toContain('用样本找函数');
         expect(host.textContent).toContain('现在做一道');
       }

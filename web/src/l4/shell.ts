@@ -2,6 +2,7 @@
    One screen: thin top bar, crumbs, the stage (three.js, or SVG without WebGL), the info card, hint, dots, and the
    round 地图 / 进度 / 下一步 buttons. Tapping a "+" box opens it in place; tapping the original box closes it. */
 import './l4.css';
+import './portal.css';
 import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
@@ -20,7 +21,7 @@ import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
-import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv } from '../dv/links';
+import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv, posLabel } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
@@ -32,9 +33,10 @@ export function start(doc: Document = document, win: Window = window) {
   if (doc.getElementById('l4')) return;
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><div class="l4-tx" aria-live="polite"></div><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  try { const th = localStorage.getItem('si.theme'); if (th === 'dark') doc.documentElement.dataset.theme = 'dark'; } catch { /* private mode */ }
+  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><nav class="pt-more" aria-label="学习入口"><a href="#map" data-pt="map">地图</a><a href="#P" data-pt="prac">练习</a><a href="#R" data-pt="me">我的</a></nav><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
-<main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
+<main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden><div class="l4-body"></div><footer class="pt-foot" hidden></footer></div></main>
 <div class="l4-ent" hidden></div>
 <section class="l4-info"></section>
 <p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div>
@@ -43,7 +45,7 @@ export function start(doc: Document = document, win: Window = window) {
 <div class="l4-rot" aria-hidden="true"><div><b>⟲</b><p class="t"></p><p class="s"></p></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   gramOn(root);
-  const nav = $('.l4-nav'), tabs = $('.l4-tabs'), stg = $('.l4-stg'), home = $('.l4-home'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
+  const nav = $('.l4-nav'), tabs = $('.l4-tabs'), stg = $('.l4-stg'), pageScroll = $('.l4-home'), home = $('.l4-body'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
   let lang: L = useApp.getState().lang === 'en' ? 'en' : 'zh';
   const T = (k: keyof typeof UI) => tx(UI[k] as Tx, lang);
   const lines0 = (() => { try { return JSON.parse(localStorage.getItem('si.l4.my.lines') || 'null') as string[] | null; } catch { return null; } })();
@@ -161,17 +163,49 @@ export function start(doc: Document = document, win: Window = window) {
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
   }
+  function paintPortal() {
+    const zh = lang !== 'en';
+    const name = root.querySelector<HTMLElement>('.pt-name'); if (name) name.textContent = zh ? '大白话拆解 AI' : 'AI, explained plainly';
+    const lab: Record<string, string> = zh
+      ? { learn: '学习', tools: '工具', news: '资讯', work: '项目', map: '地图', prac: '练习', me: '我的' }
+      : { learn: 'Learn', tools: 'Tools', news: 'News', work: 'Projects', map: 'Map', prac: 'Practice', me: 'Me' };
+    root.querySelectorAll<HTMLAnchorElement>('[data-pt]').forEach((a) => {
+      const k = a.dataset.pt || '';
+      a.textContent = lab[k] || a.textContent;
+      const on = k === 'learn' ? cur === 'home' || cur.startsWith('D') || cur.startsWith('L')
+        : k === 'tools' ? cur === 'tools' || cur.startsWith('tools/')
+        : k === 'news' ? cur === 'news' || cur.startsWith('news/')
+        : k === 'work' ? cur === 'W' || cur.startsWith('W/')
+        : k === 'map' ? cur === 'map'
+        : k === 'prac' ? cur === 'P' || cur.startsWith('P/')
+        : k === 'me' ? cur === 'R' || cur.startsWith('R/')
+        : false;
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    const q = root.querySelector<HTMLInputElement>('.pt-q');
+    if (q) { q.placeholder = zh ? '搜索站、工具、资讯' : 'Search stops, tools, news'; q.setAttribute('aria-label', q.placeholder); }
+    const nav = root.querySelector('nav.pt-links'); if (nav) nav.setAttribute('aria-label', zh ? '主导航' : 'Main');
+    const foot = root.querySelector<HTMLElement>('.pt-foot');
+    const showFoot = cur === 'home' || cur === 'about' || cur === 'news' || cur.startsWith('news/') || cur === 'tools' || cur.startsWith('tools/') || cur === 'W' || cur.startsWith('W/');
+    if (foot) {
+      foot.hidden = !showFoot;
+      foot.innerHTML = zh
+        ? `<div><h2>关于</h2><p>这个站由 GitHub 仓库 superjackman/SI 的所有者维护。</p><p><button type="button" data-a="menu">目录</button></p></div><div><h2>来源说明</h2><p>站里的数字来自同一张数表。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。</p></div><div><h2>更新时间</h2><p>资讯与工具目录核对于 2026-11-06。工具对照核对于 2026-11-07。</p></div>`
+        : `<div><h2>About</h2><p>This site is maintained by the owner of the GitHub repository superjackman/SI.</p><p><button type="button" data-a="menu">Contents</button></p></div><div><h2>Sources</h2><p>Numbers come from one table. News and tools name a source, a date and the day they were checked.</p></div><div><h2>Updated</h2><p>News and the tool list were checked on 2026-11-06. The tool comparison was checked on 2026-11-07.</p></div>`;
+    }
+  }
   function render() {
     root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
+    paintPortal();
     $('[data-a="set"]').textContent = '⚙'; $('[data-a="set"]').setAttribute('aria-label', tx(['设置', 'Settings'], lang)); $('[data-a="back"]').textContent = '↑'; $('[data-a="back"]').setAttribute('aria-label', tx(['返回上一级', 'Up one level'], lang));
     $('[data-a="menu"]').textContent = '☰'; $('[data-a="menu"]').setAttribute('aria-label', tx(['地图和进度', 'Map and progress'], lang));
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
     root.dataset.page = cur; drawTabs();
-    if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; home.hidden = true; stg.hidden = false; void renderLx(); return; }
-    if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; home.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
+    if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; pageScroll.hidden = true; stg.hidden = false; void renderLx(); return; }
+    if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; pageScroll.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
-    home.hidden = isL4; stg.hidden = !isL4;
+    pageScroll.hidden = isL4; stg.hidden = !isL4;
     if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || isHub(cur) || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
       if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
@@ -271,7 +305,7 @@ export function start(doc: Document = document, win: Window = window) {
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
     const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
-    const dotLab = (k: number) => s.keys ? Z(`第 ${s.keys[k]} 站`, `Stop ${s.keys[k]}`) : Z(`第 ${k + b} 步`, `Step ${k + b}`);
+    const dotLab = (k: number) => s.keys ? Z(`第 ${k + 1}/${s.n} 站`, `${k + 1}/${s.n}`) : Z(`第 ${k + b} 步`, `Step ${k + b}`);
     const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(dotLab(k))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${s.txt != null ? esc(s.txt) : `${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}`}</span>` : '';
     const nxBtn = s.hold ? '<span></span>' : `<button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span>${nxBtn}`;
@@ -319,7 +353,7 @@ export function start(doc: Document = document, win: Window = window) {
     const vsw = onSt ? `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${tx(['换个角度看', 'Another angle'], lang)}"><button type="button" role="radio" aria-checked="false" data-go="${td}">${tx(['自顶向下·看结构', 'Top-down · structure'], lang)}</button><button type="button" role="radio" aria-checked="true" class="on">${tx(['自底向上·看推导', 'Bottom-up · derivation'], lang)}</button></div>` : '';
     list(T('mapT'), vsw + `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
-      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
+      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${posLabel(i, lang === 'en' ? 'en' : 'zh')} · ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }
   /* ---------- routing ---------- */
   function route() {
@@ -340,13 +374,20 @@ export function start(doc: Document = document, win: Window = window) {
     const q = qGet(); if (q?.on) { const j = PATH.findIndex(([h]) => stopOf(h) === id); if (j >= 0 && j !== q.i) LS.set(QKEY, { ...q, i: j, max: Math.max(q.max, j) }); }
     if (id !== cur && pageLayer(id)) pushRecent(id, 'p');
     navNote(win, win.location.hash || '#home');
-    if (id !== cur) home.scrollTop = 0;
+    if (id !== cur) pageScroll.scrollTop = 0;
     cur = id; if (!isPx(id)) { seen.add(id); LS.set('si.l4.seen', [...seen]); } root.querySelector('.l4-ms')?.remove();
     render(); drawQp();
     const want = r.card && /^K[MABC]?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);
     doc.documentElement.dataset.l4 = `${cur}.${lang}`;
   }
   /* ---------- events ---------- */
+  root.addEventListener('submit', (e) => {
+    const f = (e.target as HTMLElement).closest?.('.pt-search'); if (!f) return;
+    e.preventDefault();
+    const box = root.querySelector<HTMLInputElement>('.pt-q');
+    const typed = box?.value ?? '';
+    void import('../search/ui').then((m) => { m.openSearch(root, lang, box); const inp = root.querySelector<HTMLInputElement>('.si-q'); if (inp && typed) { inp.value = typed; inp.dispatchEvent(new Event('input', { bubbles: true })); } });
+  });
   root.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
     /* R46: in-site #links (crumbs, the map) also replace the history entry instead of adding one (no root.contains:

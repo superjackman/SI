@@ -24,10 +24,10 @@ test.describe('R53 home', () => {
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('#l4')).toHaveAttribute('data-hm', 'first.zh');
     await expect(page.locator('.l4-ob')).toHaveCount(0);
-    await expect(page.locator('.hm-h')).toContainText('ChatGPT');
+    await expect(page.locator('.hm-h')).toContainText('从一个数学函数出发');
     expect(await page.locator('#l4').innerText()).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|Good (morning|evening)/);
     await expect(page.locator('.hm-k')).toContainText('零基础');
-    await expect(page.locator('.hm-h')).toContainText('一路搭到 ChatGPT');
+    await expect(page.locator('.hm-h')).toContainText('搭到大模型、安全与应用');
     await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
     await expect(page.locator('.hm-cta')).toContainText('用样本找函数');
     await expect(page.locator('.hm-start')).toHaveCount(0);
@@ -43,7 +43,13 @@ test.describe('R53 home', () => {
     await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
     await expect(page).toHaveURL(/#home$/); expect(await page.evaluate(() => localStorage.getItem('si.goal'))).toBe('derive');
     // tabs: no history entries, Back leaves the site
-    for (const h of ['#map', '#P', '#R', '#home']) { await page.locator(`.l4-tabs [data-go="${h}"]`).click(); await expect(page).toHaveURL(new RegExp(h + '$')); await expect(page.locator('.l4-tabs button.on')).toHaveAttribute('data-go', h); }
+    for (const h of ['#map', '#P', '#R', '#home']) {
+      const desk = page.locator(`.pt-more a[href="${h}"], .pt-links a[href="${h}"]`);
+      if (await desk.first().isVisible()) await desk.first().click();
+      else await page.locator(`.l4-tabs [data-go="${h}"]`).click();
+      await expect(page).toHaveURL(new RegExp(h + '$'));
+      if (await page.locator('.l4-tabs').isVisible()) await expect(page.locator('.l4-tabs button.on')).toHaveAttribute('data-go', h);
+    }
     await page.locator('.hm-cta').click(); await expect(page).toHaveURL(/#D\/0$/); await expect(page.locator('.l4-tabs')).toBeHidden();
     expect(await hl(page)).toBe(n0);
     await page.goBack(); await expect(page).toHaveURL('about:blank');
@@ -68,7 +74,8 @@ test.describe('R53 home', () => {
     await expect(page.locator('.hm-rt').nth(1).locator('circle')).toHaveCount(10);
     await page.locator('.hm-rt [data-h="goal:agent"]').click(); await expect(page.locator('.hm-rt.on b')).toHaveText('做 Agent'); await expect(page).toHaveURL(/#home$/);
     await page.locator('.hm-v[href="#map"]').click(); await expect(page).toHaveURL(/#map$/); await expect(page.locator('.l4-lv')).toHaveCount(5);
-    await page.locator('.l4-tabs [data-go="#home"]').click(); await page.locator('.hm-v[href="#D"]').click(); await expect(page).toHaveURL(/#D$/);
+    { const home = page.locator('.pt-links a[href="#home"]'); if (await home.isVisible()) await home.click(); else await page.locator('.l4-tabs [data-go="#home"]').click(); }
+    await page.locator('.hm-v[href="#D"]').click(); await expect(page).toHaveURL(/#D$/);
     expect(errs).toEqual([]);
   });
   test('today’s challenge: answer on home; 挑战朋友 shows only after the right answer and opens the same question', async ({ page }) => {
@@ -102,8 +109,8 @@ test.describe('R53 home', () => {
         const W = page.viewportSize()!.width;
         bad.push(...(await page.evaluate((W) => [...document.querySelectorAll('.hm *')].filter((e) => !e.closest('.hm-chips')).filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && (r.left < -0.5 || r.right > W + 0.5); }).map((e) => `wide ${e.className}`), W)).map((s) => `${tag} ${s}`));
         // the tab bar never covers the page: the home scroller ends where the tabs start
-        const [hb, tt] = await page.evaluate(() => [document.querySelector('.l4-home')!.getBoundingClientRect().bottom, document.querySelector('.l4-tabs')!.getBoundingClientRect().top]);
-        if (hb > tt + 0.5) bad.push(`${tag} tabs cover the page`);
+        const [hb, tt, shown] = await page.evaluate(() => { const t = document.querySelector('.l4-tabs') as HTMLElement | null; const on = !!t && getComputedStyle(t).display !== 'none'; return [document.querySelector('.l4-home')!.getBoundingClientRect().bottom, t ? t.getBoundingClientRect().top : 0, on]; });
+        if (shown && hb > tt + 0.5) bad.push(`${tag} tabs cover the page`);
       };
       await open(page, `./?lang=${lang}#home`); await page.waitForSelector('.hm-ch .hm-op'); await chk('first');
       await page.evaluate(() => document.querySelector('.l4-home')!.scrollTo(0, 99999)); await page.waitForTimeout(150); await chk('first-end');

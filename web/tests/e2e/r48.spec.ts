@@ -26,7 +26,7 @@ test.describe('R48 two views', () => {
     let sh = page.locator('.l4-sheet[data-card="K09"]'); await expect(sh).toBeVisible();
     await expect(sh.locator('.l4-vsw [aria-checked="true"]')).toHaveText('自顶向下·看结构');
     await expect(sh.locator('.l4-kalt h3')).toHaveText('换个角度看');
-    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 4 站');
+    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 6/23 站');
     await expect(sh.locator('.l4-kwhy')).toContainText('多层网络的梯度怎么求');
     /* sibling: K14 is born in step 4 on layer 4 too */
     await sh.locator('.l4-ksib[data-k="K14"]').click(); await expect(page).toHaveURL(re('#L4~K14'));
@@ -36,20 +36,20 @@ test.describe('R48 two views', () => {
     /* the switch → the stage it is born in, card ringed */
     await sh.locator('.l4-vsw [data-s="dv"]').click(); await expect(page.locator('.l4-sheet')).toHaveCount(0);
     await expect(page).toHaveURL(re('#D/4')); await px(page, 'D/4.zh');
-    await page.locator('.l4-top [data-a="menu"]').click();
+    await page.locator('[data-a="menu"]:visible').click();
     await expect(page.locator('.l4-ms .dv-vsw [aria-checked="true"]')).toHaveText('自底向上·看推导');
     await page.locator('.l4-ms [data-s="x"]').click();
     await expect(page.locator('.dv-kb.on')).toHaveCount(1); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     await page.locator('.dv-kb.on').scrollIntoViewIfNeeded(); await expect(page.locator('.dv-kb.on')).toBeInViewport();
     /* the view switch lives in ☰; it opens this step’s layer on the card born here */
-    await page.locator('.l4-top [data-a="menu"]').click();
+    await page.locator('[data-a="menu"]:visible').click();
     await page.locator('.l4-ms .dv-vsw [data-go]').click(); await expect(page).toHaveURL(re(`#L5~${DV_BORN[dvI(4)]!.find((k) => cardLv(k) === 5)}`));
     /* used again: K09 → step 8b (组装成 Transformer) */
     await page.evaluate((h) => { location.replace(h); }, at('K09'));
     sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator(`.l4-kst[data-n="${dvI('8b')}"]`).click();
     await expect(page).toHaveURL(re('#D/8b')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     /* the ring is one-shot: a later visit does not ring again */
-    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav .g-dots [aria-label="第 8b 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/8b'));
+    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav .g-dots [aria-label="第 11/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/8b'));
     await expect(page.locator('.dv-kb.on')).toHaveCount(0);
     expect(await hl(page)).toBe(n0);
     expect(errs).toEqual([]);
@@ -66,7 +66,7 @@ test.describe('R48 two views', () => {
     }
     for (let i = 0; i < DV_N; i++) {
       await page.evaluate((h) => { location.replace(h); }, `#D/${dvK(i)}`); await px(page, `D/${dvK(i)}.zh`);
-      await page.locator('.l4-top [data-a="menu"]').click();
+      await page.locator('[data-a="menu"]:visible').click();
       if ((await page.locator('.l4-ms .dv-vsw button').count()) !== 2) bad.push(`D/${i} switch`);
       await page.locator('.l4-ms [data-s="x"]').click();
       const kb = page.locator('.dv-kb'), n = await kb.count();
@@ -90,7 +90,7 @@ test.describe('R48 two views', () => {
       }
       for (const i of [0, 4, '8a', '8b', 10, '15a', 16]) {
         await page.evaluate((h) => { location.replace(h); }, `#D/${i}`); await px(page, `D/${i}.${l}`);
-        await page.locator('.l4-top [data-a="menu"]').click();
+        await page.locator('[data-a="menu"]:visible').click();
         for (const x of await page.evaluate(contrastIssues, { root: '.l4-ms .dv-vsw', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
         await page.locator('.l4-ms [data-s="x"]').click();
         for (const x of await page.evaluate(contrastIssues, { root: '.dv-ks', min: 4.5, icon: 3 })) bad.push(`${l} D/${i} ${x.cls} “${x.txt}” ${x.fg} on ${x.bg} = ${x.r}`);
@@ -104,7 +104,7 @@ test.describe('R48 two views', () => {
   });
   test('知识地图 #D/map: every card once, in the cell of its birth step × its layer; gold cell = the step’s own layer; entries from ☰, the chain and each stage', async ({ page }) => {
     const errs = await open(page, './?lang=zh#map'); const n0 = await hl(page); // R53: ☰ lives on the 地图 tab
-    await page.locator('.l4-top [data-a="menu"]').click(); await page.locator('.l4-ms a[href="#D/map"]').click();
+    await page.locator('[data-a="menu"]:visible').click(); await page.locator('.l4-ms a[href="#D/map"]').click();
     await expect(page).toHaveURL(re('#D/map')); await px(page, 'D/map.zh');
     await expect(page.locator('.l4-top .l4-tt')).toHaveText('知识地图 · 两个坐标');
     await expect(page.locator('.dv-mg .dv-mk')).toHaveCount(IDS.length); await expect(page.locator('.dv-mr[id]')).toHaveCount(DV_N);

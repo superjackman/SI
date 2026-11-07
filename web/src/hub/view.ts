@@ -2,7 +2,7 @@
    Weeks are kept: a new week does not drop an older one (see archive.ts). */
 import { tx, type L } from '../l4/txt';
 import { tx as cx } from '../i18n/L';
-import { DV_NM, dvI } from '../dv/links';
+import { DV_NM, dvI, posLabel } from '../dv/links';
 import { ML } from '../dv/mld';
 import { masteredSt } from '../dv/prog';
 import news from './news.json';
@@ -66,7 +66,7 @@ function readOf(st: string[], l: L) {
 const shareBtn = (kind: string, id: string, l: L) => `<button type="button" class="l4-b hb-sh" data-sh="${esc(kind)}:${esc(id)}">${esc(cx('share.item', l))}</button>`;
 function goalLink(it: NewsItem, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<p class="hb-r"><a href="#D/${it.goal}">${z(`第 ${it.goal} 站`, `Stop ${it.goal}`)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
+  return `<p class="hb-r"><a href="#D/${it.goal}">${z(dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'zh') : it.goal, dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'en') : it.goal)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
 }
 
 function newsItem(it: NewsItem, l: L, checked: string, linked: boolean) {
@@ -103,9 +103,17 @@ export function newsHtml(l: L, item = ''): string {
   return newsFrom(news, l, item);
 }
 
+function facets(t: Tool) {
+  const free = tx(t.free as [string, string], 'en').toLowerCase() + ' ' + (t.free as [string, string])[0];
+  const lic = /mit/i.test(free) ? 'mit' : /apache/i.test(free) ? 'apache' : 'other';
+  const cn = (t.cn as [string, string])[0];
+  const host = cn.includes('尚未实测') ? 'unmeasured' : (t.zh.startsWith('开源') || cn.includes('GitHub')) ? 'oss' : 'hosted';
+  return { lic, host };
+}
 function toolCard(t: Tool, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
+  const f = facets(t);
+  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}" data-lic="${f.lic}" data-host="${f.host}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
 }
 export function toolsHtml(l: L, item = ''): string {
   const z = (a: string, b: string) => tx([a, b], l);
@@ -115,23 +123,49 @@ export function toolsHtml(l: L, item = ''): string {
     return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}${guideDetail(guide, t.id, l)}</section>`;
   }
   const task = toolsTask(item);
-  const chips = `<div class="hb-f" role="tablist">${(['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('')}</div>`;
+  const taskBtns = (['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('');
+  const licBtns = ([['all', z('全部', 'All')], ['mit', 'MIT'], ['apache', 'Apache 2.0'], ['other', z('其他写法', 'Other')]] as const).map(([id, name]) => `<button type="button" data-lic="${id}" class="${id === 'all' ? 'on' : ''}" aria-pressed="${id === 'all'}">${esc(name)}</button>`).join('');
+  const hostBtns = ([['all', z('全部', 'All')], ['oss', z('开源，可自行部署', 'Open source, you host it')], ['hosted', z('托管网站', 'A hosted site')], ['unmeasured', z('尚未实测', 'Not measured')]] as const).map(([id, name]) => `<button type="button" data-host="${id}" class="${id === 'all' ? 'on' : ''}" aria-pressed="${id === 'all'}">${esc(name)}</button>`).join('');
+  const chips = `<div class="hb-f"><h2>${z('按任务', 'By task')}</h2><div role="tablist">${taskBtns}</div><h2>${z('按许可', 'By license')}</h2><div>${licBtns}</div><h2>${z('开源与托管', 'Source and hosting')}</h2><div>${hostBtns}</div></div>`;
   const cards = tools.items.map((t) => {
     const hide = task !== 'all' && !t.tasks.includes(task as (typeof TASKS)[number]);
     return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
   }).join('');
-  return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}${chips}<div class="hb-list">${cards}</div></section>`;
+  const local = guide.groups.find((g) => g.id === 'local') ?? guide.groups[0];
+  const COLS = ['Ollama', 'llama.cpp', 'vLLM'] as const;
+  const phrase = (zh: string, en: string) => (l === 'en' ? en : zh);
+  const ROWS: { zh: string; en: string; cell: Record<string, readonly [string, string]> }[] = [
+    { zh: '谁负责跑模型', en: 'Who runs the model', cell: { Ollama: ['命令 ollama run gemma4:e2b', 'ollama run gemma4:e2b'], 'llama.cpp': ['llama cli 或 llama serve', 'llama cli or llama serve'], vLLM: ['一次挂一个模型', 'one model at a time'] } },
+    { zh: '许可', en: 'License', cell: { Ollama: ['LICENSE 是 MIT', 'LICENSE files for Ollama and llama.cpp are MIT'], 'llama.cpp': ['LICENSE 是 MIT', 'LICENSE files for Ollama and llama.cpp are MIT'], vLLM: ['LICENSE 是 Apache 2.0', 'LICENSE is Apache 2.0'] } },
+    { zh: '机器要求', en: 'Machine', cell: { Ollama: ['建议 8 GB 可用显存', '8 GB of VRAM'], 'llama.cpp': ['—', '—'], vLLM: ['Linux 和 Python 3.11 到 3.14', 'Linux and Python 3.11 through 3.14'] } },
+  ];
+  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p class="hb-meta">${esc(tx(local.task as [string, string], l))} · ${z('不是评分。', 'No score.')} ${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p><table><thead><tr><th></th>${COLS.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${ROWS.map((r) => `<tr><th>${z(r.zh, r.en)}</th>${COLS.map((c) => `<td>${esc(phrase(...(r.cell[c] ?? ['—', '—'])))}</td>`).join('')}</tr>`).join('')}</tbody></table><details><summary>${z('指南原句', 'The guide’s sentences')}</summary>${local.diffs.map((d) => `<p>${esc(l === 'en' ? d.en : d.zh)}</p>`).join('')}</details></aside>` : '';
+  return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}<div class="hb-desk">${chips}<div class="hb-list">${cards}</div>${cmp}</div></section>`;
 }
 
 /** wire the task filter; `go` writes the filter into the address */
 export function wireTools(root: ParentNode, go?: (hash: string) => void) {
   const box = root.querySelector<HTMLElement>('.hb-f'); if (!box) return;
+  const paint = () => {
+    const taskOn = box.querySelector<HTMLElement>('[data-task].on')?.dataset.task ?? 'all';
+    const lic = box.querySelector<HTMLElement>('[data-lic].on')?.dataset.lic ?? 'all';
+    const host = box.querySelector<HTMLElement>('[data-host].on')?.dataset.host ?? 'all';
+    root.querySelectorAll<HTMLElement>('.hb-list [data-tasks]').forEach((card) => {
+      const tasks = (card.dataset.tasks ?? '').split(' ');
+      card.hidden = (taskOn !== 'all' && !tasks.includes(taskOn)) || (lic !== 'all' && card.dataset.lic !== lic) || (host !== 'all' && card.dataset.host !== host);
+    });
+  };
   box.addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-task]'); if (!b) return;
-    const id = b.dataset.task ?? 'all';
-    const hash = toolsHash(id);
-    if (go) { go(hash); return; }
-    box.querySelectorAll<HTMLElement>('[data-task]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
-    root.querySelectorAll<HTMLElement>('.hb-list [data-tasks]').forEach((card) => { card.hidden = id !== 'all' && !(card.dataset.tasks ?? '').split(' ').includes(id); });
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-task],[data-lic],[data-host]'); if (!b) return;
+    if (b.dataset.task) {
+      const id = b.dataset.task ?? 'all';
+      const hash = toolsHash(id);
+      if (go) { go(hash); return; }
+      box.querySelectorAll<HTMLElement>('[data-task]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
+      paint(); return;
+    }
+    const key = b.dataset.lic ? 'lic' : 'host';
+    box.querySelectorAll<HTMLElement>(`[data-${key}]`).forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    paint();
   });
 }

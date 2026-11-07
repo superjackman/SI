@@ -5,7 +5,7 @@ import { tx, type L } from '../l4/txt';
 import type { Data } from '../l4/share/draw';
 import { order } from '../vf/ids';
 import { mlGet } from './prog';
-import { DV_NM, dvI } from './links';
+import { DV_NM, dvI, posLabel } from './links';
 
 const sum = (a: number[] | undefined) => (a ?? []).reduce((s, n) => s + (Number.isFinite(n) ? n : 0), 0);
 
@@ -35,7 +35,7 @@ export async function sharePack(k: string, l: L, title: string, head: string): P
   const name = tx(DV_NM[dvI(k)] ?? [title, title], l);
   return {
     site: tx(D.SITE_N, l), url: chUrl(k, l),
-    lv: l === 'zh' ? `第 ${k} 站` : `Stop ${k}`, lvC: '#4f46e5', path: '', icon: '✎',
+    lv: dvI(k) >= 0 ? posLabel(dvI(k), l === 'en' ? 'en' : 'zh') : (l === 'zh' ? '站' : 'Stop'), lvC: '#1a4a6b', path: '', icon: '✎',
     name, idea: q, parts: [], co: '', why: '',
     head, badge: '✎',
     scan: ask ? (l === 'zh' ? '扫码做这道题' : 'Scan to try the question') : '',

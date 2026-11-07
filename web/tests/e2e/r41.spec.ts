@@ -24,8 +24,10 @@ test.describe('R41 reference layout', () => {
     await expect(page.locator('.l4-info dd').first()).toHaveText('把一段字变成「下一个字」的概率');
     // R44: ↑ / ☰ / ⚙ / EN are square icon buttons in the top bar; walking is the bottom step bar
     for (const [a, t] of [['back', '↑'], ['menu', '☰'], ['set', '⚙']] as const) {
-      const b = page.locator(`.l4-top [data-a="${a}"]`); await expect(b).toHaveText(t);
-      const q = (await b.boundingBox())!; expect(q.width).toBeGreaterThanOrEqual(page.viewportSize()!.width <= 380 ? 34 : 36); // ≤380 px: 34 px (+4 px hit ring) so the title keeps its room expect(Math.abs(q.width - q.height)).toBeLessThan(2);
+      const b = page.locator(`.l4-top [data-a="${a}"]`);
+      if (!(await b.isVisible())) continue; // desktop keeps settings; ↑ and ☰ live in the footer and the crumb
+      await expect(b).toHaveText(t);
+      const q = (await b.boundingBox())!; expect(q.width).toBeGreaterThanOrEqual(page.viewportSize()!.width <= 380 ? 34 : 36); expect(Math.abs(q.width - q.height)).toBeLessThan(2);
     }
     await go(page, '#L4/tr/4');
     await expect(page.locator('.l4-tt')).toHaveText('例题：天空是什么颜色？ → 蓝');

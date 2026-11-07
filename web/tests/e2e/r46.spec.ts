@@ -20,10 +20,10 @@ test.describe('R46 Back leaves the site', () => {
     await page.locator('.l4-nav [data-a="next"]').click(); await expect(page).not.toHaveURL(re('#L1'));
     await page.locator('.l4-nav [data-a="next"]').click();
     const u = page.url(); await page.locator('.l4-crumb a').last().click(); await expect(page).not.toHaveURL(u);
-    await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
+    await page.locator('[data-a="menu"]:visible').first().click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
     const to = (await ms.locator('a[href^="#L4"]:not(.here)').first().getAttribute('href'))!;
     await ms.locator(`a[href="${to}"]`).first().click(); await expect(ms).toHaveCount(0); await expect(page).toHaveURL(re(to));
-    await page.locator('.l4-top [data-a="back"]').click(); await expect(page).toHaveURL(re('#home'));
+    const up = page.locator('.l4-top [data-a="back"]'); if (await up.isVisible()) await up.click(); else await page.locator('.l4-crumb a').last().click(); await expect(page).toHaveURL(re('#home'));
     expect(await hl(page)).toBe(n0);
     await page.goBack(); await expect(page).toHaveURL('about:blank');
     expect(errs).toEqual([]);

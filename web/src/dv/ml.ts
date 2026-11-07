@@ -5,6 +5,7 @@ import './ml.css';
 import { tx, type L } from '../l4/txt';
 import { ML, type Goal, type Ml } from './mld';
 import { ML_G, masteredSt, mlGet, mlSet, stationMin, type MlS } from './prog';
+import { dvI, posLabel } from './links';
 import { noteMastered } from '../px/week';
 import { fillDvText } from './nums';
 import { DEMO } from '../vf/data';
@@ -50,7 +51,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   let S: MlS = mlGet(k);
   const pred: (number | null)[] = M.goals.map(() => null);
   const save = () => { const prev = masteredSt(); mlSet(k, S); noteMastered(prev); };
-  const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
+  const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s) ?? host.querySelector<E>(s)!;
   const lyLab = (n: number, fr?: number) => `${tx(LYN[n - 1]!, l)}${fr ? z(` · 第 ${fr} 镜`, ` · shot ${fr}`) : ''}`;
   const setTop = () => { const tp = root.querySelector<HTMLElement>('.ly-top'); if (tp) root.style.setProperty('--lyt', `${Math.round(tp.getBoundingClientRect().height)}px`); };
   const refreshCard = () => {
@@ -61,7 +62,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     root.querySelectorAll<HTMLElement>('[data-ml-g]').forEach((b) => { const i = Number(b.dataset.mlG), on = i === S.g; b.className = `${on ? 'on' : ''}${S.m[i] ? ' m' : ''}`; b.setAttribute('aria-checked', String(on)); b.setAttribute('aria-label', `${tx(M.goals[i]!.t, l)}${S.m[i] ? z('，过了', ', done') : ''}`); });
   };
   const inv = () => {
-    const g = M.goals[S.g]!, pk = S.p[S.g]!, from = S.g === 0 ? (prevQ ? `<p class="ml-pv"><span>${z(`第 ${prevK} 站留下`, `Left open by stop ${prevK}`)}</span><b>${esc(prevQ)}</b></p>` : '') : `<p class="ml-pv"><span>${z('刚才留下', 'Left just now')}</span><b>${t(M.goals[S.g - 1]!.nx)}</b></p>`;
+    const g = M.goals[S.g]!, pk = S.p[S.g]!, prevLab = prevK && dvI(prevK) >= 0 ? posLabel(dvI(prevK), l === 'en' ? 'en' : 'zh') : '', from = S.g === 0 ? (prevQ ? `<p class="ml-pv"><span>${z(`${prevLab}留下`, `Left open by ${prevLab}`)}</span><b>${esc(prevQ)}</b></p>` : '') : `<p class="ml-pv"><span>${z('刚才留下', 'Left just now')}</span><b>${t(M.goals[S.g - 1]!.nx)}</b></p>`;
     const wrongs = S.w?.[S.g] ?? [], solved = pk === g.a;
     const ops = g.o.map((o, i) => {
       const bad = wrongs.includes(i), ok = solved && i === g.a, off = bad || solved;

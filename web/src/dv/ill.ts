@@ -44,3 +44,38 @@ export function life(key: string, l: L): string {
   const s = SCENE[key]; if (!s) return '';
   return frame(tx([s[0], s[1]], l), s[2]);
 }
+
+/** the same scene after it has become the diagram. Paired with SCENE, not the cast stations. */
+const MATH: Record<string, readonly [string, string, string]> = {
+  '0': ['一条直线穿过样本', 'A line through the samples',
+    `<path d="M24 108 L270 28" stroke="${Y}" stroke-width="3"/><circle cx="70" cy="92" r="5" fill="${R}"/><circle cx="140" cy="68" r="5" fill="${G}"/><circle cx="220" cy="42" r="5" fill="${B}"/>`],
+  P: ['四根概率柱，加起来满格', 'Four probability bars that fill the row',
+    `<rect x="36" y="70" width="36" height="40" fill="${B}"/><rect x="90" y="40" width="36" height="70" fill="${Y}"/><rect x="144" y="88" width="36" height="22" fill="${G}"/><rect x="198" y="100" width="36" height="10" fill="${R}"/>`],
+  '1': ['罚分曲线：越靠近 0 越高', 'A penalty curve that rises toward 0',
+    `<path d="M30 28 C70 30 90 100 270 108" fill="none" stroke="${P}" stroke-width="3"/><circle cx="60" cy="32" r="5" fill="${R}"/><circle cx="200" cy="96" r="5" fill="${G}"/>`],
+  '2': ['损失曲线和球', 'The loss curve and the ball',
+    `<path d="M24 36 Q150 150 276 36" fill="none" stroke="${B}" stroke-width="3"/><circle cx="78" cy="78" r="7" fill="${R}"/><line x1="150" y1="24" x2="150" y2="118" stroke="${G}" stroke-dasharray="4 3"/>`],
+  '3': ['弯一下才能分开', 'A bend, then the points separate',
+    `<path d="M40 66 C90 20 150 110 260 50" fill="none" stroke="${Y}" stroke-width="3"/><circle cx="70" cy="40" r="7" fill="${R}"/><circle cx="200" cy="40" r="7" fill="${G}"/><circle cx="70" cy="96" r="7" fill="${G}"/><circle cx="200" cy="96" r="7" fill="${R}"/>`],
+  '4': ['坡度一层层传回去', 'The slope passed back, layer by layer',
+    `<rect x="36" y="48" width="50" height="36" fill="${R}"/><path d="M90 66 H120" stroke="${D}" stroke-width="3"/><rect x="124" y="54" width="40" height="24" fill="${Y}"/><path d="M168 66 H198" stroke="${D}" stroke-width="3"/><rect x="202" y="58" width="28" height="16" fill="${G}"/>`],
+  '5': ['三个旋钮拧到不同角度', 'Three knobs at different angles',
+    `<circle cx="70" cy="66" r="22" fill="none" stroke="${B}" stroke-width="6"/><circle cx="150" cy="66" r="22" fill="none" stroke="${G}" stroke-width="6"/><circle cx="230" cy="66" r="22" fill="none" stroke="${P}" stroke-width="6"/>`],
+  '13': ['问题指向抽出的那一本', 'The question points at the book that was pulled',
+    `<rect x="40" y="40" width="22" height="60" fill="${B}"/><rect x="70" y="24" width="22" height="76" fill="${Y}"/><rect x="100" y="40" width="22" height="60" fill="${G}"/><path d="M150 66 H240" stroke="${R}" stroke-width="3"/>`],
+  '14': ['写下调用，环在旁边转', 'Write the call; the loop sits beside it',
+    `<rect x="36" y="46" width="90" height="40" fill="none" stroke="${Y}" stroke-width="3"/><path d="M170 90 C220 90 230 40 190 40 C160 40 160 72 188 74" fill="none" stroke="${G}" stroke-width="3"/>`],
+  S: ['门关着，纸条停在门外', 'The gate is shut; the note stops outside',
+    `<rect x="150" y="28" width="14" height="80" fill="${D}"/><rect x="40" y="52" width="70" height="28" fill="${R}"/><path d="M170 66 H250" stroke="${G}" stroke-width="3" stroke-dasharray="4 3"/>`],
+  '15a': ['小方块排成一行', 'Small squares in a row',
+    `<rect x="36" y="48" width="28" height="28" fill="${P}"/><rect x="72" y="48" width="28" height="28" fill="${B}"/><rect x="108" y="48" width="28" height="28" fill="${Y}"/><rect x="144" y="48" width="28" height="28" fill="${G}"/><rect x="180" y="48" width="28" height="28" fill="${R}"/>`],
+  '15b': ['想得越久，链条越长', 'Thinking longer makes a longer chain',
+    `<rect x="30" y="58" width="40" height="18" rx="9" fill="${B}"/><rect x="80" y="52" width="60" height="28" rx="12" fill="${Y}"/><rect x="152" y="44" width="90" height="40" rx="16" fill="${G}"/>`],
+  A: ['三个窗口都标了结果', 'Three windows, each with a result',
+    `<rect x="28" y="36" width="70" height="64" fill="none" stroke="${B}" stroke-width="3"/><rect x="114" y="36" width="70" height="64" fill="none" stroke="${Y}" stroke-width="3"/><rect x="200" y="36" width="70" height="64" fill="none" stroke="${G}" stroke-width="3"/>`],
+};
+
+export function mathPic(key: string, l: L): string {
+  const s = MATH[key]; if (!s) return '';
+  return frame(tx([s[0], s[1]], l), s[2]);
+}

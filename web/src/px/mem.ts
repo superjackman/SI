@@ -3,7 +3,7 @@
    and the nameless 9:16 certificate with a challenge question + QR. All local; nothing is sent anywhere. */
 import './mem.css';
 import { UI, tx, type L } from '../l4/txt';
-import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
+import { DV_KEY, DV_LV, DV_N, DV_NM, dvI, posLabel } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 import { ROUTES } from '../dv/routes';
 import { VF_Q, order, vfDone } from '../vf/ids';
@@ -34,7 +34,7 @@ export async function mem(id: string, A: PxApi) {
 export function pickTag(p: RV.Pick, l: L) {
   const z = (a: string, b: string) => tx([a, b], l), k = stOf(p.id);
   const w = p.why === 'w' ? z('上次错', 'Missed last time') : p.ago <= 0 ? z('今天学', 'Learned today') : z(`${p.ago} 天前学`, `Learned ${p.ago} day${p.ago === 1 ? '' : 's'} ago`);
-  return `${w}${k ? ` · ${z(`第 ${k} 站`, `stop ${k}`)}` : ''}`;
+  return `${w}${k && dvI(k) >= 0 ? ` · ${posLabel(dvI(k), l === 'en' ? 'en' : 'zh')}` : ''}`;
 }
 
 /* ---------- 今日复习 ---------- */
@@ -73,7 +73,7 @@ async function sort(A: PxApi, n: number) {
   if (read < ks.length) {
     const first = ks.find((k) => !m.has(k))!;
     A.host.innerHTML = `<div class="px mm" lang="${lang}"><section class="mm-card"><b>🔒 ${z(`掌握第 ${n} 层「${lvN}」的 ${ks.length} 站后解锁`, `Unlocks after the ${ks.length} stops of layer ${n}, “${lvN}”, are mastered`)}</b><p>${z(`已掌握 ${read}/${ks.length} 站。`, `${read}/${ks.length} mastered.`)}</p><p>${z('掌握＝这一站的题都做对了，或这一站的小目标都点亮。', 'Mastered means every question on that stop is right, or every small goal on it is lit.')}</p></section>
-<div class="px-row"><button type="button" class="l4-b gold" data-go="#D/${first}">${z(`去第 ${first} 站`, `Go to stop ${first}`)} ›</button></div></div>`;
+<div class="px-row"><button type="button" class="l4-b gold" data-go="#D/${first}">${z(`去${posLabel(dvI(first), 'zh')}`, `Go to ${posLabel(dvI(first), 'en')}`)} ›</button></div></div>`;
     A.host.scrollTop = 0; fin(A, `R/so${n}`); return;
   }
   const mix = order('so' + n, ks.length).map((i) => ks[i]!), pick: string[] = [];
@@ -91,7 +91,7 @@ ${full ? `<button type="button" class="l4-b gold mm-go" data-so="ck">${z('检查
     const right = pick.every((k, j) => k === ks[j]), res = sw.querySelector<HTMLElement>('.mm-res')!;
     sw.querySelector('[data-so="ck"]')?.remove();
     sw.querySelectorAll<HTMLElement>('.mm-seq .mm-c').forEach((b, j) => b.classList.add(pick[j] === ks[j] ? 'ok' : 'bad'));
-    if (right) { soSet(n); res.innerHTML = `<p class="mm-ok"><b>✓ ${z('排对了！', 'All in order!')}</b> ${z('这一层的推导你串起来了。', 'You have this layer’s chain.')}</p><ol class="mm-key">${ks.map((k) => `<li><button type="button" class="l4-b" data-go="#D/${k}">${z(`第 ${k} 站`, `Stop ${k}`)} · ${esc(stN(k, l))}</button></li>`).join('')}</ol>`; }
+    if (right) { soSet(n); res.innerHTML = `<p class="mm-ok"><b>✓ ${z('排对了！', 'All in order!')}</b> ${z('这一层的推导你串起来了。', 'You have this layer’s chain.')}</p><ol class="mm-key">${ks.map((k) => `<li><button type="button" class="l4-b" data-go="#D/${k}">${posLabel(dvI(k), l === 'en' ? 'en' : 'zh')} · ${esc(stN(k, l))}</button></li>`).join('')}</ol>`; }
     else res.innerHTML = `<p class="mm-bad"><b>✗ ${z(`${pick.filter((k, j) => k !== ks[j]).length} 个位置不对`, `${pick.filter((k, j) => k !== ks[j]).length} out of place`)}</b> ${z('想一想：它要先有哪一站留下的问题？', 'Ask: which stop’s open question does it need first?')}</p><button type="button" class="l4-b mm-go" data-so="re">${z('再排一次', 'Try again')}</button>`;
   };
   draw(); A.host.scrollTop = 0;
