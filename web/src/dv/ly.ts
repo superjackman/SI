@@ -34,6 +34,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 const P = (xs: string[], mk: Mk, c = '') => xs.map((x) => `<p${c ? ` class="${c}"` : ''}>${mk(x)}</p>`).join('');
 const UL = (xs: string[], mk: Mk, c = '') => (xs.length ? `<ul${c ? ` class="${c}"` : ''}>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '');
 const plain = (s: string) => s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1');
+const MOT = new Set(['6', '7', '8b', '9', '12']);
 
 /* ---------- the pictures (pure html; the attention one is an animation in ./att) ---------- */
 function picSm(l: L, mk: Mk) {
@@ -100,9 +101,10 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const key = page.replace(/^D\//, '');
   const own = life(key, l);
   const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : Y.pic === 'att' ? `<div class="ly-att" data-att="1"></div>` : own;
+  const mot = MOT.has(key) ? `<div class="ly-mot" data-mot="${key}"></div>` : '';
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}<details class="ly-jv"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
+    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
     `${pic}${P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" data-vf-part="demo"></div>`,
     `<div class="ly-fx">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('自己算一算', 'Work it out')}</b>${mk(S.h)}</p></details>`,
@@ -149,4 +151,6 @@ export function wire(host: HTMLElement, page: string, l: L) {
   void import('../vf/ui').then((m) => { if (demo?.isConnected) m.mount(demo, page, l, undefined, 'demo'); if (chk?.isConnected) m.mount(chk, page, l, undefined, 'check'); });
   const at = root.querySelector<HTMLElement>('[data-att]');
   if (at) void import('./att').then((m) => { if (at.isConnected) m.att(at, l); });
+  const motEl = root.querySelector<HTMLElement>('[data-mot]');
+  if (motEl) void import('./motion').then((m) => { if (motEl.isConnected) m.mount(motEl, motEl.dataset.mot ?? '', l); });
 }
