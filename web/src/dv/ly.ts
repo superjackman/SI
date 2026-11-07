@@ -188,11 +188,12 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     return groups.map((g) => `<p>${g.map(mk).join('')}</p>`).join('');
   };
   const hasDemo = !!DEMO[`D/${key}`];
-  const twin = new Set(['bowl', 'xor', 'fit', 'slope', 'shelf', 'dot', 'lora', 'cache', 'knob']);
+  const twin = new Set(['bowl', 'xor', 'fit', 'slope', 'shelf', 'dot', 'lora', 'cache', 'knob', 'book']);
   const showStill = !hasDemo || !twin.has(Y.pic);
-  const still = showStill ? `<div class="st-fig" data-fig="pic-${Y.pic}">${pic}${hasDemo ? '' : mot}${P(caps, mk, 'ly-cap')}</div>` : '';
+  const still = showStill ? `<div class="st-fig" data-fig="pic-${Y.pic}">${pic}${P(caps, mk, 'ly-cap')}</div>` : '';
+  const motFig = MOT.has(key) ? `<div class="st-fig" data-fig="mot-${key}">${mot}</div>` : '';
   const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}</div>`;
-  const figure = still + exp;
+  const figure = still + motFig + exp;
   const formulas = Y.fx.map((f, i) => {
     const before = i === 0 ? lead : (l === 'en' ? 'When more than one number changes together, write it this way.' : '不止一个数一起改的时候，写成这样。');
     const sym = Y.fe[i];
