@@ -8,7 +8,8 @@
     font-size: 16px;
     line-height: 1.6;
   }
-  .l4-home { align-items: stretch; padding: 8px 32px 12px; }
+  .l4-home { align-items: stretch; padding: 0; display: flex; flex-direction: column; }
+  .l4-body { flex: none; width: 100%; padding: 8px 32px 24px; }
   .l4-tabs { display: none !important; }
   .l4:has(.dv-sp) .l4-nav { display: none !important; }
   .l4-tx:has(.l4-logo), .l4:has(.dv-sp) .l4-tx { display: none !important; }
@@ -33,8 +34,8 @@
   .pt-links a, .pt-more a { color: #d5d0c6; text-decoration: none; padding: 8px 12px; font-size: 15px; }
   .pt-links a[aria-current="page"], .pt-more a[aria-current="page"] { color: #fff; box-shadow: inset 0 -2px 0 #fff; }
   .pt-links a:hover, .pt-more a:hover { color: #fff; }
-  .pt-more { margin-left: 8px; }
   .pt-search { display: flex; margin-left: auto; }
+  .pt-more { margin-left: 8px; }
   .pt-q {
     width: 240px; height: 36px; padding: 0 12px;
     border: 1px solid #3d4c5c; background: #243140; color: #f4f1ea; border-radius: 2px;
@@ -42,15 +43,16 @@
   .pt-q::placeholder { color: #c5ced6; }
   .l4 .px { max-width: none; }
   .hm-hub, .hm-find { display: none !important; }
-  .pt-foot, .pt-foot[hidden] {
+  .l4-home:not([hidden]) > .pt-foot {
     display: grid !important;
     grid-template-columns: 1.1fr 1.6fr 0.9fr;
     gap: 36px;
     flex: none;
+    position: static;
     background: #15202b;
     color: #d5d0c6;
     padding: 40px 40px 48px;
-    margin-top: auto;
+    margin-top: 32px;
   }
   .pt-foot h2 { margin: 0 0 8px; color: #f4f1ea; font-size: 15px; }
   .pt-foot p, .pt-foot a { margin: 0; font-size: 14px; line-height: 1.6; color: #d5d0c6; }

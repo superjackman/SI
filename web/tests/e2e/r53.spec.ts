@@ -24,10 +24,10 @@ test.describe('R53 home', () => {
     const errs = await open(page, './?lang=zh#home'); const n0 = await hl(page);
     await expect(page.locator('#l4')).toHaveAttribute('data-hm', 'first.zh');
     await expect(page.locator('.l4-ob')).toHaveCount(0);
-    await expect(page.locator('.hm-h')).toContainText('ChatGPT');
+    await expect(page.locator('.hm-h')).toContainText('从一个数学函数出发');
     expect(await page.locator('#l4').innerText()).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|Good (morning|evening)/);
     await expect(page.locator('.hm-k')).toContainText('零基础');
-    await expect(page.locator('.hm-h')).toContainText('一路搭到 ChatGPT');
+    await expect(page.locator('.hm-h')).toContainText('搭到大模型、安全与应用');
     await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/0');
     await expect(page.locator('.hm-cta')).toContainText('用样本找函数');
     await expect(page.locator('.hm-start')).toHaveCount(0);

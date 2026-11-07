@@ -207,7 +207,9 @@ html.l4-mode:not([data-theme="dark"]) .vf-qq::before { color: #5c3b12 !important
 html.l4-mode:not([data-theme="dark"]) svg [fill="#0a1736"] { fill: #fffcf7; }
 html.l4-mode:not([data-theme="dark"]) svg [fill="#13224d"] { fill: #e7eef2; }
 html.l4-mode:not([data-theme="dark"]) svg [stroke="#33508f"] { stroke: #1a4a6b; }
-html.l4-mode:not([data-theme="dark"]) svg text { fill: #1c1915; font-size: 14px; }
+html.l4-mode:not([data-theme="dark"]) svg text { fill: #1c1915; font-size: 22px; }
+html.l4-mode:not([data-theme="dark"]) .l4-logo { color: #fff !important; }
+html.l4-mode:not([data-theme="dark"]) .st-tog { background: #fffcf7; color: #1c1915; border-color: #d9d3c7; }
 html.l4-mode:not([data-theme="dark"]) .l4-home { color: #1c1915; }
 html.l4-mode:not([data-theme="dark"]) .l4-home * { color: #1c1915; }
 html.l4-mode:not([data-theme="dark"]) .l4-top { color: #f4f1ea; }

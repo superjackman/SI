@@ -34,19 +34,18 @@ export function start(doc: Document = document, win: Window = window) {
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
   try { const th = localStorage.getItem('si.theme'); if (th === 'dark') doc.documentElement.dataset.theme = 'dark'; } catch { /* private mode */ }
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><nav class="pt-more" aria-label="学习入口"><a href="#map" data-pt="map">地图</a><a href="#P" data-pt="prac">练习</a><a href="#R" data-pt="me">我的</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><nav class="pt-more" aria-label="学习入口"><a href="#map" data-pt="map">地图</a><a href="#P" data-pt="prac">练习</a><a href="#R" data-pt="me">我的</a></nav><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
-<main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
+<main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden><div class="l4-body"></div><footer class="pt-foot" hidden></footer></div></main>
 <div class="l4-ent" hidden></div>
 <section class="l4-info"></section>
 <p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div>
 <nav class="l4-nav g-nav" hidden></nav>
 <nav class="l4-tabs" hidden></nav>
-<footer class="pt-foot" hidden></footer>
 <div class="l4-rot" aria-hidden="true"><div><b>⟲</b><p class="t"></p><p class="s"></p></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   gramOn(root);
-  const nav = $('.l4-nav'), tabs = $('.l4-tabs'), stg = $('.l4-stg'), home = $('.l4-home'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
+  const nav = $('.l4-nav'), tabs = $('.l4-tabs'), stg = $('.l4-stg'), pageScroll = $('.l4-home'), home = $('.l4-body'), info = $('.l4-info'), crumb = $('.l4-crumb'), mp = $('.l4-mp'), ent = $('.l4-ent'), hint = $('.l4-hint'), dots = $('.l4-dots'), txt = $('.l4-tx'), qp = $('.l4-qp');
   let lang: L = useApp.getState().lang === 'en' ? 'en' : 'zh';
   const T = (k: keyof typeof UI) => tx(UI[k] as Tx, lang);
   const lines0 = (() => { try { return JSON.parse(localStorage.getItem('si.l4.my.lines') || 'null') as string[] | null; } catch { return null; } })();
@@ -203,10 +202,10 @@ export function start(doc: Document = document, win: Window = window) {
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
     const isL4 = cur === 'L4' || /^(TR|US|MY)\d$/.test(cur) || cur.startsWith('X:'), soon = /^L[1235]$/.test(cur) && !lxOn(cur);
     root.dataset.page = cur; drawTabs();
-    if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; home.hidden = true; stg.hidden = false; void renderLx(); return; }
-    if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; home.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
+    if (lxOn(cur)) { pg = null; root.dataset.v = 'lx'; pageScroll.hidden = true; stg.hidden = false; void renderLx(); return; }
+    if (isPx(cur)) { pxStep = null; lxTok++; lp = null; pg = null; root.dataset.v = 'px'; pageScroll.hidden = false; stg.hidden = true; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = ''; dots.innerHTML = ''; if (S) S.el.style.display = 'none'; void renderPx(); return; }
     lxTok++; lp = null; root.dataset.v = isL4 ? 'l4' : soon ? 'soon' : 'home';
-    home.hidden = isL4; stg.hidden = !isL4;
+    pageScroll.hidden = isL4; stg.hidden = !isL4;
     if (!isL4) { pg = null; drawTop(null); crumb.innerHTML = soon ? `<a href="#home">${T('home')}</a><span>›</span><span>${tx(UI.lv[Number(cur[1]) - 1]!, lang)}</span>` : `<span>${T('home')}</span>`; mp.hidden = true; info.innerHTML = ''; ent.hidden = true; hint.textContent = soon || cur === 'home' || isHub(cur) || cur === 'map' ? '' : T('sub'); dots.innerHTML = '';
       if (soon) drawSoon(Number(cur[1]) - 1); else if (cur === 'map') drawMap(); else drawHome(); return; }
     if (!d) void load();
@@ -375,7 +374,7 @@ export function start(doc: Document = document, win: Window = window) {
     const q = qGet(); if (q?.on) { const j = PATH.findIndex(([h]) => stopOf(h) === id); if (j >= 0 && j !== q.i) LS.set(QKEY, { ...q, i: j, max: Math.max(q.max, j) }); }
     if (id !== cur && pageLayer(id)) pushRecent(id, 'p');
     navNote(win, win.location.hash || '#home');
-    if (id !== cur) home.scrollTop = 0;
+    if (id !== cur) pageScroll.scrollTop = 0;
     cur = id; if (!isPx(id)) { seen.add(id); LS.set('si.l4.seen', [...seen]); } root.querySelector('.l4-ms')?.remove();
     render(); drawQp();
     const want = r.card && /^K[MABC]?\d\d(\.2)?$/.test(r.card) ? r.card : null; if (want !== cardFor || want) void card(want);

@@ -56,7 +56,7 @@ function demo(k: DemoK, s: DemoS, l: L) {
   const ctl = extraCtl(k, s, l) ?? (k === 'gd' ? sl('eta', z('学习率 η', 'Rate η'), 0.05, 1.2, 0.05, s.eta, slOut('eta', s.eta)) + sl('n', z('步数', 'Steps'), 1, 8, 1, s.n, slOut('n', s.n))
     : k === 'sm' ? sl('T', z('温度 T', 'Temp T'), 0.1, 3, 0.1, s.T, slOut('T', s.T)) : sl('dk', 'd_k', 0, D_DK.length - 1, 1, s.dk, slOut('dk', s.dk)));
   const title = isExtra(k) ? extraTitle(k) : DT[k];
-  return `<section class="vf-b vf-dm" data-dm="${k}"><h3 class="vf-h"><span class="vf-ic">⇆</span>${esc(tx(title, l))}</h3><div class="vf-ctl">${ctl}</div><div class="vf-res" aria-live="polite">${demoOut(k, s, l)}</div></section>`;
+  return `<section class="vf-b vf-dm" data-dm="${k}"><h3 class="vf-h"><span class="vf-ic">⇆</span>${esc(tx(title, l))}</h3><div class="vf-res" aria-live="polite">${demoOut(k, s, l)}</div><div class="vf-ctl">${ctl}</div></section>`;
 }
 
 /* ---------- the questions ---------- */

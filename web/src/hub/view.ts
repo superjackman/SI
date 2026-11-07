@@ -132,7 +132,14 @@ export function toolsHtml(l: L, item = ''): string {
     return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
   }).join('');
   const local = guide.groups.find((g) => g.id === 'local') ?? guide.groups[0];
-  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p>${esc(tx(local.task as [string, string], l))}</p><p class="hb-meta">${z('差异写在指南里，不是评分。', 'The guide states the differences. There is no score.')} ${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p><table><tbody>${local.diffs.map((d) => { const text = l === 'en' ? d.en : d.zh; const head = text.split(/[。.]/)[0] ?? text; return `<tr><th>${esc(head)}</th><td>${esc(text)}</td></tr>`; }).join('')}</tbody></table></aside>` : '';
+  const COLS = ['Ollama', 'llama.cpp', 'vLLM'] as const;
+  const phrase = (zh: string, en: string) => (l === 'en' ? en : zh);
+  const ROWS: { zh: string; en: string; cell: Record<string, readonly [string, string]> }[] = [
+    { zh: '谁负责跑模型', en: 'Who runs the model', cell: { Ollama: ['命令 ollama run gemma4:e2b', 'ollama run gemma4:e2b'], 'llama.cpp': ['llama cli 或 llama serve', 'llama cli or llama serve'], vLLM: ['一次挂一个模型', 'one model at a time'] } },
+    { zh: '许可', en: 'License', cell: { Ollama: ['LICENSE 是 MIT', 'LICENSE files for Ollama and llama.cpp are MIT'], 'llama.cpp': ['LICENSE 是 MIT', 'LICENSE files for Ollama and llama.cpp are MIT'], vLLM: ['LICENSE 是 Apache 2.0', 'LICENSE is Apache 2.0'] } },
+    { zh: '机器要求', en: 'Machine', cell: { Ollama: ['建议 8 GB 可用显存', '8 GB of VRAM'], 'llama.cpp': ['—', '—'], vLLM: ['Linux 和 Python 3.11 到 3.14', 'Linux and Python 3.11 through 3.14'] } },
+  ];
+  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p class="hb-meta">${esc(tx(local.task as [string, string], l))} · ${z('不是评分。', 'No score.')} ${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p><table><thead><tr><th></th>${COLS.map((c) => `<th>${c}</th>`).join('')}</tr></thead><tbody>${ROWS.map((r) => `<tr><th>${z(r.zh, r.en)}</th>${COLS.map((c) => `<td>${esc(phrase(...(r.cell[c] ?? ['—', '—'])))}</td>`).join('')}</tr>`).join('')}</tbody></table><details><summary>${z('指南原句', 'The guide’s sentences')}</summary>${local.diffs.map((d) => `<p>${esc(l === 'en' ? d.en : d.zh)}</p>`).join('')}</details></aside>` : '';
   return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}<div class="hb-desk">${chips}<div class="hb-list">${cards}</div>${cmp}</div></section>`;
 }
 
