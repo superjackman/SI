@@ -150,7 +150,9 @@ test('every station share opens that station’s question, and the station 6 car
   await expect(page.locator('.dv-pos')).toContainText('第 8/23 站');
   await expect(page.locator('.l4-nav')).toBeHidden();
   await expect(page.locator('.st-out a[href="#D/5"]')).toBeVisible();
-  await expect(page.locator('[data-fig]')).toHaveCount(1);
+  const figs = await page.locator('[data-fig]').evaluateAll((els) => els.map((e) => e.getAttribute('data-fig') || ''));
+  expect(new Set(figs).size).toBe(figs.length);
+  expect(figs).not.toContain('pic-dot');
   await expect(page.locator('[data-morph]')).toHaveCount(0);
   await expect(page.locator('[data-share-url]')).toHaveText('https://superjackman.github.io/SI/#D/6');
   await expect(page.locator('[data-share-url]')).not.toContainText('127.0.0.1');
