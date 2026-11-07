@@ -247,7 +247,7 @@ button.dv-from span::before { content: '‹ '; }
 }
 @media (min-width: 1600px) {
   .l4 .px.dv-sp { grid-template-columns: 260px minmax(0, 1fr); }
-  .st-article { width: min(960px, calc(100% - 80px)); max-width: 960px; font-size: 18px; }
+  .st-article { font-size: 18px; }
 }
   .dv-mcap { min-height: 0; }
   .dv-msl input { min-height: 28px; }
