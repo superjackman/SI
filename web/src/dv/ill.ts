@@ -48,12 +48,13 @@ ${person(258, 164, Y)}`],
 <path d="M228 120 C248 90 268 70 286 48" fill="none" stroke="${Y}" stroke-width="3"/>
 ${person(262, 164, B)}`],
   '13': ['一排书，其中一本被抽出来', 'A row of books, one pulled out',
-    `${ground(150)}<rect x="28" y="78" width="168" height="12" rx="2" fill="${D}"/>
-<rect x="36" y="36" width="22" height="54" fill="${B}"/><rect x="62" y="42" width="22" height="48" fill="${P}"/>
-<rect x="88" y="16" width="26" height="74" fill="${Y}"/><path d="M92 28 h18 M92 38 h14 M92 48 h16" stroke="var(--ink)" stroke-width="1.4"/>
-<rect x="118" y="40" width="22" height="50" fill="${G}"/><rect x="144" y="44" width="22" height="46" fill="${R}"/>
-<path d="M214 96 h56" stroke="${Y}" stroke-width="3"/><path d="M262 90 l10 6 -10 6 z" fill="${Y}"/>
-${person(250, 164, B)}`],
+    `${ground(150)}<rect x="18" y="86" width="176" height="14" rx="2" fill="${D}"/>
+<rect x="26" y="40" width="24" height="58" fill="${B}"/><rect x="54" y="46" width="24" height="52" fill="${P}"/>
+<rect x="82" y="16" width="28" height="82" fill="${Y}"/><path d="M88 30 h16 M88 42 h12 M88 54 h16 M88 66 h10" stroke="var(--ink)" stroke-width="1.6"/>
+<rect x="114" y="44" width="24" height="54" fill="${G}"/><rect x="142" y="48" width="24" height="50" fill="${R}"/>
+<rect x="186" y="58" width="52" height="36" rx="3" fill="var(--card)" stroke="${Y}" stroke-width="2"/><path d="M194 70 h36 M194 80 h28" stroke="${Y}" stroke-width="1.6"/>
+<path d="M168 40 H188" stroke="${Y}" stroke-width="2.4"/>
+${person(262, 158, B)}<path d="M240 100 H210" stroke="${B}" stroke-width="3" stroke-linecap="round"/>`],
   '14': ['一个工具箱，旁边一个来回的环', 'A toolbox, and a loop beside it',
     `${ground(150)}${person(40, 164, B)}
 <rect x="78" y="78" width="96" height="52" rx="6" fill="var(--card)" stroke="${Y}" stroke-width="3"/>
