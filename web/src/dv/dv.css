@@ -139,7 +139,7 @@ button.dv-from span::before { content: '‹ '; }
 .dv-th { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .dv-th b { font-size: 15px; color: var(--ink); font-weight: 600; }
 .dv-take ol { margin: 0; padding-left: 1.4em; display: flex; flex-direction: column; gap: 6px; }
-.dv-tp { margin: 0; display: block; padding: 8px 10px; border-radius: 10px; background: var(--card); font-size: 14px; } .dv-tp > b { display: flex; flex-direction: column; gap: 2px; font-weight: 400; } .dv-tp > span { display: block; font-size: 13px; color: var(--highlight); } .dv-ps { display: block; text-wrap: pretty; color: var(--ink); font-size: 14px; }
+.dv-tp { margin: 0; display: block; padding: 8px 10px; border-radius: 10px; background: var(--card); font-size: 16px; } .dv-tp > b { display: flex; flex-direction: column; gap: 2px; font-weight: 400; } .dv-tp > span { display: block; font-size: 16px; color: var(--highlight); } .dv-ps { display: block; text-wrap: pretty; color: var(--ink); font-size: 16px; }
 .dv-cl { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
 .dv-cn { display: flex; align-items: baseline; gap: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid var(--c); border-radius: 10px; background: var(--card); color: var(--ink); text-align: left; line-height: 1.3; }
 .dv-end-do { flex-wrap: wrap; } .dv-end-do .l4-b { min-height: 44px; }
