@@ -27,7 +27,7 @@
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/6/#lesson","name":"词向量","headline":"词向量 · 大白话拆解 AI","description":"把离散的词变成向量，最好让向量带有语义。电脑不认「猫」这个字，只认数。怎么把字变成带意思的数？","url":"https://superjackman.github.io/SI/s/6/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"词向量","item":"https://superjackman.github.io/SI/s/6/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/6/" hreflang="en" lang="en">English</a></header>
@@ -38,15 +38,17 @@
 <p class="lead">用上下文学嵌入</p>
 <p class="open"><a href="/SI/#D/6">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">把离散的词变成向量，最好让向量带有语义。</p>
+<details class="ex"><summary>q = [3, 1]，k = [2, 2.5]。点积是多少？</summary><p>逐位相乘再相加：3 × 2 + 1 × 2.5 = 8.5。</p></details>
+
 <section><p>电脑不认「猫」这个字，只认数。怎么把字变成带意思的数？</p></section>
 
 <section><ul><li>one-hot像户口编号：唯一但看不出谁和谁像。</li><li>词向量像给每人一座坐标：常一起出现的人，坐标靠近。</li><li>切词（分词 / BPE）先决定「字」的粒度，再嵌入。</li></ul></section>
 
-<section><ul><li>one-hot 的问题：5 万词的词表，每个词是 5 万维、只有一个 1 的向量；任意两个不同词的点积都是 0，“猫”和“狗”与“猫”和“汽车”一样不相似。</li><li>嵌入：给每个词一个稠密低维向量（如 300 维），向量本身也是要学的参数；查表等价于 one-hot × 嵌入矩阵 E。</li><li>word2vec（Mikolov 等，2013）：分布假设“词义由上下文决定”，用中心词预测周围词（skip-gram）或反过来（CBOW），常一起出现的词向量会靠近。</li><li>这是自监督：标签来自文本本身。它后来发展成第 9 步的预训练。</li><li>分词（BPE）：从字符或字节出发，反复合并出现最多的相邻对，直到词表达到几万到十几万；嵌入之前先决定「词元」粒度。</li></ul></section>
+<section><ul><li>one-hot 的问题：5 万词的词表，每个词是 5 万维、只有一个 1 的向量；任意两个不同词的点积都是 0，“猫”和“狗”与“猫”和“汽车”一样不相似。</li><li>嵌入：给每个词一个稠密低维向量（如 300 维），向量本身也是要学的参数；查表等价于 one-hot × 嵌入矩阵 E。</li><li>word2vec（Mikolov 等，2013）：分布假设“词义由上下文决定”，用中心词预测周围词（skip-gram）或反过来（CBOW），常一起出现的词向量会靠近。</li><li>这是自监督：标签来自文本本身。它后来发展成「预训练」的预训练。</li><li>分词（BPE）：从字符或字节出发，反复合并出现最多的相邻对，直到词表达到几万到十几万；嵌入之前先决定「词元」粒度。</li></ul></section>
 
 <section><ul><li>两个向量方向越近，点积/余弦越大；猫·狗 &gt; 猫·汽车。</li></ul></section>
 
-<section><ul><li>点积：q=[3,1]，k=[2,2.5]，。BPE：。</li><li>点积：q = [3, 1]，k = [2, 2.5]，。</li><li>猫 = [0.8, 0.1, 0.6]，狗 = [0.7, 0.2, 0.5]，汽车 = [0.1, 0.9, 0.0]</li><li>猫·狗 = 0.56 + 0.02 + 0.30 = 0.88；猫·汽车 = 0.08 + 0.09 + 0 = 0.17</li><li>“国王 − 男人 + 女人 ≈ 女王” 经验观察，并不总是成立。</li><li>BPE：。</li></ul></section>
+<section><ul><li>点积：q=[3,1]，k=[2,2.5]，3 × 2 + 1 × 2.5 = 8.5。BPE：语料有 low、lower、lowest：“l o”最常见，合并成“lo”；再合并“lo w”成“low”；lowest 最后切成 low + est。</li><li>点积：q = [3, 1]，k = [2, 2.5]，3 × 2 + 1 × 2.5 = 8.5。</li><li>猫 = [0.8, 0.1, 0.6]，狗 = [0.7, 0.2, 0.5]，汽车 = [0.1, 0.9, 0.0]</li><li>猫·狗 = 0.56 + 0.02 + 0.30 = 0.88；猫·汽车 = 0.08 + 0.09 + 0 = 0.17</li><li>“国王 − 男人 + 女人 ≈ 女王” 经验观察，并不总是成立。</li><li>BPE：语料有 low、lower、lowest：“l o”最常见，合并成“lo”；再合并“lo w”成“low”；lowest 最后切成 low + est。</li></ul></section>
 
 <section><ul><li>a·b = Σ aᵢbᵢ</li><li>P(上下文|中心) = softmax(u·v)</li><li>点积 a · b = Σ ai × bi；余弦相似度 a · b / (‖a‖ × ‖b‖)</li><li>skip-gram：最大化 P(上下文词 | 中心词) = softmax(u上下文 · v中心)</li><li>BPE：反复合并频次最高的相邻符号对</li></ul><ul><li>向量 a</li><li>向量 b</li><li>点积大 ≈ 方向吻合（在嵌入里常≈意思近）</li></ul></section>
 
@@ -54,6 +56,6 @@
 <nav class="pn"><a href="/SI/s/5/" rel="prev">← 上一站：训练工程</a><a href="/SI/s/7/" rel="next">下一站：RNN + 注意力 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><a href="/SI/s/P/">概率基础</a></li><li><a href="/SI/s/1/">损失函数</a></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><a href="/SI/s/5/">训练工程</a></li><li><b>词向量</b></li><li><a href="/SI/s/7/">RNN + 注意力</a></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><a href="/SI/s/14/">工具与 Agent</a></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>
-<footer><p>大白话拆解 AI · 推导之路</p></footer>
+<footer><p>大白话拆解 AI · 推导之路 · <a href="/SI/about/">谁在维护</a></p></footer>
 </body>
 </html>

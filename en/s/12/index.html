@@ -14,7 +14,7 @@
 <meta property="og:title" content="Inference speed · AI, explained plainly">
 <meta property="og:description" content="Autoregressive generation emits one token at a time; it can’t parallelise like training. Generation is serial. KV cache, shared KV, FlashAttention…">
 <meta property="og:url" content="https://superjackman.github.io/SI/en/s/12/">
-<meta property="og:image" content="https://superjackman.github.io/SI/og-st/12.png">
+<meta property="og:image" content="https://superjackman.github.io/SI/og-st/en/12.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Inference speed · AI, explained plainly">
@@ -23,11 +23,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Inference speed · AI, explained plainly">
 <meta name="twitter:description" content="Autoregressive generation emits one token at a time; it can’t parallelise like training. Generation is serial. KV cache, shared KV, FlashAttention…">
-<meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/12.png">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/en/12.png">
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/12/#lesson","name":"Inference speed","headline":"Inference speed · AI, explained plainly","description":"Autoregressive generation emits one token at a time; it can’t parallelise like training. Generation is serial. KV cache, shared KV, FlashAttention…","url":"https://superjackman.github.io/SI/en/s/12/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Inference speed","item":"https://superjackman.github.io/SI/en/s/12/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/12/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
@@ -38,6 +38,8 @@
 <p class="lead">KV cache, GQA/MLA, FlashAttention, speculative decoding, MoE</p>
 <p class="open"><a href="/SI/?lang=en#D/12">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
 <p class="bd">Autoregressive generation emits one token at a time; it can’t parallelise like training.</p>
+<details class="ex"><summary>Generate 100 tokens. Without a cache, how many times are K and V computed?</summary><p>1 + 2 + … + 100 = 5050. With a cache, only 100 times.</p></details>
+
 <section><p>Generation is serial. KV cache, shared KV, FlashAttention, speculative decoding, MoE cut work and memory.</p></section>
 
 <section><ul><li>Remember past K, V.</li><li>Share KV across heads; MoE wakes a few experts per token.</li></ul></section>
@@ -46,14 +48,14 @@
 
 <section><ul><li>New token → its q,k,v → attend with cached K,V.</li></ul></section>
 
-<section><ul><li>Under , ~0.5MB/token; 100 tokens without cache need K,V computes.</li><li>KV cache : ; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache K, V computations; with a cache only 100.</li></ul></section>
+<section><ul><li>Under 32 layers, d = 4096, 4096 tokens, 2 bytes per number, ~0.5MB/token; 100 tokens without cache need 1 + 2 + … + 100 = 5050 K,V computes.</li><li>KV cache : 32 layers, d = 4096, 4096 tokens, 2 bytes per number; 32 KV heads × head size 128 = 4096 example setup.</li><li>per token = 2 × 32 × 32 × 128 × 2 = 524,288 bytes ≈ 0.5 MB; the whole context 2 × 32 × 4096 × 4096 × 2 ≈ 2 GB — for one request.</li><li>With GQA’s 8 KV heads the cache drops to 1/4, about 0.5 GB.</li><li>Generating 100 tokens: without a cache 1 + 2 + … + 100 = 5050 K, V computations; with a cache only 100.</li></ul></section>
 
-<section><ul><li>cache bytes ≈ 2 × layers × KV heads × dim × bytes</li><li>Cache per token = 2 × layers × KV heads × head size × bytes per number</li></ul><ul><li>Sampling moved to step 9; this station is efficiency</li></ul></section>
+<section><ul><li>cache bytes ≈ 2 × layers × KV heads × dim × bytes</li><li>Cache per token = 2 × layers × KV heads × head size × bytes per number</li></ul><ul><li>Sampling moved to “Pre-training”; this station is efficiency</li></ul></section>
 
 <p><b>Left open</b> Fast and lean now — but its knowledge stops at the training cut-off, it confidently makes things up (hallucination) and it has never seen your private documents.</p>
 <nav class="pn"><a href="/SI/en/s/11/" rel="prev">← Previous stop: Cheap adaptation</a><a href="/SI/en/s/13/" rel="next">Next stop: RAG →</a></nav>
 <section><h2>🗺 All stops</h2><ol><li><a href="/SI/en/s/0/">Learn a function from examples</a></li><li><a href="/SI/en/s/P/">Probability basics</a></li><li><a href="/SI/en/s/1/">Loss functions</a></li><li><a href="/SI/en/s/2/">Gradient descent</a></li><li><a href="/SI/en/s/3/">Layers + non-linearity</a></li><li><a href="/SI/en/s/4/">Backpropagation</a></li><li><a href="/SI/en/s/5/">Training in practice</a></li><li><a href="/SI/en/s/6/">Word vectors</a></li><li><a href="/SI/en/s/7/">RNN + attention</a></li><li><a href="/SI/en/s/8a/">Attention: who relates to whom</a></li><li><a href="/SI/en/s/8b/">Building the Transformer</a></li><li><a href="/SI/en/s/9/">Pre-training</a></li><li><a href="/SI/en/s/E/">Evaluation</a></li><li><a href="/SI/en/s/10/">Post-training: SFT + align</a></li><li><a href="/SI/en/s/11/">Cheap adaptation</a></li><li><b>Inference speed</b></li><li><a href="/SI/en/s/13/">RAG</a></li><li><a href="/SI/en/s/14/">Tools + agents</a></li><li><a href="/SI/en/s/S/">Safety</a></li><li><a href="/SI/en/s/15a/">Multimodal</a></li><li><a href="/SI/en/s/15b/">Reasoning models + long context</a></li><li><a href="/SI/en/s/A/">Applications</a></li><li><a href="/SI/en/s/16/">Recap</a></li></ol></section>
 </main>
-<footer><p>AI, explained plainly · Derivation path</p></footer>
+<footer><p>AI, explained plainly · Derivation path · <a href="/SI/en/about/">Who maintains this</a></p></footer>
 </body>
 </html>

@@ -27,7 +27,7 @@
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/1/#lesson","name":"损失函数","headline":"损失函数 · 大白话拆解 AI","description":"需要一个数字来衡量“模型错了多少”，越小越好。模型每猜一次，都要先知道“这次错了多少”。没有这个数，它就不知道该往哪改。损失函数就是给每次猜测打的“罚分”，训练就是让罚分越来越小。","url":"https://superjackman.github.io/SI/s/1/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"损失函数","item":"https://superjackman.github.io/SI/s/1/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/1/" hreflang="en" lang="en">English</a></header>
@@ -38,6 +38,7 @@
 <p class="lead">均方误差、极大似然、交叉熵</p>
 <p class="open"><a href="/SI/#D/1">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">需要一个数字来衡量“模型错了多少”，越小越好。</p>
+
 <section><p>模型每猜一次，都要先知道“这次错了多少”。没有这个数，它就不知道该往哪改。损失函数就是给每次猜测打的“罚分”，训练就是让罚分越来越小。</p></section>
 
 <section><ul><li>想象一个天气预报员：他说“明天 90% 下雨”，结果是晴天，应该被罚得很重；如果他说“50% 下雨”，罚得就轻一些。说得越肯定、错得越离谱，罚得越狠。</li><li>模型也一样：先给每个候选答案打一个分数，再把分数换成概率，最后只看它给正确答案多少概率：给得越少，罚分越高。</li></ul></section>
@@ -46,7 +47,7 @@
 
 <section><ul><li>左：模型给 4 个候选字打的分数，可正可负。中：softmax 先取指数（全变成正数），再除以总和，得到加起来 100% 的概率。右：正确答案的概率越小，罚分 −ln p 越大。</li></ul></section>
 
-<section><ul><li>如果正确答案是“蓝”，罚分 = −ln 0.625 ≈ 0.47；概率越接近 100%，罚分越接近 0。</li><li>MSE：预测 2.5、5、7.5，真实 3、5、7，误差平方 0.25、0、0.25，平均约 0.167。</li><li>softmax：蓝 / 绿 / 红 / 天 的分数 → 概率 。</li><li>交叉熵：本站模型开始时正确的字「蓝」只得 → L = ；训练 200 步后 → L 。越自信地答错，罚得越重。</li></ul></section>
+<section><ul><li>如果正确答案是“蓝”，罚分 = −ln 0.625 ≈ 0.47；概率越接近 100%，罚分越接近 0。</li><li>MSE：预测 2.5、5、7.5，真实 3、5、7，误差平方 0.25、0、0.25，平均约 0.167。</li><li>softmax：蓝 / 绿 / 红 / 天 的分数 2.0 / 1.0 / 0.1 / −0.5 → 概率 62.5% / 23.0% / 9.4% / 5.1%。</li><li>交叉熵：本站模型开始时正确的字「蓝」只得 5.4% → L = −ln 0.0536 ≈ 2.93；训练 200 步后 99.8% → L ≈ 0.002。越自信地答错，罚得越重。</li></ul></section>
 
 <section><ul><li>softmax(xᵢ) = e^xᵢ ÷ Σ e^xⱼ = pᵢ</li><li>L = −ln p(正确答案)</li><li>MSE = (1/n) × Σ (y预测 − y真实)²</li><li>softmax(xᵢ) = e^xᵢ ÷ Σ e^xⱼ：先取指数变成正数，再除以总和</li><li>MSE = (1/n) × Σ (y预测 − y真实)²</li><li>负对数似然 = − Σ log P(yi | xi; θ)（连乘会下溢，取对数变成求和）</li><li>H(p, q) = − Σ p(k) × log q(k)；p 为 one-hot 时就是 −log q(正确类)</li><li>KL(p‖q) = H(p, q) − H(p)：p 固定时，最小化交叉熵 = 最小化 KL = 极大似然</li></ul><ul><li>xᵢ：模型给第 i 个候选打的分数（logit）</li><li>pᵢ：softmax 之后的概率，全部加起来是 1</li><li>L：只看正确答案那一格的概率，取负对数，这就是交叉熵损失</li><li>MSE：预测一个数（回归）时用，差值平方再取平均</li></ul></section>
 
@@ -54,6 +55,6 @@
 <nav class="pn"><a href="/SI/s/P/" rel="prev">← 上一站：概率基础</a><a href="/SI/s/2/" rel="next">下一站：梯度下降 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><a href="/SI/s/P/">概率基础</a></li><li><b>损失函数</b></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><a href="/SI/s/5/">训练工程</a></li><li><a href="/SI/s/6/">词向量</a></li><li><a href="/SI/s/7/">RNN + 注意力</a></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><a href="/SI/s/14/">工具与 Agent</a></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>
-<footer><p>大白话拆解 AI · 推导之路</p></footer>
+<footer><p>大白话拆解 AI · 推导之路 · <a href="/SI/about/">谁在维护</a></p></footer>
 </body>
 </html>

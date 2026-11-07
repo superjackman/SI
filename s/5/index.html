@@ -27,7 +27,7 @@
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/5/#lesson","name":"训练工程","headline":"训练工程 · 大白话拆解 AI","description":"训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防「背题」（过拟合）。","url":"https://superjackman.github.io/SI/s/5/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"训练工程","item":"https://superjackman.github.io/SI/s/5/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/5/" hreflang="en" lang="en">English</a></header>
@@ -38,6 +38,7 @@
 <p class="lead">小批量 SGD、Adam、正则化、验证集</p>
 <p class="open"><a href="/SI/#D/5">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">训练要快、要稳、还要能泛化。</p>
+
 <section><p>数据上百万时，每步看完全部太慢；还要防「背题」（过拟合）。</p></section>
 
 <section><ul><li>小批量：每次抽一小袋样本估计坡度，又快又有点噪声。</li><li>Adam：每个旋钮自己的步长。</li><li>正则化 / 早停：别背训练集。</li></ul></section>
@@ -46,7 +47,7 @@
 
 <section><ul><li>抽一批 → 算梯度 → Adam 更新 → 看验证集是否该停。</li></ul></section>
 
-<section><ul><li>100 万条、批 256 → 一轮约 3900 次更新；动量例 。</li><li>100 万条样本、批大小 256：一轮约更新 3900 次；全量梯度下降一轮只更新 1 次。</li><li>动量：动量 0.9、坡度一直同号 1, 1, 1, 1 → ，越走越快。</li><li>训练准确率 99%、验证 70%：过拟合，加正则化、加数据或减小模型。两者都只有 60%：欠拟合。</li></ul></section>
+<section><ul><li>100 万条、批 256 → 一轮约 3900 次更新；动量例 v = 1, 1.9, 2.71, 3.44。</li><li>100 万条样本、批大小 256：一轮约更新 3900 次；全量梯度下降一轮只更新 1 次。</li><li>动量：动量 0.9、坡度一直同号 1, 1, 1, 1 → v = 1, 1.9, 2.71, 3.44，越走越快。</li><li>训练准确率 99%、验证 70%：过拟合，加正则化、加数据或减小模型。两者都只有 60%：欠拟合。</li></ul></section>
 
 <section><ul><li>v = βv + g；w ← w − η · m̂/(√v̂+ε)</li><li>动量：v = β × v + g，w = w − η × v</li><li>Adam：m = β1 × m + (1 − β1) × g，v = β2 × v + (1 − β2) × g²，w = w − η × m̂ / (√v̂ + ε)</li><li>L2：L′ = L + λ × Σ w²</li></ul><ul><li>小批量、动量、Adam、正则化四件套</li></ul></section>
 
@@ -54,6 +55,6 @@
 <nav class="pn"><a href="/SI/s/4/" rel="prev">← 上一站：反向传播</a><a href="/SI/s/6/" rel="next">下一站：词向量 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><a href="/SI/s/P/">概率基础</a></li><li><a href="/SI/s/1/">损失函数</a></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><b>训练工程</b></li><li><a href="/SI/s/6/">词向量</a></li><li><a href="/SI/s/7/">RNN + 注意力</a></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><a href="/SI/s/14/">工具与 Agent</a></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>
-<footer><p>大白话拆解 AI · 推导之路</p></footer>
+<footer><p>大白话拆解 AI · 推导之路 · <a href="/SI/about/">谁在维护</a></p></footer>
 </body>
 </html>

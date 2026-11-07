@@ -27,7 +27,7 @@
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/14/#lesson","name":"工具与 Agent","headline":"工具与 Agent · 大白话拆解 AI","description":"让模型与外部世界交互，完成多步任务。只会说不够，还要会做：查天气、改日历。模型只写调用，程序去执行。","url":"https://superjackman.github.io/SI/s/14/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"工具与 Agent","item":"https://superjackman.github.io/SI/s/14/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/14/" hreflang="en" lang="en">English</a></header>
@@ -38,6 +38,7 @@
 <p class="lead">函数调用、Agent 循环、MCP</p>
 <p class="open"><a href="/SI/#D/14">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">让模型与外部世界交互，完成多步任务。</p>
+
 <section><p>只会说不够，还要会做：查天气、改日历。模型只写调用，程序去执行。</p></section>
 
 <section><ul><li>工具说明先给模型看。</li><li>它输出调用 JSON，程序执行，结果写回。</li><li>循环：观察→想→做→再观察，直到停。</li></ul></section>
@@ -54,6 +55,6 @@
 <nav class="pn"><a href="/SI/s/13/" rel="prev">← 上一站：RAG</a><a href="/SI/s/S/" rel="next">下一站：安全 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><a href="/SI/s/P/">概率基础</a></li><li><a href="/SI/s/1/">损失函数</a></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><a href="/SI/s/5/">训练工程</a></li><li><a href="/SI/s/6/">词向量</a></li><li><a href="/SI/s/7/">RNN + 注意力</a></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><b>工具与 Agent</b></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>
-<footer><p>大白话拆解 AI · 推导之路</p></footer>
+<footer><p>大白话拆解 AI · 推导之路 · <a href="/SI/about/">谁在维护</a></p></footer>
 </body>
 </html>

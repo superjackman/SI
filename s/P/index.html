@@ -27,7 +27,7 @@
 <meta name="theme-color" content="#4f46e5">
 <link rel="icon" href="/SI/icon-192.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/P/#lesson","name":"概率基础","headline":"概率基础 · 大白话拆解 AI","description":"语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。","url":"https://superjackman.github.io/SI/s/P/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"概率基础","item":"https://superjackman.github.io/SI/s/P/"}]}]}</script>
-<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}</style>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
 <header><a href="/SI/"><b>大白话拆解 AI</b></a><a href="/SI/en/s/P/" hreflang="en" lang="en">English</a></header>
@@ -38,6 +38,7 @@
 <p class="lead">分布、条件概率、均值方差、高斯</p>
 <p class="open"><a href="/SI/#D/P">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">语言模型要预测「下一个字」，就必须先会说「可能性」。</p>
+
 <section><p>AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。</p></section>
 
 <section><ul><li>掷骰子：六点朝上的可能性是 1/6。所有朝向加起来必须是 1——这叫分布。</li><li>已知「今天是晴天」，再问「要不要带伞」——这叫条件概率：在已知信息下重新分配可能性。</li><li>语言模型就是在算：已知前文，下一个词元分别有多大可能。</li></ul></section>
@@ -46,7 +47,7 @@
 
 <section><ul><li>左：4 个候选的分数；中：变成概率（加起来 100%）；右：正确答案概率越小，后面的罚分越大。</li></ul></section>
 
-<section><ul><li>同一组 softmax 数： → 。</li><li>候选蓝 / 绿 / 红 / 天：概率 。</li><li>前文「天空是」时，条件概率最高的是「蓝」。</li></ul></section>
+<section><ul><li>同一组 softmax 数：2.0 / 1.0 / 0.1 / −0.5 → 62.5% / 23.0% / 9.4% / 5.1%。</li><li>候选蓝 / 绿 / 红 / 天：概率 62.5% / 23.0% / 9.4% / 5.1%。</li><li>前文「天空是」时，条件概率最高的是「蓝」。</li></ul></section>
 
 <section><ul><li>P(下一个 | 前文)，所有候选加起来 = 1</li><li>μ = 平均；方差 = 散开程度</li><li>P(蓝 | 天空是) + P(绿 | 天空是) + … = 1</li><li>均值 μ = (1/n) Σ xᵢ；方差 ≈ (1/n) Σ (xᵢ − μ)²</li></ul><ul><li>条件概率：大模型每一步都在算的东西</li><li>均值 / 方差：后面 √d 缩放要用</li></ul></section>
 
@@ -54,6 +55,6 @@
 <nav class="pn"><a href="/SI/s/0/" rel="prev">← 上一站：用样本找函数</a><a href="/SI/s/1/" rel="next">下一站：损失函数 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><b>概率基础</b></li><li><a href="/SI/s/1/">损失函数</a></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><a href="/SI/s/5/">训练工程</a></li><li><a href="/SI/s/6/">词向量</a></li><li><a href="/SI/s/7/">RNN + 注意力</a></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><a href="/SI/s/14/">工具与 Agent</a></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>
-<footer><p>大白话拆解 AI · 推导之路</p></footer>
+<footer><p>大白话拆解 AI · 推导之路 · <a href="/SI/about/">谁在维护</a></p></footer>
 </body>
 </html>
