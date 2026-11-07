@@ -44,7 +44,8 @@ async function readable(p: Page, tag: string, root: string, bad: string[]) {
 test.describe('R56 micro-loop', () => {
   test('stop 2: guess → dead ends, 推理 shows the layers, wrong variant → re-loop to the layer, two right → goal mastered; no history entries', async ({ page }) => {
     const errs = await open(page, './?lang=zh#D/1'); const h0 = await hl(page);
-    await expect(page.locator('.l4-nav')).toContainText('3/23');
+    await expect(page.locator('.dv-pos')).toContainText('3/23');
+    await expect(page.locator('.l4-nav')).toBeHidden();
     await go(page, '#D/2'); await px(page, 'D/2.zh');
     const G = ML['2']!.goals[0]!, ly = page.locator('.ly.ml');
     await expect(page.locator('.ml-goal')).toContainText(ML['2']!.goal[0]); await expect(ly).toHaveAttribute('data-ml-s', 'i');
@@ -70,13 +71,14 @@ test.describe('R56 micro-loop', () => {
     const st = await page.evaluate(() => JSON.parse(localStorage.getItem('si.ml') || '{}')['2']); expect(st.m[0]).toBe(1);
     // the memory kit under the loop
     await expect(page.locator('.dv-take')).toBeHidden();
-    await expect(page.locator('.dv-chn .dv-cn')).toHaveCount(3);
+    await expect(page.locator('.dv-chn')).toHaveCount(0);
+    await expect(page.locator('.dv-take li')).toHaveCount(3);
     expect(await hl(page)).toBe(h0); expect(errs).toEqual([]);
   });
   test('8a: a re-loop on the scale step lands on its attention shot', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/8a');
-    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.l4-nav')).toContainText('10/23');
-    await page.locator('[data-ml-g="1"]').click(); await cont(page, 'r');
+    await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.dv-pos')).toContainText('10/23');
+    await page.locator('[data-ml-g="1"]').click({ force: true }); await cont(page, 'r');
     await expect(page.locator('.ml-lys [data-ml-fr]').first()).toBeVisible(); await page.locator('.ml-lys [data-ml-fr]').first().click();
     await expect(page.locator('[data-att]')).toBeVisible();
     expect(errs).toEqual([]);
@@ -143,8 +145,8 @@ test.describe('R56 reads on this phone', () => {
         await cont(page, 'v'); await page.locator('[data-ml-p="0"]').click(); await page.locator('.ml-in').fill('99999'); await page.locator('[data-ml-ck]').click();
         await page.locator('.ml-v').evaluate((e) => e.scrollIntoView({ block: 'start' })); await readable(page, `${l} ${k} 验证`, '.ml-v', bad);
         await page.locator('.dv-sp').evaluate((e) => e.setAttribute('data-done', '1'));
-        await page.locator('.dv-take').evaluate((e) => e.scrollIntoView({ block: 'start' })); await readable(page, `${l} ${k} take`, '.dv-take, .dv-chn', bad);
-        if (l === 'en' && /[\u3400-\u9fff]/.test((await page.locator('.ml-goal, .ml-bar, .ml-v, .dv-take, .dv-chn').allInnerTexts()).join(''))) bad.push(`en ${k} has Chinese`);
+        await page.locator('.dv-take').evaluate((e) => e.scrollIntoView({ block: 'start' })); await readable(page, `${l} ${k} take`, '.dv-take', bad);
+        if (l === 'en' && /[\u3400-\u9fff]/.test((await page.locator('.ml-goal, .ml-bar, .ml-v, .dv-take').allInnerTexts()).join(''))) bad.push(`en ${k} has Chinese`);
       }
       for (const h of ['#home', '#review', '#me', '#settings']) {
         await go(page, h); await page.waitForTimeout(500);
@@ -159,9 +161,9 @@ test('every station share opens that station’s question, and the station 6 car
   test.setTimeout(180_000);
   const errs = await open(page, './?lang=zh#D/6');
   await expect(page.locator('.l4-tt')).toContainText('词向量');
-  await expect(page.locator('.l4-nav .g-n')).toHaveText('第 8/23 站');
-  await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站');
-  await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);
+  await expect(page.locator('.dv-pos')).toContainText('第 8/23 站');
+  await expect(page.locator('.l4-nav')).toBeHidden();
+  await expect(page.locator('.st-out a[href="#D/5"]')).toBeVisible();
   const morph = page.locator('[data-morph]');
   await expect(morph.locator('.dv-mcap .a')).toContainText('户口编号');
   await expect(morph.locator('.dv-ma')).not.toContainText('猫');

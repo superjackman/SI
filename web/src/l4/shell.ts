@@ -337,6 +337,7 @@ export function start(doc: Document = document, win: Window = window) {
     const r = parse(win.location.hash); let id = r.id; const lid = lxFrom(id);
     /* R51: an old single-step link (#D/8) opens the station that replaced it, rewriting the address (no new entry) */
     const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}`); return; }
+    const wAt = /^W\/([A-Za-z0-9]+)$/.exec(id); if (wAt) { try { sessionStorage.setItem('si.w.at', wAt[1]!); } catch { /* private mode */ } }
     const jumped = redirectTo(id); if (jumped) { navTo(win, `#${jumped}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';

@@ -23,31 +23,10 @@ export function workCard(it: Item, l: L, lines: readonly string[], url: string, 
   };
 }
 
-function tabs(i: number, l: L) {
-  const names = l === 'zh' ? ['给你的样本', '做完看到', '会失败的一种'] : ['The sample', 'When it works', 'One way it fails'];
-  return `<div class="wk-tabs" role="tablist">${names.map((n, k) => `<button type="button" role="tab" data-wk-tab="${k}" aria-selected="${k === i}" class="${k === i ? 'on' : ''}">${esc(n)}</button>`).join('')}</div>`;
-}
 function stations(it: Item, l: L) {
   const links = it.st.map((k) => `<a href="#D/${esc(k)}">${esc(stN(k, l))}</a>`).join(l === 'zh' ? '、' : ', ');
   return `<p class="wk-st">${l === 'zh' ? '接着可以看' : 'Continue with'} ${links}</p>`;
 }
-function shell(it: Item, l: L, i: number, body: string) {
-  const steps = it.steps.map((s) => `<li>${esc(bi(s as [string, string], l))}</li>`).join('');
-  return `<div class="px wk" data-work="${esc(it.id)}" lang="${l === 'en' ? 'en' : 'zh-CN'}">
-<p class="wk-note">${esc(bi(it.lead as [string, string], l))}</p>
-${tabs(i, l)}
-${body}
-<section class="wk-steps"><h3>${l === 'zh' ? '步骤' : 'Steps'}</h3><ol>${steps}</ol></section>
-${stations(it, l)}
-<details class="wk-code"><summary>${l === 'zh' ? '给程序员的代码' : 'Code, if you write programs'}</summary><p>${esc(bi(it.code as [string, string], l))}</p><pre>${esc(codeOf(it.id))}</pre></details>
-</div>`;
-}
-function codeOf(id: string) {
-  if (id === 'kb') return 'function match(id) {\n  const q = questions.find((x) => x.id === id);\n  return q && q.note ? notes.find((n) => n.id === q.note) : null;\n}';
-  if (id === 'ask') return 'function decide(state, choice) {\n  if (choice === "ask") return { asked: true, sent: false };\n  if (choice === "yes" && state.asked) return { asked: true, sent: true };\n  if (choice === "skip") return { asked: false, sent: true };\n  return state;\n}';
-  return 'function fare(km, rule) {\n  if (rule === "bug") return km * 2;\n  if (rule === "wrong") return km * 3;\n  return km <= 1 ? 3 : 3 + (km - 1) * 2;\n}';
-}
-
 function kbBody(l: L, qid: string) {
   const { q, note } = kbAnswer(qid);
   const notes = NOTES.map((n) => `<li class="${note?.id === n.id ? 'hit' : ''}"><b>${esc(n.id)}</b> ${esc(l === 'en' ? n.en : n.zh)}</li>`).join('');
@@ -80,47 +59,49 @@ function fixBody(l: L, rule: FareRule) {
 <ul class="wk-tests" data-pass="${n}">${rows}</ul><p data-wk-out="1">${esc(z(`${n}/2 道对上了。`, `${n}/2 matched.`))}</p></section>`;
 }
 
-let tab = 0;
 export async function work(id: string, A: PxApi) {
   const l = A.l, z = (a: string, b: string) => tx([a, b], l);
   const wid = id === 'W' ? '' : id.slice(2);
-  if (!wid) return list(A);
-  const it = find(wid);
-  if (!it) { A.host.innerHTML = `<div class="px"><p>${esc(z('没有这个作品。', 'That project is not here.'))}</p></div>`; A.step(null); return; }
-  tab = 0;
-  A.top(`<b class="l4-tt">${esc(bi([it.zh, it.en], l))}</b>`);
-  A.crumb([[z('首页', 'Home'), '#home'], [z('作品', 'Projects'), '#W'], [bi([it.zh, it.en], l), null]]);
+  if (wid && !find(wid)) {
+    A.host.innerHTML = `<div class="px"><p>${esc(z('没有这个作品。', 'That project is not here.'))}</p></div>`;
+    A.step(null);
+    return;
+  }
+  if (wid) { try { sessionStorage.setItem('si.w.at', wid); } catch { /* private mode */ } }
+  page(A);
+}
+
+function page(A: PxApi) {
+  const l = A.l, z = (a: string, b: string) => tx([a, b], l);
+  A.top(`<b class="l4-tt">${esc(z('项目', 'Projects'))}</b>`);
+  A.crumb([[z('首页', 'Home'), '#home'], [z('项目', 'Projects'), null]]);
+  A.step(null);
   let qid = 'bus', ask: AskState = { ...ASK0 }, rule: FareRule = 'bug';
   const paint = () => {
-    const body = it.id === 'kb' ? kbBody(l, qid) : it.id === 'ask' ? askBody(l, ask) : fixBody(l, rule);
-    A.host.innerHTML = shell(it, l, tab, body);
-    A.step({
-      n: 3, i: tab, keys: ['1', '2', '3'], txt: z(`作品 ${tab + 1} / 3`, `Project ${tab + 1} / 3`),
-      pv: z('上一页', 'Back'), nx: z('下一页', 'Next'),
-      prev: tab > 0 ? () => { tab -= 1; paint(); } : '#W',
-      next: tab < 2 ? () => { tab += 1; paint(); } : null,
-      dot: (k) => { tab = k; paint(); },
-    });
-    if (A.still()) A.root.dataset.px = `W/${it.id}.${l}`;
+    const cards = works.items.map((it) => `<article class="wk-card" id="wk-${esc(it.id)}"><b>${esc(bi([it.zh, it.en], l))}</b><p>${esc(bi(it.expect as [string, string], l))}</p></article>`).join('');
+    const blocks = works.items.map((it) => {
+      const body = it.id === 'kb' ? kbBody(l, qid) : it.id === 'ask' ? askBody(l, ask) : fixBody(l, rule);
+      const steps = it.steps.map((s) => `<li>${esc(bi(s as [string, string], l))}</li>`).join('');
+      return `<article class="wk-open" data-work="${esc(it.id)}" id="w-${esc(it.id)}">
+<h2>${esc(bi([it.zh, it.en], l))}</h2>
+<p class="wk-note">${esc(bi(it.lead as [string, string], l))}</p>
+<ol class="take">${steps}</ol>
+${body}
+${stations(it, l)}
+</article>`;
+    }).join('');
+    A.host.innerHTML = `<div class="px wk" data-work="list"><p class="wk-k">${esc(z('三个能做完的作品。写在这一页。不要密钥。', 'Three projects you can finish. Written on this page. No key.'))}</p><h1 class="st-h">${esc(z('项目', 'Projects'))}</h1><div class="wk-cards">${cards}</div>${blocks}</div>`;
+    const at = (() => { try { return sessionStorage.getItem('si.w.at'); } catch { return null; } })();
+    if (at) { try { sessionStorage.removeItem('si.w.at'); } catch { /* private mode */ } A.host.querySelector(`#w-${at}`)?.scrollIntoView({ block: 'start' }); }
+    if (A.still()) A.root.dataset.px = `W.${l}`;
   };
   A.host.onclick = (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-wk-tab],[data-wk-q],[data-wk-ask],[data-wk-fare],[data-wk-share]');
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-wk-q],[data-wk-ask],[data-wk-fare]');
     if (!b) return;
     e.stopPropagation();
-    if (b.dataset.wkTab) { tab = Number(b.dataset.wkTab); paint(); return; }
     if (b.dataset.wkQ) { qid = b.dataset.wkQ; paint(); return; }
     if (b.dataset.wkAsk) { ask = askStep(ask, b.dataset.wkAsk as 'ask' | 'skip' | 'yes' | 'no'); paint(); return; }
     if (b.dataset.wkFare) { rule = b.dataset.wkFare as FareRule; paint(); return; }
   };
   paint();
-}
-
-function list(A: PxApi) {
-  const l = A.l, z = (a: string, b: string) => tx([a, b], l);
-  A.top(`<b class="l4-tt">${esc(z('三个作品', 'Three projects'))}</b>`);
-  A.crumb([[z('首页', 'Home'), '#home'], [z('作品', 'Projects'), null]]);
-  const cards = works.items.map((it) => `<a class="wk-card" href="#W/${esc(it.id)}"><b>${esc(bi([it.zh, it.en], l))}</b><span>${esc(bi(it.expect as [string, string], l))}</span></a>`).join('');
-  A.host.innerHTML = `<div class="px wk" data-work="list"><p class="wk-note">${esc(z('三个都能在这页做完。用的是写好的样本，不是联网模型，也不要密钥。', 'All three finish on this page. They use a fixed sample, not a live model, and they ask for no key.'))}</p>${cards}</div>`;
-  A.step(null);
-  if (A.still()) A.root.dataset.px = `W.${l}`;
 }

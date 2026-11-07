@@ -6,7 +6,8 @@ const LAYER_STOP: Record<string, string> = { '1': 'D/15a', '2': 'D/13', '3': 'D/
 /** A replacement page id (no hash), or null when this id is already a live page. */
 export function redirectTo(id: string): string | null {
   if (!id || id === 'home' || id === 'review' || id === 'me' || id === 'search' || id === 'settings') return null;
-  if (id === 'news' || id.startsWith('news/') || id === 'tools' || id.startsWith('tools/') || id === 'W' || id.startsWith('W/')) return null;
+  if (id === 'news' || id.startsWith('news/') || id === 'tools' || id.startsWith('tools/') || id === 'W') return null;
+  if (id.startsWith('W/')) return 'W';
   if (id.startsWith('D/') && !id.startsWith('D/map') && !id.startsWith('D/routes') && !id.startsWith('D/ch') && dvI(id.slice(2)) >= 0) return null;
   if (id === 'map' || id === 'D' || id === 'D/map' || id === 'D/routes' || id === 'about' || id === 'Q' || id === 'Q/done') return 'home';
   if (id === 'work') return 'W';

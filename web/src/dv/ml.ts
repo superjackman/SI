@@ -33,7 +33,7 @@ export function wrap(k: string, lyHtml: string, l: L, mk: Mk): string {
 <h3 class="ml-gt">${esc(tx(M.goal, l))}</h3><ol class="ml-gl">${goals}</ol>
 <div class="ml-pic"><p><b>${t(M.pic.t)}</b><span>${t(M.pic.s)}</span></p></div>
 ${(() => { const d = diaryLine(k, l); return d ? `<p class="ml-dy"><b>${esc(d.year)} · ${esc(d.who)}</b> ${esc(d.why)} <a href="${esc(d.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : ''; })()}
-</section><p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
+</section>`;
   const bar = `<div class="ml-bar"><div class="ml-gs" role="radiogroup" aria-label="${z('进度', 'Progress')}">${M.goals.map((_, i) => `<button type="button" role="radio" data-ml-g="${i}" aria-checked="false"><i aria-hidden="true"></i></button>`).join('')}</div></div>`;
   let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
   h = h.replace('</ol></div></div>', `</ol>${bar}</div></div>`);

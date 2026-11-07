@@ -71,8 +71,13 @@ function goalLink(it: NewsItem, l: L) {
 function newsItem(it: NewsItem, l: L, checked: string, linked: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
   const body = esc(l === 'en' ? it.en : it.zh);
+  const more = linked ? '' : (l === 'en' ? it.more.en : it.more.zh).map((s) => `<p>${esc(s)}</p>`).join('');
+  return `<article class="hm-card hb-item" id="n-${esc(it.id)}"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${linked ? `<a href="#news/${esc(it.id)}">${body}</a>` : body}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p></article>`;
+}
+function newsOpen(it: NewsItem, l: L, checked: string) {
+  const z = (a: string, b: string) => tx([a, b], l);
   const more = (l === 'en' ? it.more.en : it.more.zh).map((s) => `<p>${esc(s)}</p>`).join('');
-  return `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${linked ? `<a href="#news/${esc(it.id)}">${body}</a>` : body}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p></article>`;
+  return `<article class="hb-open" data-news-open="${esc(it.id)}"><h2>${esc(l === 'en' ? it.en : it.zh)}</h2>${more}${goalLink(it, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p></article>`;
 }
 /** `src` is the weeks file. Older weeks are a list only when there is more than one. */
 export function newsFrom(src: { checked: string; weeks: { week: string; items: NewsItem[] }[] }, l: L, item = ''): string {
@@ -86,17 +91,18 @@ export function newsFrom(src: { checked: string; weeks: { week: string; items: N
     const items = w.items.map((it) => newsItem(it, l, src.checked, true)).join('');
     return `<section class="hb"><p class="hb-meta"><a href="#news">${z('资讯', 'News')}</a></p><h3 class="hb-cat">${esc(head)}</h3>${items}</section>`;
   }
-  if (item) {
-    const it = ws.flatMap((w) => w.items.map((x) => ({ ...x, week: w.week }))).find((x) => x.id === item);
+  const openId = item && !item.startsWith('w/') ? item : ws[0]?.items[0]?.id ?? '';
+  if (item && !item.startsWith('w/')) {
+    const it = ws.flatMap((w) => w.items).find((x) => x.id === item);
     if (!it) return `<section class="hb"><p class="hm-n">${esc(cx('news.missing', l))}</p>${back}</section>`;
-    return `<section class="hb"><p class="hb-meta"><a href="#news">${z('资讯', 'News')}</a> · ${esc(it.week)}</p>${newsItem(it, l, src.checked, false)}</section>`;
   }
   const nav = ws.length > 1 ? `<nav class="hb-arch" aria-label="${esc(cx('news.older', l))}">${ws.slice(1).map((w) => `<a class="hb-aw" href="#news/w/${esc(w.week)}">${esc(weekLead(1, w.week, ws.length, l))}</a>`).join('')}</nav>` : '';
   const blocks = ws.map((w, i) => {
     const items = w.items.map((it) => newsItem(it, l, src.checked, true)).join('');
     return `<h3 class="hb-cat">${esc(weekLead(i, w.week, ws.length, l))}</h3>${items}${i === 0 ? nav : ''}`;
   }).join('');
-  return `<section class="hb">${blocks}</section>`;
+  const opened = ws.flatMap((w) => w.items).find((x) => x.id === openId);
+  return `<section class="hb">${blocks}${opened ? newsOpen(opened, l, src.checked) : ''}</section>`;
 }
 export function newsHtml(l: L, item = ''): string {
   return newsFrom(news, l, item);
@@ -119,7 +125,9 @@ export function toolsHtml(l: L, item = ''): string {
   if (item && !item.startsWith('t/')) {
     const t = findTool(item);
     if (!t) return `<section class="hb"><p class="hm-n">${z('没有这个工具。', 'No such tool.')}</p><p><a href="${esc(toolsListHash())}">${z('回工具', 'Back to tools')}</a></p></section>`;
-    return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}${guideDetail(guide, t.id, l)}</section>`;
+    const back = toolsListHash();
+    const rel = t.st.map((k) => `<a href="#D/${k}">${esc(dvI(k) >= 0 ? posLabel(dvI(k), l === 'en' ? 'en' : 'zh') : k)} · ${esc(stN(k, l))}</a>`).join(z('，', ', '));
+    return `<section class="hb hb-plain"><p class="hb-meta"><a href="${esc(back)}">${z('工具', 'Tools')}</a> · ${esc(t.name)}</p><h1 class="st-h">${esc(t.name)}</h1><p class="st-nar">${esc(l === 'en' ? t.en : t.zh)}</p><div class="hm-ratio"><p>${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p><p class="hb-meta">${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p></div><p>${z('和课程的关系：', 'In the course: ')}${rel}</p><p><a href="${esc(t.url)}" target="_blank" rel="noopener">${z('打开官网', 'Open the site')}</a></p><a class="hm-cta" href="${esc(back)}">${z('回工具列表', 'Back to tools')}</a>${guideDetail(guide, t.id, l)}</section>`;
   }
   const task = toolsTask(item);
   const taskBtns = (['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('');

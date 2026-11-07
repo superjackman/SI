@@ -45,20 +45,20 @@ test('each starter project at this width', async ({ page }) => {
   await expect(page.locator('[data-work="kb"]')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('[data-work="kb"]')).toContainText('不是联网模型');
   await page.locator('[data-wk-q="food"]').click();
-  await expect(page.locator('[data-wk-out]')).toContainText('没有');
+  await expect(page.locator('[data-work="kb"] [data-wk-out]')).toContainText('没有');
   await shot(page, 'project-kb');
 
   await page.goto('./?lang=zh#W/ask');
   await expect(page.locator('[data-work="ask"]')).toBeVisible();
   await page.locator('[data-wk-ask="ask"]').click();
-  await expect(page.locator('[data-wk-out="ask"]')).toBeVisible();
+  await expect(page.locator('[data-work="ask"] [data-wk-out="ask"]')).toBeVisible();
   await shot(page, 'project-ask');
 
   await page.goto('./?lang=zh#W/fix');
   await expect(page.locator('[data-work="fix"]')).toBeVisible();
-  await expect(page.locator('.wk-tests .bad')).toHaveCount(2);
+  await expect(page.locator('[data-work="fix"] .wk-tests .bad')).toHaveCount(2);
   await page.locator('[data-wk-fare="ok"]').click();
-  await expect(page.locator('.wk-tests .ok')).toHaveCount(2);
+  await expect(page.locator('[data-work="fix"] .wk-tests .ok')).toHaveCount(2);
   await shot(page, 'project-fix');
   expect(errs).toEqual([]);
 });

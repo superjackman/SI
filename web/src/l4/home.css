@@ -165,6 +165,10 @@ html[data-anim="off"] .hm-bt i { transition: none; }
 .gloss summary { cursor: pointer; color: var(--ink); }
 .st-nextlay { margin: 8px 0; color: var(--ink); }
 html.l4-mode .l4 a.hm-cta { background: var(--navy); color: var(--on-navy); }
+.hb-open, .hb-plain .hm-ratio { margin-top: 18px; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+.hb-open h2 { margin: 0 0 8px; font-size: 22px; font-weight: 600; color: var(--ink); }
+.hb-plain { max-width: 760px; }
+.hb-plain .hm-cta { margin-top: 16px; }
 .hm-cta2 { min-height: 48px; border: 1px solid var(--highlight); border-radius: 12px; background: var(--card); color: var(--highlight); font-size: 15px; font-weight: 700; }
 .hm-wb { font-size: 12.5px; color: var(--bad); }
 @media (max-width: 1023px) {

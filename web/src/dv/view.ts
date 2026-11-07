@@ -7,7 +7,7 @@ import { UI, tx, type L } from '../l4/txt';
 import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
-import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_SEEN, cardLv, dvI, dvK, posLabel } from './links';
+import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_LV, DV_N, DV_SEEN, cardLv, dvI, dvK, posLabel } from './links';
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
@@ -38,7 +38,7 @@ const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-
 const stepNo = (i: number, l: L) => posLabel(i, l === 'en' ? 'en' : 'zh');
 /** #D/<key> of station i */
 const hD = (i: number) => `#D/${dvK(i)}`;
-/** end of a station: the reason to continue, then the next stop, then share and backup. No dialog. */
+/** end of a station: the line to carry, then one next-stop button. No dialog. */
 export function stationEnd(lo: string, next: string): string {
   return `<section class="dv-end" data-st-end="1"><p class="dv-lo">${lo}</p>${next}</section>`;
 }
@@ -81,15 +81,22 @@ export async function dv(id: string, A: PxApi) {
   const finished = masteredSt().has(dvK(i));
   const seenNow = seenSt();
   const tabs = `<nav class="st-tabs" aria-label="${z('这一站的段落', 'Parts of this stop')}"><a href="#life" aria-current="true">${z('生活画面', 'Scene')}</a><a href="#fig">${z('图', 'Picture')}</a><a href="#formula">${z('公式', 'Formula')}</a><a href="#code">${z('代码', 'Code')}</a><a href="#q">${z('这一问', 'This question')}</a></nav>`;
+  const kicker = finished
+    ? `${stepNo(i, l)} · ${z('过了', 'Done')}`
+    : `${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}`;
+  const lead = finished
+    ? z('这一站的三个小问题都过了。带走这三句。', 'The three questions on this stop are done. Take these three lines.')
+    : mk(S.s);
+  const share = `<p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
   A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<div class="st-main">
-${tabs}
-<p class="dv-pos">${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}</p>
+<p class="dv-pos">${kicker}</p>
 <h1 class="st-h">${esc(S.n)}</h1>
-<p class="st-nar">${mk(S.s)}</p>
-<p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<div class="st-stage"><figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure></div><p class="dv-first">${hook}</p>
+<p class="st-nar">${lead}</p>
+${tabs}
+${from}<div class="st-stage"><figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure></div><p class="dv-first">${hook}</p>
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
-${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
-<section class="l4-ks dv-later"><h3 class="l4-kh c5">${next ? z('接下来', 'Next') : z('这一站走完了', 'This stop is the last')}</h3><div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
+${memKit(S, z, MLm?.take(dvK(i), l) ?? null)}
+<section class="l4-ks dv-later">${share}<div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
 </div>${railHtml(dvK(i), S, l)}</div>`;
@@ -102,42 +109,28 @@ ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p
   if (LY) LY.wire(A.host, page, l);
   if (MLm) MLm.wire(A.host, dvK(i), l, mk, prevSeen ? (prev?.e ?? '') : '', prevSeen && i > 0 ? dvK(i - 1) : '');
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
-  A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, hold: true, txt: stepNo(i, l) });
+  /* Outline is the map. One forward button, inline, and only after the station is done. */
+  A.step(null);
   const ly = A.host.querySelector('.ly');
-  const lead = A.host.querySelector('.dv-lead');
-  if (ly && lead) ly.prepend(lead);
+  const leadEl = A.host.querySelector('.dv-lead');
+  if (ly && leadEl) ly.prepend(leadEl);
+  if (dvK(i) === '2') A.host.querySelector('[data-morph]')?.setAttribute('data-hold', '1');
   const side = A.host.querySelector('.st-side');
-  const nxb = A.host.querySelector('.dv-nx');
   const code = A.host.querySelector('#code');
   const live = side?.querySelector('.st-live');
   if (live && code) live.insertAdjacentElement('afterend', code);
   else if (side && code) side.appendChild(code);
-  if (side && nxb) side.appendChild(nxb);
   if (A.still()) { morphWire(A.host); railWire(A.host, dvK(i)); }
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
 
-/* R56 记忆四件套 ①②: 本站只带走 3 句 + one picture, and the chain line 上一站 → 这站 → 下一站 with the layer it lands on.
-   Every station has hand-written lines (./mld). If a station ever has none, the fallback is the first sentence of its
-   idea, its mechanism and what it leaves open. */
+/* Three lines to carry, on paper. The outline already shows where this stop sits. */
 const first = (s: string) => { const m = /^(.+?[。．.!?！？])(\s|$)/.exec(s); return (m ? m[1]! : s).trim(); };
-// R56: keep the last few glyphs of a takeaway together (no one-glyph last line)
 const glueT = (h: string) => h.replace(/((?:&[a-z#0-9]+;|[^<>&\s]){1,4})$/, '<span class="nw">$1</span>');
-function memKit(i: number, S: Dv['st'][number], prev: Dv['st'][number] | null, next: Dv['st'][number] | null, l: L, z: (a: string, b: string) => string, own: { s: string[]; p: string } | null) {
-  const n = DV_LV[i]!;
+function memKit(S: Dv['st'][number], z: (a: string, b: string) => string, own: { s: string[]; p: string } | null) {
   const s3 = own?.s ?? [S.i[0], S.i[1] ?? S.f[0], S.lo].filter((x): x is string => !!x).map(first).slice(0, 3);
-  const pic = own?.p ?? (S.ly ? first(S.ly.an[0] ?? S.ly.hook) : '');
-  const picBits = pic.split(/(?<=[。！？])/).map((s) => s.trim()).filter(Boolean);
-  const take = `<section class="dv-take" id="take"><div class="dv-th"><b>🧠 ${z('本站只带走 3 句', 'Take away three lines')}</b><span>${z('可截图存成卡片', 'Screenshot it as a card')}</span></div><ol>${s3.map((x) => `<li>${glueT(mk(x))}</li>`).join('')}</ol>${pic ? `<p class="dv-tp"><span>${z('一个画面记住它', 'One picture to remember it')}</span><b>${picBits.map((s) => `<span class="dv-ps">${mk(s)}</span>`).join('')}</b></p>` : ''}</section>`;
-  const pl = (j: number) => posLabel(j, l === 'en' ? 'en' : 'zh');
-  const nd = (j: number, cls: string, label: string) => `<button type="button" class="dv-cn ${cls}" data-go="#D/${dvK(j)}" style="${cv(j)}"><span>${esc(label)}</span><b>${esc(DV_NM_(j, l))}</b></button>`;
-  const line = [prev ? nd(i - 1, 'p', z(`上一站 ${pl(i - 1)}`, `Prev ${pl(i - 1)}`)) : '', `<span class="dv-cn c" style="${cv(i)}"><span>${z(`这一站 ${pl(i)}`, `This stop ${pl(i)}`)}</span><b>${esc(S.n)}</b></span>`, next ? nd(i + 1, 'n', z(`下一站 ${pl(i + 1)}`, `Next ${pl(i + 1)}`)) : ''].filter(Boolean).join('<i class="dv-ca" aria-hidden="true">↓</i>');
-  const why = prev ? z(`上一站留下「${prev.e}」，这一站用「${S.s}」接住${next ? `；它又留下「${S.e}」，下一站解决。` : '。'}`, `The last stop left “${prev.e}”; this one answers with “${S.s}”${next ? `, and leaves “${S.e}” for the next.` : '.'}`) : z(`起点：「${S.s}」，留下「${S.e}」给下一站。`, `The start: “${S.s}”, leaving “${S.e}” for the next.`);
-  const chainB = `<section class="dv-chn"><div class="dv-th"><b>🔗 ${z('串起来：你走到了哪', 'The chain: where you are')}</b><span>${pl(i)}</span></div><div class="dv-cl">${line}</div><p class="dv-cw">${mk(why)}</p><p class="dv-cp">${n ? z(`在金字塔里的位置：第 ${n} 层「${tx(UI.lvN[n - 1]!, 'zh')}」`, `In the pyramid: layer ${n}, “${tx(UI.lvN[n - 1]!, 'en')}”`) : z('回顾：把五层串起来', 'Recap: all five layers together')}</p></section>`;
-  // the last stop of a pyramid layer offers 阶段排序 for that layer
-  return take + chainB;
+  return `<section class="dv-take" id="take"><div class="dv-th"><b>${z('这一站的 3 句话', 'Three lines from this stop')}</b></div><ol class="take">${s3.map((x) => `<li>${glueT(mk(x))}</li>`).join('')}</ol></section>`;
 }
-const DV_NM_ = (j: number, l: L) => tx(DV_NM[j] ?? ['', ''], l);
 
 function chain(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: string) {
   const l = A.l, seen = new Set(seenGet()), vd = vfDone(), vs = vfStages(DV_N, vd);
