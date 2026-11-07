@@ -204,7 +204,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     paintPr();
   }, true);
   draw();
-  const url = `${location.origin}${location.pathname}${location.search}#D/${k}`;
+  const url = `${location.origin}${location.pathname.replace(/index\.html$/, '')}#D/${k}`;
   const slot = host.querySelector('[data-share-url]'); if (slot) slot.textContent = url;
   host.querySelector('[data-ml-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();

@@ -161,7 +161,7 @@ html[data-anim="off"] .hm-bt i { transition: none; }
 .si-page .si-hit { display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--ink); }
 .share-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
 .share-row code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 14px; color: var(--ink); }
-.gloss { margin: 10px 0; padding: 10px 12px; background: var(--mark-bg); border-radius: 6px; }
+.gloss { margin: 10px 0; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 6px; }
 .gloss summary { cursor: pointer; color: var(--ink); }
 .st-nextlay { margin: 8px 0; color: var(--ink); }
 html.l4-mode .l4 a.hm-cta { background: var(--navy); color: var(--on-navy); }
