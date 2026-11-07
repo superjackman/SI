@@ -2,6 +2,7 @@
    One screen: thin top bar, crumbs, the stage (three.js, or SVG without WebGL), the info card, hint, dots, and the
    round 地图 / 进度 / 下一步 buttons. Tapping a "+" box opens it in place; tapping the original box closes it. */
 import './l4.css';
+import './portal.css';
 import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
@@ -32,7 +33,7 @@ export function start(doc: Document = document, win: Window = window) {
   if (doc.getElementById('l4')) return;
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><div class="l4-tx" aria-live="polite"></div><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
 <main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
 <div class="l4-ent" hidden></div>
@@ -40,6 +41,7 @@ export function start(doc: Document = document, win: Window = window) {
 <p class="l4-hint"></p><div class="l4-dots" aria-hidden="true"></div>
 <nav class="l4-nav g-nav" hidden></nav>
 <nav class="l4-tabs" hidden></nav>
+<footer class="pt-foot" hidden></footer>
 <div class="l4-rot" aria-hidden="true"><div><b>⟲</b><p class="t"></p><p class="s"></p></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   gramOn(root);
@@ -161,8 +163,37 @@ export function start(doc: Document = document, win: Window = window) {
   function drawSoon(i: number) {
     home.innerHTML = `<div class="l4-soon"><p class="n">${tx(UI.lv[i]!, lang)}</p><h2>${tx(UI.lvN[i]!, lang)}</h2><p class="tag">${T('soon')}</p><p>${T('soonP')}</p><button type="button" class="l4-b gold" data-go="#L4">${T('goL4')}</button></div>`;
   }
+  function paintPortal() {
+    const zh = lang !== 'en';
+    const name = root.querySelector<HTMLElement>('.pt-name'); if (name) name.textContent = zh ? '大白话拆解 AI' : 'AI, explained plainly';
+    const lab: Record<string, string> = zh
+      ? { learn: '学习', tools: '工具', news: '资讯', work: '项目' }
+      : { learn: 'Learn', tools: 'Tools', news: 'News', work: 'Projects' };
+    root.querySelectorAll<HTMLAnchorElement>('[data-pt]').forEach((a) => {
+      const k = a.dataset.pt || '';
+      a.textContent = lab[k] || a.textContent;
+      const on = k === 'learn' ? cur === 'home' || cur === 'map' || cur.startsWith('D') || cur.startsWith('L')
+        : k === 'tools' ? cur === 'tools' || cur.startsWith('tools/')
+        : k === 'news' ? cur === 'news' || cur.startsWith('news/')
+        : k === 'work' ? cur === 'W' || cur.startsWith('W/')
+        : false;
+      if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
+    const q = root.querySelector<HTMLInputElement>('.pt-q');
+    if (q) { q.placeholder = zh ? '搜索站、工具、资讯' : 'Search stops, tools, news'; q.setAttribute('aria-label', q.placeholder); }
+    const nav = root.querySelector('nav.pt-links'); if (nav) nav.setAttribute('aria-label', zh ? '主导航' : 'Main');
+    const foot = root.querySelector<HTMLElement>('.pt-foot');
+    const showFoot = cur === 'home' || cur === 'about' || cur === 'news' || cur.startsWith('news/') || cur === 'tools' || cur.startsWith('tools/') || cur === 'W' || cur.startsWith('W/');
+    if (foot) {
+      foot.hidden = !showFoot;
+      foot.innerHTML = zh
+        ? `<div><h2>关于</h2><p>这个站由 GitHub 仓库 superjackman/SI 的所有者维护。</p></div><div><h2>来源说明</h2><p>站里的数字来自同一张数表。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。</p></div><div><h2>更新时间</h2><p>资讯与工具目录核对于 2026-11-06。工具对照核对于 2026-11-07。</p></div>`
+        : `<div><h2>About</h2><p>This site is maintained by the owner of the GitHub repository superjackman/SI.</p></div><div><h2>Sources</h2><p>Numbers come from one table. News and tools name a source, a date and the day they were checked.</p></div><div><h2>Updated</h2><p>News and the tool list were checked on 2026-11-06. The tool comparison was checked on 2026-11-07.</p></div>`;
+    }
+  }
   function render() {
     root.dataset.lang = lang; $('[data-a="lang"]').textContent = T('lang'); $('[data-a="lang"]').setAttribute('aria-label', T('langL'));
+    paintPortal();
     $('[data-a="set"]').textContent = '⚙'; $('[data-a="set"]').setAttribute('aria-label', tx(['设置', 'Settings'], lang)); $('[data-a="back"]').textContent = '↑'; $('[data-a="back"]').setAttribute('aria-label', tx(['返回上一级', 'Up one level'], lang));
     $('[data-a="menu"]').textContent = '☰'; $('[data-a="menu"]').setAttribute('aria-label', tx(['地图和进度', 'Map and progress'], lang));
     $('.l4-rot .t').textContent = T('rot'); $('.l4-rot .s').textContent = T('rotS');
@@ -271,7 +302,7 @@ export function start(doc: Document = document, win: Window = window) {
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
     const pv = s.pv ?? Z('上一步', 'Back'), nx = s.nx ?? Z('下一步', 'Next'), many = s.n > 8, b = s.z0 ? 0 : 1;
-    const dotLab = (k: number) => s.keys ? Z(`第 ${s.keys[k]} 站`, `Stop ${s.keys[k]}`) : Z(`第 ${k + b} 步`, `Step ${k + b}`);
+    const dotLab = (k: number) => s.keys ? Z(`第 ${k + 1}/${s.n} 站`, `${k + 1}/${s.n}`) : Z(`第 ${k + b} 步`, `Step ${k + b}`);
     const dt = s.n ? `<span class="g-dots${many ? ' many' : ''}">${Array.from({ length: s.n }, (_, k) => `<button type="button" data-a="dot" data-i="${k}" class="${k === s.i ? 'on' : k < s.i ? 'd' : ''}" aria-label="${esc(dotLab(k))}"${k === s.i ? ' aria-current="step"' : ''}${s.dot ? '' : ' disabled'}></button>`).join('')}</span><span class="g-n">${s.txt != null ? esc(s.txt) : `${esc(s.lab ?? '')}${s.keys?.[s.i] ?? s.i + b} / ${s.keys?.[s.n - 1] ?? s.n - 1 + b}`}</span>` : '';
     const nxBtn = s.hold ? '<span></span>' : `<button type="button" class="g-next" data-a="next"${s.next ? '' : ' disabled'}>${esc(nx)} ›</button>`;
     nav.innerHTML = `<button type="button" class="g-prev" data-a="prev"${s.prev ? '' : ' disabled'}>‹ ${esc(pv)}</button><span class="g-mid">${dt}</span>${nxBtn}`;
@@ -347,6 +378,13 @@ export function start(doc: Document = document, win: Window = window) {
     doc.documentElement.dataset.l4 = `${cur}.${lang}`;
   }
   /* ---------- events ---------- */
+  root.addEventListener('submit', (e) => {
+    const f = (e.target as HTMLElement).closest?.('.pt-search'); if (!f) return;
+    e.preventDefault();
+    const box = root.querySelector<HTMLInputElement>('.pt-q');
+    const typed = box?.value ?? '';
+    void import('../search/ui').then((m) => { m.openSearch(root, lang, box); const inp = root.querySelector<HTMLInputElement>('.si-q'); if (inp && typed) { inp.value = typed; inp.dispatchEvent(new Event('input', { bubbles: true })); } });
+  });
   root.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
     /* R46: in-site #links (crumbs, the map) also replace the history entry instead of adding one (no root.contains:
