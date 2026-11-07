@@ -59,6 +59,12 @@ html.l4-mode .l4-b, html.l4-mode .hm-cta, html.l4-mode .hm-cta2, html.l4-mode .l
   background: var(--navy); color: var(--on-navy); border-color: var(--navy);
 }
 html.l4-mode .l4-b *, html.l4-mode .hm-cta *, html.l4-mode .hm-cta2 * { color: var(--on-navy); }
+html.l4-mode .l4-sheet .l4-b { background: var(--card); color: var(--ink); border-color: var(--line); }
+html.l4-mode .l4-sheet .l4-kdv > span,
+html.l4-mode .l4-sheet .l4-kwhy span { color: var(--highlight); }
+html.l4-mode .l4-sheet .l4-ksib b,
+html.l4-mode .l4-sheet .l4-kdv b { color: var(--link); }
+html.l4-mode .dv-sb { color: var(--on-navy); background: var(--navy); }
 /* Text that sits on a saturated fill (navy bar, link blue, layer colour, good/bad) uses --on-navy.
    Light theme: light ink on a dark fill. Night theme: dark ink on a light fill. */
 html.l4-mode .l4-top a,

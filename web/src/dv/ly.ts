@@ -95,6 +95,23 @@ function picBlk(l: L) {
 <div class="ly-bx">${z('输出头 → 下一个词元的概率', 'Output head → probability of the next token')}</div></div>`;
 }
 
+/** break a programmer's note into indented pseudo-code lines instead of one paragraph */
+const codeLines = (s: string) => {
+  let out = '';
+  let depth = 0;
+  let brace = 0;
+  const nl = () => { out += '\n' + '  '.repeat(brace); };
+  for (const c of s) {
+    if (c === '(' || c === '（' || c === '[' || c === '⟦') depth++;
+    else if (c === ')' || c === '）' || c === ']' || c === '⟧') depth = Math.max(0, depth - 1);
+    if (c === '{') { brace++; out += ' {'; nl(); continue; }
+    if (c === '}') { brace = Math.max(0, brace - 1); nl(); out += '}'; nl(); continue; }
+    if ((c === ';' || c === '；') && depth === 0) { out += c; nl(); continue; }
+    if (c === ' ' && (out.endsWith('\n') || out.endsWith('  '))) continue;
+    out += c;
+  }
+  return out.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim()).join('\n');
+};
 /** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
   const z = (a: string, b: string) => tx([a, b], l), Y = S.ly, d = depthGet(), v = shown(openGet(page), d);
@@ -104,7 +121,7 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const mot = MOT.has(key) ? `<div class="ly-mot" data-mot="${key}"></div>` : '';
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv" id="code" open><summary>${z('代码', 'Code')}</summary><p>${mk(Y.jv)}</p></details>`,
+    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv" id="code" open><summary>${z('代码', 'Code')}</summary><pre class="st-code"><code>${codeLines(Y.jv).split('\n').map((l) => { const pad = l.match(/^ */)?.[0] ?? ''; return pad + mk(l); }).join('\n')}</code></pre></details>`,
     `${pic}${P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" id="fig" data-vf-part="demo"></div>`,
     `<div class="ly-fx" id="formula">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('自己算一算', 'Work it out')}</b>${mk(S.h)}</p></details>`,

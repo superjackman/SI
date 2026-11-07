@@ -35,7 +35,7 @@
 /* the slider this part asks about stays on the same screen; the rest of that layer does not */
 .ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] { display: flex; }
 .ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] > :not([data-vf-part="demo"]) { display: none; }
-.ly.ml .ly-h, .ly.ml .ml-p { scroll-margin-top: calc(var(--lyt, 64px) + 6px); }
+.ly.ml .ly-h, .ly.ml .ml-p { scroll-margin-top: 188px; }
 .ml-p { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
 .ml-h { margin: 0; font-size: 16px; line-height: 1.4; color: var(--ink); font-weight: 800; }
 .ml-pv { margin: 0; display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; border-left: 3px solid var(--highlight); border-radius: 6px; background: var(--card); }

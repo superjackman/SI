@@ -22,7 +22,7 @@ const tip = (deg: number, len: number) => {
 };
 const g = (id: string, c: string, body: string) => `<g data-obj="${id}" data-c="${c}">${body}</g>`;
 const label = (x: number, y: number, s: string, c: string, anchor: 'start' | 'middle' | 'end' = 'middle') =>
-  `<text x="${x}" y="${y}" fill="${c}" font-size="15" font-weight="700" font-family="system-ui,sans-serif" text-anchor="${anchor}">${esc(s)}</text>`;
+  `<text x="${x}" y="${y}" fill="${c}" font-size="36" font-weight="700" font-family="system-ui,sans-serif" text-anchor="${anchor}">${esc(s)}</text>`;
 
 function face(cx: number, cy: number, r = 7) {
   return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${SKIN}"/>

@@ -35,12 +35,13 @@ export const font = (px: number, wt = 700) => `${wt} ${px}px ${FONT}`;
 export function draw(d: Data, fmt: Fmt, doc: Document = document): HTMLCanvasElement {
   const [W, H] = SIZE[fmt], cv = doc.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d')!, k = fmt === 'story' ? 1 : 0.82, M = 80, IW = W - 2 * M;
-  const bg = g.createLinearGradient(0, 0, W * 0.4, H); bg.addColorStop(0, 'var(--card)'); bg.addColorStop(0.6, 'var(--card)'); bg.addColorStop(1, 'var(--bg)');
+  const css = (v: string, fb: string) => { const m = /--([a-z0-9-]+)/.exec(v); return (m ? paint(m[1]!) : v) || fb; };
+  const bg = g.createLinearGradient(0, 0, W * 0.4, H); bg.addColorStop(0, css('var(--card)', '#fffcf7')); bg.addColorStop(0.6, css('var(--card)', '#fffcf7')); bg.addColorStop(1, css('var(--bg)', '#f3f1eb'));
   g.fillStyle = bg; g.fillRect(0, 0, W, H);
-  g.globalAlpha = 0.14; g.strokeStyle = d.lvC; g.lineWidth = 30; g.beginPath(); g.arc(W - 110, 170, 220, 0, 7); g.stroke(); g.globalAlpha = 1;
+  g.globalAlpha = 0.14; g.strokeStyle = css(d.lvC, '#1a4a6b'); g.lineWidth = 30; g.beginPath(); g.arc(W - 110, 170, 220, 0, 7); g.stroke(); g.globalAlpha = 1;
   g.textBaseline = 'top'; let y = M + 10 * k;
   /* the layer chip */
-  g.font = font(44 * k, 800); const cw = g.measureText(d.lv).width + 52; rr(g, M, y, cw, 72 * k, 18); g.fillStyle = d.lvC; g.fill();
+  g.font = font(44 * k, 800); const cw = g.measureText(d.lv).width + 52; rr(g, M, y, cw, 72 * k, 18); g.fillStyle = css(d.lvC, '#1a4a6b'); g.fill();
   g.fillStyle = paint('ink'); g.fillText(d.lv, M + 26, y + 13 * k); y += 110 * k;
   /* one honest line (a real milestone, or the "in one line" opener) */
   if (d.head) { g.fillStyle = paint('navy'); g.font = font(48 * k, 800); for (const s of wrap(g, `${d.badge} ${d.head}`.trim(), IW, 2)) { g.fillText(s, M, y); y += 64 * k; } y += 14 * k; }

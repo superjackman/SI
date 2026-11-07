@@ -8,14 +8,15 @@ export const achWords = (a: Ach) => [a.title, a.big, a.stats, a.last && `${a.las
 export function drawAch(a: Ach, fmt: Fmt, doc: Document = document): HTMLCanvasElement {
   const [W, H] = SIZE[fmt], cv = doc.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d')!, k = fmt === 'story' ? 1 : 0.8, M = 64, IW = W - 2 * M;
-  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, 'var(--card)'); bg.addColorStop(0.55, 'var(--card)'); bg.addColorStop(1, 'var(--bg)'); g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const css = (name: string, fb: string) => paint(name) || fb;
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, css('card', '#fffcf7')); bg.addColorStop(0.55, css('card', '#fffcf7')); bg.addColorStop(1, css('bg', '#f3f1eb')); g.fillStyle = bg; g.fillRect(0, 0, W, H);
   g.globalAlpha = 0.16; g.strokeStyle = paint('highlight'); g.lineWidth = 26; g.beginPath(); g.arc(W - 130, 190, 220, 0, 7); g.stroke(); g.globalAlpha = 1;
   g.textBaseline = 'top'; let y = M;
   g.fillStyle = paint('navy'); g.font = font(40 * k, 800); g.fillText('◆ ' + a.site, M, y); y += 90 * k;
   g.fillStyle = paint('ink'); g.font = font(60 * k, 900); for (const s of wrap(g, a.title, IW, 2)) { g.fillText(s, M, y); y += 76 * k; } y += 40 * k;
   /* the five layers (the site's map) as five equal rows, macro → micro, drawn, not a picture (R54: no pyramid shape) */
   const py = y, ph = 300 * k; for (let i = 0; i < 5; i++) { const w = IW * 0.68, h = ph / 5 - 10, x = (W - w) / 2, yy = py + i * (ph / 5);
-    rr(g, x, yy, w, h, 14); g.fillStyle = ['var(--link)', 'var(--link)', 'var(--link)', 'var(--good)', 'var(--link)'][i]!; g.globalAlpha = 0.85; g.fill(); g.globalAlpha = 1; }
+    rr(g, x, yy, w, h, 14); g.fillStyle = css(['lv1', 'lv2', 'lv3', 'lv4', 'lv5'][i]!, '#164e63'); g.globalAlpha = 0.85; g.fill(); g.globalAlpha = 1; }
   y = py + ph + 50 * k;
   g.fillStyle = paint('navy'); g.font = font(78 * k, 900); for (const s of wrap(g, a.big, IW, 2)) { g.fillText(s, M, y); y += 96 * k; }
   g.fillStyle = paint('ink'); g.font = font(44 * k, 700); for (const s of wrap(g, a.stats, IW, 2)) { g.fillText(s, M, y); y += 60 * k; } y += 30 * k;

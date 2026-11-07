@@ -329,8 +329,7 @@ ${row(t('g1'), t('g1v', { i: pathN, n: PATH.length }), pathN / PATH.length)}${ro
     }
     A.host.querySelector<HTMLInputElement>('.px-pq')?.focus({ preventScroll: true });
   }
-  if (!m || ach.length) await preview(A, C, ach);
-  done(A, 'S');
+  try { if (!m || ach.length) await preview(A, C, ach); } finally { done(A, 'S'); }
 }
 /** S1b: the card picker — the ones I opened first, then every layer's cards; a search box filters by name */
 function pkPanel(A: PxApi, C: Record<string, Card>, op: string[]) {
