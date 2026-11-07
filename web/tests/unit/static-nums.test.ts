@@ -16,8 +16,9 @@ describe('static numbers come from nums.ts', () => {
     const nums = numsFromSource(web);
     expect(Object.keys(nums).sort()).toEqual(Object.keys(NUMS).sort());
     for (const [k, n] of Object.entries(NUMS)) {
-      expect(nums[k].zh, k).toBe(n.zh);
-      expect(nums[k].en, k).toBe(n.en);
+      const got = nums[k]!;
+      expect(got.zh, k).toBe(n.zh);
+      expect(got.en, k).toBe(n.en);
       for (const l of ['zh', 'en'] as const) expect(fillNums(`{#${k}}`, l, nums), `${l} ${k}`).toBe(fillDvText(`{#${k}}`, l));
     }
   });

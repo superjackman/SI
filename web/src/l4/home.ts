@@ -117,7 +117,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-h]'); if (!b) return; const h = b.dataset.h!;
     if (h === 'sheet') sheet(A);
     else if (h === 'bell') void bellAsk(l).then(() => { const b = host.querySelector<HTMLElement>('[data-bell]'); if (b) b.outerHTML = bellBanner(l); });
-    else if (h === 'find') void import('../search/ui').then((m) => m.openSearch(A.root, l));
+    else if (h === 'find') void import('../search/ui').then((m) => m.openSearch(A.root, l, b));
     else if (h.startsWith('tab:')) { const which = h.slice(4); A.go(which === 'news' ? '#news' : which === 'tools' ? '#tools' : '#home'); }
     else if (h.startsWith('goal:')) { goalSet(h.slice(5) as GoalId); A.redraw(); }
     else if (h === 'routes') $('[data-hm="routes"]')?.scrollIntoView({ block: 'start' });
@@ -136,7 +136,23 @@ async function hubTab(host: HTMLElement, A: HomeApi, which: 'learn' | 'news' | '
   pane.innerHTML = `<p class="hm-n">${A.l === 'en' ? 'Loading…' : '加载中…'}</p>`;
   const hub = await import('../hub/view'); if (!pane.isConnected) return;
   pane.innerHTML = which === 'news' ? hub.newsHtml(A.l, item) : hub.toolsHtml(A.l, item);
-  if (which === 'tools') hub.wireTools(pane);
+  if (which === 'tools') {
+    const sc = host.closest<HTMLElement>('.l4-home');
+    const saveScroll = () => { try { sessionStorage.setItem('si.tools.scroll', location.hash + '\n' + String(sc?.scrollTop ?? 0)); } catch { /* private mode */ } };
+    hub.wireTools(pane, (h) => {
+      saveScroll();
+      if (location.hash === h) return;
+      history.pushState(history.state, '', location.pathname + location.search + h);
+      dispatchEvent(new Event('hashchange'));
+    });
+    try {
+      const [h, y] = (sessionStorage.getItem('si.tools.scroll') || '').split('\n');
+      if (sc && h === location.hash && y) requestAnimationFrame(() => { sc.scrollTop = Number(y); });
+    } catch { /* private mode */ }
+    pane.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a[href^="#tools/"]')) saveScroll();
+    });
+  }
   pane.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sh]'); if (!b?.dataset.sh) return;
     e.preventDefault(); e.stopPropagation();

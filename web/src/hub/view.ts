@@ -17,6 +17,23 @@ export interface NewsRow {
 type NewsItem = NewsRow;
 type Tool = (typeof tools.items)[number];
 export const TASKS = ['write', 'read', 'code', 'draw', 'local'] as const;
+const TASK_SET = new Set<string>(TASKS);
+/** `#tools` or `#tools/t/code`. The filter is the address, so refresh and back/forward keep it. */
+export function toolsTask(item: string): string {
+  const m = /^t\/([a-z]+)$/.exec(item);
+  return m && TASK_SET.has(m[1]!) ? m[1]! : 'all';
+}
+export function toolsHash(task: string): string {
+  return !task || task === 'all' ? '#tools' : `#tools/t/${task}`;
+}
+/** the list the reader left, including its filter, so a tool page can return there */
+export function toolsListHash(): string {
+  try {
+    const h = (sessionStorage.getItem('si.tools.scroll') || '').split('\n')[0] || '';
+    if (h === '#tools' || /^#tools\/t\/(write|read|code|draw|local)$/.test(h)) return h;
+  } catch { /* private mode */ }
+  return '#tools';
+}
 const TASK: Record<(typeof TASKS)[number], readonly [string, string]> = {
   write: ['写作', 'Writing'],
   read: ['查资料', 'Look things up'],
@@ -90,22 +107,28 @@ function toolCard(t: Tool, l: L) {
 }
 export function toolsHtml(l: L, item = ''): string {
   const z = (a: string, b: string) => tx([a, b], l);
-  if (item) {
+  if (item && !item.startsWith('t/')) {
     const t = findTool(item);
-    if (!t) return `<section class="hb"><p class="hm-n">${z('没有这个工具。', 'No such tool.')}</p><p><a href="#tools">${z('回工具', 'Back to tools')}</a></p></section>`;
-    return `<section class="hb"><p class="hb-meta"><a href="#tools">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}</section>`;
+    if (!t) return `<section class="hb"><p class="hm-n">${z('没有这个工具。', 'No such tool.')}</p><p><a href="${esc(toolsListHash())}">${z('回工具', 'Back to tools')}</a></p></section>`;
+    return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}</section>`;
   }
-  const chips = `<div class="hb-f" role="tablist">${(['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === 'all' ? 'on' : ''}" aria-selected="${id === 'all'}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('')}</div>`;
-  const cards = tools.items.map((t) => toolCard(t, l)).join('');
+  const task = toolsTask(item);
+  const chips = `<div class="hb-f" role="tablist">${(['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('')}</div>`;
+  const cards = tools.items.map((t) => {
+    const hide = task !== 'all' && !t.tasks.includes(task as (typeof TASKS)[number]);
+    return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
+  }).join('');
   return `<section class="hb"><p class="hm-n">${z('只列真实产品。能不能在中国打开，按核对日的官网情况写，之后可能变。', 'Real products only. Whether the site opens in China is as of the checked date, and can change.')}</p>${chips}<div class="hb-list">${cards}</div></section>`;
 }
 
-/** wire the task filter; called after the pane is in the document */
-export function wireTools(root: ParentNode) {
+/** wire the task filter; `go` writes the filter into the address */
+export function wireTools(root: ParentNode, go?: (hash: string) => void) {
   const box = root.querySelector<HTMLElement>('.hb-f'); if (!box) return;
   box.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-task]'); if (!b) return;
     const id = b.dataset.task ?? 'all';
+    const hash = toolsHash(id);
+    if (go) { go(hash); return; }
     box.querySelectorAll<HTMLElement>('[data-task]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
     root.querySelectorAll<HTMLElement>('.hb-list [data-tasks]').forEach((card) => { card.hidden = id !== 'all' && !(card.dataset.tasks ?? '').split(' ').includes(id); });
   });
