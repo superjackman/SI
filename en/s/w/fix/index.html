@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Change one mistake and see the tests · AI, explained plainly</title>
+<meta name="description" content="A fare rule written on the page, and two tests that run here. You pick a change, and the page recomputes the same expected numbers. This is not a…">
+<link rel="canonical" href="https://superjackman.github.io/SI/en/s/w/fix/">
+<link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/w/fix/">
+<link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/w/fix/">
+<link rel="alternate" hreflang="x-default" href="https://superjackman.github.io/SI/s/w/fix/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI, explained plainly">
+<meta property="og:title" content="Change one mistake and see the tests · AI, explained plainly">
+<meta property="og:description" content="A fare rule written on the page, and two tests that run here. You pick a change, and the page recomputes the same expected numbers. This is not a…">
+<meta property="og:url" content="https://superjackman.github.io/SI/en/s/w/fix/">
+<meta property="og:image" content="https://superjackman.github.io/SI/og-st/en/catalog.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Change one mistake and see the tests · AI, explained plainly">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Change one mistake and see the tests · AI, explained plainly">
+<meta name="twitter:description" content="A fare rule written on the page, and two tests that run here. You pick a change, and the page recomputes the same expected numbers. This is not a…">
+<meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/en/catalog.png">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/SI/icon-192.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"AI, explained plainly","url":"https://superjackman.github.io/SI/"},{"@type":"WebPage","headline":"Change one mistake and see the tests","name":"Change one mistake and see the tests","description":"A fare rule written on the page, and two tests that run here. You pick a change, and the page recomputes the same expected numbers. This is not a…","url":"https://superjackman.github.io/SI/en/s/w/fix/","inLanguage":"en","dateModified":"2026-11-07"}]}</script>
+<style>body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
+</head>
+<body>
+<header><a href="/SI/?lang=en"><b>AI, explained plainly</b></a><a href="/SI/s/w/fix/" hreflang="zh-CN" lang="zh-CN">中文</a></header>
+<nav class="bc" aria-label="breadcrumb"><ol><li><a href="/SI/?lang=en">Home</a></li><li><a href="/SI/en/s/w/">Projects</a></li><li><b>Change one mistake and see the tests</b></li></ol></nav><main><h1>Change one mistake and see the tests</h1><p>A fare rule written on the page, and two tests that run here. You pick a change, and the page recomputes the same expected numbers. This is not a live model call, it asks for no key, and it does not need Python.</p><h2>The sample</h2><p>Rule: 3 yuan for the first kilometre, then 2 yuan for each kilometre after that. The current code charges 2 yuan for every kilometre. Tests: 1 km should be 3, and 3 km should be 7.</p><h2>Steps</h2><ol><li>Look at the two tests as they stand. Both are red.</li><li>Pick “Change it to match the rule”. The page recomputes.</li><li>Both turning green is the finished result.</li></ol><h2>When it works</h2><p>After the change that matches the rule, 1 km gives 3 and 3 km gives 7. Both pass.</p><h2>One way it fails</h2><p>Pick “3 yuan for every kilometre”. 1 km happens to be 3, and 3 km gives 9, not 7. The second test stays wrong.</p><p>Programmers can open fare. All three formulas are on the page. The tests compare those two inputs with the expected numbers.</p><p>This is a fixed sample, not a live model call, and it asks for no key.</p><p>Related stops: <a href="/SI/en/s/A/">A</a>, <a href="/SI/en/s/E/">E</a></p><p class="open"><a href="/SI/?lang=en#W/fix">▶ Open the interactive version (diagrams, labs, quizzes)</a></p></main><footer><p>AI, explained plainly · <a href="/SI/en/about/">Who maintains this</a></p></footer></body></html>
