@@ -208,17 +208,16 @@ button.dv-from span::before { content: '‹ '; }
   .st-tabs { position: sticky; top: 0; z-index: 4; background: var(--bg); margin: 0 0 10px; padding: 0; }
   .st-h { line-height: 1.45; overflow: visible; }
   .st-stage { display: block; }
-  .ly.ml { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px 18px; align-items: start; position: relative; }
+  .ly.ml { display: flex; flex-direction: column; gap: 22px; align-items: stretch; position: relative; }
   .ml-op { overflow-wrap: anywhere; }
   .ml-op span { white-space: normal; }
-  .ly.ml > .dv-lead { grid-column: 1; grid-row: 1; min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
+  .ly.ml > .dv-lead { min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
   .dv-lead .dv-morph, .dv-lead svg { max-width: 100%; }
   .dv-lead svg.ly-life { width: 100%; height: auto; max-height: 160px; }
   .dv-morph[data-hold="1"] .dv-mb, .dv-morph[data-hold="1"] .dv-mcap .b { display: none; }
-  .ly.ml > .ly-l, .ly.ml > .ml-i, .ly.ml > .ml-rz, .ly.ml > .ml-rze, .ly.ml > .ml-v, .ly.ml > .ly-nx, .st-main > .dv-later { grid-column: 1 / -1; }
   .ly.ml[data-ml-s="i"] > .dv-lead,
-  .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { max-height: none; overflow: visible; align-self: stretch; height: auto; }
-  .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { display: block !important; grid-column: 2; grid-row: 1; min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
+  .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { max-height: none; overflow: visible; height: auto; }
+  .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { display: block !important; min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
   .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) > :not([data-vf-part="demo"]) { display: none !important; }
   .ly.ml[data-ml-s="i"]:not(:has([data-vf-part="demo"])) > .dv-lead { grid-column: 1 / -1; }
   .ly.ml[data-ml-s="i"] .vf-h,
