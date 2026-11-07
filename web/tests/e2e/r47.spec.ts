@@ -27,23 +27,39 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.dv-st')).toHaveCount(23); await expect(page.locator('.dv-lk')).toHaveCount(22); await expect(page.locator('.dv-gh')).toHaveCount(6);
     await expect(page.locator('.l4-nav')).toBeHidden();
     await page.locator('.dv-st[data-go="#D/0"]').click(); await expect(page).toHaveURL(re('#D/0')); await px(page, 'D/0.zh');
-    await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 1/23 站 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('第 1/23 站');
-    await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站'); await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);
-    await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
-    await page.locator('.l4-nav .g-dots [aria-label="第 2/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
-    await page.locator('.l4-nav .g-dots [aria-label="第 3/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
-    /* 23 many-dots wrap with fat ::after rings — click the node itself so a neighbour row cannot steal the tap */
-    await page.locator('.l4-nav .g-dots [aria-label="第 7/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/5'));
-    await page.locator('.l4-nav [data-a="prev"]').click(); await expect(page).toHaveURL(re('#D/4'));
-    await page.locator('.l4-nav .g-dots [aria-label="第 5/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
-    await page.locator('.l4-nav .g-dots [aria-label="第 6/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/4'));
+    if (await page.locator('.l4-top .l4-tt').isVisible()) await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 1/23 站 · 用样本找函数');
+    else { await expect(page.locator('.dv-pos')).toContainText('第 1/23 站'); await expect(page.locator('.st-h')).toHaveText('用样本找函数'); }
+    const wide = async () => !(await page.locator('.l4-nav').isVisible());
+    if (await wide()) {
+      await expect(page.locator('.dv-pos')).toContainText('第 1/23 站');
+      await expect(page.locator('.st-h')).toHaveText('用样本找函数');
+    } else {
+      await expect(page.locator('.l4-nav .g-n')).toHaveText('第 1/23 站');
+      await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站'); await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);
+      await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
+    }
+    const hop = async (label: string, hash: string) => {
+      if (await wide()) await page.locator(`.st-out a[href="${hash}"]`).click();
+      else await page.locator(`.l4-nav .g-dots [aria-label="${label}"]`).evaluate((el: HTMLElement) => el.click());
+    };
+    const prev = async (hash: string) => {
+      if (await wide()) await page.locator(`.st-out a[href="${hash}"]`).click();
+      else await page.locator('.l4-nav [data-a="prev"]').click();
+    };
+    await hop('第 2/23 站', '#D/P'); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
+    await hop('第 3/23 站', '#D/1'); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
+    await hop('第 7/23 站', '#D/5'); await expect(page).toHaveURL(re('#D/5'));
+    await prev('#D/4'); await expect(page).toHaveURL(re('#D/4'));
+    await hop('第 5/23 站', '#D/3'); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
+    await hop('第 6/23 站', '#D/4'); await expect(page).toHaveURL(re('#D/4'));
     await page.locator('.l4-crumb a[href="#D"]').click(); await expect(page).toHaveURL(re('#D'));
     await expect(page.locator('.dv-st.seen')).toHaveCount(6); /* 0 P 1 5 4 3 */
     await page.locator('.dv-st[data-go="#D/16"]').click(); await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);
     await page.locator('.l4-crumb a[href="#D"]').click(); await expect(page).toHaveURL(re('#D'));
     await page.locator('.dv-st[data-go="#D/9"]').click(); await expect(page).toHaveURL(re('#D/9'));
-    await page.locator('.l4-top [data-a="back"]').click(); await expect(page).toHaveURL(re('#D'));
-    await page.locator('.l4-top [data-a="back"]').click(); await expect(page).toHaveURL(re('#home'));
+    const up = async () => { const b = page.locator('.l4-top [data-a="back"]'); if (await b.isVisible()) await b.click(); else await page.locator('.l4-crumb a').last().click(); };
+    await up(); await expect(page).toHaveURL(re('#D'));
+    await up(); await expect(page).toHaveURL(re('#home'));
     expect(await hl(page)).toBe(n0);
     await page.goBack(); await expect(page).toHaveURL('about:blank');
     expect(errs).toEqual([]);
@@ -66,7 +82,7 @@ test.describe('R47 derivation path', () => {
   });
   test('the map sheet lists the chain and all 23 stations', async ({ page }) => {
     const errs = await open(page, './?lang=zh#map'); // R53: ☰ lives on the 地图 tab, not on home
-    await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
+    await page.locator('[data-a="menu"]:visible').first().click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
     await expect(ms.locator('a[href^="#D/"]')).toHaveCount(25); await expect(ms.locator('a[href="#D/8a"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/8b"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/map"]')).toHaveCount(1); await expect(ms.locator('a[href="#D/routes"]')).toHaveCount(1); await expect(ms.locator('a[href="#D"]')).toHaveCount(1);
     await ms.locator('a[href="#D/9"]').click(); await expect(ms).toHaveCount(0); await expect(page).toHaveURL(re('#D/9')); await px(page, 'D/9.zh');
     expect(errs).toEqual([]);

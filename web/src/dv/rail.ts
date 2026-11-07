@@ -2,7 +2,6 @@
    The step follows the demo sliders already on the page. No second forward button. */
 import { tx, type L } from '../l4/txt';
 import { DV_KEY, DV_LV, DV_N, DV_NM, dvI, posLabel } from './links';
-import { UI } from '../l4/txt';
 import { fmt, gdL, gdSeq } from '../vf/calc';
 import type { Dv } from './types';
 
@@ -26,13 +25,14 @@ export function outlineHtml(i: number, l: L, seen: ReadonlySet<string>, mastered
     const items = rows.map(({ k, j }) => {
       const name = tx(DV_NM[j] ?? [k, k], l);
       const cls = j === i ? 'now' : mastered.has(k) ? 'done' : seen.has(k) ? 'seen' : '';
-      if (j > i && !seen.has(k) && !mastered.has(k)) return `<span class="stn ${cls}"><span class="k">${esc(k)}</span><span class="nm">${esc(name)}</span></span>`;
-      return `<a class="stn ${cls}" href="#D/${k}"${j === i ? ' aria-current="true"' : ''}><span class="k">${esc(k)}</span><span class="nm">${esc(name)}</span></a>`;
+      const num = String(j + 1);
+      return `<a class="stn ${cls}" href="#D/${k}"${j === i ? ' aria-current="true"' : ''}><span class="k">${num}</span><span class="nm">${esc(name)}</span></a>`;
     }).join('');
     const head = zh ? (g.n ? `第 ${g.n} 层 · ${g.zh}` : g.zh) : g.en;
     return `<section class="grp"><h2>${head}</h2>${items}</section>`;
   }).join('');
-  return `<aside class="st-out"><button type="button" class="st-tog" aria-expanded="false">${esc(posLabel(i, zh ? 'zh' : 'en'))}</button><nav aria-label="${zh ? '23 站' : '23 stops'}"><p class="pos"><span>${zh ? '路径位置' : 'Place'}</span><strong>${esc(posLabel(i, zh ? 'zh' : 'en'))}</strong></p>${groups}</nav></aside>`;
+  const here = tx(DV_NM[i] ?? ['', ''], l);
+  return `<aside class="st-out"><button type="button" class="st-tog" aria-expanded="false">${esc(posLabel(i, zh ? 'zh' : 'en'))}</button><nav aria-label="${zh ? '23 站' : '23 stops'}"><p class="pos st-pos"><span>${zh ? '路径位置' : 'Place'}</span><strong>${esc(posLabel(i, zh ? 'zh' : 'en'))}</strong><em>${esc(here)}</em></p>${groups}</nav></aside>`;
 }
 
 function fxLine(S: Dv['st'][number]): string {
@@ -49,10 +49,8 @@ export function railHtml(key: string, S: Dv['st'][number], l: L): string {
     : `<div class="st-live" data-rail="text"><p data-k="step">${esc(plain(S.x[0] || S.ly?.num?.[0] || S.h || ''))}</p></div>`;
   const from = prev ? (zh ? `从${posLabel(i - 1, 'zh')}来。${plain(prev[0])}` : `From ${posLabel(i - 1, 'en')}. ${prev[1]}`) : (zh ? '起点。' : 'The start.');
   const to = next ? (zh ? `通向${posLabel(i + 1, 'zh')}。${plain(S.e || next[0])}` : `On to ${posLabel(i + 1, 'en')}. ${plain(S.e || next[1])}`) : (zh ? '这一站是回顾。' : 'This stop is the recap.');
-  const lvN = DV_LV[i] ?? 0;
-  const layer = lvN ? tx(UI.lv[lvN - 1]!, l) : (zh ? '回顾' : 'Recap');
-  const tabs = `<nav class="st-tabs" aria-label="${zh ? '这一站的段落' : 'Parts of this stop'}"><a href="#life">${zh ? '生活画面' : 'Scene'}</a><a href="#fig">${zh ? '图' : 'Picture'}</a><a href="#formula">${zh ? '公式' : 'Formula'}</a><a href="#code">${zh ? '代码' : 'Code'}</a></nav>`;
-  return `<aside class="st-side">${tabs}<h2>${zh ? '公式' : 'Formula'}</h2><p class="formula">${esc(formula)}</p><h2>${zh ? '算一步' : 'One step'}</h2>${live}<h2>${zh ? '前后' : 'Around it'}</h2><ul class="conn"><li>${esc(from)}</li><li>${esc(to)}</li></ul><p class="st-layer">${esc(layer)}</p></aside>`;
+  const terms = (S.ly?.fe ?? S.i).slice(0, 3).map((x) => `<li>${esc(plain(x))}</li>`).join('');
+  return `<aside class="st-side"><h2>${zh ? '公式' : 'Formula'}</h2><p class="formula">${esc(formula)}</p><h2>${zh ? '算一步' : 'One step'}</h2>${live}${terms ? `<h2>${zh ? '这几个词' : 'The words'}</h2><ul class="terms">${terms}</ul>` : ''}<h2>${zh ? '前后' : 'Before and after'}</h2><ul class="conn"><li>${esc(from)}</li><li>${esc(to)}</li></ul></aside>`;
 }
 
 export function railWire(host: ParentNode, key: string) {

@@ -103,9 +103,17 @@ export function newsHtml(l: L, item = ''): string {
   return newsFrom(news, l, item);
 }
 
+function facets(t: Tool) {
+  const free = tx(t.free as [string, string], 'en').toLowerCase() + ' ' + (t.free as [string, string])[0];
+  const lic = /mit/i.test(free) ? 'mit' : /apache/i.test(free) ? 'apache' : 'other';
+  const cn = (t.cn as [string, string])[0];
+  const host = cn.includes('尚未实测') ? 'unmeasured' : (t.zh.startsWith('开源') || cn.includes('GitHub')) ? 'oss' : 'hosted';
+  return { lic, host };
+}
 function toolCard(t: Tool, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
+  const f = facets(t);
+  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}" data-lic="${f.lic}" data-host="${f.host}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
 }
 export function toolsHtml(l: L, item = ''): string {
   const z = (a: string, b: string) => tx([a, b], l);
@@ -115,25 +123,42 @@ export function toolsHtml(l: L, item = ''): string {
     return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}${guideDetail(guide, t.id, l)}</section>`;
   }
   const task = toolsTask(item);
-  const chips = `<div class="hb-f" role="tablist">${(['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('')}</div>`;
+  const taskBtns = (['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('');
+  const licBtns = ([['all', z('全部', 'All')], ['mit', 'MIT'], ['apache', 'Apache 2.0'], ['other', z('其他写法', 'Other')]] as const).map(([id, name]) => `<button type="button" data-lic="${id}" class="${id === 'all' ? 'on' : ''}" aria-pressed="${id === 'all'}">${esc(name)}</button>`).join('');
+  const hostBtns = ([['all', z('全部', 'All')], ['oss', z('开源，可自行部署', 'Open source, you host it')], ['hosted', z('托管网站', 'A hosted site')], ['unmeasured', z('尚未实测', 'Not measured')]] as const).map(([id, name]) => `<button type="button" data-host="${id}" class="${id === 'all' ? 'on' : ''}" aria-pressed="${id === 'all'}">${esc(name)}</button>`).join('');
+  const chips = `<div class="hb-f"><h2>${z('按任务', 'By task')}</h2><div role="tablist">${taskBtns}</div><h2>${z('按许可', 'By license')}</h2><div>${licBtns}</div><h2>${z('开源与托管', 'Source and hosting')}</h2><div>${hostBtns}</div></div>`;
   const cards = tools.items.map((t) => {
     const hide = task !== 'all' && !t.tasks.includes(task as (typeof TASKS)[number]);
     return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
   }).join('');
-  const local = guide.groups.find((g) => g.id === 'local');
-  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p>${esc(z('Ollama、llama.cpp、vLLM。差异写在指南里，不是评分。', 'Ollama, llama.cpp and vLLM. The guide states the differences. There is no score.'))}</p>${local.diffs.map((d) => `<p>${esc((l === 'en' ? d.en : d.zh).split(/(?<=。|\.)/)[0] ?? '')}</p>`).join('')}<p class="hb-meta">${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p></aside>` : '';
+  const local = guide.groups.find((g) => g.id === 'local') ?? guide.groups[0];
+  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p>${esc(tx(local.task as [string, string], l))}</p><p class="hb-meta">${z('差异写在指南里，不是评分。', 'The guide states the differences. There is no score.')} ${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p><table><tbody>${local.diffs.map((d) => { const text = l === 'en' ? d.en : d.zh; const head = text.split(/[。.]/)[0] ?? text; return `<tr><th>${esc(head)}</th><td>${esc(text)}</td></tr>`; }).join('')}</tbody></table></aside>` : '';
   return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}<div class="hb-desk">${chips}<div class="hb-list">${cards}</div>${cmp}</div></section>`;
 }
 
 /** wire the task filter; `go` writes the filter into the address */
 export function wireTools(root: ParentNode, go?: (hash: string) => void) {
   const box = root.querySelector<HTMLElement>('.hb-f'); if (!box) return;
+  const paint = () => {
+    const taskOn = box.querySelector<HTMLElement>('[data-task].on')?.dataset.task ?? 'all';
+    const lic = box.querySelector<HTMLElement>('[data-lic].on')?.dataset.lic ?? 'all';
+    const host = box.querySelector<HTMLElement>('[data-host].on')?.dataset.host ?? 'all';
+    root.querySelectorAll<HTMLElement>('.hb-list [data-tasks]').forEach((card) => {
+      const tasks = (card.dataset.tasks ?? '').split(' ');
+      card.hidden = (taskOn !== 'all' && !tasks.includes(taskOn)) || (lic !== 'all' && card.dataset.lic !== lic) || (host !== 'all' && card.dataset.host !== host);
+    });
+  };
   box.addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-task]'); if (!b) return;
-    const id = b.dataset.task ?? 'all';
-    const hash = toolsHash(id);
-    if (go) { go(hash); return; }
-    box.querySelectorAll<HTMLElement>('[data-task]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
-    root.querySelectorAll<HTMLElement>('.hb-list [data-tasks]').forEach((card) => { card.hidden = id !== 'all' && !(card.dataset.tasks ?? '').split(' ').includes(id); });
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-task],[data-lic],[data-host]'); if (!b) return;
+    if (b.dataset.task) {
+      const id = b.dataset.task ?? 'all';
+      const hash = toolsHash(id);
+      if (go) { go(hash); return; }
+      box.querySelectorAll<HTMLElement>('[data-task]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-selected', String(on)); });
+      paint(); return;
+    }
+    const key = b.dataset.lic ? 'lic' : 'host';
+    box.querySelectorAll<HTMLElement>(`[data-${key}]`).forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+    paint();
   });
 }

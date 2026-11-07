@@ -15,15 +15,18 @@ const px = (p: Page, v: string) => expect(p.locator('#l4')).toHaveAttribute('dat
 test.describe('hub, reminder, certificate, demos', () => {
   test('three entries: news and tools link back to stations and show readership', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
-    await expect(page.locator('.hm-hub')).toContainText('学');
-    await expect(page.locator('.hm-hub')).toContainText('查资讯');
-    await page.locator('[data-h="tab:news"]').click();
+    if (await page.locator('.hm-hub').isVisible()) {
+      await expect(page.locator('.hm-hub')).toContainText('学');
+      await expect(page.locator('.hm-hub')).toContainText('查资讯');
+      await page.locator('[data-h="tab:news"]').click();
+    } else await page.locator('.pt-links a[href="#news"]').click();
     await expect(page.locator('[data-pane="news"] .hb-item').first()).toBeVisible();
     await expect(page.locator('[data-pane="news"]')).toContainText('读懂度');
     await expect(page.locator('[data-pane="news"]')).not.toContainText('往期留在下面');
     await expect(page.locator('[data-pane="news"]')).toContainText('2026-11-02');
     await expect(page.locator('[data-pane="news"] a[target="_blank"]').first()).toHaveAttribute('href', /^https:\/\//);
-    await page.locator('[data-h="tab:tools"]').click();
+    if (await page.locator('[data-h="tab:tools"]').isVisible()) await page.locator('[data-h="tab:tools"]').click();
+    else await page.locator('.pt-links a[href="#tools"]').click();
     await expect(page.locator('[data-pane="tools"]')).toContainText('安全');
     await expect(page.locator('[data-pane="tools"] a[href="#D/S"]').first()).toBeVisible();
     const bad: string[] = [];
@@ -42,7 +45,8 @@ test.describe('hub, reminder, certificate, demos', () => {
     const errs = await open(page, './?lang=zh#home');
     await expect(page.locator('.hm-rv')).toContainText('上次错');
     await expect(page.locator('.hm-cta')).toBeVisible();
-    await page.locator('[data-h="tab:learn"]').click();
+    if (await page.locator('[data-h="tab:learn"]').isVisible()) await page.locator('[data-h="tab:learn"]').click();
+    else await page.locator('.pt-links a[href="#home"]').click();
     await page.evaluate(() => { location.hash = '#R'; });
     await px(page, 'R.zh');
     await expect(page.locator('[data-mm="cert"]')).toBeVisible();

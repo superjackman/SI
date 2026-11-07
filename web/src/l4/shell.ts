@@ -21,7 +21,7 @@ import { gramOn } from './gram';
 import type { Step } from '../px/view';
 import { LBG, LCOL, layerStats, lvTag, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
-import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv } from '../dv/links';
+import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv, posLabel } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
@@ -33,7 +33,8 @@ export function start(doc: Document = document, win: Window = window) {
   if (doc.getElementById('l4')) return;
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);
-  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
+  try { const th = localStorage.getItem('si.theme'); if (th === 'dark') doc.documentElement.dataset.theme = 'dark'; } catch { /* private mode */ }
+  root.innerHTML = `<header class="l4-top"><button type="button" class="l4-i" data-a="back"></button><a class="pt-brand" href="#home"><b>SI</b><span class="pt-name"></span></a><nav class="pt-links" aria-label="主导航"><a href="#home" data-pt="learn">学习</a><a href="#tools" data-pt="tools">工具</a><a href="#news" data-pt="news">资讯</a><a href="#W" data-pt="work">项目</a></nav><nav class="pt-more" aria-label="学习入口"><a href="#map" data-pt="map">地图</a><a href="#P" data-pt="prac">练习</a><a href="#R" data-pt="me">我的</a></nav><div class="l4-tx" aria-live="polite"></div><form class="pt-search" role="search"><input class="pt-q" type="search" enterkeyhint="search" autocomplete="off"></form><button type="button" class="l4-i l4-menu" data-a="menu" aria-haspopup="dialog"></button><button type="button" class="l4-i l4-gear" data-a="set"></button><button type="button" class="l4-i l4-lang" data-a="lang"></button></header>
 <div class="l4-cr"><nav class="l4-crumb"></nav><button type="button" class="l4-mp" data-a="math"></button></div><div class="l4-qp" hidden></div>
 <main class="l4-main"><div class="l4-stg"></div><div class="l4-home" hidden></div></main>
 <div class="l4-ent" hidden></div>
@@ -167,15 +168,18 @@ export function start(doc: Document = document, win: Window = window) {
     const zh = lang !== 'en';
     const name = root.querySelector<HTMLElement>('.pt-name'); if (name) name.textContent = zh ? '大白话拆解 AI' : 'AI, explained plainly';
     const lab: Record<string, string> = zh
-      ? { learn: '学习', tools: '工具', news: '资讯', work: '项目' }
-      : { learn: 'Learn', tools: 'Tools', news: 'News', work: 'Projects' };
+      ? { learn: '学习', tools: '工具', news: '资讯', work: '项目', map: '地图', prac: '练习', me: '我的' }
+      : { learn: 'Learn', tools: 'Tools', news: 'News', work: 'Projects', map: 'Map', prac: 'Practice', me: 'Me' };
     root.querySelectorAll<HTMLAnchorElement>('[data-pt]').forEach((a) => {
       const k = a.dataset.pt || '';
       a.textContent = lab[k] || a.textContent;
-      const on = k === 'learn' ? cur === 'home' || cur === 'map' || cur.startsWith('D') || cur.startsWith('L')
+      const on = k === 'learn' ? cur === 'home' || cur.startsWith('D') || cur.startsWith('L')
         : k === 'tools' ? cur === 'tools' || cur.startsWith('tools/')
         : k === 'news' ? cur === 'news' || cur.startsWith('news/')
         : k === 'work' ? cur === 'W' || cur.startsWith('W/')
+        : k === 'map' ? cur === 'map'
+        : k === 'prac' ? cur === 'P' || cur.startsWith('P/')
+        : k === 'me' ? cur === 'R' || cur.startsWith('R/')
         : false;
       if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
@@ -187,8 +191,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (foot) {
       foot.hidden = !showFoot;
       foot.innerHTML = zh
-        ? `<div><h2>关于</h2><p>这个站由 GitHub 仓库 superjackman/SI 的所有者维护。</p></div><div><h2>来源说明</h2><p>站里的数字来自同一张数表。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。</p></div><div><h2>更新时间</h2><p>资讯与工具目录核对于 2026-11-06。工具对照核对于 2026-11-07。</p></div>`
-        : `<div><h2>About</h2><p>This site is maintained by the owner of the GitHub repository superjackman/SI.</p></div><div><h2>Sources</h2><p>Numbers come from one table. News and tools name a source, a date and the day they were checked.</p></div><div><h2>Updated</h2><p>News and the tool list were checked on 2026-11-06. The tool comparison was checked on 2026-11-07.</p></div>`;
+        ? `<div><h2>关于</h2><p>这个站由 GitHub 仓库 superjackman/SI 的所有者维护。</p><p><button type="button" data-a="menu">目录</button></p></div><div><h2>来源说明</h2><p>站里的数字来自同一张数表。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。</p></div><div><h2>更新时间</h2><p>资讯与工具目录核对于 2026-11-06。工具对照核对于 2026-11-07。</p></div>`
+        : `<div><h2>About</h2><p>This site is maintained by the owner of the GitHub repository superjackman/SI.</p><p><button type="button" data-a="menu">Contents</button></p></div><div><h2>Sources</h2><p>Numbers come from one table. News and tools name a source, a date and the day they were checked.</p></div><div><h2>Updated</h2><p>News and the tool list were checked on 2026-11-06. The tool comparison was checked on 2026-11-07.</p></div>`;
     }
   }
   function render() {
@@ -350,7 +354,7 @@ export function start(doc: Document = document, win: Window = window) {
     const vsw = onSt ? `<div class="g-seg dv-vsw" role="radiogroup" aria-label="${tx(['换个角度看', 'Another angle'], lang)}"><button type="button" role="radio" aria-checked="false" data-go="${td}">${tx(['自顶向下·看结构', 'Top-down · structure'], lang)}</button><button type="button" role="radio" aria-checked="true" class="on">${tx(['自底向上·看推导', 'Bottom-up · derivation'], lang)}</button></div>` : '';
     list(T('mapT'), vsw + `<div class="l4-ml">${li('home', T('home'))}${soonL}</div>` + lxs(1) + lxs(2) + lxs(3)
       + sec('', ['L4'], [UI.whole as Tx], 4) + sec(T('trN'), ORDER.slice(1, 7), STEPN.tr) + sec(T('usN'), ORDER.slice(7, 16), STEPN.us) + sec(T('myN'), ORDER.slice(16), STEPN.my) + sec(T('xN'), xs, xn) + lxs(5)
-      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${dvK(i)} ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
+      + `<h4>${esc(tx(['自底向上 · 推导之路', 'Bottom-up · derivation path'], lang))}</h4><div class="l4-ml">${li('D', tx(['链路总览', 'The whole chain'], lang))}${li('D/routes', tx(['五条学习路线', 'Five learning routes'], lang))}${li('D/map', tx(['知识地图 · 两个坐标', 'Knowledge map · both axes'], lang))}${DV_NM.slice(0, DV_N).map((nm, i) => li(`D/${dvK(i)}`, `${posLabel(i, lang === 'en' ? 'en' : 'zh')} · ${tx(nm, lang)}`)).join('')}</div>`, [['map', T('map')], ['prog', T('prog')]], prog);
   }
   /* ---------- routing ---------- */
   function route() {

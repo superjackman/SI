@@ -4,7 +4,7 @@ import { tx, type L, type Tx } from '../l4/txt';
 import { QQ, type Q } from '../vf/data';
 import { fillDvText } from './nums';
 import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
-import { DV_KEY, dvI } from './links';
+import { DV_KEY, dvI, posLabel } from './links';
 import type { PxApi } from '../px/view';
 import { firstTry } from '../px/rv';
 import { masteredSt } from './prog';
@@ -126,7 +126,7 @@ async function shareCh(A: PxApi, key: string, qText: string) {
   const d: import('../l4/share/draw').Data = {
     site: tx(D.SITE_N, l), url,
     lv: z('挑战题', 'Challenge'), lvC: '#c99a2e',
-    path: z(`第 ${key} 站 · 自测`, `Stop ${key} · self-check`),
+    path: z(`${posLabel(dvI(key), 'zh')} · 自测`, `${posLabel(dvI(key), 'en')} · self-check`),
     icon: '✎', name: z('敢不敢算一下？', 'Can you work this out?'),
     idea: qText.slice(0, 120),
     parts: [], co: '', why: '',

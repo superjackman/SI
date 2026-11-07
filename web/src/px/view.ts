@@ -17,7 +17,7 @@ import type { Ans } from '../l4/pages';
 import { navBack } from '../l4/hnav';
 import { layerMastery, masteredSt, seenSt } from '../dv/prog';
 import { pathOf, routeNext } from '../dv/routes';
-import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
+import { DV_KEY, DV_LV, DV_N, DV_NM, dvI, posLabel } from '../dv/links';
 import { VF_Q, vfDone } from '../vf/ids';
 import * as RV from './rv';
 import { keepHtml, wireKeep } from './keep';
@@ -250,7 +250,7 @@ async function record(A: PxApi) {
   const rdone = r.st.filter((k) => ms.has(String(k))).length, z = (a: string, b: string) => tx([a, b], L_);
   const C2 = 2 * Math.PI * 30, ring = `<svg class="px-ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="30" fill="none" stroke="#1d2d5c" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="#ffd77a" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C2 * ms.size) / DV_N).toFixed(1)} ${C2.toFixed(1)}" transform="rotate(-90 38 38)"/></svg>`;
   const ft = RV.firstTry();
-  const cont = `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))} ${rdone}/${r.st.length}</span><span>${esc(z(`第 ${nx} 站 · `, `Stop ${nx} · `))}${esc(tx(DV_NM[dvI(nx)] ?? ['', ''], L_))}</span></div><button type="button" class="l4-b gold" data-go="#D/${nx}">${t('cont')}</button></div>
+  const cont = `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))} ${rdone}/${r.st.length}</span><span>${esc(z(`${posLabel(dvI(nx), L_ === 'en' ? 'en' : 'zh')} · `, `${posLabel(dvI(nx), 'en')} · `))}${esc(tx(DV_NM[dvI(nx)] ?? ['', ''], L_))}</span></div><button type="button" class="l4-b gold" data-go="#D/${nx}">${t('cont')}</button></div>
 <div class="px-mst">${ring}<p><b>${ms.size}</b><span>/ ${z(`${DV_N} 站掌握`, `${DV_N} stops mastered`)}</span></p><ul><li>${z(`答对 ${vd.size} 题`, `${vd.size} questions right`)}</li><li>${ft.n ? z(`首答正确率 ${ft.p}%`, `First-try accuracy ${ft.p}%`) : z('首答正确率：还没答过', 'First-try accuracy: none yet')}</li><li>${z(`读过 ${sn.size}/${DV_N} 站`, `${sn.size}/${DV_N} stops read`)}</li></ul></div>`;
   const RULE = z('掌握＝这一站的题都做对了，或这一站的小目标都点亮。阶段排序、分享成就、证书和徽章都按掌握解锁。', 'Mastered means every question on that stop is right, or every small goal on it is lit. Ordering a layer, sharing, the certificate and the badges all use that rule.');
   const lv = st.map((x) => { const [ma, mt] = lm[x.n - 1]!, ks = DV_KEY.filter((_, i) => DV_LV[i] === x.n), rd = ks.filter((k) => sn.has(k)).length; return `<button type="button" class="px-lvr" data-go="#L${x.n}"><span class="px-row l">${lvT(x.n, L_)}<b>${esc(tx(UI.lvN[x.n - 1]!, L_))}</b><i>${esc(z(`掌握 ${ma}/${mt} 站 · 读过 ${rd}/${mt} 站`, `${ma}/${mt} stops mastered · ${rd}/${mt} stops read`))}</i></span>${pbar(ma, mt, x.n)}</button>`; }).join('');
@@ -259,7 +259,7 @@ async function record(A: PxApi) {
   const lastA = new Map<string, boolean>(); for (const e of lg) if (e.k === 'ans') lastA.set(e.id, e.ok);
   const wr = LAYERS.flatMap((n) => QUIZ[n].map((q, i) => ({ n, q, i })).filter(({ q }) => lastA.get(q.id) === false));
   const wrong = wr.length ? `<h3>${t('wrongT', { n: wr.length })}</h3><div class="px-rcs">${wr.map(({ n, q, i }) => `<div class="px-rc">${lvT(n, L_)}<span>${esc(t('wrongR', { i: i + 1, c: t('cardOf', { n: C[q.k]!.n }) }))}</span><button type="button" class="l4-b" data-k="${q.k}.2">${t('review')}</button></div>`).join('')}</div>` : '';
-  const rc = [...sn].slice(-6).reverse().map((k) => `<button type="button" class="px-rc" data-go="#D/${k}"><span class="k">${esc(z('站', 'stop'))}</span><span class="h">${esc(z(`第 ${k} 站`, `Stop ${k}`))} · ${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</span></button>`).join('');
+  const rc = [...sn].slice(-6).reverse().map((k) => `<button type="button" class="px-rc" data-go="#D/${k}"><span class="k">${esc(z('站', 'stop'))}</span><span class="h">${esc(posLabel(dvI(k), L_ === 'en' ? 'en' : 'zh'))} · ${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</span></button>`).join('');
   const ach = ms.size > 0;
   A.host.innerHTML = `<div class="px px-rec">${cont}
 ${keepHtml(L_)}

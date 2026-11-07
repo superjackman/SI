@@ -10,8 +10,8 @@ async function open(p: Page, q: string) {
 
 test('search finds a station from a Chinese query', async ({ page }) => {
   const errs = await open(page, './?lang=zh#home');
-  await page.locator('[data-h="find"]').click();
-  await page.locator('.si-q').fill('注意力');
+  if (await page.locator('.pt-q').isVisible()) { await page.locator('.pt-q').fill('注意力'); await page.locator('.pt-search').evaluate((f: HTMLFormElement) => f.requestSubmit()); }
+  else { await page.locator('[data-h="find"]').click(); await page.locator('.si-q').fill('注意力'); }
   const hit = page.locator('.si-hit[href="#D/8a"]');
   await expect(hit).toBeVisible();
   await hit.click();

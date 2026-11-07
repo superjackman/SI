@@ -51,7 +51,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   let S: MlS = mlGet(k);
   const pred: (number | null)[] = M.goals.map(() => null);
   const save = () => { const prev = masteredSt(); mlSet(k, S); noteMastered(prev); };
-  const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
+  const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s) ?? host.querySelector<E>(s)!;
   const lyLab = (n: number, fr?: number) => `${tx(LYN[n - 1]!, l)}${fr ? z(` · 第 ${fr} 镜`, ` · shot ${fr}`) : ''}`;
   const setTop = () => { const tp = root.querySelector<HTMLElement>('.ly-top'); if (tp) root.style.setProperty('--lyt', `${Math.round(tp.getBoundingClientRect().height)}px`); };
   const refreshCard = () => {

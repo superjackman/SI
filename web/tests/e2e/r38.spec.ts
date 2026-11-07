@@ -43,7 +43,8 @@ test.describe('R38 explorer', () => {
     const errs = await open(page, './?lang=zh', false);
     await expect(page.locator('#l4')).toHaveAttribute('data-v', 'home');
     /* R53: the pyramid moved to the 地图 tab (#map) */
-    await page.locator('.l4-tabs [data-go="#map"]').click(); await expect(page).toHaveURL(/#map$/);
+    { const map = page.locator('.pt-more a[href="#map"]'); if (await map.isVisible()) await map.click(); else await page.locator('.l4-tabs [data-go="#map"]').click(); }
+    await expect(page).toHaveURL(/#map$/);
     await expect(page.locator('.l4-lv')).toHaveCount(5);
     await expect(page.locator('.l4-lv.live')).toHaveCount(5);
     await expect(page.locator('.l4-lv.live').filter({ hasText: 'Transformer' })).toHaveCount(1);
@@ -51,7 +52,8 @@ test.describe('R38 explorer', () => {
     await page.goto('./?lang=zh#map'); await page.locator('.l4-lv.live').first().click(); await expect(page.locator('#l4')).toHaveAttribute('data-v', 'lx'); await expect(page).toHaveURL(/#L1$/);
     await page.goto('./?lang=zh#home');
     await expect(page.locator('.l4-tabs button')).toHaveCount(4); await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);
-    await page.locator('.l4-tabs [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-lvr').first()).toBeVisible(); /* R42: G3 progress page — five layer rows */
+    { const me = page.locator('.pt-more a[href="#R"]'); if (await me.isVisible()) await me.click(); else await page.locator('.l4-tabs [data-go="#R"]').click(); }
+    await expect(page).toHaveURL(/#R$/); await expect(page.locator('.px-lvr').first()).toBeVisible(); /* R42: G3 progress page — five layer rows */
     expect(errs).toEqual([]);
   });
   test('old addresses (?w=3d, ?classic=1, #T1, #learn) land on the explorer home: the old sites are gone', async ({ page }) => {
@@ -138,7 +140,7 @@ test.describe('R38 explorer', () => {
     await expect(page.locator('.l4-pn [data-go="#L4/my/3"]')).toBeVisible({ timeout: 90000 });
     await page.locator('.l4-pn [data-go="#L4/my/3"]').click(); await page.locator('[data-my="q"]').fill('草地是什么颜色？');
     await page.locator('[data-act="my-test"]').click(); await expect(page.locator('.l4-pn .l4-big')).toContainText('绿', { timeout: 20000 });
-    await page.locator('[data-a="back"]').click();
+    { const b = page.locator('.l4-top [data-a="back"]'); if (await b.isVisible()) await b.click(); else await page.locator('.l4-crumb a').last().click(); }
     await page.goto('./?lang=zh#L4/my/1'); await page.locator('[data-my="lines"]').fill('没有箭头的一行');
     await page.locator('[data-act="my-train"]').click(); await expect(page.locator('.l4-err')).toBeVisible(); await expect(page).toHaveURL(/my\/1$/);
   });
@@ -149,11 +151,11 @@ test.describe('R38 explorer', () => {
   test('map lists every page and marks seen ones; progress counts them; language switch keeps the page', async ({ page }) => {
     const go = async (hs: string) => { await page.evaluate(() => document.querySelectorAll('.l4-ms').forEach((e) => e.remove())); await page.evaluate((x) => { location.hash = x; }, hs); await expect(page).toHaveURL(new RegExp(hs.replace(/\//g, '\\/') + '$')); };
     await open(page, './?lang=zh#L4/us/2');
-    await page.locator('[data-a="menu"]').click(); expect(await page.locator('.l4-ms a').count()).toBeGreaterThanOrEqual(19);
+    await page.locator('[data-a="menu"]:visible').click(); expect(await page.locator('.l4-ms a').count()).toBeGreaterThanOrEqual(19);
     await expect(page.locator('.l4-ms a.here')).toHaveCount(1);
     await page.locator('.l4-ms a[href$="#L4/tr/2"]').click(); await expect(page).toHaveURL(/tr\/2$/);
-    await go('#L4/tr/3'); await page.locator('[data-a="menu"]').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
-    await go('#L4/tr/2'); await page.locator('[data-a="menu"]').click(); await page.locator('.l4-ms [data-t="prog"]').click();
+    await go('#L4/tr/3'); await page.locator('[data-a="menu"]:visible').click(); await expect(page.locator('.l4-ms a.seen').first()).toBeVisible();
+    await go('#L4/tr/2'); await page.locator('[data-a="menu"]:visible').click(); await page.locator('.l4-ms [data-t="prog"]').click();
     await expect(page.locator('.l4-ms .l4-mpg .rw')).toHaveCount(5); await page.locator('.l4-ms .l4-mpg [data-go="#R"]').click(); await expect(page).toHaveURL(/#R$/);
     await expect(page.locator('.px-lvr[data-go="#L4"] i').first()).toContainText(/读过 \d+\/\d+ 站/); /* ledger counts stations, not explorer pages */
     await expect(page.locator('.l4-home a[href*="w=3d"], .l4-home a[href*="classic=1"]')).toHaveCount(0);

@@ -65,16 +65,16 @@ test.describe('R44 step bar', () => {
 test.describe('R44 ↑ and ☰', () => {
   test('↑ goes up one level', async ({ page }) => {
     const errs = await open(page, './?lang=zh#L1/2');
-    const up = page.locator('.l4-top [data-a="back"]');
-    await up.click(); await expect(page).toHaveURL(re('#L1'));
-    await up.click(); await expect(page).toHaveURL(re('#home'));
-    await hashTo(page, '#L4/tr/3'); await up.click(); await expect(page).toHaveURL(re('#L4'));
-    await hashTo(page, '#P/q1'); await up.click(); await expect(page).toHaveURL(re('#P'));
+    const up = async () => { const b = page.locator('.l4-top [data-a="back"]'); if (await b.isVisible()) await b.click(); else await page.locator('.l4-crumb a').last().click(); };
+    await up(); await expect(page).toHaveURL(re('#L1'));
+    await up(); await expect(page).toHaveURL(re('#home'));
+    await hashTo(page, '#L4/tr/3'); await up(); await expect(page).toHaveURL(re('#L4'));
+    await hashTo(page, '#P/q1'); await up(); await expect(page).toHaveURL(re('#P'));
     expect(errs).toEqual([]);
   });
   test('☰ opens the map with a progress tab and closes', async ({ page }) => {
     const errs = await open(page, './?lang=zh#L4/us/2');
-    await page.locator('.l4-top [data-a="menu"]').click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
+    await page.locator('[data-a="menu"]:visible').first().click(); const ms = page.locator('.l4-ms'); await expect(ms).toBeVisible();
     const tabs = ms.locator('[role="tab"]'); await expect(tabs).toHaveCount(2); await expect(tabs.first()).toHaveAttribute('aria-selected', 'true');
     await expect(ms.locator('a.here')).toHaveCount(1);
     await tabs.nth(1).click(); await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true'); await expect(ms.locator('.l4-mpg .rw')).toHaveCount(5); await expect(ms.locator('a.here')).toHaveCount(0);

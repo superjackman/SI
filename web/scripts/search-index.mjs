@@ -37,7 +37,7 @@ export function buildSearch(web) {
     const a = zh[i], b = en[i];
     rows.push({
       kind: 'st', id, hash: `#D/${id}`,
-      zh: a.n, en: b.n,
+      zh: `第 ${i + 1}/${keys.length} 站 · ${a.n}`, en: `${i + 1}/${keys.length} · ${b.n}`,
       z: clip(`${a.s || ''} ${a.ly?.hook || ''} ${a.e || ''}`),
       e: clip(`${b.s || ''} ${b.ly?.hook || ''} ${b.e || ''}`),
     });

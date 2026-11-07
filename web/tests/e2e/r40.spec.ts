@@ -48,7 +48,9 @@ test.describe('R40 练记享', () => {
     for (const [go, id] of [['#P', 'P'], ['#R', 'R'], ['#S', 'S'], ['#Q', 'Q']] as const) {
       const hub = go === '#S' || go === '#Q' ? '#map' : '#home';
       await page.evaluate((h) => { location.hash = h; }, hub); await expect(page.locator('.l4-tabs button')).toHaveCount(4);
-      await page.locator(`${hub === '#map' ? '.l4-mls' : '.l4-tabs'} [data-go="${go}"]`).click();
+      const desk = page.locator(`.pt-more a[href="${go}"]`);
+      if (hub === '#home' && await desk.isVisible()) await desk.click();
+      else await page.locator(`${hub === '#map' ? '.l4-mls' : '.l4-tabs'} [data-go="${go}"]`).click();
       await page.waitForFunction((w) => document.getElementById('l4')?.dataset.px === w, `${id}.zh`);
     }
     expect(errs).toEqual([]);
