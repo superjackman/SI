@@ -1,6 +1,7 @@
 /* R50 验证优化 · self-check, misconceptions and demos: the site's dark tokens (px / dv), all text ≥ 12px and ≥ 4.5:1 */
 .vf { display: grid; gap: 8px; margin: 8px 0 0; color: var(--ink); font-size: 13px; line-height: 1.5; text-align: left; text-wrap: pretty; }
 .vf-b { padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.st-article .vf-in, .st-article .vf-op, .st-article .vf-ck, .st-article .vf-sw { min-height: 44px; font-size: 16px; }
 .vf h3.vf-h { display: flex; align-items: center; gap: 6px; margin: 0 0 4px; font-size: 14px; font-weight: 800; color: var(--ink); }
 .vf-ic { flex: none; display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; background: var(--navy); color: var(--card); font-size: 13px; font-weight: 900; }
 .vf-pc { margin-left: auto; padding: 0 7px; border: 1px solid var(--line); border-radius: 9px; font-size: 12px; font-weight: 700; color: var(--ink); white-space: nowrap; }

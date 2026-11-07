@@ -34,7 +34,6 @@
 .dv-sp:has(.ly.ml[data-ml-s="v"]) .ml-i { display: none; }
 /* the slider this part asks about stays on the same screen; the rest of that layer does not */
 .ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] { display: flex; }
-.ly.ml[data-ml-s="v"][data-show-demo="1"] > .ly-l[data-ly="3"] > :not([data-vf-part="demo"]):not(.st-live) { display: none; }
 .ml-rz:empty, .ml-rze:empty { display: none !important; border: 0; padding: 0; margin: 0; }
 .ly.ml .ly-h, .ly.ml .ml-p { scroll-margin-top: 188px; }
 .ml-p { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }

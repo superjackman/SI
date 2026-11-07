@@ -150,13 +150,11 @@ test('every station share opens that station’s question, and the station 6 car
   await expect(page.locator('.dv-pos')).toContainText('第 8/23 站');
   await expect(page.locator('.l4-nav')).toBeHidden();
   await expect(page.locator('.st-out a[href="#D/5"]')).toBeVisible();
-  const morph = page.locator('[data-morph]');
-  await expect(morph.locator('.dv-mcap .a')).toContainText('户口编号');
-  await expect(morph.locator('.dv-ma')).not.toContainText('猫');
-  await morph.locator('input').evaluate((el) => { const i = el as HTMLInputElement; i.value = '100'; i.dispatchEvent(new Event('input', { bubbles: true })); });
-  await expect(morph).toHaveAttribute('data-at', 'math');
-  await expect(morph.locator('.dv-mcap .b')).toContainText('车离得远');
-  await expect(page.locator('[data-share-url]')).toContainText('#D/6');
+  await expect(page.locator('[data-fig]')).toHaveCount(1);
+  await expect(page.locator('[data-morph]')).toHaveCount(0);
+  await expect(page.locator('[data-share-url]')).toHaveText('https://superjackman.github.io/SI/#D/6');
+  await expect(page.locator('[data-share-url]')).not.toContainText('127.0.0.1');
+  await expect(page.locator('[data-share-url]')).not.toContainText('localhost');
   await expect(page.locator('[role="dialog"]')).toHaveCount(0);
   await page.locator('[data-ml-share]').click();
   await expect(page.locator('[role="dialog"]')).toHaveCount(0);

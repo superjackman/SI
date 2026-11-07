@@ -28,10 +28,13 @@ export function wrap(k: string, lyHtml: string, l: L, mk: Mk): string {
   void mk;
   const z = (a: string, b: string) => tx([a, b], l), S = mlGet(k);
   const d0 = diaryLine(k, l);
-  const say = d0 ? `<p class="ml-dy"><b>${esc(d0.year)} · ${esc(d0.who)}</b> ${esc(d0.why)} <a href="${esc(d0.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : '';
+  const by = d0 ? `<p class="st-by">${l === 'en' ? `${esc(d0.year)}, ${esc(d0.who)}. ` : `${esc(d0.year)} 年，${esc(d0.who)}。`}${esc(d0.why)} <a href="${esc(d0.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : '';
   let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
-  h = h.replace('<div class="ly-nx"></div>', `<section class="ml-p ml-i" id="q" aria-live="polite"></section><section class="ml-p ml-rz"></section><div class="ml-rze"></div><section class="ml-p ml-v" aria-live="polite"></section><div class="ly-nx"></div>`);
-  return say + h;
+  h = h.replace('<div data-ask="by"></div>', by);
+  h = h.replace('<div data-ask="num"></div>', `<section class="ml-p ml-v" aria-live="polite"></section>`);
+  h = h.replace('<div data-ask="choice"></div>', `<section class="ml-p ml-i" id="q" aria-live="polite"></section>`);
+  h = h.replace('<div class="ly-nx"></div>', `<section class="ml-rz" hidden></section><div class="ml-rze" hidden></div><div class="ly-nx"></div>`);
+  return h;
 }
 
 /** 带走三句 + a picture, for the station's end (memory kit) */
@@ -193,7 +196,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     paintPr();
   }, true);
   draw();
-  const url = `${location.origin}${location.pathname.replace(/index\.html$/, '')}#D/${k}`;
+  const url = `https://superjackman.github.io/SI/#D/${k}`;
   const slot = host.querySelector('[data-share-url]'); if (slot) slot.textContent = url;
   host.querySelector('[data-ml-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();

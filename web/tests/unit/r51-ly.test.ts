@@ -55,7 +55,9 @@ describe('R52 layered teaching', () => {
         const el = document.createElement('div'); el.innerHTML = h;
         expect(el.querySelectorAll('.ly-l')).toHaveLength(5); expect(el.querySelectorAll('.ly-l:not([hidden])')).toHaveLength(5);
         expect(el.querySelectorAll('.ly-pg button')).toHaveLength(0); expect(el.querySelectorAll('.ly-dep [role="radio"]')).toHaveLength(0);
-        expect(el.querySelector('.ly-l[data-ly="3"] [data-vf-part="demo"]')).toBeTruthy(); expect(el.querySelector('.ly-l[data-ly="5"] [data-vf-part="check"]')).toBeTruthy();
+        expect(el.querySelector('.ly-l[data-ly="2"] [data-vf-part="demo"]')).toBeTruthy(); expect(el.querySelector('[data-vf-part="check"]')).toBeTruthy();
+        const figs = [...el.querySelectorAll('[data-fig]')].map((e) => e.getAttribute('data-fig'));
+        expect(new Set(figs).size).toBe(figs.length); expect(figs.length).toBeGreaterThan(0);
         if (l === 'en') expect(el.textContent!, k).not.toMatch(CJK);
       }
     });

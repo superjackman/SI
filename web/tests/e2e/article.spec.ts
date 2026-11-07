@@ -36,6 +36,19 @@ test('every station is an outline and one article, with the lesson already in th
     expect(dup, k).toEqual([]);
     await expect(page.locator('.dv-take li')).toHaveCount(3);
     await expect(page.locator('.dv-end [data-fwd="1"]')).toHaveCount(1);
+    const figs = await page.locator('[data-fig]').evaluateAll((els) => els.map((e) => e.getAttribute('data-fig') || ''));
+    expect(new Set(figs).size, k).toBe(figs.length);
+    const order = await page.evaluate(() => {
+      const take = document.querySelector('.dv-take');
+      if (!take) return ['no-take'];
+      return [...document.querySelectorAll('.vf-qz, .ml-v, .ml-i')].filter((el) => take.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING).map((el) => el.className);
+    });
+    expect(order, k).toEqual([]);
+    const stray = await page.locator('.st-article').innerText();
+    expect(stray.split('\n').map((s) => s.trim()).filter((s) => /^(\[[0-9]+,|undefined|\[object )/.test(s)), k).toEqual([]);
+    const width = await page.locator('.st-article').evaluate((el) => parseFloat(getComputedStyle(el).maxWidth));
+    expect(width, k).toBeLessThanOrEqual(820);
+    expect(width, k).toBeGreaterThanOrEqual(760);
     await expect(page.locator('[role="dialog"]')).toHaveCount(0);
   }
 });

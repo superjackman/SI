@@ -13,7 +13,6 @@ import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
 import { ML_G, masteredSt, seenSt } from './prog';
 import { stripIds } from './plain';
-import { morph, morphWire } from './morph';
 import { outlineHtml, railWire } from './rail';
 
 const LC = ['var(--lv1)', 'var(--lv2)', 'var(--lv3)', 'var(--lv4)', 'var(--lv5)'], GOLD = 'var(--highlight)';
@@ -23,7 +22,7 @@ const cv = (i: number) => { const n = DV_LV[i]!; return n ? `--c:${LC[n - 1]};--
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 /** **keyword** · `formula` · {~approximate / empirical} · ⟦q:colour mark⟧ (R51, q k v c r) */
 /** Inline formula mentions stay plain text. A display formula is a separate line, not a chip. */
-export const mk = (s: string) => esc(stripIds(s)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '$1').replace(/\{~([^}]+)\}/g, '<span class="dv-ap">≈ $1</span>').replace(/⟦([qkvcr]):([^⟧]+)⟧/g, '<span class="ly-c ly-$1">$2</span>');
+export const mk = (s: string) => esc(stripIds(s)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '$1').replace(/\{~([^}]+)\}/g, '<span class="dv-ap">≈ $1</span>').replace(/⟦([qkvcr]):([^⟧]+)⟧/g, '<span class="ly-c ly-$1">$2</span>').replace(/(\[[^\[\]\n]{1,40}\])/g, '<span class="nw">$1</span>');
 const LOAD: Record<L, () => Promise<{ default: Dv }>> = { zh: () => import('./zh'), en: () => import('./en') };
 // R49: {#key} numbers come from the shared table in nums.ts, same as the cards
 export const content = async (l: L) => {
@@ -84,7 +83,6 @@ export async function dv(id: string, A: PxApi) {
 <p class="dv-pos">${kicker}</p>
 <h1 class="st-h">${esc(S.n)}</h1>
 ${openP}
-<figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure>
 ${lesson}
 ${memKit(S, z, MLm?.take(dvK(i), l) ?? null)}
 <section class="dv-later">${share}<div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
@@ -101,13 +99,7 @@ ${LY ? '' : `<div class="vf-slot" data-vf-page="${page}"></div>`}
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
   /* Outline is the map. One forward button, inline, and only after the station is done. */
   A.step(null);
-  const ly = A.host.querySelector('.ly');
-  const leadEl = A.host.querySelector('.dv-lead');
-  const open = ly?.querySelector('.ly-l[data-ly="1"]');
-  if (open && leadEl) open.append(leadEl);
-  else if (ly && leadEl) ly.prepend(leadEl);
-  if (dvK(i) === '2') A.host.querySelector('[data-morph]')?.setAttribute('data-hold', '1');
-  if (A.still()) { morphWire(A.host); railWire(A.host, dvK(i)); }
+  if (A.still()) railWire(A.host, dvK(i));
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
 

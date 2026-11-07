@@ -35,7 +35,9 @@ test('empty storage walks station 0 through 16 with one forward and no skip', as
     await expect(page.locator('.st-article')).toBeVisible();
     await expect(page.locator('.st-side, .st-tabs, .ly-dep, .ly-pg, .ly-go, .ml-goal')).toHaveCount(0);
     await expect(page.locator('.ly-l:not([hidden])')).toHaveCount(5);
-    await expect(page.locator('.dv-lead')).toBeVisible();
+    const figs = await page.locator('[data-fig]').evaluateAll((els) => els.map((e) => e.getAttribute('data-fig') || ''));
+    expect(new Set(figs).size, k).toBe(figs.length);
+    expect(figs.length, k).toBeGreaterThan(0);
     await expect(page.locator('.ml-q').first()).toBeAttached();
     await expect(page.locator('.dv-take li')).toHaveCount(3);
     await expect(page.locator('.dv-pos')).toContainText(`第 ${i + 1}/${DV_N} 站`);

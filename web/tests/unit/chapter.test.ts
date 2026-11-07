@@ -20,7 +20,12 @@ describe('station chapter', () => {
       el.innerHTML = html(S, `D/${k}`, l, mk, '');
       const demo = el.querySelector('[data-vf-part="demo"]');
       expect(demo?.nextElementSibling?.classList.contains('st-live'), `${l} ${k} step`).toBe(true);
+      const figs = [...el.querySelectorAll('[data-fig]')].map((e) => e.getAttribute('data-fig') || '');
+      expect(new Set(figs).size, `${l} ${k} fig`).toBe(figs.length);
+      if (figs.includes('exp')) expect(figs.some((id) => id.startsWith('pic-') && id !== 'pic-att'), `${l} ${k} dup`).toBe(false);
       expect(el.querySelector('.st-inline'), `${l} ${k} tail`).toBeNull();
+      const lines = (el.textContent || '').split('\n').map((s) => s.trim());
+      expect(lines.filter((s) => /^(\[[0-9]+,|undefined|\[object )/.test(s)), `${l} ${k} stray`).toEqual([]);
       const norm = (s: string) => (s || '').replace(/\s+/g, '').trim();
       const blocks = [...el.querySelectorAll('.fx-line, .fx-sym p')].map((e) => norm(e.textContent || '')).filter((t) => t.length > 6);
       const seen = new Map<string, number>();

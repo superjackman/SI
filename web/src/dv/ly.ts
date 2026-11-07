@@ -11,6 +11,7 @@ import { D_SM4, fmt, softmax } from '../vf/calc';
 import { life } from './ill';
 import { workedHtml } from './rail';
 import { ML } from './mld';
+import { DEMO } from '../vf/data';
 
 import { LY_DEPTH, depthGet, depthSet, okD, type Depth } from './prog';
 
@@ -172,14 +173,38 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     const s = fillDvText(tx(w, l), l);
     if (keep(s, false)) why.push(s);
   });
-  const codeLead = l === 'en' ? 'In code, the same step.' : '写成程序，是这样。';
+  const codeLead = l === 'en' ? 'In a program, that is the same step.' : '放到程序里，还是这一步。';
   const code = codeLines(Y.jv).split('\n').map((line) => { const pad = line.match(/^ */)?.[0] ?? ''; return pad + mk(line); }).join('\n');
+  const H = (zh: string, en: string) => `<h2 class="st-sec">${l === 'en' ? en : zh}</h2>`;
+  const flow = (xs: string[]) => {
+    const bits = xs.map((s) => s.trim()).filter(Boolean);
+    const groups: string[][] = [];
+    let cur: string[] = [];
+    for (const s of bits) {
+      cur.push(s);
+      if (cur.length >= 2 || s.length > 90) { groups.push(cur); cur = []; }
+    }
+    if (cur.length) groups.push(cur);
+    return groups.map((g) => `<p>${g.map(mk).join('')}</p>`).join('');
+  };
+  const hasDemo = !!DEMO[`D/${key}`];
+  const twin = new Set(['bowl', 'xor', 'fit', 'slope', 'shelf', 'dot', 'lora', 'cache', 'knob']);
+  const showStill = !hasDemo || !twin.has(Y.pic);
+  const still = showStill ? `<div class="st-fig" data-fig="pic-${Y.pic}">${pic}${hasDemo ? '' : mot}${P(caps, mk, 'ly-cap')}</div>` : '';
+  const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}</div>`;
+  const figure = still + exp;
+  const formulas = Y.fx.map((f, i) => {
+    const before = i === 0 ? lead : (l === 'en' ? 'When more than one number changes together, write it this way.' : '不止一个数一起改的时候，写成这样。');
+    const sym = Y.fe[i];
+    return `<p>${esc(before)}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${sym ? `<p>${mk(sym)}</p>` : ''}`;
+  }).join('');
+  const restFe = Y.fe.slice(Y.fx.length);
   const L5 = [
-    `<p class="ly-hook">${mk(Y.hook)}</p>${P(an, mk)}`,
-    `<div class="st-fig">${pic}${mot}${P(caps, mk, 'ly-cap')}</div>`,
-    `<div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}`,
-    `<p class="fx-lead">${esc(lead)}</p><div class="ly-fx" id="formula">${Y.fx.map((f) => `<p class="formula fx-line">${esc(fxPlain(f))}</p>`).join('')}</div><div class="fx-sym">${Y.fe.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${why.length ? `<div class="st-why">${why.map((p) => `<p>${mk(p)}</p>`).join('')}</div>` : ''}<p class="fx-lead">${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
-    `<div class="vf-slot" data-vf-part="check"></div>`,
+    `${H('这一步在做什么', 'What this step is doing')}<div data-ask="by"></div><p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
+    `${H('看一看', 'Look')}${figure}<div data-ask="num"></div>`,
+    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div>${restFe.length ? flow(restFe) : ''}<div class="vf-slot" data-vf-part="check"></div>`,
+    `${H('另外的办法为什么不行', 'Why the other ways fail')}${why.length ? flow(why) : ''}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
+    `${H('换种办法会怎样', 'What if you chose another way')}<div data-ask="choice"></div>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
   return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;

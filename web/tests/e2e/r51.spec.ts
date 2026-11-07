@@ -27,8 +27,8 @@ test.describe('R51 layers', () => {
     await expect(vis(page)).toHaveCount(5);
     await expect(page.locator('.ly-dep, .ly-pg, .ly-go, .st-tabs, .st-side')).toHaveCount(0);
     await expect(page.locator('.ly-l[data-ly="1"]')).toContainText('梯度下降');
-    await expect(page.locator('.ly-bowl')).toBeVisible();
-    await expect(page.locator('.ly-l[data-ly="3"] .vf-dm[data-dm="gd"]')).toBeVisible();
+    await expect(page.locator('.ly-l[data-ly="2"] .vf-dm[data-dm="gd"]')).toBeVisible();
+    await expect(page.locator('[data-fig]')).toHaveCount(1);
     await expect(page.locator('.ly-fx')).toContainText('∂L/∂w');
     await expect(page.locator('.vf-qz')).toBeVisible();
     await expect(page.locator('.st-code')).toBeVisible();

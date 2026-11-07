@@ -16,7 +16,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 /** **keyword** · `formula` · {~approximate} · {#shared number}, as on the stage pages */
 // keep the last few characters together so a line never ends with a lone ？ or letter
 const glue = (h: string) => h.replace(/((?:&[a-z#0-9]+;|[^<>&\s]){1,4}(?:\s(?:&[a-z#0-9]+;|[^<>&\s]){1,3})?)$/, '<span class="nw">$1</span>');
-export const mk = (s: string, l: L) => glue(esc(fillDvText(s, l)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '$1').replace(/\{~([^}]+)\}/g, '<span class="vf-ap">≈ $1</span>'));
+export const mk = (s: string, l: L) => glue(esc(fillDvText(s, l)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '$1').replace(/\{~([^}]+)\}/g, '<span class="vf-ap">≈ $1</span>').replace(/(\[[^\[\]\n]{1,40}\])/g, '<span class="nw">$1</span>'));
 /** is the typed value right? (choice questions are checked by index) */
 export const ok = (q: Q, v: number) => Math.abs(v - q.a) <= (q.tol ?? 0.5 * 10 ** -q.d) + 1e-9;
 /** the answer the way it is shown */
