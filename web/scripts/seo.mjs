@@ -83,7 +83,10 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
     const list = items.map((it) => `<li><a href="${base}${(L === 'en' ? 'en/' : '')}s/news/${it.id}/">${esc(it.date)} · ${esc(it.source)}</a> — ${esc(clip(L === 'zh' ? it.zh : it.en, L === 'zh' ? 80 : 120))}</li>`).join('');
     const path = (L === 'en' ? 'en/' : '') + 's/news/';
     const title = L === 'zh' ? '资讯' : 'News';
-    const desc = L === 'zh' ? '每周资讯，带来源和日期，并链回对应的站。往期保留。' : 'Weekly notes with a source and a date, each linked to a stop. Older weeks stay.';
+    const older = weeks.length > 1;
+    const desc = L === 'zh'
+      ? `每周资讯，带来源和日期，并链回对应的站。${older ? '往期保留。' : ''}`
+      : `Weekly notes with a source and a date, each linked to a stop.${older ? ' Older weeks stay.' : ''}`;
     const alt = { zh: 's/news/', en: 'en/s/news/' };
     files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, type: 'website', image: ORIGIN + base + 'og.png' })
       + `<main><h1>${title}</h1><p>${esc(desc)}</p><ul>${list}</ul><p class="open"><a href="${appHref('news', L)}">${T[L].open}</a></p></main></body></html>\n`);

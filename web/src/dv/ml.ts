@@ -4,7 +4,8 @@
 import './ml.css';
 import { tx, type L } from '../l4/txt';
 import { ML, type Goal, type Ml } from './mld';
-import { ML_G, mlGet, mlSet, type MlS } from './prog';
+import { ML_G, masteredSt, mlGet, mlSet, type MlS } from './prog';
+import { noteMastered } from '../px/week';
 import { fillDvText } from './nums';
 import { DEMO } from '../vf/data';
 import { DEMO0, type DemoS } from '../vf/ui';
@@ -49,7 +50,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   const M = ML[k]!, z = (a: string, b: string) => tx([a, b], l), t = (x: T) => mk(fillDvText(tx(x, l), l)), N = M.goals.length;
   let S: MlS = mlGet(k);
   const pred: (number | null)[] = M.goals.map(() => null);
-  const save = () => mlSet(k, S);
+  const save = () => { const prev = masteredSt(); mlSet(k, S); noteMastered(prev); };
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s)!;
   const lyLab = (n: number, fr?: number) => `${tx(LYN[n - 1]!, l)}${fr ? z(` · 第 ${fr} 镜`, ` · shot ${fr}`) : ''}`;
   const setTop = () => { const tp = root.querySelector<HTMLElement>('.ly-top'); if (tp) root.style.setProperty('--lyt', `${Math.round(tp.getBoundingClientRect().height)}px`); };
@@ -157,7 +158,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     const v = parseNum(inp.value); const fbx = root.querySelector('.ml-vq');
     if (v == null) { fbx?.querySelector('.ml-fb')?.remove(); fbx?.insertAdjacentHTML('beforeend', `<p class="ml-fb bad"><b>${z('先填一个数字。', 'Type a number first.')}</b></p>`); return; }
     const g = M.goals[S.g]!, right = Math.abs(v - q.a) <= q.tol + 1e-9, base = (S.v[S.g]! % varN(g.vk)) === 0 ? BASE[g.vk] : undefined;
-    if (base) { rvAns(base, right); if (right) vfAdd(base); }
+    if (base) { rvAns(base, right); if (right) { const prev = masteredSt(); vfAdd(base); noteMastered(prev); } }
     if (!S.c || S.c.length !== N) S.c = Array.from({ length: N }, (_, i) => S.c?.[i] ?? 0);
     if (right) { S.k[S.g] = S.k[S.g]! + 1; S.c[S.g] = (S.c[S.g] ?? 0) + 1; if (S.k[S.g]! >= 2) S.m[S.g] = 1; last = 'ok'; lastMis = null; }
     else { S.k[S.g] = 0; last = 'bad'; lastMis = misOf(q, v); }

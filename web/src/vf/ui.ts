@@ -6,6 +6,8 @@ import { tx, type L } from '../l4/txt';
 import { fillDvText } from '../dv/nums';
 import { QQ, MCS, DEMO, type Q, type DemoK } from './data';
 import { VF_Q, order, vfAdd, vfDone, vfStat } from './ids';
+import { masteredSt } from '../dv/prog';
+import { noteMastered } from '../px/week';
 import { rvAns } from '../px/rv';
 import { attW, D_ATT, D_DK, D_SM, fmt, gdKind, gdL, gdSeq, parseNum, softmax } from './calc';
 import { extraCtl, extraOut, extraTitle, isExtra } from './demo2';
@@ -89,7 +91,7 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
     fb.innerHTML = right ? `<b>✓ ${z('对了！', 'Right!')}</b>` : `<b>✗ ${z('还不对，再试试。', 'Not yet — try again.')}</b> ${z('提示：', 'Hint: ')}${mk(tx(q.h, l), l)}`;
     if (q.o) li.querySelectorAll<HTMLElement>('.vf-op').forEach((b) => { const i = Number(b.dataset.vf!.slice(5)); b.classList.toggle('ok', right && i === q.a); b.classList.toggle('bad', !right && i === pick); });
     if (right && !vfDone().has(id)) {
-      vfAdd(id); li.classList.add('done');
+      const prev = masteredSt(); vfAdd(id); noteMastered(prev); li.classList.add('done');
       const qq = li.querySelector('.vf-qq'); if (qq && !qq.querySelector('.vf-tk')) qq.insertAdjacentHTML('beforeend', `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>`);
       const r = vfStat(page); if (pc && !o.ids) { pc.textContent = pcT(r.s, r.t, l); pc.classList.toggle('all', r.s === r.t); }
       onTick?.();

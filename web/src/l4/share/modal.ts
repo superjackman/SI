@@ -2,6 +2,7 @@
    title + ✕, (optional chips / card picker), the preview, 竖版 9:16 / 方版 4:5, one meta line, ⬇ 保存图片 · ⤴ 分享,
    and 🔗 复制链接. Used by a card's ⤴ 分享 and by #S. `k` is the data attribute the buttons carry (data-m / data-px). */
 import { tx, type L } from '../txt';
+import { tx as cx } from '../../i18n/L';
 import type { Card } from '../c/kc';
 import { cardData } from './card';
 import type { Data, Fmt } from './draw';
@@ -93,4 +94,47 @@ export async function mountShare(host: HTMLElement, o: { l: L; title: string; fi
     else if (v === 'copy') void copyLink(o.data.url, st, o.l);
   });
   addEventListener('keydown', key); await draw();
+}
+
+/** one picture: the item's own preview file, or a drawn card with the same words if that file cannot be fetched */
+export async function mountImage(host: HTMLElement, o: { l: L; title: string; file: string; url: string; image: string; alt: string; text: string; kind: string; data: Data }) {
+  host.querySelector('.g-modal')?.remove();
+  const m = document.createElement('div'); m.className = 'g-modal l4-shm'; host.appendChild(m);
+  let blob: Blob | null = null, src = '', tok = 0;
+  const close = () => { m.remove(); removeEventListener('keydown', key); if (src) URL.revokeObjectURL(src); };
+  const key = (e: KeyboardEvent) => { if (e.key === 'Escape') close(); };
+  const show = (b: Blob, note: string, card: string) => {
+    blob = b; if (src) URL.revokeObjectURL(src); src = URL.createObjectURL(b);
+    m.innerHTML = dlgHtml({ l: o.l, k: 'm', title: o.title, fmt: 'post', meta: note });
+    const seg = m.querySelector<HTMLElement>('.g-seg'); if (seg) seg.hidden = true;
+    m.querySelector<HTMLElement>('.g-x')?.focus({ preventScroll: true });
+    const pv = m.querySelector<HTMLElement>('.g-pv')!;
+    Object.assign(pv.dataset, { bytes: String(b.size), text: o.text, url: o.url, kind: o.kind, card });
+    pv.innerHTML = `<img alt="${esc(o.alt)}" src="${src}">`;
+  };
+  m.addEventListener('click', (e) => {
+    e.stopPropagation(); if (e.target === m) { close(); return; }
+    const v = (e.target as HTMLElement).closest<HTMLElement>('[data-m]')?.dataset.m; if (!v) return;
+    const st = m.querySelector<HTMLElement>('.g-st');
+    if (v === 'close') close();
+    else if (v === 'save' && blob) download(blob, src, `${o.file}.png`);
+    else if (v === 'share' && blob) void shareOut(blob, `${o.file}.png`, o.url, o.text, st, o.l);
+    else if (v === 'copy') void copyLink(o.url, st, o.l);
+  });
+  addEventListener('keydown', key);
+  m.innerHTML = dlgHtml({ l: o.l, k: 'm', title: o.title, fmt: 'post', meta: tx(['正在准备这张卡…', 'Preparing this card…'], o.l), off: true });
+  const seg0 = m.querySelector<HTMLElement>('.g-seg'); if (seg0) seg0.hidden = true;
+  const t = ++tok;
+  try {
+    const r = await fetch(o.image);
+    if (r.ok) {
+      const b = await r.blob();
+      if (b.size > 32 && t === tok && m.isConnected) { show(b, cx('share.same', o.l), 'og'); return; }
+    }
+  } catch { /* offline or missing: draw the same words */ }
+  if (!m.isConnected || t !== tok) return;
+  const D = await import('./draw');
+  const b = await D.png(D.draw(o.data, 'post'));
+  if (!m.isConnected || t !== tok) return;
+  show(b, cx('share.miss', o.l), 'draw');
 }

@@ -8,6 +8,7 @@ import { DV_KEY, dvI } from './links';
 import type { PxApi } from '../px/view';
 import { firstTry } from '../px/rv';
 import { masteredSt } from './prog';
+import { noteMastered } from '../px/week';
 
 /** which station → which vf question id: the R52 pilot (2, 8a), and (R53) every other station with a choice
     question gets its first one, so the home page's 今天的挑战 can be shared as the very same question */
@@ -101,7 +102,7 @@ ${Q.o ? `<div class="vf-opts" role="list">${order(qid, Q.o.length).map((i) => `<
   const ok = (right: boolean, picked?: number) => {
     if (first === null) { first = right; fy.hidden = false; fy.className = `dv-fy ${right ? 'ok' : 'bad'}`;
       fy.textContent = right ? z(`你答对了 1/1（首答）${sh ? ` · 分享者首答正确率 ${sh.fa}%` : ''}`, `You got 1/1 at the first try${sh ? ` · the sharer: ${sh.fa}%` : ''}`) : z(`首答 0/1，再算一次也能解锁讲解${sh ? ` · 分享者首答正确率 ${sh.fa}%` : ''}`, `First try 0/1; get it right to unlock the explanation${sh ? ` · the sharer: ${sh.fa}%` : ''}`); }
-    if (right) { vfAdd(qid); fb.textContent = z('✓ 答对了', '✓ Correct'); fb.className = 'vf-fb ok'; why.hidden = false; }
+    if (right) { const prev = masteredSt(); vfAdd(qid); noteMastered(prev); fb.textContent = z('✓ 答对了', '✓ Correct'); fb.className = 'vf-fb ok'; why.hidden = false; }
     else { const line = picked != null && ask.why?.[picked] ? ask.why[picked]! : Q.h; fb.textContent = z('✗ 再试试：', '✗ Try again: ') + clean(line); fb.className = 'vf-fb miss'; }
   };
   A.host.querySelectorAll<HTMLElement>('.vf-op').forEach((b) => b.addEventListener('click', () => {

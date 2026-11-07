@@ -1,6 +1,7 @@
 /* News and tools. Static JSON, lazy. Each item has its own hash.
    Weeks are kept: a new week does not drop an older one (see archive.ts). */
 import { tx, type L } from '../l4/txt';
+import { tx as cx } from '../i18n/L';
 import { DV_NM, dvI } from '../dv/links';
 import { ML } from '../dv/mld';
 import { masteredSt } from '../dv/prog';
@@ -9,7 +10,11 @@ import tools from './tools.json';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
-type NewsItem = (typeof news.weeks)[number]['items'][number];
+export interface NewsRow {
+  id: string; date: string; zh: string; en: string; url: string; source: string;
+  st: string[]; goal: string; gi: number; more: { zh: readonly string[]; en: readonly string[] };
+}
+type NewsItem = NewsRow;
 type Tool = (typeof tools.items)[number];
 export const TASKS = ['write', 'read', 'code', 'draw', 'local'] as const;
 const TASK: Record<(typeof TASKS)[number], readonly [string, string]> = {
@@ -39,30 +44,49 @@ function readOf(st: string[], l: L) {
   const links = st.map((k) => `<a href="#D/${k}">${esc(stN(k, l))}</a>`).join(z('、', ', '));
   return `<p class="hb-r">${z(`读懂度 ${got}/${st.length}`, `Read ${got}/${st.length}`)} · ${links}</p>`;
 }
+const shareBtn = (kind: string, id: string, l: L) => `<button type="button" class="l4-b hb-sh" data-sh="${esc(kind)}:${esc(id)}">${esc(cx('share.item', l))}</button>`;
 function goalLink(it: NewsItem, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   return `<p class="hb-r"><a href="#D/${it.goal}">${z(`第 ${it.goal} 站`, `Stop ${it.goal}`)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
 }
 
-export function newsHtml(l: L, item = ''): string {
+function newsItem(it: NewsItem, l: L, checked: string, linked: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
-  if (item) {
-    const it = findNews(item);
-    if (!it) return `<section class="hb"><p class="hm-n">${z('这条资讯不在存档里。', 'That item is not in the archive.')}</p><p><a href="#news">${z('回资讯', 'Back to news')}</a></p></section>`;
-    const more = (l === 'en' ? it.more.en : it.more.zh).map((s) => `<p>${esc(s)}</p>`).join('');
-    return `<section class="hb"><p class="hb-meta"><a href="#news">${z('资讯', 'News')}</a> · ${esc(it.week)}</p><article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${esc(l === 'en' ? it.en : it.zh)}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${news.checked}`, `checked ${news.checked}`)}</p></article></section>`;
+  const body = esc(l === 'en' ? it.en : it.zh);
+  const more = (l === 'en' ? it.more.en : it.more.zh).map((s) => `<p>${esc(s)}</p>`).join('');
+  return `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p>${linked ? `<a href="#news/${esc(it.id)}">${body}</a>` : body}</p>${more}${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${checked}`, `checked ${checked}`)}</p>${shareBtn('news', it.id, l)}</article>`;
+}
+/** `src` is the weeks file. Older weeks are a list only when there is more than one. */
+export function newsFrom(src: { checked: string; weeks: { week: string; items: NewsItem[] }[] }, l: L, item = ''): string {
+  const z = (a: string, b: string) => tx([a, b], l);
+  const ws = [...src.weeks].sort((a, b) => (a.week < b.week ? 1 : -1));
+  const back = `<p><a href="#news">${esc(cx('news.back', l))}</a></p>`;
+  if (item.startsWith('w/')) {
+    const id = item.slice(2), i = ws.findIndex((w) => w.week === id);
+    if (i < 0) return `<section class="hb"><p class="hm-n">${esc(cx('news.noWeek', l))}</p>${back}</section>`;
+    const w = ws[i]!, head = ws.length > 1 && i > 0 ? weekLead(i, w.week, ws.length, l) : tx([`本周 ${w.week} 起。每条都有来源和日期，没有排行。`, `This week, from ${w.week}. Each item has a source and a date. No ranking.`], l);
+    const items = w.items.map((it) => newsItem(it, l, src.checked, true)).join('');
+    return `<section class="hb"><p class="hb-meta"><a href="#news">${z('资讯', 'News')}</a></p><h3 class="hb-cat">${esc(head)}</h3>${items}</section>`;
   }
-  const blocks = weeks().map((w, i) => {
-    const items = w.items.map((it) => `<article class="hm-card hb-item"><p class="hb-meta">${esc(it.date)} · ${esc(it.source)}</p><p><a href="#news/${it.id}">${esc(l === 'en' ? it.en : it.zh)}</a></p>${goalLink(it, l)}${readOf(it.st, l)}<p class="hb-src"><a href="${esc(it.url)}" target="_blank" rel="noopener">${z('来源', 'Source')}</a> · ${z(`核对 ${news.checked}`, `checked ${news.checked}`)}</p></article>`).join('');
-    const h = weekLead(i, w.week, weeks().length, l);
-    return `<h3 class="hb-cat">${esc(h)}</h3>${items}`;
+  if (item) {
+    const it = ws.flatMap((w) => w.items.map((x) => ({ ...x, week: w.week }))).find((x) => x.id === item);
+    if (!it) return `<section class="hb"><p class="hm-n">${esc(cx('news.missing', l))}</p>${back}</section>`;
+    return `<section class="hb"><p class="hb-meta"><a href="#news">${z('资讯', 'News')}</a> · ${esc(it.week)}</p>${newsItem(it, l, src.checked, false)}</section>`;
+  }
+  const nav = ws.length > 1 ? `<nav class="hb-arch" aria-label="${esc(cx('news.older', l))}">${ws.slice(1).map((w) => `<a class="hb-aw" href="#news/w/${esc(w.week)}">${esc(weekLead(1, w.week, ws.length, l))}</a>`).join('')}</nav>` : '';
+  const blocks = ws.map((w, i) => {
+    const items = w.items.map((it) => newsItem(it, l, src.checked, true)).join('');
+    return `<h3 class="hb-cat">${esc(weekLead(i, w.week, ws.length, l))}</h3>${items}${i === 0 ? nav : ''}`;
   }).join('');
   return `<section class="hb">${blocks}</section>`;
+}
+export function newsHtml(l: L, item = ''): string {
+  return newsFrom(news, l, item);
 }
 
 function toolCard(t: Tool, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p></article>`;
+  return `<article class="hm-card hb-item" data-tasks="${esc(t.tasks.join(' '))}"><b><a href="#tools/${t.id}">${esc(t.name)}</a></b><p>${esc(l === 'en' ? t.en : t.zh)}</p><p class="hb-meta">${esc(tx(t.free as [string, string], l))}</p><p>${esc(tx(t.cn as [string, string], l))}</p>${readOf(t.st, l)}<p class="hb-src"><a href="#D/${t.safe}">${z('安全', 'Safety')}</a> · <a href="${esc(t.url)}" target="_blank" rel="noopener">${z('官网', 'Site')}</a> · ${z(`核对 ${tools.checked}`, `checked ${tools.checked}`)}</p>${shareBtn('tools', t.id, l)}</article>`;
 }
 export function toolsHtml(l: L, item = ''): string {
   const z = (a: string, b: string) => tx([a, b], l);

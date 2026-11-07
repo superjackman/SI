@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolveBase } from './base.config.mjs';
 import { buildId, versionJson } from './scripts/build-id.mjs';
+import { buildSearch } from './scripts/search-index.mjs';
 import { buildSeo } from './scripts/seo.mjs';
 import type { Plugin } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,25 @@ const versionFile = (): Plugin => ({
   configureServer(s) { s.middlewares.use((q, r, next) => { if ((q.url ?? '').split('?')[0] === base + 'version.json') { r.setHeader('content-type', 'application/json'); r.setHeader('cache-control', 'no-store'); r.end(versionJson(BUILD)); } else next(); }); },
 });
 
+/** search.json is built with the site and loaded only when the search dialog opens */
+const searchFile = (): Plugin => {
+  const web = fileURLToPath(new URL('.', import.meta.url));
+  const source = () => JSON.stringify(buildSearch(web));
+  return {
+    name: 'si-search-index',
+    generateBundle() { this.emitFile({ type: 'asset', fileName: 'search.json', source: source() }); },
+    configureServer(s) {
+      s.middlewares.use((q, r, next) => {
+        if ((q.url ?? '').split('?')[0] === base + 'search.json') {
+          r.setHeader('content-type', 'application/json; charset=utf-8');
+          r.setHeader('cache-control', 'no-store');
+          r.end(source());
+        } else next();
+      });
+    },
+  };
+};
+
 /** the home canonical / JSON-LD url follow the build base (a /SI/next/ preview build stays self-consistent) */
 const ORIGIN = 'https://superjackman.github.io';
 const canonical = (): Plugin => ({ name: 'si-canonical', apply: 'build', transformIndexHtml: (html) => html.split(`${ORIGIN}/SI/"`).join(`${ORIGIN}${base}"`) });
@@ -37,7 +57,7 @@ function stripHtmlComments(): Plugin {
 
 export default defineConfig({
   base,
-  plugins: [versionFile(), canonical(), stripHtmlComments()],
+  plugins: [versionFile(), searchFile(), canonical(), stripHtmlComments()],
   define: {
     __SI_BUILD__: JSON.stringify(BUILD),
     // analytics only counts on the production root (/SI/) unless forced; /SI/next/ never pollutes the dashboard
