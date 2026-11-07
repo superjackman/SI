@@ -173,6 +173,8 @@ html[data-anim="off"] .hm-bt i { transition: none; }
   .hm-works li { border-top: 2px solid #15202b; padding-top: 10px; }
   .hb-desk { display: grid; grid-template-columns: 220px minmax(0, 1fr) 380px; gap: 16px 20px; align-items: start; }
   .hb-desk .hb-f { flex-direction: column; align-items: stretch; align-self: start; position: static; top: auto; margin: 0; padding: 0; background: transparent; }
+  .hb-desk > .hb-f, .hb-desk > .hb-list, .hb-desk > .hb-cmp { margin-top: 0; }
+  .hb-desk > .hb-f > h2:first-of-type { margin-top: 0; }
   .hb-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
   .hb-list .hb-item { padding: 12px 14px; }
   .hb-list [data-sh] { display: none; }
