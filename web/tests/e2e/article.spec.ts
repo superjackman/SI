@@ -38,6 +38,22 @@ test('every station is an outline and one article, with the lesson already in th
     await expect(page.locator('.dv-end [data-fwd="1"]')).toHaveCount(1);
     const figs = await page.locator('[data-fig]').evaluateAll((els) => els.map((e) => e.getAttribute('data-fig') || ''));
     expect(new Set(figs).size, k).toBe(figs.length);
+    await expect(page.locator('[data-fig="scene"] svg')).toBeVisible();
+    const adjacent = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll('.st-article .ml-num, .st-article .ml-pred, .st-article .st-q, .st-article .ml-i')].filter((el) => (el as HTMLElement).offsetParent);
+      const bad: string[] = [];
+      for (let i = 0; i < cards.length - 1; i++) {
+        const a = cards[i]!, b = cards[i + 1]!;
+        if (a.contains(b) || b.contains(a)) continue;
+        const range = document.createRange();
+        range.setStartAfter(a);
+        range.setEndBefore(b);
+        const prose = range.cloneContents().querySelector('p, pre, .st-fig, .ly-fx, .st-code');
+        if (!prose) bad.push(`${a.className} → ${b.className}`);
+      }
+      return bad;
+    });
+    expect(adjacent, k).toEqual([]);
     const order = await page.evaluate(() => {
       const take = document.querySelector('.dv-take');
       if (!take) return ['no-take'];

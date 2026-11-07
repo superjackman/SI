@@ -23,7 +23,11 @@
 .vf-opts { display: grid; gap: 5px; }
 .vf-op { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); font: inherit; font-size: 16px; line-height: 1.5; text-align: left; cursor: pointer; }
 .vf-op.ok { border-color: var(--good); background: var(--card); } .vf-op.bad { border-color: var(--bad); background: var(--card); }
-.vf-fb { margin: 8px 0 0; font-size: 16px; line-height: 1.65; } .vf-fb:empty { display: none; }
+.vf-fb { margin: 8px 0 0; font-size: 16px; line-height: 1.65; font-weight: 400; } .vf-fb:empty { display: none; }
+.vf-myth { margin: 8px 0 0; font-size: 16px; line-height: 1.65; font-weight: 400; color: var(--ink); }
+.vf-myth[hidden] { display: none; }
+.vf-myth p { margin: 0 0 6px; font-weight: 400; }
+.vf-myth b { display: inline; font-weight: 600; font-size: 16px; }
 .vf-q[data-st='ok'] .vf-fb b { color: var(--good); } .vf-q[data-st='bad'] .vf-fb b { color: var(--highlight); }
 .vf-sw { margin-top: 6px; }
 .vf-sol { margin-top: 5px; padding: 6px 8px; border: 1px dashed var(--highlight); border-radius: 8px; background: var(--card); }

@@ -22,8 +22,7 @@ describe('station chapter', () => {
       expect(demo?.nextElementSibling?.classList.contains('st-live'), `${l} ${k} step`).toBe(true);
       const figs = [...el.querySelectorAll('[data-fig]')].map((e) => e.getAttribute('data-fig') || '');
       expect(new Set(figs).size, `${l} ${k} fig`).toBe(figs.length);
-      const twins = ['pic-bowl', 'pic-xor', 'pic-fit', 'pic-slope', 'pic-shelf', 'pic-dot', 'pic-lora', 'pic-cache', 'pic-knob', 'pic-book'];
-      if (figs.includes('exp')) expect(figs.some((id) => twins.includes(id)), `${l} ${k} dup`).toBe(false);
+      expect(el.querySelector('[data-fig="scene"] svg'), `${l} ${k} scene`).toBeTruthy();
       expect(el.querySelector('.st-inline'), `${l} ${k} tail`).toBeNull();
       const lines = (el.textContent || '').split('\n').map((s) => s.trim());
       expect(lines.filter((s) => /^(\[[0-9]+,|undefined|\[object )/.test(s)), `${l} ${k} stray`).toEqual([]);

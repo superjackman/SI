@@ -31,9 +31,9 @@
 .ly .fx-lead, .ly .fx-sym p, .ly .st-why p { margin: 0 0 0.85em; }
 .ly .st-fig { margin: 0 0 16px; padding: 8px 12px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); width: 100%; }
 .ly .st-fig svg, .ly .vf-plot { width: 100%; height: auto; display: block; }
-.ly .st-fig svg.ly-life, .ly .st-fig svg.ly-pen, .ly .st-fig svg.ly-bowl, .ly .st-fig svg.ly-xor, .ly .st-fig svg.ly-dotp { width: auto; max-width: 100%; height: auto; margin-inline: 0; }
-.ly .st-fig:has(> svg.ly-life) { width: min(100%, 464px); }
-.ly .st-fig svg.ly-asvg { width: auto; max-width: min(100%, 440px); height: auto; margin-inline: auto; }
+.ly .st-fig svg.ly-life, .ly .st-fig svg.ly-pen { width: 100%; max-width: none; height: auto; margin: 0; display: block; }
+.ly .st-fig svg.ly-asvg { width: 100%; max-width: none; height: auto; margin: 0; }
+.ly-mot { margin: 10px 0 0; padding: 0; border: 0; background: none; }
 .vf-slot:empty, [data-vf-part="myth"]:empty, .st-q:empty { display: none; }
 .ly .st-sec { margin: 32px 0 12px; font-size: 22px; line-height: 1.35; font-weight: 600; color: var(--ink); }
 .ly-l:first-child .st-sec { margin-top: 18px; }
@@ -48,8 +48,8 @@
 .st-by { margin: 0 0 4px; font-size: 16px; line-height: 1.7; }
 .ly .st-live { margin: 0.6em 0 0; font-variant-numeric: tabular-nums; }
 .ly .st-live div { padding: 2px 0; }
-.ly-c { font-weight: 700; }
-.ly-c { color: var(--link); } .ly-q { color: var(--highlight); } .ly-k { color: var(--good); } .ly-v { color: var(--link); } .ly-r { color: var(--bad); }
+.ly .ly-c { color: var(--ink); font-weight: 700; }
+.ly-q { color: var(--highlight); } .ly-k { color: var(--good); } .ly-v { color: var(--link); } .ly-r { color: var(--bad); }
 .ly-jv { border: 1px dashed var(--line); border-radius: 10px; padding: 4px 10px; }
 .ly-jv summary, .ly-more summary { min-height: 40px; display: flex; align-items: center; cursor: pointer; color: var(--link); font-size: 14px; font-weight: 700; }
 .ly-jv p { padding-bottom: 6px; }
@@ -87,7 +87,7 @@
 /* ② the attention animation (./att) */
 .ly-anim { display: flex; flex-direction: column; gap: 6px; }
 .ly-stage { min-height: 120px; }
-.ly-asvg { display: block; width: 100%; max-width: 300px; margin: 0 auto; height: auto; font-size: 13px; }
+.ly-asvg { display: block; width: 100%; max-width: none; margin: 0; height: auto; font-size: 15px; }
 .ly-asvg text, .ly-asvg tspan { fill: var(--ink); }
 .ly-asvg .ly-big { font-size: 26px; font-weight: 800; fill: var(--navy); }
 .ly-asvg .ly-num { font-size: 16px; font-weight: 800; fill: var(--navy); }
@@ -112,7 +112,7 @@
 @keyframes ly-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* on-demand pictures (dv/motion.ts): last frame is the resting state; motion only while .play */
-.ly-mot { margin: 8px 0 4px; padding: 8px 8px 10px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+.ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; }
 .ly-mcap, .ly-mnote { margin: 6px 0; font-size: 16px; line-height: 1.7; color: var(--ink); }
 .ly-mot .l4-b { min-height: 44px; min-width: 72px; }
 .mv-fig { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -122,9 +122,9 @@
 .mv-stack .mv-chips { flex-direction: column; align-items: stretch; }
 .mv-line { flex: 1 1 48px; height: 4px; border-radius: 2px; background: repeating-linear-gradient(90deg, var(--navy) 0 8px, transparent 8px 14px); }
 .mv-line.down { flex: none; width: 4px; height: 72px; background: repeating-linear-gradient(var(--navy) 0 8px, transparent 8px 14px); }
-.mv-bars { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.mv-bars div { display: grid; grid-template-columns: 3.4em 1fr; align-items: center; gap: 8px; font-size: 16px; color: var(--ink); }
-.mv-bars i { display: block; height: 14px; border-radius: 7px; background: var(--link); }
+.mv-bars { display: flex; flex-direction: column; align-items: stretch; gap: 8px; width: 100%; }
+.mv-bars div { display: grid; grid-template-columns: 3.4em minmax(0, 1fr); align-items: center; gap: 8px; width: 100%; font-size: 16px; color: var(--ink); }
+.mv-bars i { display: block; height: 16px; border-radius: 8px; background: var(--link); min-width: 8px; }
 .mv-bars div:first-child i { background: var(--navy); }
 @media (prefers-reduced-motion: no-preference) {
   html[data-anim="on"] .ly-mot.play .mv-line { animation: mv-dash 1.1s linear infinite; }

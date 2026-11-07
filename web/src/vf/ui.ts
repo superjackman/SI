@@ -75,19 +75,24 @@ function qItem(id: string, q: Q, l: L, done: boolean) {
 export interface MountO { ids?: readonly string[]; rev?: boolean; onJudge?: (id: string, right: boolean) => void; myths?: boolean }
 export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void, part?: 'demo' | 'check', o: MountO = {}) {
   const z = (a: string, b: string) => tx([a, b], l), d0 = vfDone();
-  const ids = o.myths ? [] : (o.ids ? o.ids.filter((id) => id in QQ) : part === 'demo' ? [] : VF_Q[page] ?? []);
+  const ids = o.ids ? o.ids.filter((id) => id in QQ) : (o.myths || part === 'demo' ? [] : VF_Q[page] ?? []);
   const mc = o.myths ? MCS(page) : (o.ids || part === 'demo' ? [] : MCS(page));
   const dk = o.ids || o.myths || part === 'check' ? undefined : DEMO[page];
   if (!ids.length && !mc.length && !dk) { slot.innerHTML = ''; return; }
   const s: DemoS = { ...DEMO0 };
+  const myth = mc.length ? `<div class="vf-myth"${o.ids ? ' hidden' : ''}>${mc.map((m) => `<p><b>${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p><b>${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '';
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
-    + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
-    + (mc.length ? `<div class="st-myth">${mc.map((m) => `<p><b>${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p><b>${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '')
+    + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol>${o.ids ? myth : ''}</section>` : '')
+    + (!o.ids && myth ? `<div class="st-myth">${myth}</div>` : '')
     + '</div>';
+  const held = slot.querySelector<HTMLElement>('.vf-myth');
+  if (held && ids.some((id) => d0.has(id))) held.hidden = false;
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {
     const id = li.dataset.q!, q = QQ[id]!, fb = li.querySelector<HTMLElement>('.vf-fb')!;
     li.dataset.st = right ? 'ok' : 'bad'; rvAns(id, right, undefined, !!o.rev); o.onJudge?.(id, right);
     fb.innerHTML = right ? `<b>✓ ${z('对了！', 'Right!')}</b>` : `<b>✗ ${z('还不对，再试试。', 'Not yet — try again.')}</b> ${z('提示：', 'Hint: ')}${mk(tx(q.h, l), l)}`;
+    const mythEl = li.closest('.vf')?.querySelector<HTMLElement>('.vf-myth');
+    if (mythEl) mythEl.hidden = false;
     if (q.o) li.querySelectorAll<HTMLElement>('.vf-op').forEach((b) => { const i = Number(b.dataset.vf!.slice(5)); b.classList.toggle('ok', right && i === q.a); b.classList.toggle('bad', !right && i === pick); });
     if (right && !vfDone().has(id)) {
       const prev = masteredSt(); vfAdd(id); noteMastered(prev); li.classList.add('done');
