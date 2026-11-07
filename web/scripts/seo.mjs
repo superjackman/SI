@@ -142,7 +142,7 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
     ] };
     const img = `${ORIGIN}${base}og-hub/${L === 'en' ? 'en/' : ''}${kind}/${id}.png`;
     files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: img })
-      + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])}</p></footer></body></html>\n`);
+      + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])} · <a href="${base}${L === 'en' ? 'en/' : ''}about/">${L === 'zh' ? '谁在维护' : 'Who maintains this'}</a></p></footer></body></html>\n`);
     pages.push({ path, alt, lastmod: lm });
   };
   for (const L of ['zh', 'en']) {
@@ -278,7 +278,7 @@ ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(show(s
 <section><h2>${T[L].all}</h2><ol>${KEYS.map((kk, j) => j === i ? `<li><b>${esc(names[L][j])}</b></li>` : `<li><a href="${base}${pagePath(kk, L)}">${esc(names[L][j])}</a></li>`).join('')}</ol></section>
 </main>
 `;
-      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld, image: `${ORIGIN}${base}og-st/${L === 'en' ? 'en/' : ''}${k}.png` }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer}</p></footer>\n</body>\n</html>\n`);
+      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld, image: `${ORIGIN}${base}og-st/${L === 'en' ? 'en/' : ''}${k}.png` }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer} · <a href="${base}${L === 'en' ? 'en/' : ''}about/">${L === 'zh' ? '谁在维护' : 'Who maintains this'}</a></p></footer>\n</body>\n</html>\n`);
       pages.push({ path, alt, lastmod: lm });
     }
     const path = catPath(L), alt = { zh: catPath('zh'), en: catPath('en') }, title = `${T[L].catT(KEYS.length)} · ${SITE[L]}`;
@@ -293,6 +293,32 @@ ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(show(s
   const hub = loadHub(web, base, head, abs, appHref, T, SITE, lm);
   for (const [p, html] of hub.files) files.set(p, html);
   pages.push(...hub.pages);
+  const toolsJ = JSON.parse(readFileSync(join(web, 'src/hub/tools.json'), 'utf8'));
+  const newsJ = JSON.parse(readFileSync(join(web, 'src/hub/news.json'), 'utf8'));
+  const day = toolsJ.checked === newsJ.checked ? toolsJ.checked : `${newsJ.checked} / ${toolsJ.checked}`;
+  const ABOUT = {
+    zh: {
+      title: '谁在维护',
+      whoT: '谁在维护', who: '这个站由 GitHub 仓库 superjackman/SI 的所有者维护。',
+      checkT: '事实怎么核对', check: '站里的数字来自同一张数表，互动页和静态页用的是同一份。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。',
+      fixT: '怎样更正', fix: '发现写错了，在仓库开一条 issue，写上页面地址和你认为不对的地方。',
+      when: `资讯和工具最近一次核对是 ${day}。`, issue: '开一条 issue',
+    },
+    en: {
+      title: 'Who maintains this',
+      whoT: 'Who maintains this', who: 'This site is maintained by the owner of the GitHub repository superjackman/SI.',
+      checkT: 'How facts are checked', check: 'Numbers come from one table, shared by the interactive pages and the static pages. News and tools name a source, a date and the day they were checked. A number that is not in that table or in a source is not shown.',
+      fixT: 'How to report a correction', fix: 'If something is wrong, open an issue on the repository with the page address and what you think is off.',
+      when: `News and tools were last checked on ${day}.`, issue: 'Open an issue',
+    },
+  };
+  for (const L of ['zh', 'en']) {
+    const A = ABOUT[L], path = (L === 'en' ? 'en/' : '') + 'about/', alt = { zh: 'about/', en: 'en/about/' };
+    const desc = clip(A.who, L === 'zh' ? 110 : 160);
+    const body = `<main><h1>${esc(A.title)}</h1><section><h2>${esc(A.whoT)}</h2><p>${esc(A.who)}</p><p><a href="https://github.com/superjackman/SI">superjackman/SI</a></p></section><section><h2>${esc(A.checkT)}</h2><p>${esc(A.check)}</p><p>${esc(A.when)}</p></section><section><h2>${esc(A.fixT)}</h2><p>${esc(A.fix)}</p><p><a href="https://github.com/superjackman/SI/issues">${esc(A.issue)}</a></p></section><p><a href="${base}${L === 'en' ? '?lang=en' : ''}">${T[L].home}</a></p></main>`;
+    files.set(path + 'index.html', head({ L, title: `${A.title} · ${SITE[L]}`, desc, path, alt, type: 'website', image: L === 'en' ? ORIGIN + base + 'og-st/en/catalog.png' : ORIGIN + base + 'og.png' }) + body + `</body></html>\n`);
+    pages.push({ path, alt, lastmod: lm });
+  }
   const cards = cardIds(web);
   const newest = lm;
   const url = (p, alt, mod) => `<url><loc>${abs(p)}</loc><lastmod>${mod}</lastmod>${alt ? `<xhtml:link rel="alternate" hreflang="zh-CN" href="${abs(alt.zh)}"/><xhtml:link rel="alternate" hreflang="en" href="${abs(alt.en)}"/><xhtml:link rel="alternate" hreflang="x-default" href="${abs(alt.zh)}"/>` : ''}</url>`;

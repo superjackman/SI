@@ -43,6 +43,11 @@ describe('R53 home', () => {
       home(host, api(root));
       expect(host.querySelector('.hm')!.getAttribute('data-st')).toBe(back ? 'back' : 'first');
       expect(host.querySelectorAll('.hm-cta').length).toBe(1);
+      if (!back) {
+        expect(host.textContent).toContain('零基础');
+        expect(host.textContent).toContain('一路搭到 ChatGPT');
+        expect(host.querySelector('.hm-cta')!.textContent).toContain('现在做一道');
+      }
       expect(host.textContent).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|连续 \d+ 天/);
       expect(host.querySelectorAll('.hm-rt').length).toBe(5); expect(host.querySelectorAll('.hm-v').length).toBe(2);
       root.remove();

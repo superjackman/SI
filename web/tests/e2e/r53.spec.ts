@@ -24,8 +24,10 @@ test.describe('R53 home', () => {
     await expect(page.locator('.l4-ob')).toHaveCount(0);
     await expect(page.locator('.hm-h')).toContainText('ChatGPT');
     expect(await page.locator('#l4').innerText()).not.toMatch(/欢迎|你好|晚上好|早上好|Welcome|Hello|Good (morning|evening)/);
-    await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveText(/从「词向量」开始/);
-    await expect(page.locator('.hm-cta')).toHaveAttribute('data-go', '#D/6');
+    await expect(page.locator('.hm-k')).toContainText('零基础');
+    await expect(page.locator('.hm-h')).toContainText('一路搭到 ChatGPT');
+    await expect(page.locator('.hm-cta')).toHaveCount(1); await expect(page.locator('.hm-cta')).toHaveText(/现在做一道/);
+    await expect(page.locator('.hm-start')).toHaveAttribute('data-go', '#D/6');
     await expect(page.locator('.l4-top [data-a="menu"]')).toBeHidden(); await expect(page.locator('.l4-top [data-a="back"]')).toBeHidden();
     await expect(page.locator('.l4-top [data-a="set"]')).toBeVisible(); await expect(page.locator('.l4-top [data-a="lang"]')).toBeVisible();
     await expect(page.locator('.l4-tabs button')).toHaveCount(4); await expect(page.locator('.l4-tabs button.on')).toHaveText('学习');
@@ -34,11 +36,12 @@ test.describe('R53 home', () => {
     await page.locator('[data-h="T"]').fill('3'); await expect(page.locator('.hm-demo output')).toHaveText('3.0');
     const p3 = await page.locator('.hm-bar b').first().innerText(); expect(parseInt(p3)).toBeLessThan(parseInt(p1));
     // choosing a route on home changes the button, not the address
-    await page.locator('.hm-rc[data-h="goal:derive"]').click(); await expect(page.locator('.hm-cta')).toHaveText(/用样本找函数/);
+    await page.locator('.hm-rc[data-h="goal:derive"]').click(); await expect(page.locator('.hm-start')).toHaveText(/用样本找函数/);
+    await expect(page.locator('.hm-cta')).toHaveText(/现在做一道/);
     await expect(page).toHaveURL(/#home$/); expect(await page.evaluate(() => localStorage.getItem('si.goal'))).toBe('derive');
     // tabs: no history entries, Back leaves the site
     for (const h of ['#map', '#P', '#R', '#home']) { await page.locator(`.l4-tabs [data-go="${h}"]`).click(); await expect(page).toHaveURL(new RegExp(h + '$')); await expect(page.locator('.l4-tabs button.on')).toHaveAttribute('data-go', h); }
-    await page.locator('.hm-cta').click(); await expect(page).toHaveURL(/#D\/0$/); await expect(page.locator('.l4-tabs')).toBeHidden();
+    await page.locator('.hm-start').click(); await expect(page).toHaveURL(/#D\/0$/); await expect(page.locator('.l4-tabs')).toBeHidden();
     expect(await hl(page)).toBe(n0);
     await page.goBack(); await expect(page).toHaveURL('about:blank');
     expect(errs).toEqual([]);

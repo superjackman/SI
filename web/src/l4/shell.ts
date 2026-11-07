@@ -136,6 +136,7 @@ export function start(doc: Document = document, win: Window = window) {
   let hmTok = 0;
   function drawHome() {
     const t = ++hmTok, l = lang; delete root.dataset.hm;
+    if (cur === 'about') { void import('./home').then((m) => { if (t !== hmTok || cur !== 'about' || lang !== l) return; m.aboutPage(home, l); }); return; }
     const pane = cur.startsWith('tools') ? 'tools' as const : cur.startsWith('news') ? 'news' as const : 'learn' as const;
     const item = cur.includes('/') ? cur.slice(cur.indexOf('/') + 1) : '';
     void import('./home').then((m) => { if (t !== hmTok || (cur !== 'home' && !isHub(cur)) || lang !== l) return; m.home(home, { l, root, go, pane, item, redraw: () => { if (cur === 'home' || isHub(cur)) drawHome(); } }); }).catch(() => { /* offline: the shell still works */ });
@@ -262,9 +263,10 @@ export function start(doc: Document = document, win: Window = window) {
     ['R', '#R', ['我的', 'Me'], '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>'],
   ];
   function drawTabs() {
-    const on = TABS.some(([id]) => id === cur) || isHub(cur); tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
+    const on = TABS.some(([id]) => id === cur) || isHub(cur) || cur === 'about'; tabs.hidden = !on; root.dataset.tabs = on ? '1' : ''; if (!on) { tabs.innerHTML = ''; return; }
     tabs.setAttribute('aria-label', tx(['主导航', 'Main'], lang));
-    tabs.innerHTML = TABS.map(([id, h, t, ic]) => `<button type="button" data-go="${h}"${id === cur ? ' class="on" aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${tx(t, lang)}</span></button>`).join('');
+    const homeOn = cur === 'home' || cur === 'about' || isHub(cur);
+    tabs.innerHTML = TABS.map(([id, h, t, ic]) => { const here = id === 'home' ? homeOn : id === cur; return `<button type="button" data-go="${h}"${here ? ' class="on" aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg><span>${tx(t, lang)}</span></button>`; }).join('');
   }
   function drawNav() {
     const s = (stepNow = stepOf()); nav.hidden = !s; root.dataset.nav = s ? '1' : ''; if (!s) { nav.innerHTML = ''; return; }
@@ -330,7 +332,7 @@ export function start(doc: Document = document, win: Window = window) {
     const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}${r.card ? '~' + r.card : ''}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
-    if (!(lid || id === 'home' || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
+    if (!(lid || id === 'home' || id === 'about' || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';
     if (id !== cur) { sel = null; if (!id.startsWith('X:') && id !== 'home') back = H(id); }
     if (id === 'MY3' && my.ready && !myLoaded && !my.running) { myLoaded = true; void tf().then((c) => c.tf.loadMy()); }
     if (id !== cur) bump();

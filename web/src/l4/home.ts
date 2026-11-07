@@ -16,6 +16,10 @@ import { fmt, softmax } from '../vf/calc';
 import { LBG, LCOL } from './progress';
 import { rvAll, rvNext, rvPick, wrongIds } from '../px/rv';
 import { bellAsk, bellBanner, bellPing } from '../px/remind';
+import { tx as cx } from '../i18n/L';
+import type { Code } from '../i18n/codes';
+import toolsJson from '../hub/tools.json';
+import newsJson from '../hub/news.json';
 
 export interface HomeApi { l: L; root: HTMLElement; go: (h: string) => void; redraw: () => void; pane?: 'learn' | 'news' | 'tools'; item?: string }
 /** 看懂大模型 by default (it starts at 词向量) */
@@ -51,12 +55,13 @@ export function home(host: HTMLElement, A: HomeApi) {
     top = `<section class="hm-hero"><p class="hm-k">${z('零基础 · 每站 5 分钟 · 不用注册', 'No prior knowledge · 5 min per stop · no sign-up')}</p>
 <h1 class="hm-h">${z('从一道小学算术，', 'From grade-school arithmetic')}<span>${z('一路搭到 ChatGPT', 'all the way to ChatGPT')}</span></h1>
 <p class="hm-s">${z(`${DV_N} 站讲透 AI 是怎么“想”出下一个字的，每一站都能自己动手算一遍。`, `${DV_N} stops on how AI “thinks up” the next word, and every stop lets you work it out yourself.`)}</p></section>
+<button type="button" class="hm-cta" data-h="ask">${esc(cx('home.ask', l))} ›</button>
+<button type="button" class="hm-start" data-go="#D/${nxt}">${z(`或从「${stN(nxt, l)}」开始`, `Or start with “${stN(nxt, l)}”`)} ›</button>
 <section class="hm-card hm-demo" data-hm="demo"><div class="hm-dh"><b>${z('天空是', 'The sky is')} <span class="hm-q">？</span></b><span class="hm-chip">${z('拖一拖', 'Drag')} · ${z('温度', 'temp')} <output>1.0</output></span></div>
 <div class="hm-bars">${skyBars(p, l)}</div>
 <label class="hm-sl"><span>${z('温度 T', 'Temp T')}</span><input type="range" min="0.2" max="3" step="0.1" value="1" data-h="T" aria-label="${z('温度', 'Temperature')}"></label>
 <p class="hm-n">${z('AI 每次只做一件事：给每个候选字打分，再挑一个。（示意数字）', 'AI does one thing at a time: score every candidate word, then pick one. (illustrative numbers)')}</p></section>
 ${chooser}
-<button type="button" class="hm-cta" data-go="#D/${nxt}">${z(`从「${stN(nxt, l)}」开始`, `Start with “${stN(nxt, l)}”`)} ›</button>
 <div class="hm-meta"><span>${rMeta(r)}</span><a href="#map">${z('先看整张地图', 'See the whole map first')} ›</a></div>
 <div class="hm-sec"><b>${z('也可以换一条路线', 'Or pick another route')}</b><button type="button" class="hm-lk" data-h="routes">${z('全部', 'All')} ›</button></div>
 <div class="hm-chips" role="radiogroup" aria-label="${z('路线', 'Route')}">${ROUTES.map((x) => `<button type="button" role="radio" aria-checked="${x.id === r.id}" class="hm-rc${x.id === r.id ? ' on' : ''}" data-h="goal:${x.id}" style="--c:${x.c}"><i aria-hidden="true"></i><b>${esc(tx(x.n, l))}</b><span>${z(`${x.st.length} 站`, `${x.st.length} stops`)}${x.id === r.id ? z(' · 已选', ' · chosen') : ''}</span></button>`).join('')}</div>`;
@@ -99,7 +104,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 <p class="hm-n hm-c">${z('两边随时互相跳：每张卡都写着它在第几站诞生', 'Jump between them anytime: every card says the stop where it is born')}</p>
 <div class="hm-sec"><b>${z('今天的挑战', 'Today’s challenge')}</b></div>
 <section class="hm-card hm-ch" data-hm="ch"><p class="hm-n">${z('题目加载中…', 'Loading the question…')}</p></section>
-<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer>`;
+<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><a href="#about">${esc(cx('about.title', l))}</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer>`;
 
   const pane0 = A.pane ?? 'learn';
   const tab = (id: 'learn' | 'news' | 'tools', name: string) => `<button type="button" role="tab" class="${pane0 === id ? 'on' : ''}" data-h="tab:${id}" aria-selected="${pane0 === id}">${name}</button>`;
@@ -118,6 +123,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
     if (h === 'sheet') sheet(A);
     else if (h === 'bell') void bellAsk(l).then(() => { const b = host.querySelector<HTMLElement>('[data-bell]'); if (b) b.outerHTML = bellBanner(l); });
     else if (h === 'find') void import('../search/ui').then((m) => m.openSearch(A.root, l, b));
+    else if (h === 'ask') { const ch = $('[data-hm="ch"]'); ch?.scrollIntoView({ block: 'center' }); ch?.querySelector<HTMLElement>('.hm-op')?.focus(); }
     else if (h.startsWith('tab:')) { const which = h.slice(4); A.go(which === 'news' ? '#news' : which === 'tools' ? '#tools' : '#home'); }
     else if (h.startsWith('goal:')) { goalSet(h.slice(5) as GoalId); A.redraw(); }
     else if (h === 'routes') $('[data-hm="routes"]')?.scrollIntoView({ block: 'start' });
@@ -228,4 +234,17 @@ export function sheet(A: HomeApi) {
   });
   addEventListener('keydown', key); draw(); A.root.appendChild(el);
   el.querySelector<HTMLElement>('.hm-dep .on')?.focus({ preventScroll: true });
+}
+
+/** The checked date written in the news and tools files. Same string on the static page. */
+export function checkedOn(): string {
+  return toolsJson.checked === newsJson.checked ? toolsJson.checked : `${newsJson.checked} / ${toolsJson.checked}`;
+}
+/** Who maintains this, how a number gets onto the page, and how to send a correction. */
+export function aboutPage(host: HTMLElement, l: L) {
+  const t = (c: Code) => cx(c, l);
+  host.innerHTML = `<div class="hm hm-about" lang="${l === 'en' ? 'en' : 'zh-CN'}"><p><a href="#home">${esc(t('about.back'))}</a></p><h1>${esc(t('about.title'))}</h1>
+<section class="hm-card"><h2>${esc(t('about.whoT'))}</h2><p>${esc(t('about.who'))}</p><p><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">superjackman/SI</a></p></section>
+<section class="hm-card"><h2>${esc(t('about.checkT'))}</h2><p>${esc(t('about.check'))}</p><p class="hm-n">${esc(t('about.when').replace('{d}', checkedOn()))}</p></section>
+<section class="hm-card"><h2>${esc(t('about.fixT'))}</h2><p>${esc(t('about.fix'))}</p><p><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${esc(t('about.issue'))}</a></p></section></div>`;
 }

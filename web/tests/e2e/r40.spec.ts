@@ -44,7 +44,7 @@ test.describe('R40 练记享', () => {
   test('home has 学 练 记 享 and the quick-path entry; each opens its area', async ({ page }) => {
     const errs = await open(page, './?lang=zh#home');
     await expect(page.locator('.l4-tabs button')).toHaveCount(4); // R53: 学习 / 地图 / 练习 / 我的
-    await expect(page.locator('.hm-cta')).toContainText(/开始|继续/); // R53 home: the one gold button
+    await expect(page.locator('.hm-cta')).toContainText(/现在做一道|继续/); // first visit does one question; a return visit continues
     for (const [go, id] of [['#P', 'P'], ['#R', 'R'], ['#S', 'S'], ['#Q', 'Q']] as const) {
       const hub = go === '#S' || go === '#Q' ? '#map' : '#home';
       await page.evaluate((h) => { location.hash = h; }, hub); await expect(page.locator('.l4-tabs button')).toHaveCount(4);

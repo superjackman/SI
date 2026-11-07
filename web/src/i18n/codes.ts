@@ -51,5 +51,16 @@ export const CODES = {
   'news.noWeek': { zh: '没有这一周。', en: 'That week is not here.' },
   'news.back': { zh: '回资讯', en: 'Back to news' },
   'news.older': { zh: '往期', en: 'Older weeks' },
+  'about.title': { zh: '谁在维护', en: 'Who maintains this' },
+  'about.whoT': { zh: '谁在维护', en: 'Who maintains this' },
+  'about.who': { zh: '这个站由 GitHub 仓库 superjackman/SI 的所有者维护。', en: 'This site is maintained by the owner of the GitHub repository superjackman/SI.' },
+  'about.checkT': { zh: '事实怎么核对', en: 'How facts are checked' },
+  'about.check': { zh: '站里的数字来自同一张数表，互动页和静态页用的是同一份。资讯和工具写出来源、日期和核对日。没有写进这张表或来源里的数，页面上就不出现。', en: 'Numbers come from one table, shared by the interactive pages and the static pages. News and tools name a source, a date and the day they were checked. A number that is not in that table or in a source is not shown.' },
+  'about.fixT': { zh: '怎样更正', en: 'How to report a correction' },
+  'about.fix': { zh: '发现写错了，在仓库开一条 issue，写上页面地址和你认为不对的地方。', en: 'If something is wrong, open an issue on the repository with the page address and what you think is off.' },
+  'about.when': { zh: '资讯和工具最近一次核对是 {d}。', en: 'News and tools were last checked on {d}.' },
+  'about.back': { zh: '回首页', en: 'Back home' },
+  'about.issue': { zh: '开一条 issue', en: 'Open an issue' },
+  'home.ask': { zh: '现在做一道', en: 'Do one question now' },
 } as const satisfies Record<string, Bi>;
 export type Code = keyof typeof CODES;

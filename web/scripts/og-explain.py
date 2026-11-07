@@ -6,6 +6,7 @@ Run from web/: python3 scripts/og-explain.py
 """
 import json
 import re
+import sys
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -166,6 +167,22 @@ def card(path, lang, chip_s, title, invite, diagram, key):
     say(d, (LEFT, 528), invite, font(32), GOLD, lang, key)
     save(im, path)
 
+def write_root():
+    """Home-page cover: the same promise as the first screen, plus a path, not a trapezoid."""
+    im = Image.new('RGB', (W, H), '#0b1230')
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle((36, 36, 1164, 594), 28, fill='#101a3d', outline='#c99a2e', width=3)
+    y = chip(d, '零基础', 64, 'zh', 'root') + 16
+    title = '从一道小学算术，一路搭到 ChatGPT'
+    f, lines = fit(d, title, 54, 46, 2, 'root')
+    for ln in lines:
+        say(d, (LEFT, y), ln, f, WHITE, 'zh', 'root')
+        y += int(f.size * 1.25)
+    say(d, (LEFT, y + 6), '每站 5 分钟 · 不用注册', font(32), MUTED, 'zh', 'root')
+    flow(d, (LEFT, 360, MAX_W, 150), ('算术', '概率', '注意力', 'ChatGPT'), 'zh', 'root')
+    say(d, (LEFT, 528), '现在做一道', font(34), GOLD, 'zh', 'root')
+    save(im, web / 'public' / 'og.png')
+
 def main():
     nums = load_nums()
     st = json.loads((web / 'src/dv/zh-st.json').read_text())['st']
@@ -246,4 +263,7 @@ def main():
     print(f'wrote {n} explanatory og pngs')
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == 'root':
+        write_root()
+    else:
+        main()
