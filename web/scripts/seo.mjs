@@ -3,6 +3,7 @@
 // en-st.json (same words as the app). Card landings stay in public/c/ (og-cards.mjs); the sitemap
 // lists them. Wired from vite.config generateBundle so every build / e2e / deploy ships the files.
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { guideDetail, guideLead } from './guide-html.mjs';
 import { join } from 'node:path';
 
 export const ORIGIN = 'https://superjackman.github.io';
@@ -126,6 +127,20 @@ function cardIds(web) {
   return readdirSync(dir).filter((f) => f.endsWith('.html')).map((f) => f.slice(0, -5)).sort();
 }
 
+function guideBody(web, id, L) {
+  const guide = JSON.parse(readFileSync(join(web, 'src/hub/guide.json'), 'utf8'));
+  return guideDetail(guide, id, L);
+}
+function workPages(web, L, base, one) {
+  const works = JSON.parse(readFileSync(join(web, 'src/work/works.json'), 'utf8'));
+  const bi = (p) => (L === 'en' ? p[1] : p[0]);
+  for (const w of works.items) {
+    const steps = (w.steps || []).map((s) => `<li>${esc(bi(s))}</li>`).join('');
+    const sts = (w.st || []).map((k) => `<a href="${base}${L === 'en' ? 'en/' : ''}s/${k}/">${esc(k)}</a>`).join(L === 'zh' ? '、' : ', ');
+    const body = `<p>${esc(bi(w.lead))}</p><h2>${L === 'zh' ? '给你的样本' : 'The sample'}</h2><p>${esc(bi(w.input))}</p><h2>${L === 'zh' ? '步骤' : 'Steps'}</h2><ol>${steps}</ol><h2>${L === 'zh' ? '做完看到' : 'When it works'}</h2><p>${esc(bi(w.expect))}</p><h2>${L === 'zh' ? '会失败的一种' : 'One way it fails'}</h2><p>${esc(bi(w.fail))}</p><p>${esc(bi(w.code))}</p><p>${L === 'zh' ? '这是固定样本，不是联网模型，也不要密钥。' : 'This is a fixed sample, not a live model call, and it asks for no key.'}</p><p>${L === 'zh' ? '相关的站' : 'Related stops'}: ${sts}</p>`;
+    one(L, 'w', w.id, L === 'zh' ? w.zh : w.en, clip(bi(w.lead), L === 'zh' ? 110 : 150), body, `W/${w.id}`);
+  }
+}
 function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
   const news = JSON.parse(readFileSync(join(web, 'src/hub/news.json'), 'utf8'));
   const tools = JSON.parse(readFileSync(join(web, 'src/hub/tools.json'), 'utf8'));
@@ -135,12 +150,15 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
   const one = (L, kind, id, title, desc, body, hash) => {
     const path = (L === 'en' ? 'en/' : '') + `s/${kind}/${id}/`;
     const alt = { zh: `s/${kind}/${id}/`, en: `en/s/${kind}/${id}/` };
-    const trail = [[T[L].home, L === 'en' ? '?lang=en' : ''], [kind === 'news' ? (L === 'zh' ? '资讯' : 'News') : (L === 'zh' ? '工具' : 'Tools'), (L === 'en' ? 'en/' : '') + `s/${kind}/`], [title, path]];
+    const section = kind === 'news' ? (L === 'zh' ? '资讯' : 'News') : kind === 'w' ? (L === 'zh' ? '作品' : 'Projects') : (L === 'zh' ? '工具' : 'Tools');
+    const trail = [[T[L].home, L === 'en' ? '?lang=en' : ''], [section, (L === 'en' ? 'en/' : '') + `s/${kind}/`], [title, path]];
     const ld = { '@context': 'https://schema.org', '@graph': [
       { '@type': 'WebSite', name: SITE[L], url: abs('') },
       { '@type': kind === 'news' ? 'NewsArticle' : 'WebPage', headline: title, name: title, description: desc, url: abs(path), inLanguage: L === 'zh' ? 'zh-CN' : 'en', dateModified: lm },
     ] };
-    const img = `${ORIGIN}${base}og-hub/${L === 'en' ? 'en/' : ''}${kind}/${id}.png`;
+    const img = kind === 'w'
+      ? ORIGIN + base + (L === 'en' ? 'og-st/en/catalog.png' : 'og.png')
+      : `${ORIGIN}${base}og-hub/${L === 'en' ? 'en/' : ''}${kind}/${id}.png`;
     files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: img })
       + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])} · <a href="${base}${L === 'en' ? 'en/' : ''}about/">${L === 'zh' ? '谁在维护' : 'Who maintains this'}</a></p></footer></body></html>\n`);
     pages.push({ path, alt, lastmod: lm });
@@ -165,17 +183,27 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
     const tlist = tools.items.map((t) => `<li><a href="${base}${(L === 'en' ? 'en/' : '')}s/tools/${t.id}/">${esc(t.name)}</a> — ${esc(L === 'zh' ? t.zh : t.en)}</li>`).join('');
     const tp = (L === 'en' ? 'en/' : '') + 's/tools/';
     const tt = L === 'zh' ? '工具' : 'Tools';
-    const td = L === 'zh' ? '真实产品。按写作、查资料、编程、做图、本地跑筛选。每条写明来源日期和安全提示。' : 'Real products, filtered by writing, lookup, code, pictures and running locally. Each note has a date and a safety line.';
+    const td = L === 'zh' ? '真实产品。按写作、查资料、编程、做图、本地跑筛选。首批附有选择指南。' : 'Real products, filtered by writing, lookup, code, pictures and running locally. The first batch has a selection guide.';
+    const guide = JSON.parse(readFileSync(join(web, 'src/hub/guide.json'), 'utf8'));
     files.set(tp + 'index.html', head({ L, title: `${tt} · ${SITE[L]}`, desc: td, path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, type: 'website', image: L === 'en' ? ORIGIN + base + 'og-hub/en/tools-index.png' : ORIGIN + base + 'og.png' })
-      + `<main><h1>${tt}</h1><p>${esc(td)}</p><ul>${tlist}</ul><p class="open"><a href="${appHref('tools', L)}">${T[L].open}</a></p></main></body></html>\n`);
+      + `<main><h1>${tt}</h1><p>${esc(td)}</p>${guideLead(guide, L)}<ul>${tlist}</ul><p class="open"><a href="${appHref('tools', L)}">${T[L].open}</a></p></main></body></html>\n`);
     pages.push({ path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, lastmod: lm });
     for (const t of tools.items) {
       const name = t.name;
       const blurb = L === 'zh' ? t.zh : t.en;
       const free = L === 'zh' ? t.free[0] : t.free[1];
       const cn = L === 'zh' ? t.cn[0] : t.cn[1];
-      one(L, 'tools', t.id, name, clip(`${name}: ${blurb}`, L === 'zh' ? 110 : 150), `<p>${esc(blurb)}</p><p>${esc(free)}</p><p>${esc(cn)}</p><p><a href="${esc(t.url)}">${L === 'zh' ? '官网' : 'Site'}</a></p>`, `tools/${t.id}`);
+      one(L, 'tools', t.id, name, clip(`${name}: ${blurb}`, L === 'zh' ? 110 : 150), `<p>${esc(blurb)}</p><p>${esc(free)}</p><p>${esc(cn)}</p><p><a href="${esc(t.url)}">${L === 'zh' ? '官网' : 'Site'}</a></p>${guideBody(web, t.id, L)}`, `tools/${t.id}`);
     }
+    workPages(web, L, base, one);
+    const works = JSON.parse(readFileSync(join(web, 'src/work/works.json'), 'utf8'));
+    const wp = (L === 'en' ? 'en/' : '') + 's/w/';
+    const wtitle = L === 'zh' ? '作品' : 'Projects';
+    const wdesc = L === 'zh' ? '三个能在浏览器里做完的作品。用的是固定样本，不是联网模型。' : 'Three projects you can finish in the browser. They use a fixed sample, not a live model.';
+    const wlist = works.items.map((w) => `<li><a href="${base}${wp}${w.id}/">${esc(L === 'zh' ? w.zh : w.en)}</a> — ${esc(L === 'zh' ? w.expect[0] : w.expect[1])}</li>`).join('');
+    files.set(wp + 'index.html', head({ L, title: `${wtitle} · ${SITE[L]}`, desc: wdesc, path: wp, alt: { zh: 's/w/', en: 'en/s/w/' }, type: 'website', image: L === 'en' ? ORIGIN + base + 'og-st/en/catalog.png' : ORIGIN + base + 'og.png' })
+      + `<main><h1>${wtitle}</h1><p>${esc(wdesc)}</p><ul>${wlist}</ul><p class="open"><a href="${appHref('W', L)}">${T[L].open}</a></p></main></body></html>\n`);
+    pages.push({ path: wp, alt: { zh: 's/w/', en: 'en/s/w/' }, lastmod: lm });
   }
   return { files, pages };
 }

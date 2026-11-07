@@ -7,6 +7,8 @@ import { ML } from '../dv/mld';
 import { masteredSt } from '../dv/prog';
 import news from './news.json';
 import tools from './tools.json';
+import guide from './guide.json';
+import { guideDetail, guideLead } from '../../scripts/guide-html.mjs';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
@@ -110,7 +112,7 @@ export function toolsHtml(l: L, item = ''): string {
   if (item && !item.startsWith('t/')) {
     const t = findTool(item);
     if (!t) return `<section class="hb"><p class="hm-n">${z('没有这个工具。', 'No such tool.')}</p><p><a href="${esc(toolsListHash())}">${z('回工具', 'Back to tools')}</a></p></section>`;
-    return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}</section>`;
+    return `<section class="hb"><p class="hb-meta"><a href="${esc(toolsListHash())}">${z('工具', 'Tools')}</a></p>${toolCard(t, l)}${guideDetail(guide, t.id, l)}</section>`;
   }
   const task = toolsTask(item);
   const chips = `<div class="hb-f" role="tablist">${(['all', ...TASKS] as const).map((id) => `<button type="button" role="tab" data-task="${id}" class="${id === task ? 'on' : ''}" aria-selected="${id === task}">${esc(id === 'all' ? z('全部', 'All') : tx(TASK[id], l))}</button>`).join('')}</div>`;
@@ -118,7 +120,7 @@ export function toolsHtml(l: L, item = ''): string {
     const hide = task !== 'all' && !t.tasks.includes(task as (typeof TASKS)[number]);
     return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
   }).join('');
-  return `<section class="hb"><p class="hm-n">${z('只列真实产品。能不能在中国打开，按核对日的官网情况写，之后可能变。', 'Real products only. Whether the site opens in China is as of the checked date, and can change.')}</p>${chips}<div class="hb-list">${cards}</div></section>`;
+  return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}${chips}<div class="hb-list">${cards}</div></section>`;
 }
 
 /** wire the task filter; `go` writes the filter into the address */

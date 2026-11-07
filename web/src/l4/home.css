@@ -13,12 +13,17 @@
 .hb-meta, .hb-src, .hb-r { font-size: 13px; color: #d5e2ff; }
 .hb-r a, .hb-src a, .hb-item b a { color: #9cc8ff; }
 .hb, .hb-f { min-width: 0; max-width: 100%; }
-.hb-f { display: flex; flex-wrap: wrap; gap: 6px; }
+.hb-f { position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; gap: 6px; padding: 6px 0; background: #050a1a; }
 .hb-f button { min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #2c4690; background: #0a1532; color: #e6eeff; font-size: 13px; white-space: nowrap; }
 .hb-f button.on { background: #ffd77a; color: #1a1204; border-color: #ffd77a; font-weight: 700; }
 .hb-sh { align-self: flex-start; min-height: 44px; }
 .hb-arch { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 8px; }
 .hb-aw { display: flex; align-items: center; min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 1px solid #2c4690; background: #0a1532; color: #e6eeff; text-decoration: none; font-size: 14px; }
+.hb-g, .hb-lead, .hb-diff { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.hb-g h3, .hb-lead h2, .hb-diff h3 { margin: 8px 0 0; font-size: 16px; color: #ffd77a; }
+.hb-g p, .hb-lead p, .hb-diff li { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.hb-g a, .hb-diff a { min-height: 44px; display: inline-flex; align-items: center; overflow-wrap: anywhere; }
+.hb-g .hb-src, .hb-diff .hb-src { padding-left: 1.1em; margin: 0; }
 .hm::before { content: ''; position: absolute; left: 0; right: 0; top: -40px; height: 260px; background: radial-gradient(60% 70% at 50% 0, #3b2fa255, #0000 70%); pointer-events: none; }
 .hm > * { position: relative; }
 .hm-card { background: #0a1532; border: 1px solid #2a3f80; border-radius: 18px; padding: 12px 14px; color: #e6eeff; text-align: left; }
@@ -116,6 +121,10 @@
 .hm-ft a, .l4 .hm-ft button { display: inline-flex; align-items: center; color: #9cc8ff; text-decoration: none; background: none; border: 0; padding: 0 4px; min-height: 44px; font-size: 12.5px; line-height: 1; white-space: nowrap; }
 .hm-ft2 { margin: 0; text-align: center; }
 .hm-ft2 a { min-height: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
+.hm-wk h2 { margin: 0; font-size: 18px; color: #ffd77a; }
+.hm-wk p { margin: 0; font-size: 15px; line-height: 1.5; }
+.l4 .hm-wk-go { width: 100%; min-height: 44px; border-radius: 14px; border: 1px solid #c99a2e; background: transparent; color: #ffd77a; font-size: 15px; font-weight: 700; }
+.hm-wk .hm-lk { min-height: 44px; display: inline-flex; align-items: center; }
 /* 调整我的学法 */
 .hm-sh .l4-sh { flex-wrap: wrap; } .hm-shm { font-size: 12px; color: #a9b9e0; }
 .hm-sht { margin: 8px 0 6px; font-size: 14px; color: #e6eeff; }
