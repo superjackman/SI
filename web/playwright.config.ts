@@ -15,7 +15,7 @@ const phone = (name: string, width: number, height: number) => ({
   name,
   use: { ...devices['Pixel 7'], ...chrome, viewport: { width, height }, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
 });
-/** desktop is the primary viewport; 390 is the phone check. The 23-station walk runs in all three. */
+/** Desktop widths are the suite. 390 only checks that a few pages do not scroll sideways. */
 const desk = (name: string, width: number, height: number) => ({
   name,
   use: { ...chrome, viewport: { width, height }, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
@@ -30,7 +30,12 @@ export default defineConfig({
   retries: 1,
   // specs start from a saved storage state (tests/e2e/onb-done.json)
   use: { baseURL: `http://localhost:${port}${base}`, locale: 'zh-CN', trace: 'off', storageState: 'tests/e2e/onb-done.json' },
-  projects: [desk('d1280', 1280, 800), desk('d1440', 1440, 900), phone('m390', 390, 844)],
+  projects: [
+    desk('d1280', 1280, 800),
+    desk('d1440', 1440, 900),
+    desk('d1920', 1920, 1080),
+    { ...phone('m390', 390, 844), testMatch: /smoke-390\.spec\.ts/ },
+  ],
   webServer: {
     // serves the *built* dist under the real base, like GitHub Pages does; SI_E2E_SERVE=repo serves the committed
     // repo files instead (root build, next/ redirect) with a Pages-like static server (R5 cutover checks);

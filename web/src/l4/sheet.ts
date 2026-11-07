@@ -19,7 +19,7 @@ function mini(c: Card, l: L) {
   for (const n of NODES) {
     const on = c.hl.includes(n), bk = on && c.bk, f = bk ? 'var(--card)' : on ? 'var(--link)' : 'var(--card)', st = bk ? 'var(--highlight)' : on ? 'var(--link)' : 'var(--link)';
     s += `<rect x="6" y="${pos[n]}" width="${w}" height="${bh}" rx="5" fill="${f}" stroke="${st}"${on ? ` style="filter:drop-shadow(0 0 3px ${st})"` : ''}/>`;
-    s += `<text x="${6 + w / 2}" y="${pos[n] + 12.5}" text-anchor="middle" font-size="12" fill="${on ? 'var(--card)' : 'var(--link)'}">${tx(MINI[n], l)}</text>`;
+    s += `<text x="${6 + w / 2}" y="${pos[n] + 12.5}" text-anchor="middle" font-size="12" fill="${on && !bk ? 'var(--on-navy)' : 'var(--ink)'}">${tx(MINI[n], l)}</text>`;
   }
   return `<svg class="l4-mini" width="${w + 12}" height="${y}" viewBox="0 0 ${w + 12} ${y}" aria-hidden="true">${s}</svg>`;
 }

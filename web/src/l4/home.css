@@ -44,7 +44,7 @@
 .hm-bt i { display: block; height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--link), var(--link)); transition: width .15s; }
 .hm-bar:nth-child(2) .hm-bt i { background: var(--link); } .hm-bar:nth-child(3) .hm-bt i { background: var(--link); }
 .hm-sl { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; font-size: 13px; color: var(--ink); }
-.hm-sl span { flex: none; } .hm-sl input { flex: 1; min-width: 0; accent-color: var(--highlight); height: 28px; }
+.hm-sl span { flex: none; } .hm-sl input { flex: 1; min-width: 0; accent-color: var(--navy); height: 28px; }
 .hm-pick { margin: 2px 0 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; color: var(--ink); }
 .l4 .hm-dd { min-height: 38px; padding: 0 11px; border-radius: 12px; border: 1.5px solid var(--highlight); background: var(--card); color: var(--highlight); font-weight: 800; font-size: 15px; }
 .hm-dd i { font-style: normal; font-size: 12px; }
@@ -155,7 +155,7 @@ html[data-anim="off"] .hm-bt i { transition: none; }
   .hm-layer b, .hm-layer i { display: block; font-style: normal; }
 }
 @media (min-width: 1024px) {
-  .hm { max-width: 1280px; margin: 0 auto; padding-top: 28px; }
+  .hm { max-width: none; margin: 0 auto; padding-top: 28px; }
   .l4 .hm-cta { width: auto; align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; }
   .hm-hero .hm-act { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
   .l4 .hm-hero .hm-cta { padding: 12px 24px; }
@@ -183,7 +183,7 @@ html[data-anim="off"] .hm-bt i { transition: none; }
   .hb-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
   .hb-list .hb-item { padding: 12px 14px; }
   .hb-list [data-sh] { display: none; }
-  .hb-cmp { position: static; top: auto; align-self: start; background: var(--card); color: var(--card); border: 1px solid var(--ink); padding: 14px 16px; }
+  .hb-cmp { position: static; top: auto; align-self: start; background: var(--card); color: var(--ink); border: 1px solid var(--line); padding: 14px 16px; }
   .hb-cmp table { width: 100%; border-collapse: collapse; font-size: 14px; }
   .hb-cmp th, .hb-cmp td { text-align: left; vertical-align: top; border-top: 1px solid var(--ink); padding: 8px 8px 8px 0; }
   .hb-cmp th { font-weight: 600; white-space: nowrap; }

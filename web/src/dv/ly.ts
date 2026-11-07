@@ -10,7 +10,7 @@ import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
 import { life } from './ill';
 
-import { LY_DEPTH, depthGet, depthSet, jvGet, okD, type Depth } from './prog';
+import { LY_DEPTH, depthGet, depthSet, okD, type Depth } from './prog';
 
 export { LY_DEPTH, depthGet, depthSet, type Depth };
 export const LY_OPEN = 'si.ly.open';
@@ -81,7 +81,7 @@ function picDot(l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   return `<svg class="ly-dotp" viewBox="0 0 300 160" role="img" aria-label="${z('两个向量的点积', 'Dot product of two vectors')}"><line x1="40" y1="120" x2="260" y2="120" stroke="var(--link)"/><line x1="40" y1="120" x2="40" y2="20" stroke="var(--link)"/>
 <line x1="40" y1="120" x2="160" y2="50" stroke="var(--highlight)" stroke-width="3" marker-end="url(#ly-aq)"/><line x1="40" y1="120" x2="200" y2="90" stroke="var(--good)" stroke-width="3"/>
-<text x="170" y="45" fill="var(--navy)" font-size="12">q</text><text x="210" y="95" fill="var(--good-bg)" font-size="12">k</text>
+<text x="170" y="45" fill="var(--navy)" font-size="12">q</text><text x="210" y="95" fill="var(--good)" font-size="12">k</text>
 <text x="150" y="145" text-anchor="middle" fill="var(--link)" font-size="12">${z('方向越近，点积越大', 'closer directions → larger dot product')}</text>
 <defs><marker id="ly-aq" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--navy)"/></marker></defs></svg>`;
 }
@@ -104,7 +104,7 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const mot = MOT.has(key) ? `<div class="ly-mot" data-mot="${key}"></div>` : '';
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv" id="code"${jvGet() ? ' open' : ''}><summary>${z('我是程序员：换个说法', 'I’m a programmer: say it in code')}</summary><p>${mk(Y.jv)}</p></details>`,
+    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv" id="code" open><summary>${z('代码', 'Code')}</summary><p>${mk(Y.jv)}</p></details>`,
     `${pic}${P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" id="fig" data-vf-part="demo"></div>`,
     `<div class="ly-fx" id="formula">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('自己算一算', 'Work it out')}</b>${mk(S.h)}</p></details>`,

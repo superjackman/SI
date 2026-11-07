@@ -11,19 +11,19 @@
   --on-navy: #f4f1ea;
   --link: #1a4a6b;
   --curve: #1a4a6b;
-  --highlight: #8a4b08;
-  --good: #145c3a;
+  --highlight: #7a3f06;
+  --good: #135636;
   --good-bg: #e5f2eb;
   --bad: #7f2d2d;
   --bad-bg: #f8ecec;
   --mark: #5c3b12;
   --mark-bg: #efe6d6;
   --skin: #f0c7a2;
-  --lv1: #0e7490;
-  --lv2: #0f766e;
-  --lv3: #4338ca;
-  --lv4: #1d4ed8;
-  --lv5: #6d28d9;
+  --lv1: #164e63;
+  --lv2: #0f5348;
+  --lv3: #3730a3;
+  --lv4: #1e40af;
+  --lv5: #5b21b6;
 }
 html[data-theme="dark"] {
   --bg: #050a1a;
@@ -45,11 +45,11 @@ html[data-theme="dark"] {
   --mark: #ffe08a;
   --mark-bg: #2a2208;
   --skin: #f0c7a2;
-  --lv1: #0891b2;
-  --lv2: #0d9488;
-  --lv3: #4f46e5;
-  --lv4: #2563eb;
-  --lv5: #7c3aed;
+  --lv1: #7dd3fc;
+  --lv2: #5eead4;
+  --lv3: #a5b4fc;
+  --lv4: #93c5fd;
+  --lv5: #d8b4fe;
 }
 html.l4-mode, html.l4-mode body, html.l4-mode .l4 { background: var(--bg); color: var(--ink); }
 html.l4-mode .l4-top, html.l4-mode .pt-foot { background: var(--navy); color: var(--on-navy); }
@@ -59,3 +59,49 @@ html.l4-mode .l4-b, html.l4-mode .hm-cta, html.l4-mode .hm-cta2, html.l4-mode .l
   background: var(--navy); color: var(--on-navy); border-color: var(--navy);
 }
 html.l4-mode .l4-b *, html.l4-mode .hm-cta *, html.l4-mode .hm-cta2 * { color: var(--on-navy); }
+/* Text that sits on a saturated fill (navy bar, link blue, layer colour, good/bad) uses --on-navy.
+   Light theme: light ink on a dark fill. Night theme: dark ink on a light fill. */
+html.l4-mode .l4-top a,
+html.l4-mode .pt-foot a,
+html.l4-mode .l4-top button,
+html.l4-mode .l4-lt,
+html.l4-mode .dv-n,
+html.l4-mode .dv-mk,
+html.l4-mode .hm-sq,
+html.l4-mode .l4-lv .q,
+html.l4-mode .hm-sqb,
+html.l4-mode .hm-rdb,
+html.l4-mode .g-bdg,
+html.l4-mode .hm-gh em,
+html.l4-mode .hm-rh em,
+html.l4-mode .hm-hub button.on,
+html.l4-mode .hb-f button.on,
+html.l4-mode .hm-dep button.on,
+html.l4-mode .hm-dep button.on span,
+html.l4-mode .l4-hr.pri,
+html.l4-mode .l4-hr.pri b,
+html.l4-mode .l4-hr.pri span,
+html.l4-mode .l4-pipe span.on,
+html.l4-mode .l4-seg button.on,
+html.l4-mode .g-next,
+html.l4-mode .g-seg button.on,
+html.l4-mode .g-chips button.on,
+html.l4-mode .mm-c i,
+html.l4-mode .lx-cps .c.on,
+html.l4-mode .dv-cn.c,
+html.l4-mode .dv-cn.c span,
+html.l4-mode .vf-ic,
+html.l4-mode .ml-gh em,
+html.l4-mode .ml-re i,
+html.l4-mode .si-k,
+html.l4-mode .wk-tabs button.on,
+html.l4-mode .dv-sb,
+html.l4-mode .px-lt,
+html.l4-mode .l4-qkv .q,
+html.l4-mode .l4-qkv .v,
+html.l4-mode .l4-ffn .w,
+html.l4-mode .l4-grid .cell.ok,
+html.l4-mode .l4-kid { color: var(--on-navy); }
+html.l4-mode .l4-hr.pri,
+html.l4-mode .l4-hr.pri b,
+html.l4-mode .l4-hr.pri span { color: var(--on-navy) !important; }

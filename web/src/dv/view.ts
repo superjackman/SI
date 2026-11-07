@@ -114,6 +114,10 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   if (ly && lead) ly.prepend(lead);
   const side = A.host.querySelector('.st-side');
   const nxb = A.host.querySelector('.dv-nx');
+  const code = A.host.querySelector('#code');
+  const live = side?.querySelector('.st-live');
+  if (live && code) live.insertAdjacentElement('afterend', code);
+  else if (side && code) side.appendChild(code);
   if (side && nxb) side.appendChild(nxb);
   if (A.still()) { morphWire(A.host); railWire(A.host, dvK(i)); }
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;

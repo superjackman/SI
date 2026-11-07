@@ -8,7 +8,7 @@ import { tx, type L } from '../l4/txt';
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export const Y = 'var(--highlight)', G = 'var(--good)', B = 'var(--link)', P = 'var(--link)', R = 'var(--bad)', D = 'var(--link)', AX = 'var(--link)';
-const SKIN = 'var(--skin)', HAIR = 'var(--ink)', INK = 'var(--ink)', PAGE = 'var(--card)', RED = 'var(--bad)';
+const SKIN = 'var(--skin)', HAIR = 'var(--ink)', INK = 'var(--ink)', ON = 'var(--on-navy)', PAGE = 'var(--card)', RED = 'var(--bad)';
 const H = 176;
 
 export const CAST_KEYS = new Set(['6', '7', '8a', '8b', '9', 'E', '10', '11', '12', '16']);
@@ -157,7 +157,7 @@ function scene8a(l: L, math: boolean) {
   const scores = bars.map((b) => g(b.id, b.c, math
     ? `<rect x="${b.x}" y="${floor - b.h}" width="26" height="${b.h}" rx="4" fill="${b.c}"/>${label(b.x + 13, floor - b.h - 6, b.t, b.c)}`
     : `<rect x="${b.x}" y="${floor - 18}" width="26" height="14" rx="3" fill="${b.c}"/>`)).join('');
-  const ask = g('q', R, `<rect x="50" y="132" width="34" height="22" rx="4" fill="${R}"/>${math ? label(67, 148, 'Q', INK) : `<path d="M56 140 h22 M56 146 h14" stroke="${INK}" stroke-width="1.2"/>`}`);
+  const ask = g('q', R, `<rect x="50" y="132" width="34" height="22" rx="4" fill="${R}"/>${math ? label(67, 148, 'Q', ON) : `<path d="M56 140 h22 M56 146 h14" stroke="${ON}" stroke-width="1.2"/>`}`);
   const lifeOnly = math ? '' : `${person(40, 158, R, 'R')}${person(121, 158, 'var(--link)')}${person(189, 158, G)}${person(257, 158, B)}
 <path d="M24 22 Q150 40 280 20" fill="none" stroke="${Y}" stroke-width="1.4"/>
 <circle cx="70" cy="26" r="3.2" fill="${R}"/><circle cx="140" cy="32" r="3.2" fill="${Y}"/><circle cx="210" cy="28" r="3.2" fill="${G}"/><circle cx="260" cy="24" r="3.2" fill="${B}"/>
@@ -172,9 +172,9 @@ function scene8a(l: L, math: boolean) {
 function scene8b(l: L, math: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
   const floors = [
-    { id: 'f1', c: B, y: 28, t: 'attn', ink: 'var(--ink)', who: `${face(128, 46, 6)}${face(176, 46, 6)}<rect x="116" y="54" width="70" height="7" rx="1" fill="var(--card)"/>` },
-    { id: 'f2', c: P, y: 74, t: '+ x', ink: INK, who: `${face(118, 94, 6)}<rect x="138" y="84" width="46" height="22" rx="2" fill="${PAGE}"/><rect x="172" y="78" width="16" height="12" rx="2" fill="${Y}"/>` },
-    { id: 'f3', c: G, y: 120, t: 'FFN', ink: INK, who: `${face(122, 138, 6)}${face(198, 138, 6)}<rect x="110" y="146" width="24" height="6" rx="1" fill="var(--card)"/><rect x="186" y="146" width="24" height="6" rx="1" fill="var(--card)"/>` },
+    { id: 'f1', c: B, y: 28, t: 'attn', ink: ON, who: `${face(128, 46, 6)}${face(176, 46, 6)}<rect x="116" y="54" width="70" height="7" rx="1" fill="var(--card)"/>` },
+    { id: 'f2', c: P, y: 74, t: '+ x', ink: ON, who: `${face(118, 94, 6)}<rect x="138" y="84" width="46" height="22" rx="2" fill="${PAGE}"/><rect x="172" y="78" width="16" height="12" rx="2" fill="${Y}"/>` },
+    { id: 'f3', c: G, y: 120, t: 'FFN', ink: ON, who: `${face(122, 138, 6)}${face(198, 138, 6)}<rect x="110" y="146" width="24" height="6" rx="1" fill="var(--card)"/><rect x="186" y="146" width="24" height="6" rx="1" fill="var(--card)"/>` },
   ];
   const body = floors.map((f) => g(f.id, f.c, `<rect x="86" y="${f.y}" width="140" height="40" rx="6" fill="${f.c}"/>${math ? label(156, f.y + 25, f.t, f.ink) : f.who}`)).join('');
   const shell = math ? '' : `<path d="M74 30 L160 10 L246 30 V164 H74 Z" fill="var(--card)" stroke="var(--link)" stroke-width="2"/>
@@ -228,7 +228,7 @@ function sceneE(l: L, math: boolean) {
 function scene10(l: L, math: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
   const card = (id: string, c: string, x: number, letter: string, hot: boolean) => g(id, c, `<rect x="${x}" y="28" width="104" height="84" rx="8" fill="${hot ? 'var(--link)' : 'var(--card)'}" stroke="${c}" stroke-width="${hot ? 3 : 1.6}"/>${math
-    ? label(x + 52, 76, letter, c)
+    ? label(x + 52, 76, letter, hot ? ON : c)
     : `<path d="M${x + 12} 46 H${x + 88} M${x + 12} 60 H${x + 76} M${x + 12} 74 H${x + 84} M${x + 12} 88 H${x + 64}" stroke="${c}" stroke-width="1.6" opacity="0.85"/>`}`);
   const pick = g('pick', G, math
     ? `<path d="M188 62 l8 10 l16-18" fill="none" stroke="${G}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`
@@ -248,7 +248,7 @@ function scene11(l: L, math: boolean) {
     ? label(78, 100, 'W', B)
     : `<path d="M40 60 l20 16 l-8 22 M80 52 l6 28 M120 70 l14-16 l8 24 M160 58 l-10 30" fill="none" stroke="var(--link)" stroke-width="1.3" opacity="0.8"/>
 <circle cx="54" cy="108" r="2" fill="var(--card)"/><circle cx="96" cy="120" r="1.6" fill="var(--card)"/><circle cx="150" cy="112" r="2" fill="var(--card)"/>`}`);
-  const strip = g('ba', Y, `<rect x="176" y="52" width="78" height="22" rx="4" fill="${Y}"/>${math ? label(215, 68, 'BA', INK) : `<path d="M188 60 h50 M188 68 h32" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/>`}`);
+  const strip = g('ba', Y, `<rect x="176" y="52" width="78" height="22" rx="4" fill="${Y}"/>${math ? label(215, 68, 'BA', ON) : `<path d="M188 60 h50 M188 68 h32" stroke="${ON}" stroke-width="1.4" stroke-linecap="round"/>`}`);
   const lifeOnly = math ? '' : `${person(262, 164, 'var(--highlight)')}<path d="M250 126 C232 100 226 80 214 66" fill="none" stroke="var(--navy)" stroke-width="4" stroke-linecap="round"/><ellipse cx="214" cy="62" rx="40" ry="16" fill="${Y}" opacity="0.25"/>`;
   const aria = math
     ? z('大矩阵冻住，只暖旁边一条', 'the big matrix stays frozen, a thin path is warmed')
@@ -260,7 +260,7 @@ function scene11(l: L, math: boolean) {
 function scene12(l: L, math: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
   const row = (id: string, c: string, x: number, y: number, w: number, t: string, faceX: number) => g(id, c, math
-    ? `<rect x="${x}" y="${y}" width="${w}" height="32" rx="6" fill="${id === 'n' ? 'none' : c}" stroke="${c}" stroke-width="2"${id === 'n' ? ' stroke-dasharray="4 3"' : ''}/>${label(x + w / 2, y + 21, t, id === 'k' ? 'var(--ink)' : id === 'n' ? Y : INK)}`
+    ? `<rect x="${x}" y="${y}" width="${w}" height="32" rx="6" fill="${id === 'n' ? 'none' : c}" stroke="${c}" stroke-width="2"${id === 'n' ? ' stroke-dasharray="4 3"' : ''}/>${label(x + w / 2, y + 21, t, id === 'n' ? Y : ON)}`
     : `<rect x="${x}" y="${y}" width="${w}" height="32" rx="6" fill="${id === 'n' ? 'none' : c}" stroke="${c}" stroke-width="2"${id === 'n' ? ' stroke-dasharray="4 3"' : ''}/>${id === 'n' ? '' : `${face(faceX, y + 16, 6)}<path d="M${faceX + 12} ${y + 16} h${w - 36}" stroke="${INK}" stroke-width="1.5"/>`}`);
   const book = math ? '' : `<rect x="78" y="24" width="168" height="132" rx="6" fill="var(--card)" stroke="${D}" stroke-width="2"/>
 <rect x="92" y="32" width="142" height="116" rx="3" fill="${PAGE}"/>
@@ -282,7 +282,7 @@ function scene16(l: L, math: boolean) {
   ];
   const thread = g('thread', D, `<path d="M20 150 H280" stroke="${D}" stroke-width="${math ? 3 : 4}" fill="none" stroke-linecap="round"/>`);
   const beads = stops.map((s) => g(s.id, s.c, math
-    ? `<circle cx="${s.x}" cy="150" r="13" fill="${s.c}"/>${label(s.x, 155, s.t, s.c === B ? 'var(--ink)' : INK)}`
+    ? `<circle cx="${s.x}" cy="150" r="13" fill="${s.c}"/>${label(s.x, 155, s.t, ON)}`
     : `<circle cx="${s.x}" cy="150" r="12" fill="${s.c}"/><circle cx="${s.x - 3}" cy="146" r="3" fill="var(--card)" opacity="0.35"/>`)).join('');
   const lifeOnly = math ? '' : `${person(52, 168, B)}${person(248, 168, G, 'up')}
 <path d="M132 86 h36 v30 h-36 z" fill="var(--link)"/><path d="M128 86 l22-16 22 16 z" fill="${Y}"/>
