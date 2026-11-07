@@ -69,11 +69,25 @@ export function buildSearch(web) {
     }
   }
   const tools = read(web, 'src/hub/tools.json');
+  let guide = { items: {} };
+  try { guide = read(web, 'src/hub/guide.json'); } catch { /* guide is optional for older trees */ }
   for (const t of tools.items || []) {
+    const g = guide.items?.[t.id];
+    const extraZ = g ? `${g.fit?.[0] || ''} ${g.unfit?.[0] || ''}` : '';
+    const extraE = g ? `${g.fit?.[1] || ''} ${g.unfit?.[1] || ''}` : '';
     rows.push({
       kind: 'tool', id: t.id, hash: `#tools/${t.id}`,
       zh: t.name, en: t.name,
-      z: clip(t.zh), e: clip(t.en),
+      z: clip(`${t.zh} ${extraZ}`), e: clip(`${t.en} ${extraE}`),
+    });
+  }
+  const works = read(web, 'src/work/works.json');
+  for (const w of works.items || []) {
+    rows.push({
+      kind: 'work', id: w.id, hash: `#W/${w.id}`,
+      zh: w.zh, en: w.en,
+      z: clip(`${w.lead?.[0] || ''} ${w.input?.[0] || ''} ${w.expect?.[0] || ''} ${w.fail?.[0] || ''}`),
+      e: clip(`${w.lead?.[1] || ''} ${w.input?.[1] || ''} ${w.expect?.[1] || ''} ${w.fail?.[1] || ''}`),
     });
   }
   return rows;

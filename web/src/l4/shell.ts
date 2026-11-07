@@ -24,7 +24,7 @@ import { DV_ALIAS, DV_N, DV_NM, dvI, dvK, isDv } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
-const isPx = (id: string) => /^(P|R|S|Q)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
+const isPx = (id: string) => /^(P|R|S|Q|W)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
 const isHub = (id: string) => id === 'news' || id.startsWith('news/') || id === 'tools' || id.startsWith('tools/');
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
@@ -278,7 +278,7 @@ export function start(doc: Document = document, win: Window = window) {
   const run = (f: string | (() => void) | null | undefined) => { if (typeof f === 'string') go(f); else f?.(); };
   /** ↑ goes up exactly one level */
   function upOf(): string {
-    if (isPx(cur)) return /^[PD]\/./.test(cur) ? '#' + cur[0] : cur === 'Q/done' ? '#Q' : '#home';
+    if (isPx(cur)) return /^[PDW]\/./.test(cur) ? '#' + cur[0] : cur === 'Q/done' ? '#Q' : '#home';
     if (lxOn(cur)) return /^L\d$/.test(cur) ? '#home' : '#L' + layerOf(cur);
     if (cur.startsWith('X:')) return pg?.up ?? back;
     if (/^(TR|US|MY)\d$/.test(cur)) return '#L4';

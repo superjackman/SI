@@ -1,0 +1,33 @@
+.wk { gap: 10px; }
+.wk-note { margin: 0; font-size: 15px; line-height: 1.5; color: #e6eeff; }
+.wk-tabs { position: sticky; top: 0; z-index: 3; display: flex; gap: 6px; padding: 6px 0; background: #050a1a; }
+.wk-tabs button { flex: 1; min-height: 44px; min-width: 0; padding: 6px 8px; border-radius: 12px; border: 1px solid #2c4690; background: #0a1532; color: #e6eeff; font-size: 13px; line-height: 1.25; }
+.wk-tabs button.on { background: #ffd77a; color: #1a1204; border-color: #ffd77a; font-weight: 700; }
+.wk h3 { margin: 8px 0 4px; font-size: 15px; color: #ffd77a; }
+.wk p, .wk li { font-size: 15px; line-height: 1.5; color: #e6eeff; }
+.wk-notes, .wk-tests { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.wk-notes li, .wk-tests li { padding: 8px 10px; border-radius: 12px; border: 1px solid #2c4690; background: #0a1532; }
+.wk-notes li.hit { border-color: #ffd77a; }
+.wk-tests li.ok { border-color: #86efac; }
+.wk-tests li.bad { border-color: #fca5a5; }
+.wk-qs { display: flex; flex-direction: column; gap: 8px; }
+.wk-qs button { min-height: 44px; padding: 8px 12px; border-radius: 12px; border: 1px solid #3a63d0; background: #101a3d; color: #e6eeff; text-align: left; font-size: 15px; line-height: 1.35; }
+.wk-qs button.on { border-color: #ffd77a; }
+.wk-out, .wk-ok, .wk-bad, .wk-ask { margin: 8px 0 0; padding: 8px 10px; border-radius: 12px; background: #101a3d; }
+.wk-ok { border: 1px solid #86efac; }
+.wk-bad { border: 1px solid #fca5a5; }
+.wk-ask { border: 1px solid #ffd77a; }
+.wk-out span, .wk-tests span { display: block; color: #d5e2ff; font-size: 13px; }
+.wk-st a { min-height: 44px; display: inline-flex; align-items: center; margin-right: 8px; }
+.wk-code summary { min-height: 44px; display: flex; align-items: center; color: #9cc8ff; font-weight: 700; }
+.wk-code pre { margin: 0; padding: 8px; overflow: auto; max-width: 100%; border-radius: 10px; background: #060d22; color: #e6eeff; font-size: 13px; line-height: 1.45; }
+.wk-card { display: flex; flex-direction: column; gap: 4px; min-height: 44px; padding: 10px 12px; border-radius: 12px; border: 1px solid #2c4690; background: #0a1532; color: #e6eeff; text-decoration: none; }
+.wk-card b { font-size: 16px; }
+.wk [data-wk-share] { min-height: 44px; width: 100%; }
+@media (prefers-reduced-motion: reduce) {
+  .wk-notes li.hit { outline: 2px solid #ffd77a; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wk-notes li.hit { animation: wk-hit .6s ease; }
+}
+@keyframes wk-hit { from { background: #3a2a08; } to { background: #0a1532; } }

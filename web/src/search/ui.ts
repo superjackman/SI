@@ -7,7 +7,7 @@ import type { L } from '../l4/txt';
 import { grouped, search, whyOf, type Entry, type Kind } from './query';
 
 const KIND: Record<Kind, Code> = {
-  st: 'search.kind.st', card: 'search.kind.card', news: 'search.kind.news', tool: 'search.kind.tool',
+  st: 'search.kind.st', card: 'search.kind.card', news: 'search.kind.news', tool: 'search.kind.tool', work: 'search.kind.work',
 };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
