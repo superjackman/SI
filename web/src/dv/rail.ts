@@ -87,8 +87,7 @@ export function railWire(host: ParentNode, key: string) {
     const t = e.target as HTMLElement;
     if (t instanceof HTMLInputElement && t.closest('[data-dm="gd"]')) paint();
   });
-  const watch = new MutationObserver(() => paint());
-  const root = host instanceof HTMLElement ? host : null;
-  if (root) watch.observe(root, { childList: true, subtree: true });
   paint();
+  const timer = window.setInterval(() => { if (host.querySelector('[data-vs="eta"]')) { paint(); window.clearInterval(timer); } }, 250);
+  window.setTimeout(() => window.clearInterval(timer), 4000);
 }

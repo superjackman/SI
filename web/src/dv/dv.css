@@ -167,6 +167,10 @@ button.dv-from span::before { content: '‹ '; }
 @media (min-width: 1100px) {
   .l4 .px.dv-sp { display: grid; grid-template-columns: 240px minmax(0, 1fr) 270px; max-width: none; gap: 8px 18px; align-items: start; }
   .st-out, .st-side { position: sticky; top: 8px; max-height: calc(100vh - 84px); overflow: auto; margin: 0; }
+  .dv-lead .dv-morn, .dv-lead .ly-life, .dv-lead .dv-morph svg { max-height: 112px; }
+  .dv-mcap { min-height: 0; }
+  .dv-msl input { min-height: 28px; }
+  .dv-lead .ly-life { width: auto; max-width: 100%; }
   .st-out nav { display: block; }
   .st-tog { display: none; }
   .st-side { background: #fffcf7; color: #1c1915; border: 1px solid #d9d3c7; border-radius: 2px; }
