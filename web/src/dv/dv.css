@@ -177,7 +177,7 @@ button.dv-from span::before { content: '‹ '; }
 .st-side .conn li { font-size: 13px; padding: 4px 0; }
 .dv-lead .dv-morn, .dv-lead .ly-life, .dv-lead .dv-morph svg { max-height: 150px; width: 100%; }
 .dv-lead .dv-mcap { min-height: 0; }
-.ly.ml[data-ml-s="i"] > .ly-top { display: block; }
+.ly.ml[data-ml-s="i"] > .ly-top { display: none !important; }
 @media (max-width: 1023px) {
   .dv-lead .dv-morn, .dv-lead .ly-life, .dv-lead .dv-morph svg { max-height: 96px; }
   .dv-lead .dv-morph { gap: 2px; }
@@ -242,6 +242,10 @@ button.dv-from span::before { content: '‹ '; }
   .st-side h2 { color: var(--muted); }
   .st-live div { border-bottom-color: var(--ink); }
   .dv-later .dv-nx, .dv-later .l4-b.g-jump { width: auto; margin-top: 8px; }
+  .dv-sp[data-done="1"] .ly.ml > .ly-l,
+  .dv-sp[data-done="1"] .dv-lead,
+  .dv-sp[data-done="1"] .ml-v:empty,
+  .dv-lo { display: none !important; }
   .stn.done .nm { color: var(--muted); }
   .stn.now { background: var(--mark-bg); border-left-color: var(--navy); color: var(--ink); }
 }
