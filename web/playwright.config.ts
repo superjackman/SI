@@ -15,10 +15,9 @@ const phone = (name: string, width: number, height: number) => ({
   name,
   use: { ...devices['Pixel 7'], ...chrome, viewport: { width, height }, deviceScaleFactor: 3, isMobile: true, hasTouch: true },
 });
-/** wide layout for the learning-path specs only; the rest of the suite stays on the phone sizes */
+/** desktop is the primary viewport; 390 is the phone check. The 23-station walk runs in all three. */
 const desk = (name: string, width: number, height: number) => ({
   name,
-  testMatch: /flow\.spec\.ts/,
   use: { ...chrome, viewport: { width, height }, deviceScaleFactor: 1, isMobile: false, hasTouch: false },
 });
 
@@ -31,7 +30,7 @@ export default defineConfig({
   retries: 1,
   // specs start from a saved storage state (tests/e2e/onb-done.json)
   use: { baseURL: `http://localhost:${port}${base}`, locale: 'zh-CN', trace: 'off', storageState: 'tests/e2e/onb-done.json' },
-  projects: [phone('m360', 360, 740), phone('m390', 390, 844), phone('m430', 430, 932), desk('d1280', 1280, 800), desk('d1440', 1440, 900)],
+  projects: [desk('d1280', 1280, 800), desk('d1440', 1440, 900), phone('m390', 390, 844)],
   webServer: {
     // serves the *built* dist under the real base, like GitHub Pages does; SI_E2E_SERVE=repo serves the committed
     // repo files instead (root build, next/ redirect) with a Pages-like static server (R5 cutover checks);

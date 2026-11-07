@@ -289,7 +289,7 @@ ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
       const sec = (body) => body ? `<section>${body}</section>\n` : '';
       const body = `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav>
 <main>
-<p class="lv">${T[L].layer} · ${i + 1} / ${KEYS.length}</p>
+<p class="lv">${L === 'zh' ? `第 ${i + 1}/${KEYS.length} 站` : `${i + 1}/${KEYS.length}`} · ${T[L].layer}</p>
 <h1>${esc(nm)}</h1>
 <p class="lead">${esc(show(s.s))}</p>
 <p class="open"><a href="${appHref('D/' + k, L)}">${T[L].open}</a></p>
