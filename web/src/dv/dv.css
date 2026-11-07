@@ -210,7 +210,7 @@ button.dv-from span::before { content: '‹ '; }
   .dv-lead .dv-morph, .dv-lead svg { max-width: 100%; }
   .dv-lead svg.ly-life { width: 100%; height: auto; max-height: 160px; }
   .dv-morph[data-hold="1"] .dv-mb, .dv-morph[data-hold="1"] .dv-mcap .b { display: none; }
-  .ly.ml > .ml-i, .ly.ml > .ml-rz, .ly.ml > .ml-rze, .ly.ml > .ml-v, .ly.ml > .ly-nx, .st-main > .dv-later { grid-column: 1 / -1; }
+  .ly.ml > .ly-l, .ly.ml > .ml-i, .ly.ml > .ml-rz, .ly.ml > .ml-rze, .ly.ml > .ml-v, .ly.ml > .ly-nx, .st-main > .dv-later { grid-column: 1 / -1; }
   .ly.ml[data-ml-s="i"] > .dv-lead,
   .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { max-height: 210px; overflow: auto; }
   .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { display: block !important; grid-column: 2; grid-row: 1; min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
