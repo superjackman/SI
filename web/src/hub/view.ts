@@ -2,7 +2,7 @@
    Weeks are kept: a new week does not drop an older one (see archive.ts). */
 import { tx, type L } from '../l4/txt';
 import { tx as cx } from '../i18n/L';
-import { DV_NM, dvI } from '../dv/links';
+import { DV_NM, dvI, posLabel } from '../dv/links';
 import { ML } from '../dv/mld';
 import { masteredSt } from '../dv/prog';
 import news from './news.json';
@@ -66,7 +66,7 @@ function readOf(st: string[], l: L) {
 const shareBtn = (kind: string, id: string, l: L) => `<button type="button" class="l4-b hb-sh" data-sh="${esc(kind)}:${esc(id)}">${esc(cx('share.item', l))}</button>`;
 function goalLink(it: NewsItem, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<p class="hb-r"><a href="#D/${it.goal}">${z(`第 ${it.goal} 站`, `Stop ${it.goal}`)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
+  return `<p class="hb-r"><a href="#D/${it.goal}">${z(dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'zh') : it.goal, dvI(it.goal) >= 0 ? posLabel(dvI(it.goal), 'en') : it.goal)} · ${esc(goalName(it.goal, it.gi, l))}</a></p>`;
 }
 
 function newsItem(it: NewsItem, l: L, checked: string, linked: boolean) {
@@ -120,7 +120,9 @@ export function toolsHtml(l: L, item = ''): string {
     const hide = task !== 'all' && !t.tasks.includes(task as (typeof TASKS)[number]);
     return toolCard(t, l).replace('<article ', `<article ${hide ? 'hidden ' : ''}`);
   }).join('');
-  return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}${chips}<div class="hb-list">${cards}</div></section>`;
+  const local = guide.groups.find((g) => g.id === 'local');
+  const cmp = local ? `<aside class="hb-cmp"><h2>${z('同一任务对照', 'Same task')}</h2><p>${esc(z('Ollama、llama.cpp、vLLM。差异写在指南里，不是评分。', 'Ollama, llama.cpp and vLLM. The guide states the differences. There is no score.'))}</p>${local.diffs.map((d) => `<p>${esc((l === 'en' ? d.en : d.zh).split(/(?<=。|\.)/)[0] ?? '')}</p>`).join('')}<p class="hb-meta">${z(`核对 ${guide.checked}`, `checked ${guide.checked}`)}</p></aside>` : '';
+  return `<section class="hb"><p class="hm-n">${z('只列真实产品。首批选择指南写了适合谁、许可和部署。没有从中国大陆测过的，就写尚未实测。', 'Real products only. The first guide says who it suits, the license and what it takes to run. Where mainland China was not measured, it says so.')}</p>${guideLead(guide, l)}<div class="hb-desk">${chips}<div class="hb-list">${cards}</div>${cmp}</div></section>`;
 }
 
 /** wire the task filter; `go` writes the filter into the address */

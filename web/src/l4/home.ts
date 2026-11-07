@@ -8,7 +8,7 @@
 import './home.css';
 import { UI, tx, type L, type Tx } from './txt';
 import { ROUTES, goalGet, goalSet, pathOf, routeNext, routeOf, type GoalId, type Route } from '../dv/routes';
-import { CARD_SK, DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
+import { CARD_SK, DV_KEY, DV_LV, DV_N, DV_NM, dvI, posLabel } from '../dv/links';
 import { ML_G, SUB_MIN, depthGet, depthSet, jvGet, jvSet, layerMastery, masteredSt, mlDone, pathMin, seenSt, stationMin, type Depth } from '../dv/prog';
 import { soAll } from '../px/mem';
 import { noteMastered, weekModel } from '../px/week';
@@ -41,7 +41,7 @@ export function weekBlock(l: L): string {
     : `<p>${esc(cx('week.master', l))} ${m.mastered.length} · ${esc(cx('week.practice', l))} ${m.practice}</p>`;
   return `<section class="hm-card hm-wk" data-week="${m.empty ? 'empty' : 'on'}"><h2>${esc(cx('week.home', l))}</h2>${body}<a class="hm-lk" href="#R">${esc(cx('week.open', l))}</a></section>`;
 }
-const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
+const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['算清数', 'Work the numbers'], d: ['深入', 'Deep'] };
 const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句一幅', 'Line + picture'], m: ['把数算清', 'The numbers'], d: ['连式子', 'Formulas'] };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
@@ -76,7 +76,8 @@ export function home(host: HTMLElement, A: HomeApi) {
     const sky = skyP(1), typical = stationMin(3);
     top = `<section class="hm-hero"><p class="hm-k">${z(`零基础 · 三题的站约 ${typical} 分钟 · 不用注册`, `No prior knowledge · about ${typical} min for a three-part stop · no sign-up`)}</p>
 <h1 class="hm-h">${z('从一道小学算术，', 'From grade-school arithmetic')}<span>${z('一路搭到 ChatGPT', 'all the way to ChatGPT')}</span></h1>
-<p class="hm-s">${z(`${DV_N} 站讲透 AI 是怎么“想”出下一个字的，每一站都能自己动手算一遍。`, `${DV_N} stops on how AI “thinks up” the next word, and every stop lets you work it out yourself.`)}</p></section>
+<p class="hm-s">${z(`${DV_N} 站讲透 AI 是怎么“想”出下一个字的，每一站都能自己动手算一遍。`, `${DV_N} stops on how AI “thinks up” the next word, and every stop lets you work it out yourself.`)}</p>
+<figure class="hm-rise" aria-hidden="true"><ol>${[['背后的数学', 'The maths'], ['Transformer 内部', 'Inside a Transformer'], ['大模型怎么得来', 'How a model is made'], ['AI 助手怎么工作', 'How an assistant works'], ['我怎么用 AI', 'How I use it']].map(([a, b], n) => `<li style="animation-delay:${n * 0.12}s">${z(a!, b!)}</li>`).join('')}</ol></figure></section>
 <p class="hm-pos">${z(`第 ${pos}/${DV_N} 站`, `${pos}/${DV_N}`)}</p>
 ${startBtn(z(`从「${stN(nxt, l)}」开始`, `Start with “${stN(nxt, l)}”`))}
 <section class="hm-card hm-demo" data-hm="demo"><div class="hm-dh"><b>${z('天空是', 'The sky is')} <span class="hm-q">？</span></b><span class="hm-chip">${z('拖一拖', 'Drag')} · ${z('温度', 'temp')} <output>1.0</output></span></div>
@@ -213,7 +214,7 @@ async function challenge(host: HTMLElement, A: HomeApi, m: ReadonlySet<string>) 
   const solved = () => vfDone().has(id);
   const draw = (fb = '') => {
     const ok = solved();
-    box.innerHTML = `<p class="hm-chk">${z(`第 ${k} 站`, `Stop ${k}`)} · ${esc(stN(k, l))} · ${z('30 秒', '30 sec')}</p><p class="hm-chq">${t(Q.q)}</p>
+    box.innerHTML = `<p class="hm-chk">${z(posLabel(dvI(k), 'zh'), posLabel(dvI(k), 'en'))} · ${esc(stN(k, l))} · ${z('30 秒', '30 sec')}</p><p class="hm-chq">${t(Q.q)}</p>
 <div class="hm-ops">${order(id, Q.o!.length).map((i) => `<button type="button" class="hm-op${ok && i === Q.a ? ' ok' : ''}" data-o="${i}"${ok ? ' aria-disabled="true"' : ''}>${t(Q.o![i]!)}</button>`).join('')}</div>
 <p class="hm-fb" role="status" aria-live="polite">${fb || (ok ? z('✓ 答对了', '✓ Right') : '')}</p>
 <div class="hm-chr"><span class="hm-n">${ok ? z('可以生成一张题卡发给朋友', 'Make a card for a friend') : z('答对后可以生成题卡发给朋友', 'Get it right to make a card for a friend')}</span>${ok ? `<button type="button" class="hm-out" data-go="#D/ch/${k}">${z('挑战朋友', 'Challenge a friend')} ›</button>` : ''}</div>`;

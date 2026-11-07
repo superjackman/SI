@@ -29,7 +29,7 @@ export function showOnb(host: HTMLElement, l: L, quick: () => void) {
   let st = 1; let depth: Depth = 'm'; let goal: GoalId = 'derive';
   const DEPTHS: { id: Depth; n: Tx; s: Tx }[] = [
     { id: 's', n: ['30 秒', '30 sec'], s: ['一句话 + 一张图，先建立直觉', 'One line + one picture: the intuition'] },
-    { id: 'm', n: ['5 分钟', '5 min'], s: ['类比 + 图 + 数字 + 一道题', 'Analogy + picture + numbers + one quiz'] },
+    { id: 'm', n: ['算清数', 'Work the numbers'], s: ['类比 + 图 + 数字 + 一道题', 'Analogy + picture + numbers + one quiz'] },
     { id: 'd', n: ['深入', 'Deep'], s: ['公式、推导、常见误解全开', 'Formulas, derivation, misconceptions'] },
   ];
   const draw = () => {
