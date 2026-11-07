@@ -140,7 +140,8 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
       { '@type': 'WebSite', name: SITE[L], url: abs('') },
       { '@type': kind === 'news' ? 'NewsArticle' : 'WebPage', headline: title, name: title, description: desc, url: abs(path), inLanguage: L === 'zh' ? 'zh-CN' : 'en', dateModified: lm },
     ] };
-    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: `${ORIGIN}${base}og-hub/${kind}/${id}.png` })
+    const img = `${ORIGIN}${base}og-hub/${L === 'en' ? 'en/' : ''}${kind}/${id}.png`;
+    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, ld, image: img })
       + `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav><main><h1>${esc(title)}</h1>${body}<p class="open"><a href="${appHref(hash, L)}">${T[L].open}</a></p></main><footer><p>${esc(SITE[L])}</p></footer></body></html>\n`);
     pages.push({ path, alt, lastmod: lm });
   };
@@ -153,7 +154,7 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
       ? `每周资讯，带来源和日期，并链回对应的站。${older ? '往期保留。' : ''}`
       : `Weekly notes with a source and a date, each linked to a stop.${older ? ' Older weeks stay.' : ''}`;
     const alt = { zh: 's/news/', en: 'en/s/news/' };
-    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, type: 'website', image: ORIGIN + base + 'og.png' })
+    files.set(path + 'index.html', head({ L, title: `${title} · ${SITE[L]}`, desc, path, alt, type: 'website', image: L === 'en' ? ORIGIN + base + 'og-hub/en/news-index.png' : ORIGIN + base + 'og.png' })
       + `<main><h1>${title}</h1><p>${esc(desc)}</p><ul>${list}</ul><p class="open"><a href="${appHref('news', L)}">${T[L].open}</a></p></main></body></html>\n`);
     pages.push({ path, alt, lastmod: lm });
     for (const it of items) {
@@ -165,7 +166,7 @@ function loadHub(web, base, head, abs, appHref, T, SITE, lm) {
     const tp = (L === 'en' ? 'en/' : '') + 's/tools/';
     const tt = L === 'zh' ? '工具' : 'Tools';
     const td = L === 'zh' ? '真实产品。按写作、查资料、编程、做图、本地跑筛选。每条写明来源日期和安全提示。' : 'Real products, filtered by writing, lookup, code, pictures and running locally. Each note has a date and a safety line.';
-    files.set(tp + 'index.html', head({ L, title: `${tt} · ${SITE[L]}`, desc: td, path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, type: 'website', image: ORIGIN + base + 'og.png' })
+    files.set(tp + 'index.html', head({ L, title: `${tt} · ${SITE[L]}`, desc: td, path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, type: 'website', image: L === 'en' ? ORIGIN + base + 'og-hub/en/tools-index.png' : ORIGIN + base + 'og.png' })
       + `<main><h1>${tt}</h1><p>${esc(td)}</p><ul>${tlist}</ul><p class="open"><a href="${appHref('tools', L)}">${T[L].open}</a></p></main></body></html>\n`);
     pages.push({ path: tp, alt: { zh: 's/tools/', en: 'en/s/tools/' }, lastmod: lm });
     for (const t of tools.items) {
@@ -277,14 +278,14 @@ ${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(show(s
 <section><h2>${T[L].all}</h2><ol>${KEYS.map((kk, j) => j === i ? `<li><b>${esc(names[L][j])}</b></li>` : `<li><a href="${base}${pagePath(kk, L)}">${esc(names[L][j])}</a></li>`).join('')}</ol></section>
 </main>
 `;
-      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld, image: `${ORIGIN}${base}og-st/${k}.png` }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer}</p></footer>\n</body>\n</html>\n`);
+      files.set(path + 'index.html', head({ L, title, desc, path, alt, ld, image: `${ORIGIN}${base}og-st/${L === 'en' ? 'en/' : ''}${k}.png` }) + body + `<footer><p>${esc(SITE[L])} · ${T[L].layer}</p></footer>\n</body>\n</html>\n`);
       pages.push({ path, alt, lastmod: lm });
     }
     const path = catPath(L), alt = { zh: catPath('zh'), en: catPath('en') }, title = `${T[L].catT(KEYS.length)} · ${SITE[L]}`;
     const ld = { '@context': 'https://schema.org', '@graph': [website(L), course(L),
       { '@type': 'ItemList', itemListElement: KEYS.map((k, j) => ({ '@type': 'ListItem', position: j + 1, name: names[L][j], url: abs(pagePath(k, L)) })) },
       crumbs([[T[L].home, L === 'en' ? '?lang=en' : ''], [T[L].cat, path]])] };
-    files.set(path + 'index.html', head({ L, title, desc: T[L].catD, path, alt, type: 'website', ld })
+    files.set(path + 'index.html', head({ L, title, desc: T[L].catD, path, alt, type: 'website', ld, image: L === 'en' ? ORIGIN + base + 'og-st/en/catalog.png' : ORIGIN + base + 'og.png' })
       + `<main>\n<h1>${esc(T[L].catT(KEYS.length))}</h1>\n<p>${esc(T[L].catD)}</p>\n<p class="open"><a href="${appHref('D', L)}">${T[L].open}</a></p>\n<ol>${KEYS.map((k, j) => `<li><a href="${base}${pagePath(k, L)}"><b>${esc(names[L][j])}</b></a> — ${esc(descs.get(`${L}:${k}`))}</li>`).join('')}</ol>\n</main>\n`
       + `<footer><p>${esc(SITE[L])}</p></footer>\n</body>\n</html>\n`);
     pages.push({ path, alt, lastmod: lm });
