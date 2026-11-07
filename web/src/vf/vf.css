@@ -33,12 +33,12 @@
 .vf-m b { display: block; font-size: 16px; } .vf-x b { color: var(--bad); } .vf-r b { color: var(--good); }
 .vf-x { color: var(--ink); }
 .vf-ctl { display: grid; gap: 6px; margin-bottom: 6px; }
-.vf-sl { display: grid; grid-template-columns: minmax(72px, auto) 1fr 52px; align-items: center; gap: 8px; font-size: 15px; }
-.vf-sl input, .vf-ctl input[type="range"] { width: 100%; min-height: 28px; accent-color: var(--navy); } .vf-sl output, .vf-ctl output { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); }
+.vf-sl { display: grid; grid-template-columns: minmax(72px, auto) 1fr 52px; align-items: center; gap: 8px; font-size: 16px; }
+.vf-sl input, .vf-ctl input[type="range"] { width: 100%; min-height: 40px; accent-color: var(--navy); } .vf-sl output, .vf-ctl output { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); }
 .vf-res { display: grid; gap: 4px; }
 .vf-plot { width: 100%; height: auto; max-height: 150px; }
 .vf-o { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .vf-k { font-weight: 800; } .vf-k.ok, .vf-k.osc { color: var(--good); } .vf-k.slow, .vf-k.stuck { color: var(--highlight); } .vf-k.div { color: var(--bad); }
-.vf-bar { display: grid; grid-template-columns: minmax(44px, auto) 1fr 56px; align-items: center; gap: 6px; font-size: 12.5px; }
+.vf-bar { display: grid; grid-template-columns: minmax(44px, auto) 1fr 56px; align-items: center; gap: 6px; font-size: 16px; }
 .vf-bar i { height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--link), var(--card)); }
 .vf-bar b { text-align: right; font-variant-numeric: tabular-nums; color: var(--highlight); }

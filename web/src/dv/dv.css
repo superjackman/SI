@@ -113,7 +113,7 @@ button.dv-from span::before { content: '‹ '; }
 .dv .dv-so { min-width: 0; overflow-wrap: anywhere; }
 .dv .g-seg.dv-vsw { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 /* R56 记忆: 本站只带走 3 句 + 串起来 */
-.dv-pos { margin: 0; font-size: 13px; font-weight: 700; color: var(--highlight); }
+.dv-pos { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--highlight); letter-spacing: 0; }
 .dv-quiet { display: block; margin: 8px 0 0; font-size: 14px; color: var(--link); }
 .dv-sp[data-done="0"] .dv-lo { display: none !important; }
 .dv-sp[data-done="1"] .ly > :not(.ml-v),
@@ -209,7 +209,7 @@ button.dv-from span::before { content: '‹ '; }
   .st-tabs { position: sticky; top: 0; z-index: 4; background: var(--bg); margin: 0 0 10px; padding: 0; }
   .st-h { line-height: 1.45; overflow: visible; }
   .st-stage { display: block; }
-  .ly.ml { display: flex; flex-direction: column; gap: 22px; align-items: stretch; position: relative; }
+  .ly.ml { display: flex; flex-direction: column; gap: 0; align-items: stretch; position: relative; }
   .ml-op { overflow-wrap: anywhere; }
   .ml-op span { white-space: normal; }
   .ly.ml > .dv-lead { min-height: 0; background: var(--card); border: 1px solid var(--line); padding: 12px; }
@@ -226,12 +226,18 @@ button.dv-from span::before { content: '‹ '; }
   .dv-later .l4-b.g-jump { background: var(--navy); color: var(--on-navy); border: 0; }
   .st-side .ly-jv { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 8px; }
   .st-side .ly-jv summary { font-size: 13px; color: var(--muted); }
-  .st-code { margin: 0; padding: 10px 12px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; }
+  .st-article .st-code { margin: 0 0 16px; padding: 12px 14px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace; font-size: 16px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; width: 100%; }
   .st-fig, .st-article .vf-dm, .st-article .vf-q, .st-article .ml-pr, .st-article .st-code, .st-article .st-by { max-width: 820px; width: 100%; }
   .st-fig svg, .st-article .vf-plot { width: 100%; height: auto; max-height: none; }
-  .st-sec { margin: 1.2em 0 0.45em; font-size: 22px; line-height: 1.35; font-weight: 600; }
-  .st-by { margin: 0 0 0.8em; font-size: 16px; line-height: 1.7; }
-  .st-article .vf-in, .st-article .ml-in, .st-article .vf-op, .st-article .ml-op, .st-article .vf-ck, .st-article .ml-ck, .st-article .vf-sw { min-height: 44px; }
+  .st-fig svg.ly-life, .st-fig svg.ly-pen, .st-fig svg.ly-bowl, .st-fig svg.ly-xor, .st-fig svg.ly-dotp { width: auto; max-width: 100%; margin-inline: 0; }
+  .st-fig:has(> svg.ly-life) { width: min(100%, 464px); }
+  .st-fig svg.ly-asvg { width: auto; max-width: min(100%, 440px); margin-inline: auto; }
+  .st-sec { margin: 32px 0 12px; font-size: 22px; line-height: 1.35; font-weight: 600; }
+  .ly-l:first-child .st-sec { margin-top: 18px; }
+  .st-by { margin: 0 0 4px; font-size: 16px; line-height: 1.7; }
+  .st-article .vf-in, .st-article .ml-in, .st-article .vf-op, .st-article .ml-op, .st-article .vf-ck, .st-article .ml-ck, .st-article .vf-sw { min-height: 44px; font-size: 16px !important; }
+  .st-article .l4-b { font-size: 15px !important; }
+  .st-article .st-live, .st-article .vf-bar, .st-article .vf-axes, .st-article .vf-fb, .st-article .ml-fb, .st-article .ml-dead, .st-article .ml-live { font-size: 16px; }
   .vf-plot { width: 100%; height: auto; min-height: 0; max-height: 280px; display: block; }
   .vf-axes { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   .vf-dm .vf-ctl { margin-top: 8px; }

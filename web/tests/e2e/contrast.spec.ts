@@ -73,6 +73,16 @@ const SCAN = () => {
     const r = el.getBoundingClientRect();
     return r.width >= 1 && r.height >= 1 && r.bottom > 0 && r.top < innerHeight && r.right > 0 && r.left < innerWidth;
   };
+  /* a string scrolled under the top bar is still in the layout box, but another element is painted there */
+  const painted = (el: Element) => {
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y = r.top + Math.min(r.height * 0.35, r.height / 2);
+    if (x < 1 || y < 1 || x >= innerWidth - 1 || y >= innerHeight - 1) return true;
+    const top = document.elementFromPoint(x, y);
+    if (!top) return false;
+    return top === el || el.contains(top) || top.contains(el);
+  };
   const needOf = (el: Element) => {
     const cs = getComputedStyle(el);
     const px = parseFloat(cs.fontSize);
@@ -109,7 +119,7 @@ const SCAN = () => {
     const text = node.nodeValue || '';
     if (!text.trim()) continue;
     const el = node.parentElement;
-    if (!el || el.closest('script,style,noscript,[hidden]') || hidden(el) || !inView(el)) continue;
+    if (!el || el.closest('script,style,noscript,[hidden]') || hidden(el) || !inView(el) || !painted(el)) continue;
     const cs = getComputedStyle(el);
     let fg = parse(cs.color);
     let bgs = [cssBg(el)];

@@ -158,14 +158,6 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const caps = labeled ? [] : Y.pc.filter((x) => keep(x, true));
   let stepSrc = '';
   if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
-  const g0 = ML[key]?.goals[0];
-  let lead = l === 'en' ? 'That step, written as a formula.' : '把这一步写成式子，是这样。';
-  if (g0) {
-    const raw = fillDvText(tx(g0.why[g0.a]!, l), l).replace(/`[^`]*`/g, '').replace(/\*\*/g, '');
-    const bit = raw.split(/[。！？.!?]/)[0]?.trim() ?? '';
-    const line = bit ? (l === 'en' ? `${bit}.` : `${bit}。`) : '';
-    if (line && keep(line, false)) lead = line;
-  }
   for (const f of Y.fx) note(fxPlain(f));
   const why: string[] = [];
   for (const g of ML[key]?.goals ?? []) g.why.forEach((w, i) => {
@@ -194,38 +186,39 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const motFig = MOT.has(key) ? `<div class="st-fig" data-fig="mot-${key}">${mot}</div>` : '';
   const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}</div>`;
   const figure = still + motFig + exp;
-  const symBits = Y.fe.map((raw) => {
+  const syms = Y.fe.map((raw) => {
     const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
     const bits = plain.split(/[：:]/);
-    if (bits.length < 2) return plain;
-    const name = bits[0]!.trim(), rest = bits.slice(1).join(l === 'en' ? ': ' : '：').trim();
-    return l === 'en' ? `${name} is ${rest}` : `${name}是${rest}`;
-  }).filter(Boolean);
-  const symSentence = symBits.length
-    ? (l === 'en' ? `Here ${symBits.join('; ')}.` : `其中${symBits.join('，')}。`)
+    if (bits.length < 2) return { name: '', rest: plain };
+    return { name: bits[0]!.trim(), rest: bits.slice(1).join(l === 'en' ? ': ' : '：').trim() };
+  }).filter((s) => s.rest);
+  const mathish = (s: string) => /[=←≈→≠∑Σ∂√×÷]|softmax|log |σ\(/.test(s);
+  const plainFx = Y.fx.map((f) => fxPlain(f)).filter(Boolean);
+  const shownFx = plainFx.filter(mathish);
+  const displayFx = shownFx.length ? shownFx : plainFx.slice(0, 1);
+  const aside = plainFx.filter((s) => !displayFx.includes(s)).map((s) => (/[。！？.!?]$/.test(s) ? s : s + (l === 'en' ? '.' : '。')));
+  const defs = syms.filter((s) => s.name);
+  const notes = syms.filter((s) => !s.name);
+  const shorts = notes.filter((s) => [...s.rest].length <= 12 && !/[，,。！？.!]/.test(s.rest));
+  const longs = notes.filter((s) => !shorts.includes(s));
+  const shortSentence = shorts.length
+    ? (l === 'en' ? `The roles in that line are ${shorts.map((s) => s.rest).join(', ')}.` : `式子里的角色是${shorts.map((s) => s.rest).join('、')}。`)
     : '';
-  const symHtml = symSentence.length > 160
-    ? `<dl class="fx-def">${Y.fe.map((raw) => {
-        const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
-        const bits = plain.split(/[：:]/);
-        const name = (bits[0] ?? plain).trim();
-        const rest = bits.slice(1).join(l === 'en' ? ': ' : '：').trim();
-        return rest ? `<div><dt>${esc(name)}</dt><dd>${esc(rest)}</dd></div>` : `<div><dt></dt><dd>${esc(plain)}</dd></div>`;
-      }).join('')}</dl>`
-    : (symSentence ? `<p>${esc(symSentence)}</p>` : '');
-  const shownFx = Y.fx.filter((f) => /[=←≈]/.test(fxPlain(f)));
-  const displayFx = shownFx.length ? shownFx : Y.fx.slice(0, 1);
-  const aside = Y.fx.filter((f) => !displayFx.includes(f)).map((f) => fxPlain(f)).filter(Boolean);
-  const tail = [symSentence, ...aside].filter(Boolean).join(l === 'en' ? ' ' : '');
-  const explain = tail.length > 180 ? symHtml : (tail ? `<p>${esc(tail)}</p>` : '');
+  const defList = defs.length
+    ? `<p>${esc(l === 'en' ? 'What the symbols mean:' : '符号的意思：')}</p><dl class="fx-def">${defs.map((s) => `<div><dt>${esc(s.name)}</dt><dd>${esc(s.rest)}</dd></div>`).join('')}</dl>`
+    : '';
+  const asideHtml = [...longs.map((s) => s.rest), shortSentence, ...aside].filter(Boolean).map((s) => `<p>${esc(/[。！？.!?]$/.test(s) ? s : s + (l === 'en' ? '.' : '。'))}</p>`).join('');
   const formulas = displayFx.map((f, i) => {
-    const before = i === 0 ? lead : (l === 'en' ? 'The same relation, written once more.' : '同一个关系，再写成一种。');
-    const after = i === displayFx.length - 1 ? explain : '';
+    const last = i === displayFx.length - 1;
+    const before = i === 0
+      ? (l === 'en' ? 'Written as a formula, that step is:' : '写成式子，就是：')
+      : (l === 'en' ? 'The same step, on the next line:' : '同一步，再写一行：');
+    const after = last ? (defList + asideHtml || `<p>${esc(l === 'en' ? 'The left side is the result; the right side is how it is computed.' : '左边是结果，右边是怎么算出来。')}</p>`) : '';
     return `<p>${esc(before)}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${after}`;
   }).join('');
   const qSlot = (i: number) => `<div class="st-q" data-vf-part="check" data-vf-i="${i}"></div>`;
   const L5 = [
-    `${H('这一步在做什么', 'What this step is doing')}<div data-ask="by"></div><p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
+    `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
     `${H('看一看', 'Look')}${figure}<div data-ask="num"></div>`,
     `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div>${qSlot(0)}`,
     `${H('另外的办法为什么不行', 'Why the other ways fail')}${why.length ? flow(why) : ''}<div data-ask="pred"></div><div data-vf-part="myth"></div>${qSlot(1)}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>${qSlot(2)}`,
