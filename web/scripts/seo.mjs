@@ -30,12 +30,77 @@ const HL = { zh: 'zh-CN', en: 'en' };
 const OGL = { zh: 'zh_CN', en: 'en_US' };
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-/** strip the colour / keyword marks used in the layered copy so SEO pages stay plain text */
+/** The same {#key} table the interactive pages fill from (src/dv/nums.ts). Values are not copied here. */
+export function numsFromSource(web) {
+  const src = readFileSync(join(web, 'src/dv/nums.ts'), 'utf8');
+  const start = src.indexOf('export const NUM = {');
+  const end = src.indexOf('} satisfies Record<string, Num>');
+  if (start < 0 || end < start) throw new Error('seo: NUM table not found in nums.ts');
+  const block = src.slice(start, end);
+  const nums = {};
+  const re = /\n  (\w+): \{\n    zh: '((?:\\'|[^'])*)',\s*en: '((?:\\'|[^'])*)',(?:\n    ap: \['((?:\\'|[^'])*)', '((?:\\'|[^'])*)'\],)?/g;
+  for (const m of block.matchAll(re)) nums[m[1]] = { zh: m[2], en: m[3], ap: m[4] != null ? [m[4], m[5]] : null };
+  if (Object.keys(nums).length < 30) throw new Error('seo: parsed too few numbers from nums.ts (' + Object.keys(nums).length + ')');
+  return nums;
+}
+/** Same substitution as fillDvText: the table value, and an approximate label when the table has one. */
+export function fillNums(s, L, nums) {
+  return String(s ?? '').replace(/\{#(\w+)\}/g, (_, k) => {
+    const n = nums[k];
+    if (!n || (L !== 'zh' && L !== 'en') || !n[L]) throw new Error('seo: unknown number {#' + k + '}');
+    return n.ap ? n[L] + ' {~' + n.ap[L === 'zh' ? 0 : 1] + '}' : n[L];
+  });
+}
+const STEP_TOK = '15a|15b|8a|8b|\\d+|[PESA]';
+/** Old “第 N 步 / step N” wording becomes the station’s own name. A gradient step (“第 1 步梯度”) stays. */
+export function stepPhrase(s, L, names) {
+  const nameFor = (p) => {
+    if (names[p]) return names[p];
+    if (p === '8' && names['8a'] && names['8b']) return L === 'zh' ? `${names['8a']}、${names['8b']}` : `${names['8a']}, ${names['8b']}`;
+    if (p === '15' && names['15a'] && names['15b']) return L === 'zh' ? `${names['15a']}、${names['15b']}` : `${names['15a']}, ${names['15b']}`;
+    return '';
+  };
+  const quote = (p) => { const n = nameFor(p); return n ? (L === 'zh' ? `「${n}」` : `“${n}”`) : ''; };
+  if (L === 'zh') {
+    return s.replace(new RegExp(`第\\s*((?:${STEP_TOK})(?:\\s*[、，,]\\s*(?:${STEP_TOK}))*)\\s*步(?!梯度)`, 'g'), (m, inner) => {
+      const parts = inner.split(/\s*[、，,]\s*/).map(quote);
+      return parts.every(Boolean) ? parts.join('、') : m;
+    });
+  }
+  return s.replace(new RegExp(`\\bsteps?\\s+((?:${STEP_TOK})(?:\\s*(?:,|and)\\s*(?:${STEP_TOK}))*)\\b(?!\\s+gradient)`, 'gi'), (m, inner) => {
+    const parts = inner.split(/\s*(?:,|and)\s*/i).map(quote);
+    return parts.every(Boolean) ? parts.join(', ') : m;
+  });
+}
+const tick = (s) => String(s).replace(/`/g, '');
+/** One worked example whose result is the shared table, readable with no JavaScript. */
+function worked(k, L, nums) {
+  if (k === '6') {
+    const a = tick(nums.dot[L]);
+    return L === 'zh'
+      ? ['q = [3, 1]，k = [2, 2.5]。点积是多少？', `逐位相乘再相加：${a}。`]
+      : ['q = [3, 1], k = [2, 2.5]. What is the dot product?', `Multiply each pair, then add: ${a}.`];
+  }
+  if (k === '9') {
+    const s = tick(nums.tS[L]), a = tick(nums.t1[L]), a05 = tick(nums.t05[L]), a2 = tick(nums.t2[L]);
+    return L === 'zh'
+      ? [`分数 ${s}，温度 T = 1 时三个概率是多少？`, `T = 1 → ${a}。T = 0.5 → ${a05}。T = 2 → ${a2}。`]
+      : [`Scores ${s}. At temperature T = 1, what are the three probabilities?`, `T = 1 → ${a}. T = 0.5 → ${a05}. T = 2 → ${a2}.`];
+  }
+  if (k === '12') {
+    const a = tick(nums.kv100[L]);
+    return L === 'zh'
+      ? ['生成 100 个词元，不用缓存一共要算多少次 K、V？', `${a}。有缓存只算 100 次。`]
+      : ['Generate 100 tokens. Without a cache, how many times are K and V computed?', `${a}. With a cache, only 100 times.`];
+  }
+  return null;
+}
+/** strip the colour / keyword marks used in the layered copy so SEO pages stay plain text.
+    {#key} is filled before this runs; a leftover placeholder must stay visible so the build test fails. */
 const plain = (s) => String(s)
   .replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1')
   .replace(/\*\*([^*]+)\*\*/g, '$1')
   .replace(/`([^`]+)`/g, '$1')
-  .replace(/\{#[^}]+\}/g, '')
   .replace(/\{~([^}]+)\}/g, '$1')
   .replace(/[（(][^）)]{0,40}(?:KM|KA|KB|KC|K)\d{2}[^）)]{0,20}[）)]/g, '')
   .replace(/(?:KM|KA|KB|KC|K)\d{2}\s*卡同一例/g, '')
@@ -126,7 +191,8 @@ export function buildSeo({ web, base, lastmod } = {}) {
     + '.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}'
     + '.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}'
     + '.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}'
-    + 'ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}';
+    + 'ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}'
+    + 'details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}';
   const head = ({ L, title, desc, path, alt, type = 'article', ld, noindex = false, image }) => `<!doctype html>
 <html lang="${HL[L]}">
 <head>
@@ -165,16 +231,23 @@ ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
   const crumbs = (items) => ({ '@type': 'BreadcrumbList', itemListElement: items.map(([n, p], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: abs(p) })) });
 
   const files = new Map(), pages = [], descs = new Map(), names = { zh: [], en: [] };
+  const nums = numsFromSource(web);
+  const nameOf = { zh: {}, en: {} };
+  for (const L of ['zh', 'en']) {
+    const st0 = loadSt(web, L).st;
+    if (st0.length !== KEYS.length) throw new Error(`seo: ${L}-st has ${st0.length} stations, expected ${KEYS.length}`);
+    KEYS.forEach((k, i) => { nameOf[L][k] = st0[i].n; });
+  }
   for (const L of ['zh', 'en']) {
     const st = loadSt(web, L).st;
-    if (st.length !== KEYS.length) throw new Error(`seo: ${L}-st has ${st.length} stations, expected ${KEYS.length}`);
     names[L] = st.map((s) => s.n);
+    const show = (s) => plain(stepPhrase(fillNums(s, L, nums), L, nameOf[L]));
     for (let i = 0; i < KEYS.length; i++) {
       const k = KEYS[i], s = st[i], nm = s.n;
       const ly = s.ly || {};
       const title = `${nm} · ${SITE[L]}`;
-      let desc = clip(plain([s.q, ly.hook].filter(Boolean).join(L === 'zh' ? '' : ' ')), L === 'zh' ? 110 : 160);
-      if (!desc) desc = clip(`${nm}: ${plain((ly.an && ly.an[0]) || s.i[0] || '')}`, L === 'zh' ? 110 : 160);
+      let desc = clip(show([s.q, ly.hook].filter(Boolean).join(L === 'zh' ? '' : ' ')), L === 'zh' ? 110 : 160);
+      if (!desc) desc = clip(`${nm}: ${show((ly.an && ly.an[0]) || s.i[0] || '')}`, L === 'zh' ? 110 : 160);
       if ([...descs.values()].includes(desc)) desc = clip(`${nm} · ${desc}`, L === 'zh' ? 110 : 160);
       descs.set(`${L}:${k}`, desc);
       const path = pagePath(k, L), alt = { zh: pagePath(k, 'zh'), en: pagePath(k, 'en') };
@@ -183,22 +256,23 @@ ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
         { '@type': 'LearningResource', '@id': abs(path) + '#lesson', name: nm, headline: title, description: desc, url: abs(path), inLanguage: HL[L], isAccessibleForFree: true, isPartOf: { '@type': 'Course', '@id': abs(catPath(L)) + '#course', name: T[L].course }, learningResourceType: 'Lesson' },
         crumbs(trail)] };
       const pv = i > 0 ? KEYS[i - 1] : null, nx = i < KEYS.length - 1 ? KEYS[i + 1] : null;
-      const lis = (xs) => (xs && xs.length ? `<ul>${xs.map((x) => `<li>${esc(plain(x))}</li>`).join('')}</ul>` : '');
+      const lis = (xs) => (xs && xs.length ? `<ul>${xs.map((x) => `<li>${esc(show(x))}</li>`).join('')}</ul>` : '');
       const sec = (body) => body ? `<section>${body}</section>\n` : '';
       const body = `<nav class="bc" aria-label="breadcrumb"><ol>${trail.map(([n, p], j) => `<li>${j === trail.length - 1 ? `<b>${esc(n)}</b>` : `<a href="${base}${p}">${esc(n)}</a>`}</li>`).join('')}</ol></nav>
 <main>
 <p class="lv">${T[L].layer} · ${i + 1} / ${KEYS.length}</p>
 <h1>${esc(nm)}</h1>
-<p class="lead">${esc(plain(s.s))}</p>
+<p class="lead">${esc(show(s.s))}</p>
 <p class="open"><a href="${appHref('D/' + k, L)}">${T[L].open}</a></p>
-${s.q ? `<p class="bd">${esc(plain(s.q))}</p>` : ''}
-${sec(ly.hook ? `<p>${esc(plain(ly.hook))}</p>` : '')}
+${s.q ? `<p class="bd">${esc(show(s.q))}</p>` : ''}
+${(() => { const ex = worked(k, L, nums); return ex ? `<details class="ex"><summary>${esc(ex[0])}</summary><p>${esc(ex[1])}</p></details>\n` : ''; })()}
+${sec(ly.hook ? `<p>${esc(show(ly.hook))}</p>` : '')}
 ${sec(lis(ly.an))}
 ${sec(lis(s.i))}
 ${sec(lis(ly.pc))}
 ${sec(lis([...(ly.num || []), ...(s.x || [])]))}
 ${sec(lis([...(ly.fx || []), ...(s.f || [])]) + (ly.fe && ly.fe.length ? lis(ly.fe) : ''))}
-${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(plain(s.lo))}</p>` : ''}
+${s.lo ? `<p><b>${L === 'zh' ? '留下的问题' : 'Left open'}</b> ${esc(show(s.lo))}</p>` : ''}
 <nav class="pn">${pv ? `<a href="${base}${pagePath(pv, L)}" rel="prev">${T[L].prev}${L === 'zh' ? '：' : ': '}${esc(names[L][i - 1])}</a>` : '<span></span>'}${nx ? `<a href="${base}${pagePath(nx, L)}" rel="next">${T[L].next.replace(' →', '')}${L === 'zh' ? '：' : ': '}${esc(names[L][i + 1])} →</a>` : ''}</nav>
 <section><h2>${T[L].all}</h2><ol>${KEYS.map((kk, j) => j === i ? `<li><b>${esc(names[L][j])}</b></li>` : `<li><a href="${base}${pagePath(kk, L)}">${esc(names[L][j])}</a></li>`).join('')}</ol></section>
 </main>
