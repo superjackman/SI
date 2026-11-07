@@ -78,7 +78,7 @@ test.describe('R56 micro-loop', () => {
   test('8a: a re-loop on the scale step lands on its attention shot', async ({ page }) => {
     const errs = await open(page, './?lang=en#D/8a');
     await expect(page.locator('.ml-goal')).toContainText(ML['8a']!.goal[1]); await expect(page.locator('.dv-pos')).toContainText('10/23');
-    await page.locator('[data-ml-g="1"]').click({ force: true }); await cont(page, 'r');
+    await page.locator('[data-ml-g="1"]').evaluate((el) => (el as HTMLButtonElement).click()); await cont(page, 'r');
     await expect(page.locator('.ml-lys [data-ml-fr]').first()).toBeVisible(); await page.locator('.ml-lys [data-ml-fr]').first().click();
     await expect(page.locator('[data-att]')).toBeVisible();
     expect(errs).toEqual([]);
