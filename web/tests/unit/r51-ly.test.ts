@@ -37,7 +37,7 @@ describe('R52 layered teaching', () => {
     }
   });
   it('colour marks render as spans, inside formulas too', () => {
-    expect(mk('`⟦q:Q⟧ × ⟦k:K^T⟧`')).toBe('<span class="formula"><span class="ly-c ly-q">Q</span> × <span class="ly-c ly-k">K^T</span></span>');
+    expect(mk('`⟦q:Q⟧ × ⟦k:K^T⟧`')).toBe('<span class="ly-c ly-q">Q</span> × <span class="ly-c ly-k">K^T</span>');
     expect(mk('a ⟦v:b⟧ ⟦c:c⟧ ⟦r:d⟧')).toBe('a <span class="ly-c ly-v">b</span> <span class="ly-c ly-c">c</span> <span class="ly-c ly-r">d</span>');
   });
   describe('depth', () => {

@@ -17,7 +17,23 @@ test('every station is an outline and one article, with the lesson already in th
     await expect(page.locator('.st-side, .st-tabs, .ly-dep, .ly-pg, .ly-go, .ml-goal, .ml-bar')).toHaveCount(0);
     await expect(page.locator('.ly-l:not([hidden])')).toHaveCount(5);
     await expect(page.locator('.st-code')).toBeAttached();
-    await expect(page.locator('.ly-fx, .st-inline .formula').first()).toBeAttached();
+    await expect(page.locator('.ly-fx .fx-line').first()).toBeAttached();
+    await expect(page.locator('.st-inline, .st-side')).toHaveCount(0);
+    const adjacent = await page.evaluate(() => {
+      const demo = document.querySelector('[data-vf-part="demo"]');
+      return !!demo?.nextElementSibling?.classList.contains('st-live');
+    });
+    expect(adjacent, k).toBe(true);
+    const text = await page.locator('.st-article').innerText();
+    for (const s of ['先自己算，再填进去', '拖一下，从图到式子', '同一件事，写成图', '这几个词', '连对 0/', '用 NumPy']) expect(text, `${k} ${s}`).not.toContain(s);
+    const dup = await page.evaluate(() => {
+      const norm = (s: string) => s.replace(/\s+/g, '').trim();
+      const blocks = [...document.querySelectorAll('.fx-line, .fx-sym p')].map((e) => norm(e.textContent || '')).filter((t) => t.length > 8);
+      const seen = new Map<string, number>();
+      for (const t of blocks) seen.set(t, (seen.get(t) || 0) + 1);
+      return [...seen.entries()].filter(([, n]) => n > 1).map(([t]) => t);
+    });
+    expect(dup, k).toEqual([]);
     await expect(page.locator('.dv-take li')).toHaveCount(3);
     await expect(page.locator('.dv-end [data-fwd="1"]')).toHaveCount(1);
     await expect(page.locator('[role="dialog"]')).toHaveCount(0);

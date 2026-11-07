@@ -51,7 +51,7 @@ describe('R47 derivation path', () => {
     }
   });
   it('markup is escaped before the marks are applied', () => {
-    expect(mk('<b>x</b> **k** `f`')).toBe('&lt;b&gt;x&lt;/b&gt; <span class="k">k</span> <span class="formula">f</span>');
+    expect(mk('<b>x</b> **k** `f`')).toBe('&lt;b&gt;x&lt;/b&gt; <span class="k">k</span> f');
   });
   it('every linked card exists in both languages; each card links back to the first stage that uses it', () => {
     for (const l of ['zh', 'en']) { const all = card(l); for (const ks of DV_K) for (const k of ks) expect(all[k], `${l} ${k}`).toBeTruthy(); }

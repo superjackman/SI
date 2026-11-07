@@ -22,16 +22,18 @@ export const CAP: Record<string, readonly [string, string, string, string]> = {
   '16': ['一根线串起几颗珠子', 'One thread through several beads', '从第 0 站走到这里', 'From stop 0 to here'],
 };
 
-const FALL: readonly [string, string, string, string] = ['生活里的这一幕', 'The everyday picture', '同一件事，写成图', 'The same idea, drawn'];
+const FALL: readonly [string, string, string, string] = ['', '', '', ''];
 
 export function morph(key: string, l: L): string {
   const everyday = life(key, l);
   const math = CAST_KEYS.has(key) ? castMath(key, l) : mathPic(key, l);
   if (!everyday || !math) return everyday;
   const cap = CAP[key] ?? FALL, z = (a: string, b: string) => tx([a, b], l);
+  const capA = z(cap[0], cap[1]), capB = z(cap[2], cap[3]);
+  const caption = capA || capB ? `<p class="dv-mcap">${capA ? `<span class="a">${esc(capA)}</span>` : ''}${capB ? `<span class="b">${esc(capB)}</span>` : ''}</p>` : '';
   return `<div class="dv-morph" data-morph="1" data-at="life" style="--m:0"><div class="dv-morn"><div class="dv-ma">${everyday}</div><div class="dv-mb">${math}</div></div>
-<p class="dv-mcap"><span class="a">${esc(z(cap[0], cap[1]))}</span><span class="b">${esc(z(cap[2], cap[3]))}</span></p>
-<label class="dv-msl"><span>${z('拖一下，从图到式子', 'Drag, from the picture to the diagram')}</span><input type="range" min="0" max="100" value="0" aria-label="${z('从图到式子', 'From the picture to the diagram')}"></label></div>`;
+${caption}
+<label class="dv-msl"><input type="range" min="0" max="100" value="0" aria-label="${z('画面和示意图', 'Picture and diagram')}"></label></div>`;
 }
 
 export function morphWire(root: ParentNode) {

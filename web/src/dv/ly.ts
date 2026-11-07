@@ -9,6 +9,8 @@ import type { Ly, Stage } from './types';
 import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
 import { life } from './ill';
+import { workedHtml } from './rail';
+import { ML } from './mld';
 
 import { LY_DEPTH, depthGet, depthSet, okD, type Depth } from './prog';
 
@@ -31,8 +33,6 @@ export const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['3
 
 type Mk = (s: string) => string;
 const P = (xs: string[], mk: Mk, c = '') => xs.map((x) => `<p${c ? ` class="${c}"` : ''}>${mk(x)}</p>`).join('');
-const UL = (xs: string[], mk: Mk, c = '') => (xs.length ? `<ul${c ? ` class="${c}"` : ''}>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '');
-const plain = (s: string) => s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1');
 const MOT = new Set(['6', '7', '8b', '9', '12']);
 
 /* ---------- the pictures (pure html; the attention one is an animation in ./att) ---------- */
@@ -111,19 +111,74 @@ const codeLines = (s: string) => {
   }
   return out.split('\n').map((l) => l.trimEnd()).filter((l) => l.trim()).join('\n');
 };
-/** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */
+const norm = (s: string) => s.replace(/<[^>]+>/g, '').replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').replace(/\{#[^}]+\}/gi, '').replace(/\s+/g, '').replace(/[，。、：；！？,.!?:;“”"'（）()【】\-—–]/g, '');
+const MOTIF = [/大雾/, /雾里/, /蒙着/, /下山/, /大碗/, /碗底/, /碗形/, /收音机/, /旋钮/, /纸条/, /罚分/, /天气预报/, /fog/i, /blindfold/i, /bowl/i];
+const skipLine = (s: string) => /NumPy|数字层|看动画/.test(s) || s.includes('拖一') || s.includes('从图到') || (s.includes('同一件') && s.includes('写成图')) || s.includes('先自己');
+const fxPlain = (s: string) => s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').replace(/\{#[^}]+\}/gi, '').replace(/\s+/g, ' ').trim();
+const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+/** one chapter: picture, experiment and its step, the formula once, why the other ways fail, then code */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
+  void exK;
   const Y = S.ly;
   const key = page.replace(/^D\//, '');
   const own = life(key, l);
   const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : Y.pic === 'att' ? `<div class="ly-att" data-att="1"></div>` : own;
   const mot = MOT.has(key) ? `<div class="ly-mot" data-mot="${key}"></div>` : '';
-  const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
+  const seen: string[] = [];
+  const motifs = new Set<string>();
+  const note = (s: string) => {
+    const n = norm(s);
+    if (n.length >= 8) seen.push(n);
+    for (const r of MOTIF) if (r.test(s)) motifs.add(r.source);
+  };
+  const fresh = (s: string, motif: boolean) => {
+    const n = norm(s);
+    if (n.length >= 12) {
+      for (const p of seen) {
+        if (p === n) return false;
+        const short = p.length < n.length ? p : n;
+        const long = p.length < n.length ? n : p;
+        if (short.length >= 18 && long.includes(short)) return false;
+      }
+    }
+    if (motif) for (const r of MOTIF) if (r.test(s) && motifs.has(r.source)) return false;
+    return true;
+  };
+  const keep = (s: string, motif: boolean) => {
+    if (!s.trim() || skipLine(s)) return false;
+    if (!fresh(s, motif)) return false;
+    note(s);
+    return true;
+  };
+  note(Y.hook);
+  const an = Y.an.filter((x) => keep(x, true));
+  const labeled = Y.pic === 'sm' || Y.pic === 'bowl' || Y.pic === 'xor' || Y.pic === 'dot' || Y.pic === 'blk';
+  const caps = labeled ? [] : Y.pc.filter((x) => keep(x, true));
+  let stepSrc = '';
+  if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
+  const g0 = ML[key]?.goals[0];
+  let lead = l === 'en' ? 'That step, written as a formula.' : '把这一步写成式子，是这样。';
+  if (g0) {
+    const raw = fillDvText(tx(g0.why[g0.a]!, l), l).replace(/`[^`]*`/g, '').replace(/\*\*/g, '');
+    const bit = raw.split(/[。！？.!?]/)[0]?.trim() ?? '';
+    const line = bit ? (l === 'en' ? `${bit}.` : `${bit}。`) : '';
+    if (line && keep(line, false)) lead = line;
+  }
+  for (const f of Y.fx) note(fxPlain(f));
+  const why: string[] = [];
+  for (const g of ML[key]?.goals ?? []) g.why.forEach((w, i) => {
+    if (i === g.a) return;
+    const s = fillDvText(tx(w, l), l);
+    if (keep(s, false)) why.push(s);
+  });
+  const codeLead = l === 'en' ? 'In code, the same step.' : '写成程序，是这样。';
+  const code = codeLines(Y.jv).split('\n').map((line) => { const pad = line.match(/^ */)?.[0] ?? ''; return pad + mk(line); }).join('\n');
   const L5 = [
-    `<p class="ly-hook">${mk(Y.hook)}</p>${P(Y.an, mk)}${mot}`,
-    `${pic}${P(Y.pc, mk, 'ly-cap')}`,
-    `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" id="fig" data-vf-part="demo"></div>`,
-    `<div class="ly-fx" id="formula">${Y.fx.map((f) => `<p class="formula">${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<pre class="st-code" id="code"><code>${codeLines(Y.jv).split('\n').map((line) => { const pad = line.match(/^ */)?.[0] ?? ''; return pad + mk(line); }).join('\n')}</code></pre><div class="ly-more"><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p>${mk(S.h)}</p></div>`,
+    `<p class="ly-hook">${mk(Y.hook)}</p>${P(an, mk)}`,
+    `<div class="st-fig">${pic}${mot}${P(caps, mk, 'ly-cap')}</div>`,
+    `<div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}`,
+    `<p class="fx-lead">${esc(lead)}</p><div class="ly-fx" id="formula">${Y.fx.map((f) => `<p class="formula fx-line">${esc(fxPlain(f))}</p>`).join('')}</div><div class="fx-sym">${Y.fe.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${why.length ? `<div class="st-why">${why.map((p) => `<p>${mk(p)}</p>`).join('')}</div>` : ''}<p class="fx-lead">${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
     `<div class="vf-slot" data-vf-part="check"></div>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');

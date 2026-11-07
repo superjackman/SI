@@ -43,7 +43,8 @@ test.describe('R56 micro-loop', () => {
     const G = ML['2']!.goals[0]!;
     await expect(page.locator('.ml-goal, .st-side, .st-tabs, .ly-dep')).toHaveCount(0);
     await expect(page.locator('.ly-l:not([hidden])')).toHaveCount(5);
-    await expect(page.locator('.ml-i')).toContainText('第 3/23 站留下');
+    await expect(page.locator('.st-open')).toContainText('怎么找到让损失最小的参数');
+    await expect(page.locator('.ml-i')).not.toContainText('留下');
     await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(1); await expect(page.locator('.ml-live')).toHaveCount(0);
     await page.locator(`[data-ml-o="${G.a}"]`).click(); await expect(page.locator('.ml-live')).toHaveCount(1);
     await page.locator(`[data-ml-p="${G.pr.a}"]`).click(); await expect(page.locator('.ml-pr')).toContainText('对了');
@@ -55,7 +56,8 @@ test.describe('R56 micro-loop', () => {
     // stay on the question: new numbers, two right in a row light the goal
     await page.locator('[data-ml-again]').click();
     for (const i of [1, 2]) {
-      const q = varQ(G.vk, i); await expect(page.locator('.ml-vn')).toContainText(`第 ${i + 1} 组数`);
+      const q = varQ(G.vk, i);
+      await expect(page.locator('.ml-in')).toHaveValue('');
       await page.locator('.ml-in').fill(num(q.a, q.d)); await page.locator('[data-ml-ck]').click(); await expect(page.locator('.ml-fb.ok')).toBeVisible();
       if (i === 1) await page.locator('[data-ml-again]').click();
     }

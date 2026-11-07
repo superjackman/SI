@@ -3,10 +3,8 @@
 import { tx, type L } from '../l4/txt';
 import { DV_KEY, DV_LV, DV_NM, posLabel } from './links';
 import { fmt, gdL, gdSeq } from '../vf/calc';
-import type { Dv } from './types';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-const plain = (s: string) => s.replace(/`/g, '').replace(/\*\*/g, '').replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/\{#[a-z0-9]+\}/gi, '').replace(/\s+/g, ' ').trim();
 
 const LAYERS: { n: number; zh: string; en: string }[] = [
   { n: 5, zh: '背后的数学', en: 'The maths behind it' },
@@ -35,22 +33,14 @@ export function outlineHtml(i: number, l: L, seen: ReadonlySet<string>, mastered
   return `<aside class="st-out"><button type="button" class="st-tog" aria-expanded="false">${esc(posLabel(i, zh ? 'zh' : 'en'))}</button><nav aria-label="${zh ? '23 站' : '23 stops'}"><p class="pos st-pos"><span>${zh ? '路径位置' : 'Place'}</span><strong>${esc(posLabel(i, zh ? 'zh' : 'en'))}</strong><em>${esc(here)}</em></p>${groups}</nav></aside>`;
 }
 
-function fxLine(S: Dv['st'][number]): string {
-  const raw = S.ly?.fx?.[0] || S.f[0] || '';
-  return plain(raw);
-}
-
-export function railHtml(key: string, S: Dv['st'][number], l: L): string {
-  const zh = l !== 'en';
-  const formula = key === '2'
-    ? 'w ← w − η·∂L/∂w'
-    : (fxLine(S) || (zh ? '这一站的式子在正文里。' : 'The formula is in the page.'));
-  const live = key === '2'
-    ? `<div class="st-live" data-rail="gd"><div>旧 w = <b data-k="w0">0</b></div><div>∂L/∂w = <b data-k="slope">−4</b></div><div>η = <b data-k="eta">0.30</b></div><div>新 w = <b data-k="w1">1.20</b></div><div>L <b data-k="L0">4.50</b> → <b data-k="L1">1.14</b></div></div>`
-    : `<div class="st-live" data-rail="text"><p data-k="step">${esc(plain(S.x[0] || S.ly?.num?.[0] || S.h || ''))}</p></div>`;
-  const gloss = key === '2' ? `<details class="gloss" open><summary><span class="term">${zh ? '梯度' : 'Gradient'}</span></summary><p>${zh ? '每个旋钮各有一个坡。把这些坡排成一个向量，就是梯度。朝它的反方向走，损失才会变小。' : 'Each knob has a slope. Those slopes, as one vector, are the gradient. Step against it and the loss falls.'}</p></details>` : '';
-  const terms = (S.ly?.fe ?? S.i).slice(0, 3).map((x) => `<li>${esc(plain(x))}</li>`).join('');
-  return `<section class="st-inline"><h2>${zh ? '式子' : 'Formula'}</h2><p class="formula">${esc(formula)}</p><h2>${zh ? '算一步' : 'One step'}</h2>${live}${gloss}${terms ? `<h2>${zh ? '这几个词' : 'The words'}</h2><ul class="terms">${terms}</ul>` : ''}</section>`;
+/** The one worked step, placed directly under the experiment. Station 2 follows the gradient sliders. */
+export function workedHtml(key: string, l: L, stepHtml: string): string {
+  if (key === '2') {
+    const zh = l !== 'en';
+    const row = (k: string, lab: string, v: string) => `<div><span>${lab}</span> <b data-k="${k}">${v}</b></div>`;
+    return `<div class="st-live" data-rail="gd">${row('w0', zh ? '旧 w =' : 'old w =', '0')}${row('slope', '∂L/∂w =', '−4')}${row('eta', 'η =', '0.30')}${row('w1', zh ? '新 w =' : 'new w =', '1.20')}<div>L <b data-k="L0">4.50</b> → <b data-k="L1">1.14</b></div></div>`;
+  }
+  return `<div class="st-live" data-rail="text"><p data-k="step">${stepHtml}</p></div>`;
 }
 
 export function railWire(host: ParentNode, key: string) {
