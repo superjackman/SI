@@ -87,12 +87,12 @@
 .ly-asvg text, .ly-asvg tspan { fill: var(--ink); }
 .ly-asvg .ly-big { font-size: 26px; font-weight: 800; fill: var(--navy); }
 .ly-asvg .ly-num { font-size: 16px; font-weight: 800; fill: var(--navy); }
-.ly-tk { fill: var(--card); stroke: var(--link); }
-.ly-tk.it { fill: var(--card); stroke: var(--highlight); stroke-width: 2; }
-.ly-tk.itv { fill: var(--card); stroke: var(--link); stroke-width: 2; }
+.ly-tk { fill: var(--navy); stroke: var(--link); }
+.ly-tk.it { fill: var(--navy); stroke: var(--highlight); stroke-width: 2; }
+.ly-tk.itv { fill: var(--navy); stroke: var(--link); stroke-width: 2; }
 .ly-tk.k { stroke: var(--good); stroke-width: 2; }
 .ly-tk.v { stroke: var(--link); stroke-width: 2; }
-.ly-asvg .ly-tt { font-size: 13px; fill: var(--ink); }
+.ly-asvg .ly-tt { font-size: 15px; fill: var(--on-navy); color: var(--on-navy); }
 .ly-beam { fill: none; stroke: var(--highlight); stroke-width: 2; stroke-dasharray: 5 4; }
 .ly-flow { fill: none; stroke: var(--link); stroke-opacity: .75; stroke-linecap: round; }
 .ly-acap { margin: 0; min-height: 3.2em; color: var(--ink); }
