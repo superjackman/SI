@@ -115,11 +115,6 @@ button.dv-from span::before { content: '‹ '; }
 /* R56 记忆: 本站只带走 3 句 + 串起来 */
 .dv-pos { margin: 0; font-size: 13px; font-weight: 700; color: var(--highlight); }
 .dv-quiet { display: block; margin: 8px 0 0; font-size: 14px; color: var(--link); }
-.dv-sp[data-done="0"] .dv-take,
-.dv-sp[data-done="0"] .dv-nx,
-.dv-sp[data-done="0"] .dv-end,
-.dv-sp[data-done="0"] .ml-dy,
-.dv-sp[data-done="0"] .dv-later .l4-kbd,
 .dv-sp[data-done="0"] .dv-lo { display: none !important; }
 .dv-sp[data-done="1"] .ly > :not(.ml-v),
 .dv-sp[data-done="1"] .ml-goal,
@@ -194,7 +189,17 @@ button.dv-from span::before { content: '‹ '; }
 .st-pos strong { display: block; font-size: 18px; font-weight: 600; color: var(--ink); margin: 2px 0; }
 .st-pos em { display: block; font-style: normal; font-size: 14px; }
 @media (min-width: 1024px) {
-  .l4 .px.dv-sp { display: grid; grid-template-columns: 248px minmax(0, 1fr) 380px; max-width: none; gap: 0; align-items: start; }
+  .l4 .px.dv-sp { display: grid; grid-template-columns: 240px minmax(0, 1fr); max-width: none; gap: 0; align-items: start; }
+  .st-article { max-width: 880px; margin: 0 auto; padding: 36px 48px 80px; font-size: 18px; line-height: 1.75; }
+  .st-article .st-h { font-size: 40px; margin: 8px 0 16px; }
+  .st-article .st-open, .st-article .st-say, .st-article .ly-hook { margin: 0 0 16px; max-width: 42em; }
+  .st-article .dv-lead, .st-article .vf-plot, .st-article .ly-l { max-width: 100%; }
+  .st-inline { margin: 28px 0; padding: 8px 0 0; }
+  .st-inline h2 { margin: 18px 0 6px; font-size: 13px; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+  .st-inline .formula { font-size: 22px; line-height: 1.5; color: var(--ink); }
+  .ly.ml[data-ml-s] > .ly-l,
+  .dv-sp .ml-i, .dv-sp .ml-rz, .dv-sp .ml-v { display: flex !important; }
+  .ly.ml[data-ml-s] > .ly-l { display: block !important; }
   .st-main { padding: 12px 28px 40px; min-width: 0; }
   .st-out { position: sticky; top: 0; max-height: calc(100vh - 180px); overflow: auto; margin: 0; background: var(--card); border-right: 1px solid var(--line); padding: 8px 8px 16px; }
   .st-side { position: sticky; top: 0; max-height: calc(100vh - 180px); overflow: auto; margin: 0; background: var(--card); color: var(--ink); border: 0; border-left: 1px solid var(--line); border-radius: 0; padding: 16px 16px 28px; }
@@ -231,11 +236,12 @@ button.dv-from span::before { content: '‹ '; }
   .vf-dm .vf-ctl { margin-top: 8px; }
   .st-side .formula { font-size: 20px; letter-spacing: 0.03em; line-height: 1.5; padding: 10px 12px; color: var(--ink); }
 @media (max-width: 1400px) {
-  .l4 .px.dv-sp { grid-template-columns: 200px minmax(0, 1fr) 260px; }
+  .l4 .px.dv-sp { grid-template-columns: 220px minmax(0, 1fr); }
   .st-main { padding-left: 16px; padding-right: 16px; }
 }
 @media (min-width: 1600px) {
-  .l4 .px.dv-sp { grid-template-columns: 280px minmax(0, 1fr) 380px; }
+  .l4 .px.dv-sp { grid-template-columns: 260px minmax(0, 1fr); }
+  .st-article { font-size: 19px; }
 }
   .dv-mcap { min-height: 0; }
   .dv-msl input { min-height: 28px; }

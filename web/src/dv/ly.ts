@@ -26,11 +26,8 @@ const openSet = (page: string, n: number) => { const o = openAll(); o[page] = n;
 export const shown = (open: number, d: Depth) => Math.max(1, Math.min(open, DEPTH_MAX[d]));
 
 const NAME: readonly (readonly [string, string])[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
-const NXT: readonly (readonly [string, string])[] = [['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue'], ['继续', 'Continue']];
-const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 
 type Mk = (s: string) => string;
-const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const P = (xs: string[], mk: Mk, c = '') => xs.map((x) => `<p${c ? ` class="${c}"` : ''}>${mk(x)}</p>`).join('');
 const UL = (xs: string[], mk: Mk, c = '') => (xs.length ? `<ul${c ? ` class="${c}"` : ''}>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '');
 const plain = (s: string) => s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1');
@@ -114,23 +111,21 @@ const codeLines = (s: string) => {
 };
 /** the layered body of a pilot stage page (replaces ①–④, the try-it line and the 验证 block) */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
-  const z = (a: string, b: string) => tx([a, b], l), Y = S.ly, d = depthGet(), v = shown(openGet(page), d);
+  const Y = S.ly;
   const key = page.replace(/^D\//, '');
   const own = life(key, l);
   const pic = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'bowl' ? picBowl(l) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'xor' ? picXor(l) : Y.pic === 'dot' ? picDot(l) : Y.pic === 'att' ? `<div class="ly-att" data-att="1"></div>` : own;
   const mot = MOT.has(key) ? `<div class="ly-mot" data-mot="${key}"></div>` : '';
   const fxs = Y.fx.map(plain), more = S.f.filter((f) => !fxs.includes(f));
   const L5 = [
-    `<div class="ly-hero">${own}</div><p class="ly-hook"><b>${mk(Y.hook)}</b></p>${P(Y.an, mk)}${mot}<details class="ly-jv" id="code" open><summary>${z('代码', 'Code')}</summary><pre class="st-code"><code>${codeLines(Y.jv).split('\n').map((l) => { const pad = l.match(/^ */)?.[0] ?? ''; return pad + mk(l); }).join('\n')}</code></pre></details>`,
+    `<p class="ly-hook">${mk(Y.hook)}</p>${P(Y.an, mk)}${mot}`,
     `${pic}${P(Y.pc, mk, 'ly-cap')}`,
     `${UL([...Y.num, ...S.x], mk, 'ly-num')}${exK}<div class="vf-slot" id="fig" data-vf-part="demo"></div>`,
-    `<div class="ly-fx" id="formula">${Y.fx.map((f) => `<p>${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<details class="ly-more"><summary>${z('深入：原理、更多公式和出处', 'Deeper: the reasoning, more formulas, sources')}</summary><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p class="dv-do"><b>${z('自己算一算', 'Work it out')}</b>${mk(S.h)}</p></details>`,
+    `<div class="ly-fx" id="formula">${Y.fx.map((f) => `<p class="formula">${mk(f)}</p>`).join('')}</div>${UL(Y.fe, mk, 'ly-fe')}<pre class="st-code" id="code"><code>${codeLines(Y.jv).split('\n').map((line) => { const pad = line.match(/^ */)?.[0] ?? ''; return pad + mk(line); }).join('\n')}</code></pre><div class="ly-more"><p>${mk(S.q)}</p>${UL(S.i, mk)}${UL(more, mk)}<p>${mk(S.h)}</p></div>`,
     `<div class="vf-slot" data-vf-part="check"></div>`,
   ];
-  const seg = (['s', 'm', 'd'] as const).map((k) => `<button type="button" role="radio" data-ly-d="${k}" aria-checked="${k === d}"${k === d ? ' class="on"' : ''}>${esc(tx(DLAB[k], l))}</button>`).join('');
-  const bar = NAME.map((n, k) => `<li><button type="button" data-ly-go="${k + 1}" aria-label="${esc(tx(n, l))}"><i aria-hidden="true"></i></button></li>`).join('');
-  const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"${k + 1 > v ? ' hidden' : ''}><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
-  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}"><div class="ly-top"><div class="ly-row"><div class="g-seg ly-dep" role="radiogroup" aria-label="${z('学多深', 'How deep')}">${seg}</div><ol class="ly-pg" aria-label="${z('进度', 'Progress')}">${bar}</ol></div></div>${secs}<div class="ly-nx"></div></div>`;
+  const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
+  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;
 }
 
 /** wire the layered body inside `host`: depth, 懂了 → next layer, the bar, the two 验证 parts, the pictures */
@@ -141,22 +136,16 @@ export function wire(host: HTMLElement, page: string, l: L) {
   const reduce = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
   const draw = () => {
     const v = shown(open, d), max = DEPTH_MAX[d];
-    root.dataset.depth = d; root.dataset.shown = String(v);
-    root.querySelectorAll<HTMLElement>('.ly-l').forEach((s) => { s.hidden = Number(s.dataset.ly) > v; });
+    root.dataset.depth = d; root.dataset.shown = '5';
+    root.querySelectorAll<HTMLElement>('.ly-l').forEach((s) => { s.hidden = false; });
     root.querySelectorAll<HTMLElement>('[data-ly-d]').forEach((b) => { const on = b.dataset.lyD === d; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     root.querySelectorAll<HTMLElement>('[data-ly-go]').forEach((b) => {
       const k = Number(b.dataset.lyGo); b.className = k < v ? 'done' : k === v ? 'on' : k <= max ? 'off' : 'out';
       b.setAttribute('aria-label', `${tx(NAME[k - 1]!, l)}${k <= v ? z('，已展开', ', open') : k <= max ? '' : z('，在更深一档', ', in a deeper setting')}`);
       if (k === v) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
     });
-    const nx = root.querySelector<HTMLElement>('.ly-nx')!;
-    /* the station loop has its own single forward button; this one would be a second 「继续」 */
-    const end = v >= 5 ? `<p class="ly-end">${z('✓ 看完了。', '✓ That’s the end of this part.')}</p>` : '';
-    const more = v < max
-      ? `<button type="button" class="l4-b g-jump ly-go" data-ly-a="next">${esc(tx(NXT[v - 1]!, l))}</button>`
-      : `<button type="button" class="l4-b g-info ly-go" data-ly-a="up">${d === 's' ? z('再往下看？切到 5 分钟', 'More of it? Switch to 5 min') : z('连式子一起？切到深入', 'The formula too? Switch to Deep')}</button>`;
-    /* a station already has one forward button; don’t add a second one */
-    nx.innerHTML = root.classList.contains('ml') ? end : (v >= 5 ? end : more);
+    const nx = root.querySelector<HTMLElement>('.ly-nx');
+    if (nx) nx.innerHTML = '';
   };
   const focus = (k: number) => { const h = root.querySelector<HTMLElement>(`.ly-l[data-ly="${k}"] .ly-h`); if (!h) return; h.focus({ preventScroll: true }); h.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' }); };
   const openTo = (k: number) => { if (k > open) { open = k; openSet(page, k); } if (k > DEPTH_MAX[d]) { d = depthFor(k); depthSet(d); } draw(); focus(k); };

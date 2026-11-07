@@ -4,7 +4,7 @@
 import './ml.css';
 import { tx, type L } from '../l4/txt';
 import { ML, type Goal, type Ml } from './mld';
-import { ML_G, masteredSt, mlGet, mlSet, stationMin, type MlS } from './prog';
+import { ML_G, masteredSt, mlGet, mlSet, type MlS } from './prog';
 import { dvI, posLabel } from './links';
 import { noteMastered } from '../px/week';
 import { fillDvText } from './nums';
@@ -20,7 +20,6 @@ import { diaryLine } from './diary';
 type Mk = (s: string) => string;
 type T = readonly [string, string];
 const ABC = ['A', 'B', 'C'];
-const LYN: readonly T[] = [['开场', 'Opening'], ['图', 'Picture'], ['数字', 'Numbers'], ['式子', 'Formula'], ['计算', 'Compute']];
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 export const hasMl = (k: string) => k in ML && k in ML_G;
 export const mlOf = (k: string): Ml | null => ML[k] ?? null;
@@ -28,18 +27,10 @@ export const mlOf = (k: string): Ml | null => ML[k] ?? null;
 /** the station's 本站大目标 card + the layered body with the micro-loop bar and panels woven in */
 export function wrap(k: string, lyHtml: string, l: L, mk: Mk): string {
   const M = ML[k]!, z = (a: string, b: string) => tx([a, b], l), S = mlGet(k), t = (x: T) => mk(fillDvText(tx(x, l), l));
-  const goals = M.goals.map((g, i) => `<li class="${S.m[i] ? 'm' : ''}">${esc(tx(g.t, l))}${S.m[i] ? ' ✓' : ''}</li>`).join('');
-  const card = `<section class="ml-goal" data-ml-card="1"><div class="ml-gh"><span>${z(`约 ${stationMin(M.goals.length)} 分钟`, `about ${stationMin(M.goals.length)} min`)}</span></div>
-<h3 class="ml-gt">${esc(tx(M.goal, l))}</h3><ol class="ml-gl">${goals}</ol>
-<div class="ml-pic"><p><b>${t(M.pic.t)}</b><span>${t(M.pic.s)}</span></p></div>
-${(() => { const d = diaryLine(k, l); return d ? `<p class="ml-dy"><b>${esc(d.year)} · ${esc(d.who)}</b> ${esc(d.why)} <a href="${esc(d.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : ''; })()}
-</section>`;
-  const bar = `<div class="ml-bar"><div class="ml-gs" role="radiogroup" aria-label="${z('进度', 'Progress')}">${M.goals.map((_, i) => `<button type="button" role="radio" data-ml-g="${i}" aria-checked="false"><i aria-hidden="true"></i></button>`).join('')}</div></div>`;
+  const say = `<p class="st-say">${t(M.pic.t)}</p><p class="st-say">${t(M.pic.s)}</p>${(() => { const d = diaryLine(k, l); return d ? `<p class="ml-dy"><b>${esc(d.year)} · ${esc(d.who)}</b> ${esc(d.why)} <a href="${esc(d.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : ''; })()}`;
   let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
-  h = h.replace('</ol></div></div>', `</ol>${bar}</div></div>`);
-  h = h.replace(/(<\/div><\/div>)(<section class="ly-l")/, `$1<section class="ml-p ml-i" id="q" aria-live="polite"></section><section class="ml-p ml-rz"></section>$2`);
-  h = h.replace('<div class="ly-nx"></div>', '<div class="ly-nx"></div><div class="ml-rze"></div><section class="ml-p ml-v" aria-live="polite"></section>');
-  return card + h;
+  h = h.replace('<div class="ly-nx"></div>', `<section class="ml-p ml-i" id="q" aria-live="polite"></section><section class="ml-p ml-rz"></section><div class="ml-rze"></div><section class="ml-p ml-v" aria-live="polite"></section><div class="ly-nx"></div>`);
+  return say + h;
 }
 
 /** 带走三句 + a picture, for the station's end (memory kit) */
@@ -52,7 +43,6 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   const pred: (number | null)[] = M.goals.map(() => null);
   const save = () => { const prev = masteredSt(); mlSet(k, S); noteMastered(prev); };
   const $ = <E extends HTMLElement>(s: string) => root.querySelector<E>(s) ?? host.querySelector<E>(s)!;
-  const lyLab = (n: number, fr?: number) => `${tx(LYN[n - 1]!, l)}${fr ? z(` · 第 ${fr} 镜`, ` · shot ${fr}`) : ''}`;
   const setTop = () => { const tp = root.querySelector<HTMLElement>('.ly-top'); if (tp) root.style.setProperty('--lyt', `${Math.round(tp.getBoundingClientRect().height)}px`); };
   const refreshCard = () => {
     host.querySelectorAll<HTMLElement>('.ml-gl li').forEach((li, i) => { li.classList.toggle('m', !!S.m[i]); li.textContent = `${tx(M.goals[i]!.t, l)}${S.m[i] ? ' ✓' : ''}`; });
@@ -70,14 +60,13 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     }).join('');
     const shown = solved ? g.why.map((_, i) => i) : wrongs;
     const whyBits = shown.map((i) => i === g.a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(g.why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(g.why[i]!)}</p>`).join('');
-    const why = shown.length ? `<div class="ml-why">${whyBits}</div>${solved ? `<button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-to="r">${z('继续 ›', 'Continue ›')}</button>` : ''}` : '';
+    const why = shown.length ? `<div class="ml-why">${whyBits}</div>` : '';
     $('.ml-i').innerHTML = `<h3 class="ml-h">${esc(tx(g.t, l))}</h3>${from}<p class="ml-pv2">${t(g.pv)}</p>
-<p class="ml-q">${t(g.q)}</p><div class="ml-ops"${solved ? '' : ' data-fwd="1"'}>${ops}</div>${why}`;
+<p class="ml-q">${t(g.q)}</p><div class="ml-ops">${ops}</div>${why}`;
   };
   const rz = () => {
     const g = M.goals[S.g]!;
-    const jumps = g.ly.map((n) => `<button type="button" class="l4-b g-info ml-ly" data-ml-ly="${n}"${n === 2 && g.fr ? ` data-ml-fr="${g.fr}"` : ''}>${esc(lyLab(n, n === 2 ? g.fr : undefined))}</button>`).join('');
-    $('.ml-rz').innerHTML = `<ol class="ml-rl">${g.rz.map((x) => `<li>${t(x)}</li>`).join('')}</ol><div class="ml-lys">${jumps}</div><button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-to="v">${z('继续 ›', 'Continue ›')}</button>`;
+    $('.ml-rz').innerHTML = `<ol class="ml-rl">${g.rz.map((x) => `<li>${t(x)}</li>`).join('')}</ol>`;
     $('.ml-rze').innerHTML = '';
   };
   let cur: VarQ | null = null, last: 'ok' | 'bad' | null = null, lastMis: ReturnType<typeof misOf> = null;
@@ -132,22 +121,22 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     if (last === 'ok') {
       const allM = S.m.every(Boolean);
       fb = `<p class="ml-fb ok"><b>✓ ${z('对了！', 'Right!')}</b>${done ? z(`「${tx(g.t, 'zh')}」过了。`, `“${tx(g.t, 'en')}” is done.`) : z('再对一道，连对两道这里就过了。', 'One more right, and two in a row finishes this part.')}</p>`
-        + (done ? (S.g < N - 1 ? `<button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-next="1">${z(`${tx(M.goals[S.g + 1]!.t, 'zh')} ›`, `${tx(M.goals[S.g + 1]!.t, 'en')} ›`)}</button>` : allM ? `<p class="ml-fb ok"><b>★ ${z('这一站过了。', 'This stop is done.')}</b></p>` : `<button type="button" class="l4-b g-jump ml-go" data-fwd="1" data-ml-todo="1">${z('还有一处没过 ›', 'One part is still open ›')}</button>`)
-          : `<button type="button" class="l4-b g-info ml-go" data-fwd="1" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`);
+        + (done ? (S.g < N - 1 ? `<button type="button" class="l4-b g-jump ml-go" data-ml-next="1">${z(`${tx(M.goals[S.g + 1]!.t, 'zh')} ›`, `${tx(M.goals[S.g + 1]!.t, 'en')} ›`)}</button>` : allM ? `<p class="ml-fb ok"><b>★ ${z('这一站过了。', 'This stop is done.')}</b></p>` : `<button type="button" class="l4-b g-jump ml-go" data-ml-todo="1">${z('还有一处没过 ›', 'One part is still open ›')}</button>`)
+          : `<button type="button" class="l4-b g-info ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`);
       if (allM) host.querySelector('.dv-sp')?.setAttribute('data-done', '1');
     } else if (last === 'bad') {
       const m = lastMis;
       const work = g.rz.map((x) => `<li>${t(x)}</li>`).join('');
       fb = `<p class="ml-fb bad"><b>✗ ${m ? tx(m.why, l).replace(/`/g, '') : z('还不对。', 'Not yet.')}</b>${m ? '' : z(`对一下：${tx(q.w, 'zh').replace(/`/g, '')}`, `Check: ${tx(q.w, 'en').replace(/`/g, '')}`)}</p>
 <ol class="ml-work">${work}</ol>
-<p class="ml-n">${z('这道记进错题本，今日复习会再考。换一组数继续。', 'This one is in the wrong book; today’s review will bring it back. New numbers, same question.')}</p><button type="button" class="l4-b g-info ml-go" data-fwd="1" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`;
+<p class="ml-n">${z('这道记进错题本，今日复习会再考。换一组数继续。', 'This one is in the wrong book; today’s review will bring it back. New numbers, same question.')}</p><button type="button" class="l4-b g-info ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`;
     }
-    const inp = judged ? '' : `<div class="vf-row"><input class="vf-in ml-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<button type="button" class="l4-b g-act ml-ck" data-fwd="1" data-ml-ck="1">${z('检查', 'Check')}</button></div>`;
+    const inp = judged ? '' : `<div class="vf-row"><input class="vf-in ml-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<button type="button" class="l4-b g-act ml-ck" data-ml-ck="1">${z('检查', 'Check')}</button></div>`;
     $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${fb}</div>`;
     const demoAt = M.goals.findIndex((x) => x.ly.includes(3));
     root.dataset.showDemo = demoAt >= 0 && demoAt === S.g ? '1' : '0';
   };
-  const draw = () => { bar(); if (S.s === 'i') inv(); else if (S.s === 'r') rz(); else ver(); setTop(); };
+  const draw = () => { bar(); inv(); rz(); ver(); setTop(); };
   const go = (s: MlS['s'], scroll = true) => {
     if (s === 'v' && S.s !== 'v') { liveW[S.g] = []; liveOk[S.g] = false; }
     S.s = s; save(); draw(); if (scroll) { const p = s === 'i' ? $('.ml-i') : s === 'r' ? $('.ml-rz') : $('.ml-v'); p.scrollIntoView({ block: 'start' }); }

@@ -53,8 +53,8 @@ describe('R52 layered teaching', () => {
       for (const [D, l] of [[zh, 'zh'], [en, 'en']] as const) for (const k of PILOT) {
         const S = D.st[dvI(k)]! as Stage & { ly: Ly }, h = html(S, `D/${k}`, l, mk, '');
         const el = document.createElement('div'); el.innerHTML = h;
-        expect(el.querySelectorAll('.ly-l')).toHaveLength(5); expect(el.querySelectorAll('.ly-l:not([hidden])')).toHaveLength(1);
-        expect(el.querySelectorAll('.ly-pg button')).toHaveLength(5); expect(el.querySelectorAll('.ly-dep [role="radio"]')).toHaveLength(3);
+        expect(el.querySelectorAll('.ly-l')).toHaveLength(5); expect(el.querySelectorAll('.ly-l:not([hidden])')).toHaveLength(5);
+        expect(el.querySelectorAll('.ly-pg button')).toHaveLength(0); expect(el.querySelectorAll('.ly-dep [role="radio"]')).toHaveLength(0);
         expect(el.querySelector('.ly-l[data-ly="3"] [data-vf-part="demo"]')).toBeTruthy(); expect(el.querySelector('.ly-l[data-ly="5"] [data-vf-part="check"]')).toBeTruthy();
         if (l === 'en') expect(el.textContent!, k).not.toMatch(CJK);
       }

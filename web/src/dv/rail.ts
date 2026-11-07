@@ -1,7 +1,7 @@
 /* Station frame: sticky outline (drawer on a phone) and a live worked step.
    The step follows the demo sliders already on the page. No second forward button. */
 import { tx, type L } from '../l4/txt';
-import { DV_KEY, DV_LV, DV_N, DV_NM, dvI, posLabel } from './links';
+import { DV_KEY, DV_LV, DV_NM, posLabel } from './links';
 import { fmt, gdL, gdSeq } from '../vf/calc';
 import type { Dv } from './types';
 
@@ -41,19 +41,16 @@ function fxLine(S: Dv['st'][number]): string {
 }
 
 export function railHtml(key: string, S: Dv['st'][number], l: L): string {
-  const zh = l !== 'en', i = dvI(key);
-  const prev = i > 0 ? DV_NM[i - 1] : null, next = i < DV_N - 1 ? DV_NM[i + 1] : null;
+  const zh = l !== 'en';
   const formula = key === '2'
     ? 'w ← w − η·∂L/∂w'
     : (fxLine(S) || (zh ? '这一站的式子在正文里。' : 'The formula is in the page.'));
   const live = key === '2'
     ? `<div class="st-live" data-rail="gd"><div>旧 w = <b data-k="w0">0</b></div><div>∂L/∂w = <b data-k="slope">−4</b></div><div>η = <b data-k="eta">0.30</b></div><div>新 w = <b data-k="w1">1.20</b></div><div>L <b data-k="L0">4.50</b> → <b data-k="L1">1.14</b></div></div>`
     : `<div class="st-live" data-rail="text"><p data-k="step">${esc(plain(S.x[0] || S.ly?.num?.[0] || S.h || ''))}</p></div>`;
-  const from = prev ? (zh ? `从${posLabel(i - 1, 'zh')}来。${plain(prev[0])}` : `From ${posLabel(i - 1, 'en')}. ${prev[1]}`) : (zh ? '起点。' : 'The start.');
-  const to = next ? (zh ? `通向${posLabel(i + 1, 'zh')}。${plain(S.e || next[0])}` : `On to ${posLabel(i + 1, 'en')}. ${plain(S.e || next[1])}`) : (zh ? '这一站是回顾。' : 'This stop is the recap.');
   const gloss = key === '2' ? `<details class="gloss" open><summary><span class="term">${zh ? '梯度' : 'Gradient'}</span></summary><p>${zh ? '每个旋钮各有一个坡。把这些坡排成一个向量，就是梯度。朝它的反方向走，损失才会变小。' : 'Each knob has a slope. Those slopes, as one vector, are the gradient. Step against it and the loss falls.'}</p></details>` : '';
   const terms = (S.ly?.fe ?? S.i).slice(0, 3).map((x) => `<li>${esc(plain(x))}</li>`).join('');
-  return `<aside class="st-side"><h2>${zh ? '公式' : 'Formula'}</h2><p class="formula">${esc(formula)}</p><h2>${zh ? '算一步' : 'One step'}</h2>${live}${gloss}${terms ? `<h2>${zh ? '这几个词' : 'The words'}</h2><ul class="terms">${terms}</ul>` : ''}<h2>${zh ? '前后' : 'Before and after'}</h2><ul class="conn"><li>${esc(from)}</li><li>${esc(to)}</li></ul></aside>`;
+  return `<section class="st-inline"><h2>${zh ? '式子' : 'Formula'}</h2><p class="formula">${esc(formula)}</p><h2>${zh ? '算一步' : 'One step'}</h2>${live}${gloss}${terms ? `<h2>${zh ? '这几个词' : 'The words'}</h2><ul class="terms">${terms}</ul>` : ''}</section>`;
 }
 
 export function railWire(host: ParentNode, key: string) {

@@ -11,7 +11,7 @@ import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_LV, DV_N, DV_SEEN, cardLv, dvI, 
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
-import { ML_G, masteredSt, seenSt, stationMin } from './prog';
+import { ML_G, masteredSt, seenSt } from './prog';
 import { stripIds } from './plain';
 import { morph, morphWire } from './morph';
 import { outlineHtml, railHtml, railWire } from './rail';
@@ -59,10 +59,7 @@ export async function dv(id: string, A: PxApi) {
   const ul = (xs: string[]) => xs.length ? `<ul>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '';
   const prev = i > 0 ? D.st[i - 1]! : null, next = i < DV_N - 1 ? D.st[i + 1]! : null, n = DV_LV[i]!;
   const prevSeen = i > 0 && seenSt().has(dvK(i - 1));
-  const bridge = (S.ly?.hook ?? S.s).split(/[。！？.!?]/)[0] ?? S.s;
-  const from = !prev ? `<p class="dv-from s"><span>${z('起点', 'The start')}</span><b>${z('地基：一个能调的函数', 'The foundation: a function you can tune')}</b></p>`
-    : prevSeen ? `<button type="button" class="dv-from" data-go="${hD(i - 1)}"><span>${z(`${stepNo(i - 1, l)}留下的问题`, `Left open by ${stepNo(i - 1, l)}`)}</span><b>${esc(prev.e)}</b></button>`
-    : `<p class="dv-from s"><span>${z('从这里接上', 'Pick up here')}</span><b>${esc(bridge)}</b></p>`;
+  const openP = prev?.e ? `<p class="st-open">${mk(prev.e)}</p>` : '';
   const layerShift = next && DV_LV[i] !== DV_LV[i + 1] ? `<p class="st-nextlay">${z(`下一层从「${next.n}」接上。`, `The next layer starts with “${next.n}”.`)}</p>` : '';
   const nxt = next ? `${layerShift}<button type="button" class="l4-b g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`下一站 · ${stepNo(i + 1, l)} · `, `Next · ${stepNo(i + 1, l)} · `)}${esc(next.n)}</button>`
     : `<button type="button" class="l4-b g-jump" data-fwd="1" data-go="#me">${z('回到我的进度', 'Back to my progress')} ›</button>`;
@@ -77,29 +74,22 @@ export async function dv(id: string, A: PxApi) {
   const MLm = LY && dvK(i) in ML_G ? await import('./ml') : null; if (!A.still()) return;
   const page = `D/${dvK(i)}`;
   A.root.dataset.topdown = tdh;
-  const hook = S.ly?.hook ? mk(S.ly.hook) : mk((S.i[0] ?? S.q).split(/[。！？.!?]/)[0] ?? S.q);
   const finished = masteredSt().has(dvK(i));
   const seenNow = seenSt();
-  const tabs = `<nav class="st-tabs" aria-label="${z('这一站的段落', 'Parts of this stop')}"><a href="#life" aria-current="true">${z('生活画面', 'Scene')}</a><a href="#fig">${z('图', 'Picture')}</a><a href="#formula">${z('公式', 'Formula')}</a><a href="#code">${z('代码', 'Code')}</a><a href="#q">${z('这一问', 'This question')}</a></nav>`;
-  const kicker = finished
-    ? `${stepNo(i, l)} · ${z('过了', 'Done')}`
-    : `${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}`;
-  const lead = finished
-    ? z('这一站的三个小问题都过了。带走这三句。', 'The three questions on this stop are done. Take these three lines.')
-    : mk(S.s);
+  const kicker = `${stepNo(i, l)}${finished ? ` · ${z('过了', 'Done')}` : ''}`;
   const share = `<p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
-  A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<div class="st-main">
+  const lesson = LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('要解决的问题', 'The problem'), mk(S.q))}${sec(2, z('想法', 'The idea'), ul(S.i))}${sec(3, z('式子', 'Formula'), ul(S.f))}${sec(4, z('一个小数例子', 'A small example'), ul(S.x) + exK)}`;
+  A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<article class="st-main st-article">
 <p class="dv-pos">${kicker}</p>
 <h1 class="st-h">${esc(S.n)}</h1>
-<p class="st-nar">${lead}</p>
-${tabs}
-${from}<div class="st-stage"><figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure></div><p class="dv-first">${hook}</p>
-${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
+${openP}
+<figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure>
+${lesson}
+${railHtml(dvK(i), S, l).replace('st-side', 'st-inline')}
 ${memKit(S, z, MLm?.take(dvK(i), l) ?? null)}
-<section class="l4-ks dv-later">${share}<div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
-${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
-<div class="vf-slot" data-vf-page="${page}"></div>`}
-</div>${railHtml(dvK(i), S, l)}</div>`;
+<section class="dv-later">${share}<div class="l4-kbd">${stationEnd(mk(S.lo), nxt)}</div></section>
+${LY ? '' : `<div class="vf-slot" data-vf-page="${page}"></div>`}
+</article></div>`;
   A.host.scrollTop = 0; seenAdd(i);
   let fk: string | null = null; try { fk = sessionStorage.getItem(DV_FOCUS); sessionStorage.removeItem(DV_FOCUS); } catch { /* private mode */ }
   A.host.querySelector('[data-st-share]')?.addEventListener('click', () => { /* share is the inline link row */ });
@@ -115,11 +105,6 @@ ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p
   const leadEl = A.host.querySelector('.dv-lead');
   if (ly && leadEl) ly.prepend(leadEl);
   if (dvK(i) === '2') A.host.querySelector('[data-morph]')?.setAttribute('data-hold', '1');
-  const side = A.host.querySelector('.st-side');
-  const code = A.host.querySelector('#code');
-  const live = side?.querySelector('.st-live');
-  if (live && code) live.insertAdjacentElement('afterend', code);
-  else if (side && code) side.appendChild(code);
   if (A.still()) { morphWire(A.host); railWire(A.host, dvK(i)); }
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
