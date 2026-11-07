@@ -20,6 +20,7 @@ import { goalGet, routeNext, routeOf } from '../dv/routes';
 import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
 import { VF_Q, vfDone } from '../vf/ids';
 import * as RV from './rv';
+import { keepHtml, wireKeep } from './keep';
 
 export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined; /** R56 the counter text (else 「key / last」) */ txt?: string | undefined }
 export interface PxApi {
@@ -260,6 +261,7 @@ async function record(A: PxApi) {
   const rc = [...sn].slice(-6).reverse().map((k) => `<button type="button" class="px-rc" data-go="#D/${k}"><span class="k">${esc(z('站', 'stop'))}</span><span class="h">${esc(z(`第 ${k} 站`, `Stop ${k}`))} · ${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</span></button>`).join('');
   const ach = ms.size > 0;
   A.host.innerHTML = `<div class="px px-rec">${cont}
+${keepHtml(L_)}
 <h3>${esc(z(`五层掌握 · ${ms.size}/${DV_N} 站`, `Five layers · ${ms.size}/${DV_N} stops mastered`))}</h3><div class="px-lvs">${lv}</div>
 <div class="px-wall" data-px="wall"></div>
 <h3>${t('bestT')}</h3><div class="px-bcs">${best}</div>${wrong}
@@ -267,6 +269,7 @@ async function record(A: PxApi) {
 <div class="px-row"><button type="button" class="l4-b" data-go="#P">${t('toP')}</button>${ach ? `<button type="button" class="l4-b gold" data-mm="ach">${t('shareAch')}</button>` : ''}</div><p class="px-f">${esc(RULE)}</p></div>`;
   const wall = A.host.querySelector<HTMLElement>('.px-wall');
   if (wall) { const M = await import('./mem'); if (!A.still()) return; M.wall(wall, A); }
+  wireKeep(A.host, L_, A.root);
   A.host.querySelector('[data-mm="ach"]')?.addEventListener('click', () => {
     const k = [...ms].at(-1) ?? '0';
     void import('../dv/share').then(({ openShare, progressLine }) => openShare(A.root, L_, k, t('shareAch'), progressLine(k, L_), 'ach', 'si-progress'));

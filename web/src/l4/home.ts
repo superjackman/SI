@@ -10,6 +10,7 @@ import { UI, tx, type L, type Tx } from './txt';
 import { ROUTES, goalGet, goalSet, routeNext, routeOf, type GoalId, type Route } from '../dv/routes';
 import { CARD_SK, DV_KEY, DV_N, DV_NM, dvI } from '../dv/links';
 import { depthGet, depthSet, jvGet, jvSet, layerMastery, masteredSt, routeMin, seenSt, type Depth } from '../dv/prog';
+import { noteMastered } from '../px/week';
 import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
 import { fmt, softmax } from '../vf/calc';
 import { LBG, LCOL } from './progress';
@@ -102,7 +103,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 
   const pane0 = A.pane ?? 'learn';
   const tab = (id: 'learn' | 'news' | 'tools', name: string) => `<button type="button" role="tab" class="${pane0 === id ? 'on' : ''}" data-h="tab:${id}" aria-selected="${pane0 === id}">${name}</button>`;
-  const tabs = `<div class="hm-hub" role="tablist" aria-label="${z('入口', 'Entries')}">${tab('learn', z('学', 'Learn'))}${tab('news', z('查资讯', 'News'))}${tab('tools', z('找工具', 'Tools'))}</div>`;
+  const tabs = `<div class="hm-hub" role="tablist" aria-label="${z('入口', 'Entries')}">${tab('learn', z('学', 'Learn'))}${tab('news', z('查资讯', 'News'))}${tab('tools', z('找工具', 'Tools'))}</div><button type="button" class="hm-find" data-h="find">${z('搜索', 'Search')}</button>`;
   host.innerHTML = `<div class="hm" lang="${l === 'en' ? 'en' : 'zh-CN'}" data-st="${back ? 'back' : 'first'}" data-hub="${pane0}">${tabs}${bellBanner(l)}<div data-pane="learn"${pane0 === 'learn' ? '' : ' hidden'}>${top}${below}</div><div data-pane="news"${pane0 === 'news' ? '' : ' hidden'}></div><div data-pane="tools"${pane0 === 'tools' ? '' : ' hidden'}></div></div>`;
   const $ = <E extends HTMLElement>(s: string) => host.querySelector<E>(s);
 
@@ -116,6 +117,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-h]'); if (!b) return; const h = b.dataset.h!;
     if (h === 'sheet') sheet(A);
     else if (h === 'bell') void bellAsk(l).then(() => { const b = host.querySelector<HTMLElement>('[data-bell]'); if (b) b.outerHTML = bellBanner(l); });
+    else if (h === 'find') void import('../search/ui').then((m) => m.openSearch(A.root, l));
     else if (h.startsWith('tab:')) { const which = h.slice(4); A.go(which === 'news' ? '#news' : which === 'tools' ? '#tools' : '#home'); }
     else if (h.startsWith('goal:')) { goalSet(h.slice(5) as GoalId); A.redraw(); }
     else if (h === 'routes') $('[data-hm="routes"]')?.scrollIntoView({ block: 'start' });
@@ -135,6 +137,12 @@ async function hubTab(host: HTMLElement, A: HomeApi, which: 'learn' | 'news' | '
   const hub = await import('../hub/view'); if (!pane.isConnected) return;
   pane.innerHTML = which === 'news' ? hub.newsHtml(A.l, item) : hub.toolsHtml(A.l, item);
   if (which === 'tools') hub.wireTools(pane);
+  pane.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-sh]'); if (!b?.dataset.sh) return;
+    e.preventDefault(); e.stopPropagation();
+    const [kind, id] = b.dataset.sh.split(':');
+    if (kind && id) void import('../hub/share').then((m) => m.openItem(A.root, A.l, kind, id));
+  });
   pane.dataset.ready = '1';
 }
 
@@ -170,7 +178,7 @@ async function challenge(host: HTMLElement, A: HomeApi, m: ReadonlySet<string>) 
   box.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-o]'); if (!b || solved()) return;
     const i = Number(b.dataset.o);
-    if (i === Q.a) { vfAdd(id); draw(); } else { draw(`✗ ${z('再想想：', 'Not quite: ')}${t(Q.h)}`); box.querySelector(`[data-o="${i}"]`)?.classList.add('bad'); }
+    if (i === Q.a) { const prev = masteredSt(); vfAdd(id); noteMastered(prev); draw(); } else { draw(`✗ ${z('再想想：', 'Not quite: ')}${t(Q.h)}`); box.querySelector(`[data-o="${i}"]`)?.classList.add('bad'); }
   });
   /* 挑战一个朋友: only once a station with a challenge question is mastered; the latest such station */
   const cf = host.querySelector<HTMLElement>('[data-hm="chf"]'), mk = [...DV_KEY].reverse().find((s) => m.has(s) && CH[s]);
