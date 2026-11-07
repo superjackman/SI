@@ -26,7 +26,7 @@ test.describe('R48 two views', () => {
     let sh = page.locator('.l4-sheet[data-card="K09"]'); await expect(sh).toBeVisible();
     await expect(sh.locator('.l4-vsw [aria-checked="true"]')).toHaveText('自顶向下·看结构');
     await expect(sh.locator('.l4-kalt h3')).toHaveText('换个角度看');
-    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 4 站');
+    await expect(sh.locator('.l4-kdv')).toHaveCount(1); await expect(sh.locator('.l4-kdv .dv-sb')).toHaveText('第 6/23 站');
     await expect(sh.locator('.l4-kwhy')).toContainText('多层网络的梯度怎么求');
     /* sibling: K14 is born in step 4 on layer 4 too */
     await sh.locator('.l4-ksib[data-k="K14"]').click(); await expect(page).toHaveURL(re('#L4~K14'));
@@ -49,7 +49,7 @@ test.describe('R48 two views', () => {
     sh = page.locator('.l4-sheet[data-card="K09"]'); await sh.locator(`.l4-kst[data-n="${dvI('8b')}"]`).click();
     await expect(page).toHaveURL(re('#D/8b')); await expect(page.locator('.dv-kb.on')).toHaveAttribute('data-k', 'K09');
     /* the ring is one-shot: a later visit does not ring again */
-    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav .g-dots [aria-label="第 8b 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/8b'));
+    await page.locator('.l4-nav [data-a="prev"]').click(); await page.locator('.l4-nav .g-dots [aria-label="第 11/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/8b'));
     await expect(page.locator('.dv-kb.on')).toHaveCount(0);
     expect(await hl(page)).toBe(n0);
     expect(errs).toEqual([]);

@@ -7,13 +7,14 @@ import { UI, tx, type L } from '../l4/txt';
 import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
-import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_OF, DV_SEEN, DV_USES, cardLv, dvI, dvK } from './links';
+import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_OF, DV_SEEN, DV_USES, cardLv, dvI, dvK, posLabel } from './links';
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
 import { ML_G, masteredSt, seenSt, stationMin } from './prog';
 import { stripIds } from './plain';
 import { morph, morphWire } from './morph';
+import { outlineHtml, railHtml, railWire } from './rail';
 import { tx as cx } from '../i18n/L';
 
 const LC = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'], GOLD = '#c99a2e';
@@ -35,7 +36,7 @@ export const seenKeys = (v: unknown): string[] => !Array.isArray(v) ? [] : [...n
 const seenGet = (): number[] => { try { return seenKeys(JSON.parse(localStorage.getItem(DV_SEEN) || '[]')).map(dvI); } catch { return []; } };
 const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b).map(dvK))); } catch { /* private mode */ } };
 const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="${cv(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };
-const stepNo = (i: number, l: L) => tx([`第 ${i + 1}/${DV_N} 站`, `${i + 1}/${DV_N}`], l);
+const stepNo = (i: number, l: L) => posLabel(i, l === 'en' ? 'en' : 'zh');
 /** #D/<key> of station i */
 const hD = (i: number) => `#D/${dvK(i)}`;
 /** end of a station: the reason to continue, then the next stop, then share and backup. No dialog. */
@@ -79,16 +80,17 @@ export async function dv(id: string, A: PxApi) {
   A.root.dataset.topdown = tdh;
   const hook = S.ly?.hook ? mk(S.ly.hook) : mk((S.i[0] ?? S.q).split(/[。！？.!?]/)[0] ?? S.q);
   const finished = masteredSt().has(dvK(i));
-  A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">
+  const seenNow = seenSt();
+  A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<div class="st-main">
 <p class="dv-pos">${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}</p>
-<p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<figure class="dv-lead">${morph(dvK(i), l)}</figure><p class="dv-first">${hook}</p>
+<p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<figure class="dv-lead" id="life">${morph(dvK(i), l)}</figure><p class="dv-first">${hook}</p>
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
 ${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
 <section class="l4-ks dv-later"><h3 class="l4-kh c5">${next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next')}</h3><div class="l4-kbd">${stationEnd(mk(S.lo), nxt, esc(cx('end.share', l)), esc(cx('end.backup', l)))}</div></section>
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
 ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="button" class="l4-b g-act" data-go="#D/ch/${dvK(i)}">${z('✎ 分享挑战题：让朋友算一算', '✎ Share a challenge: let a friend try')}</button></div>` : ''}
-<div class="dv-ks"><h3>${z('换个角度看 · 金字塔里的卡', 'Another angle · cards in the pyramid')}</h3>${born ? `<h4>${z('本步诞生的卡', 'Born in this step')}</h4><div class="dv-kg">${born}</div>` : ''}${uses ? `<h4>${z('本步也用到', 'Also used here')}</h4><div class="dv-kg">${uses}</div>` : ''}<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('在知识地图里看这一步', 'This step on the knowledge map')}</button>${n ? `<button type="button" class="l4-b dv-lv" data-go="#L${n}">${z(`↓ 去金字塔 第${n}层`, `↓ To the pyramid · layer ${n}`)}</button>` : ''}</div></div>`;
+<div class="dv-ks"><h3>${z('换个角度看 · 金字塔里的卡', 'Another angle · cards in the pyramid')}</h3>${born ? `<h4>${z('本步诞生的卡', 'Born in this step')}</h4><div class="dv-kg">${born}</div>` : ''}${uses ? `<h4>${z('本步也用到', 'Also used here')}</h4><div class="dv-kg">${uses}</div>` : ''}<button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('在知识地图里看这一步', 'This step on the knowledge map')}</button>${n ? `<button type="button" class="l4-b dv-lv" data-go="#L${n}">${z(`↓ 去金字塔 第${n}层`, `↓ To the pyramid · layer ${n}`)}</button>` : ''}</div></div>${railHtml(dvK(i), S, l)}</div>`;
   A.host.scrollTop = 0; seenAdd(i);
   let fk: string | null = null; try { fk = sessionStorage.getItem(DV_FOCUS); sessionStorage.removeItem(DV_FOCUS); } catch { /* private mode */ }
   A.host.querySelector('.dv-ks .dv-mp')?.addEventListener('click', () => { try { sessionStorage.setItem(DV_FOCUS, `s${dvK(i)}`); } catch { /* private mode */ } });
@@ -103,7 +105,7 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
     e.stopPropagation();
     void import('./share').then(({ openShare, progressLine }) => openShare(A.root, l, dvK(i), cx('end.share', l), progressLine(dvK(i), l), 'stop', `si-stop-${dvK(i)}`));
   });
-  if (A.still()) morphWire(A.host);
+  if (A.still()) { morphWire(A.host); railWire(A.host, dvK(i)); }
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }
 

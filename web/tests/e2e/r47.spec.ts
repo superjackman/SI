@@ -29,13 +29,13 @@ test.describe('R47 derivation path', () => {
     await expect(page.locator('.l4-top .l4-tt')).toHaveText('第 1/23 站 · 用样本找函数'); await expect(page.locator('.l4-nav .g-n')).toHaveText('第 1/23 站');
     await expect(page.locator('.l4-nav [data-a="prev"]')).toContainText('上一站'); await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);
     await expect(page.locator('.l4-nav [data-a="prev"]')).toBeDisabled();
-    await page.locator('.l4-nav .g-dots [aria-label="第 P 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
-    await page.locator('.l4-nav .g-dots [aria-label="第 1 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
+    await page.locator('.l4-nav .g-dots [aria-label="第 2/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/P')); await px(page, 'D/P.zh');
+    await page.locator('.l4-nav .g-dots [aria-label="第 3/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/1')); await px(page, 'D/1.zh');
     /* 23 many-dots wrap with fat ::after rings — click the node itself so a neighbour row cannot steal the tap */
-    await page.locator('.l4-nav .g-dots [aria-label="第 5 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/5'));
+    await page.locator('.l4-nav .g-dots [aria-label="第 7/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/5'));
     await page.locator('.l4-nav [data-a="prev"]').click(); await expect(page).toHaveURL(re('#D/4'));
-    await page.locator('.l4-nav .g-dots [aria-label="第 3 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
-    await page.locator('.l4-nav .g-dots [aria-label="第 4 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/4'));
+    await page.locator('.l4-nav .g-dots [aria-label="第 5/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/3')); await expect(page.locator('.ly')).toHaveCount(1);
+    await page.locator('.l4-nav .g-dots [aria-label="第 6/23 站"]').evaluate((el: HTMLElement) => el.click()); await expect(page).toHaveURL(re('#D/4'));
     await page.locator('.l4-crumb a[href="#D"]').click(); await expect(page).toHaveURL(re('#D'));
     await expect(page.locator('.dv-st.seen')).toHaveCount(6); /* 0 P 1 5 4 3 */
     await page.locator('.dv-st[data-go="#D/16"]').click(); await expect(page.locator('.l4-nav .g-next')).toHaveCount(0);

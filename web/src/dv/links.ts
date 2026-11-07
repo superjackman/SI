@@ -10,6 +10,9 @@ export type SK = number | 'P' | 'E' | 'S' | 'A' | '8a' | '8b' | '15a' | '15b';
 export const DV_N = DV_KEY.length;
 export const dvI = (k: SK | string): number => (DV_KEY as readonly string[]).indexOf(String(k));
 export const dvK = (i: number): string => DV_KEY[i] ?? String(i);
+/** visible position, 1–23. Hashes stay on the key (`#D/2`). */
+export const posOf = (k: SK | string): number => dvI(k) + 1;
+export const posLabel = (i: number, l: 'zh' | 'en' = 'zh'): string => (l === 'en' ? `${i + 1}/${DV_N}` : `第 ${i + 1}/${DV_N} 站`);
 /** the old single-step routes that now open a station */
 export const DV_ALIAS: Readonly<Record<string, string>> = { 'D/8': 'D/8a', 'D/15': 'D/15a' };
 const ix = (ks: readonly SK[]) => ks.map((k) => { const i = dvI(k); if (i < 0) throw new Error('no station ' + String(k)); return i; });
