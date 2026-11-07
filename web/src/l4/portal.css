@@ -59,5 +59,6 @@
   .pt-foot a { color: #f4f1ea; }
   .pt-foot button { background: none; border: 0; padding: 0; color: #f4f1ea; font-size: 14px; text-decoration: underline; cursor: pointer; }
   .l4 .hm-cta { width: auto; min-width: 200px; border-radius: 2px; box-shadow: none; font-weight: 600; }
+  .l4-crumb a::after, .l4-mp::after { height: 100%; top: 0; transform: none; }
   .l4 .hm::before { display: none; }
 }
