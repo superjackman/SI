@@ -133,7 +133,7 @@ function list(A: PxApi) {
   /* R56 one ledger: 练习 is grouped by station along my route (the same mastery as home / 地图 / 我的), then the rest */
   const z = (a: string, b: string) => tx([a, b], L_), vd = vfDone(), ms = masteredSt(vd), r = pathOf(), on = new Set(r.st.map(String));
   const stB = (k: string) => { const q = VF_Q['D/' + k] ?? [], s = q.filter((id) => vd.has(id)).length, m = ms.has(k), n = DV_LV[dvI(k)] ?? 0;
-    return `<button type="button" class="px-st2${m ? ' m' : ''}" data-go="#D/${k}" style="--c:${n ? LC[n - 1] : '#c99a2e'}"><span class="px-sk">${esc(k)}</span><b>${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</b><i>${m ? z('★ 已掌握', '★ mastered') : `✎ ${s}/${q.length}`}</i></button>`; };
+    return `<button type="button" class="px-st2${m ? ' m' : ''}" data-go="#D/${k}" style="--c:${n ? LC[n - 1] : 'var(--highlight)'}"><span class="px-sk">${esc(k)}</span><b>${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</b><i>${m ? z('★ 已掌握', '★ mastered') : `✎ ${s}/${q.length}`}</i></button>`; };
   const rest = DV_KEY.filter((k) => !on.has(k) && (VF_Q['D/' + k] ?? []).length), rp = RV.rvPick(3);
   const rvB = `<button type="button" class="px-rvb" data-go="#R/rv"><b>🧠 ${z('今日复习', 'Today’s review')}</b><span>${rp.length ? esc(z(`${rp.length} 题到期 · 错题本 ${RV.wrongIds().length} 题`, `${rp.length} due · wrong book ${RV.wrongIds().length}`)) : esc(z('今天没有到期的题', 'Nothing due today'))}</span><i aria-hidden="true">›</i></button>`;
   A.host.innerHTML = `<div class="px px-p">${rvB}<p class="px-sub">${z('按站练：一站的题都做对了，首页、地图、我的都用这一本账。', 'Practise by stop: a stop counts once its questions are right. Home, the map and Me use that same count.')}</p>
@@ -248,7 +248,7 @@ async function record(A: PxApi) {
   /* R56 one ledger: the same station mastery as the home ring, the 地图 tab, the chain and 练习 */
   const vd = vfDone(), ms = masteredSt(vd), sn = seenSt(), lm = layerMastery(ms), r = pathOf(), nx = routeNext(r, ms, sn);
   const rdone = r.st.filter((k) => ms.has(String(k))).length, z = (a: string, b: string) => tx([a, b], L_);
-  const C2 = 2 * Math.PI * 30, ring = `<svg class="px-ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="30" fill="none" stroke="#1d2d5c" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="#ffd77a" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C2 * ms.size) / DV_N).toFixed(1)} ${C2.toFixed(1)}" transform="rotate(-90 38 38)"/></svg>`;
+  const C2 = 2 * Math.PI * 30, ring = `<svg class="px-ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="30" fill="none" stroke="var(--card)" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="var(--navy)" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C2 * ms.size) / DV_N).toFixed(1)} ${C2.toFixed(1)}" transform="rotate(-90 38 38)"/></svg>`;
   const ft = RV.firstTry();
   const cont = `<div class="px-ct"><div class="px-row l"><b>${t('contT')}</b>${sk ? `<span class="px-f">${t('streak', { n: sk })}</span>` : ''}</div><div class="px-row l"><span class="px-lt" style="--c:${r.c}">${esc(tx(r.n, L_))} ${rdone}/${r.st.length}</span><span>${esc(z(`${posLabel(dvI(nx), L_ === 'en' ? 'en' : 'zh')} · `, `${posLabel(dvI(nx), 'en')} · `))}${esc(tx(DV_NM[dvI(nx)] ?? ['', ''], L_))}</span></div><button type="button" class="l4-b gold" data-go="#D/${nx}">${t('cont')}</button></div>
 <div class="px-mst">${ring}<p><b>${ms.size}</b><span>/ ${z(`${DV_N} 站掌握`, `${DV_N} stops mastered`)}</span></p><ul><li>${z(`答对 ${vd.size} 题`, `${vd.size} questions right`)}</li><li>${ft.n ? z(`首答正确率 ${ft.p}%`, `First-try accuracy ${ft.p}%`) : z('首答正确率：还没答过', 'First-try accuracy: none yet')}</li><li>${z(`读过 ${sn.size}/${DV_N} 站`, `${sn.size}/${DV_N} stops read`)}</li></ul></div>`;
@@ -376,7 +376,7 @@ async function copy() {
 const STOPN: Record<string, Tx> = { L4: ['Transformer 全图', 'The whole Transformer'], US5: STEPN.us[4]! as Tx, US9: STEPN.us[8]! as Tx };
 export function stopName(h: string, l: L) { const id = parse(h).id, lx = lxFrom(id); return tx((lx ? LX_N[lx] : STOPN[id]) ?? ['', ''], l); }
 const qGet = () => LS.get<QState | null>(QKEY, null);
-const LC = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'];
+const LC = ['var(--link)', 'var(--good)', 'var(--link)', 'var(--link)', 'var(--link)'];
 const lvT = (n: number, l: L) => `<span class="px-lt" style="--c:${LC[n - 1]}">${tx(UI.lv[n - 1]!, l)}</span>`;
 function qLand(A: PxApi) {
   A.top(`<b class="l4-tt">${t('quick')}</b>`); crumbs(A, [t('quick'), null]);

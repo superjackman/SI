@@ -158,7 +158,7 @@ async function cert(A: PxApi) {
   const k = [...m].filter((x) => CH[x]).sort((a, b) => dvI(b) - dvI(a))[0] ?? '2', qid = CH[k]!, Q = QQ[qid]!;
   const url = certUrl(k, l, ft.p, c.n), qText = fillDvText(tx(Q.q, l), l).replace(/`/g, '');
   const d: import('../l4/share/draw').Data = {
-    site: tx(D.SITE_N, l), url, lv: z('结业证书', 'Certificate'), lvC: '#c99a2e', path: '', icon: '🎓',
+    site: tx(D.SITE_N, l), url, lv: z('结业证书', 'Certificate'), lvC: 'var(--highlight)', path: '', icon: '🎓',
     name: z(`我从一道小学算术，亲手推到了「${c.what}」`, `From grade-school arithmetic, I worked my way to “${c.what}”`),
     idea: z(`掌握 ${c.n}/${DV_N} 站 · 答对 ${vd} 题${ft.n ? ` · 首答正确率 ${ft.p}%` : ''}`, `${c.n}/${DV_N} stops mastered · ${vd} right${ft.n ? ` · ${ft.p}% right first try` : ''}`),
     parts: [], co: '', why: '', head: z('每一题都是自己算出来的', 'Every answer worked out by hand'), badge: '🎓',

@@ -35,7 +35,7 @@ export async function sharePack(k: string, l: L, title: string, head: string): P
   const name = tx(DV_NM[dvI(k)] ?? [title, title], l);
   return {
     site: tx(D.SITE_N, l), url: chUrl(k, l),
-    lv: dvI(k) >= 0 ? posLabel(dvI(k), l === 'en' ? 'en' : 'zh') : (l === 'zh' ? '站' : 'Stop'), lvC: '#1a4a6b', path: '', icon: '✎',
+    lv: dvI(k) >= 0 ? posLabel(dvI(k), l === 'en' ? 'en' : 'zh') : (l === 'zh' ? '站' : 'Stop'), lvC: 'var(--link)', path: '', icon: '✎',
     name, idea: q, parts: [], co: '', why: '',
     head, badge: '✎',
     scan: ask ? (l === 'zh' ? '扫码做这道题' : 'Scan to try the question') : '',

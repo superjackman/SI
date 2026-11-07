@@ -125,7 +125,7 @@ async function shareCh(A: PxApi, key: string, qText: string) {
   const url = chUrl(key, l);
   const d: import('../l4/share/draw').Data = {
     site: tx(D.SITE_N, l), url,
-    lv: z('挑战题', 'Challenge'), lvC: '#c99a2e',
+    lv: z('挑战题', 'Challenge'), lvC: 'var(--highlight)',
     path: z(`${posLabel(dvI(key), 'zh')} · 自测`, `${posLabel(dvI(key), 'en')} · self-check`),
     icon: '✎', name: z('敢不敢算一下？', 'Can you work this out?'),
     idea: qText.slice(0, 120),

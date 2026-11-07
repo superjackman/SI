@@ -6,7 +6,7 @@ import { morph } from '../../src/dv/morph';
 
 const ang = (x0: number, y0: number, x1: number, y1: number) => Math.atan2(-(y1 - y0), x1 - x0) * 180 / Math.PI;
 const objs = (svg: string) => {
-  const pairs = [...svg.matchAll(/data-obj="([^"]+)" data-c="(#[0-9a-fA-F]+)"/g)];
+  const pairs = [...svg.matchAll(/data-obj="([^"]+)" data-c="(var\(--[a-z0-9-]+\)|#[0-9a-fA-F]+)"/g)];
   return Object.fromEntries(pairs.map((m) => [m[1]!, m[2]!.toLowerCase()]));
 };
 
@@ -20,7 +20,7 @@ describe('life-scene morph', () => {
       expect(cut, k).toBeGreaterThan(0);
       const lifeH = zh.slice(0, cut);
       const math = zh.slice(cut);
-      expect(lifeH, k).toContain('#f0c7a2');
+      expect(lifeH, k).toContain('var(--skin)');
       expect(lifeH, k).not.toMatch(/先猜|调查|推理|验证/);
       expect(math, k).not.toMatch(/先猜|你会怎么做/);
       const lo = objs(lifeH), mo = objs(math);

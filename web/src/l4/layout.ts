@@ -65,10 +65,10 @@ export function litUpto(b: Nd): Record<Nd, St> {
   const k = NODES.indexOf(b); return Object.fromEntries(NODES.map((n, i) => [n, i < k ? 'pass' : i === k ? 'lit' : 'dim'])) as Record<Nd, St>;
 }
 export const STY: Record<St, { fill: string; stroke: string; text: string; glow: number }> = {
-  calm: { fill: '#0c1a3d', stroke: '#3f6fff', text: '#e6eeff', glow: 0.25 },
-  lit: { fill: '#1c3f9e', stroke: '#9cc8ff', text: '#ffffff', glow: 0.85 },
-  pass: { fill: '#0f2250', stroke: '#5a86e0', text: '#d6e4ff', glow: 0.18 },
-  dim: { fill: '#091026', stroke: '#2c3e6a', text: '#93a3c8', glow: 0 },
-  back: { fill: '#3b1f0a', stroke: '#ff9a3c', text: '#ffe6cc', glow: 0.7 },
-  sel: { fill: '#2350c8', stroke: '#d6ecff', text: '#ffffff', glow: 1 },
+  calm: { fill: 'var(--card)', stroke: 'var(--link)', text: 'var(--ink)', glow: 0.25 },
+  lit: { fill: 'var(--link)', stroke: 'var(--link)', text: 'var(--ink)', glow: 0.85 },
+  pass: { fill: 'var(--card)', stroke: 'var(--link)', text: 'var(--ink)', glow: 0.18 },
+  dim: { fill: 'var(--card)', stroke: 'var(--link)', text: 'var(--link)', glow: 0 },
+  back: { fill: 'var(--card)', stroke: 'var(--highlight)', text: 'var(--ink)', glow: 0.7 },
+  sel: { fill: 'var(--link)', stroke: 'var(--ink)', text: 'var(--ink)', glow: 1 },
 };

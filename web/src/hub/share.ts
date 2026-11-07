@@ -14,7 +14,7 @@ export function hubImage(kind: 'news' | 'tools', id: string) {
 }
 function pack(site: string, l: L, url: string, lv: string, name: string, idea: string): Data {
   return {
-    site, url, lv, lvC: '#c99a2e', path: '', icon: '↗', name, idea, parts: [], co: '', why: '',
+    site, url, lv, lvC: 'var(--highlight)', path: '', icon: '↗', name, idea, parts: [], co: '', why: '',
     head: '', badge: '', scan: l === 'zh' ? '扫码打开这一条' : 'Scan to open this one', how: '', whyT: '',
     pts: [idea], sub: tx(['一层层看懂 AI', 'AI, layer by layer'], l),
   };

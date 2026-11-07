@@ -22,25 +22,25 @@
     height: 64px;
     gap: 22px;
     padding: 0 32px;
-    background: #15202b;
+    background: var(--card);
     border-bottom: 0;
-    color: #f4f1ea;
+    color: var(--ink);
   }
-  .l4-top .l4-i { background: transparent; border-color: #3d4c5c; color: #f4f1ea; }
-  .pt-brand { display: flex; align-items: baseline; gap: 12px; color: #f4f1ea; text-decoration: none; flex: none; min-width: 200px; }
+  .l4-top .l4-i { background: transparent; border-color: var(--line); color: var(--ink); }
+  .pt-brand { display: flex; align-items: baseline; gap: 12px; color: var(--ink); text-decoration: none; flex: none; min-width: 200px; }
   .pt-brand b { letter-spacing: 0.14em; font-size: 18px; }
-  .pt-name { color: #d5d0c6; font-size: 14px; }
+  .pt-name { color: var(--muted); font-size: 14px; }
   .pt-links, .pt-more { display: flex; gap: 2px; flex: none; align-items: center; }
-  .pt-links a, .pt-more a { color: #d5d0c6; text-decoration: none; padding: 8px 12px; font-size: 15px; }
-  .pt-links a[aria-current="page"], .pt-more a[aria-current="page"] { color: #fff; box-shadow: inset 0 -2px 0 #fff; }
-  .pt-links a:hover, .pt-more a:hover { color: #fff; }
+  .pt-links a, .pt-more a { color: var(--muted); text-decoration: none; padding: 8px 12px; font-size: 15px; }
+  .pt-links a[aria-current="page"], .pt-more a[aria-current="page"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--ink); }
+  .pt-links a:hover, .pt-more a:hover { color: var(--ink); }
   .pt-search { display: flex; margin-left: auto; }
   .pt-more { margin-left: 8px; }
   .pt-q {
     width: 240px; height: 36px; padding: 0 12px;
-    border: 1px solid #3d4c5c; background: #243140; color: #f4f1ea; border-radius: 2px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 2px;
   }
-  .pt-q::placeholder { color: #c5ced6; }
+  .pt-q::placeholder { color: var(--link); }
   .l4 .px { max-width: none; }
   .hm-hub, .hm-find { display: none !important; }
   .l4-home:not([hidden]) > .pt-foot {
@@ -49,15 +49,15 @@
     gap: 36px;
     flex: none;
     position: static;
-    background: #15202b;
-    color: #d5d0c6;
+    background: var(--card);
+    color: var(--muted);
     padding: 40px 40px 48px;
     margin-top: 32px;
   }
-  .pt-foot h2 { margin: 0 0 8px; color: #f4f1ea; font-size: 15px; }
-  .pt-foot p, .pt-foot a { margin: 0; font-size: 14px; line-height: 1.6; color: #d5d0c6; }
-  .pt-foot a { color: #f4f1ea; }
-  .pt-foot button { background: none; border: 0; padding: 0; color: #f4f1ea; font-size: 14px; text-decoration: underline; cursor: pointer; }
+  .pt-foot h2 { margin: 0 0 8px; color: var(--ink); font-size: 15px; }
+  .pt-foot p, .pt-foot a { margin: 0; font-size: 14px; line-height: 1.6; color: var(--muted); }
+  .pt-foot a { color: var(--ink); }
+  .pt-foot button { background: none; border: 0; padding: 0; color: var(--ink); font-size: 14px; text-decoration: underline; cursor: pointer; }
   .l4 .hm-cta { width: auto; min-width: 200px; border-radius: 2px; box-shadow: none; font-weight: 600; }
   .l4-crumb a::after, .l4-mp::after { height: 100%; top: 0; transform: none; }
   .l4 .hm::before { display: none; }

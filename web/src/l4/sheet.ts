@@ -15,11 +15,11 @@ function mini(c: Card, l: L) {
   const w = 104, bh = 17, g = 4, top = 6; let s = '', y = top; const pos = {} as Record<Nd, number>;
   for (const n of [...NODES].reverse()) { if (n === 'an2') y += 6; pos[n] = y; y += bh + g; if (n === 'att') y += 4; }
   const fy = pos.an2 - 5, fh = pos.att + bh + 5 - fy;
-  s += `<rect x="2" y="${fy}" width="${w + 8}" height="${fh}" rx="6" fill="none" stroke="${c.fr ? '#9cc8ff' : '#4a66b8'}" ${c.fr ? 'stroke-width="2"' : 'stroke-dasharray="4 3"'}/>`;
+  s += `<rect x="2" y="${fy}" width="${w + 8}" height="${fh}" rx="6" fill="none" stroke="${c.fr ? 'var(--link)' : 'var(--link)'}" ${c.fr ? 'stroke-width="2"' : 'stroke-dasharray="4 3"'}/>`;
   for (const n of NODES) {
-    const on = c.hl.includes(n), bk = on && c.bk, f = bk ? '#3b1f0a' : on ? '#1c3f9e' : '#0c1a3d', st = bk ? '#ff9a3c' : on ? '#9cc8ff' : '#33508f';
+    const on = c.hl.includes(n), bk = on && c.bk, f = bk ? 'var(--card)' : on ? 'var(--link)' : 'var(--card)', st = bk ? 'var(--highlight)' : on ? 'var(--link)' : 'var(--link)';
     s += `<rect x="6" y="${pos[n]}" width="${w}" height="${bh}" rx="5" fill="${f}" stroke="${st}"${on ? ` style="filter:drop-shadow(0 0 3px ${st})"` : ''}/>`;
-    s += `<text x="${6 + w / 2}" y="${pos[n] + 12.5}" text-anchor="middle" font-size="12" fill="${on ? '#fff' : '#b7c6ea'}">${tx(MINI[n], l)}</text>`;
+    s += `<text x="${6 + w / 2}" y="${pos[n] + 12.5}" text-anchor="middle" font-size="12" fill="${on ? 'var(--card)' : 'var(--link)'}">${tx(MINI[n], l)}</text>`;
   }
   return `<svg class="l4-mini" width="${w + 12}" height="${y}" viewBox="0 0 ${w + 12} ${y}" aria-hidden="true">${s}</svg>`;
 }

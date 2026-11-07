@@ -16,7 +16,7 @@ const stN = (k: string, l: L) => tx(DV_NM[dvI(k)] ?? [k, k], l);
 
 export function workCard(it: Item, l: L, lines: readonly string[], url: string, site: string): Data {
   return {
-    site, url, lv: l === 'zh' ? '作品' : 'Project', lvC: '#c99a2e', path: '', icon: '✦',
+    site, url, lv: l === 'zh' ? '作品' : 'Project', lvC: 'var(--highlight)', path: '', icon: '✦',
     name: bi([it.zh, it.en], l), idea: bi(it.lead as [string, string], l),
     parts: [], co: '', why: '', head: lines[0] ?? '', badge: '',
     scan: l === 'zh' ? '扫码打开这个作品' : 'Scan to open this project', how: '', whyT: '',

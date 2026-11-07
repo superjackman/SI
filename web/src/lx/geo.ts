@@ -86,12 +86,12 @@ export function geo(v: View, W: number, H: number, mode: Mode, px = 170, k = 1, 
 
 /** colours per state (plates, outlines, label text) */
 export const STY: Record<St, { fill: string; stroke: string; glow: number }> = {
-  calm: { fill: '#0b1636', stroke: '#3f6fff', glow: 0 },
-  pass: { fill: '#0b1636', stroke: '#34509a', glow: 0 },
-  lit: { fill: '#1c3f9e', stroke: '#9cc8ff', glow: 0.55 },
-  sel: { fill: '#2350c8', stroke: '#d6ecff', glow: 0.8 },
-  dim: { fill: '#091026', stroke: '#24345c', glow: 0 },
-  or: { fill: '#3b1f0a', stroke: '#ff9a3c', glow: 0.45 },
-  gold: { fill: '#1f1806', stroke: '#d6a840', glow: 0.25 },
+  calm: { fill: 'var(--card)', stroke: 'var(--link)', glow: 0 },
+  pass: { fill: 'var(--card)', stroke: 'var(--link)', glow: 0 },
+  lit: { fill: 'var(--link)', stroke: 'var(--link)', glow: 0.55 },
+  sel: { fill: 'var(--link)', stroke: 'var(--ink)', glow: 0.8 },
+  dim: { fill: 'var(--card)', stroke: 'var(--link)', glow: 0 },
+  or: { fill: 'var(--card)', stroke: 'var(--highlight)', glow: 0.45 },
+  gold: { fill: 'var(--card)', stroke: 'var(--highlight)', glow: 0.25 },
 };
-export const ACOL: Record<St, string> = { calm: '#5f86d8', lit: '#8fe3ff', pass: '#4a6ab8', dim: '#2a3c6c', sel: '#8fe3ff', or: '#ff9a3c', gold: '#ffd27a' };
+export const ACOL: Record<St, string> = { calm: 'var(--link)', lit: 'var(--ink)', pass: 'var(--link)', dim: 'var(--link)', sel: 'var(--ink)', or: 'var(--highlight)', gold: 'var(--highlight)' };

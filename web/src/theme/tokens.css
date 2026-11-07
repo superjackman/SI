@@ -1,0 +1,61 @@
+/* One palette. Light is the default, matching the mockup. The night set is the dark block below. */
+:root {
+  --bg: #f3f1eb;
+  --card: #fffcf7;
+  --white: #ffffff;
+  --line: #d9d3c7;
+  --line-2: #c9c2b4;
+  --ink: #1c1915;
+  --muted: #3e382f;
+  --navy: #15202b;
+  --on-navy: #f4f1ea;
+  --link: #1a4a6b;
+  --curve: #1a4a6b;
+  --highlight: #8a4b08;
+  --good: #145c3a;
+  --good-bg: #e5f2eb;
+  --bad: #7f2d2d;
+  --bad-bg: #f8ecec;
+  --mark: #5c3b12;
+  --mark-bg: #efe6d6;
+  --skin: #f0c7a2;
+  --lv1: #0e7490;
+  --lv2: #0f766e;
+  --lv3: #4338ca;
+  --lv4: #1d4ed8;
+  --lv5: #6d28d9;
+}
+html[data-theme="dark"] {
+  --bg: #050a1a;
+  --card: #0a1532;
+  --white: #ffffff;
+  --line: #2c4690;
+  --line-2: #3a63d0;
+  --ink: #e6eeff;
+  --muted: #b7c6ea;
+  --navy: #ffd77a;
+  --on-navy: #1a1204;
+  --link: #9cc8ff;
+  --curve: #8fe3ff;
+  --highlight: #ffd77a;
+  --good: #7ef0b0;
+  --good-bg: #0b2420;
+  --bad: #fca5a5;
+  --bad-bg: #1f0f1f;
+  --mark: #ffe08a;
+  --mark-bg: #2a2208;
+  --skin: #f0c7a2;
+  --lv1: #0891b2;
+  --lv2: #0d9488;
+  --lv3: #4f46e5;
+  --lv4: #2563eb;
+  --lv5: #7c3aed;
+}
+html.l4-mode, html.l4-mode body, html.l4-mode .l4 { background: var(--bg); color: var(--ink); }
+html.l4-mode .l4-top, html.l4-mode .pt-foot { background: var(--navy); color: var(--on-navy); }
+html.l4-mode .l4-top * { color: var(--on-navy); }
+html.l4-mode .l4 a { color: var(--link); }
+html.l4-mode .l4-b, html.l4-mode .hm-cta, html.l4-mode .hm-cta2, html.l4-mode .l4-b.gold {
+  background: var(--navy); color: var(--on-navy); border-color: var(--navy);
+}
+html.l4-mode .l4-b *, html.l4-mode .hm-cta *, html.l4-mode .hm-cta2 * { color: var(--on-navy); }

@@ -52,7 +52,7 @@ export function dia5(l: L): Dia {
   const T = (t: Tx) => t[l === 'zh' ? 0 : 1];
   for (const [id, b, t] of TAG) {
     const cy = pos[b]! + bh / 2 + (id === 'g-att' ? -11 : id === 'g-at2' ? 12 : 0), h = 19;
-    nodes.push({ id, x: xt, y: cy - h / 2, w: Math.min(360 - 4 - xt, tw(T(t))), h, t, tag: '#5aa0ff' });
+    nodes.push({ id, x: xt, y: cy - h / 2, w: Math.min(360 - 4 - xt, tw(T(t))), h, t, tag: 'var(--link)' });
     if (id !== 'g-at2') edges.push({ id: 'd-' + id, d: `M${186} ${pos[b]! + bh / 2} H${xt}`, dash: true });
   }
   const ty = pos.tok! - 6;

@@ -1,3 +1,4 @@
+import { paint } from '../theme/paint';
 /* R39: the three.js stage for layers 1, 2, 3 and 5 (lazy; three.js is shared with the layer-4 chunk). Same look as
    layer 4: rounded glowing plates with a back plate for depth, arrow bars with heads, dashed frames, the glowing
    connector into an opened box's panel and a travelling light. z = 0 maps 1:1 to CSS px so DOM labels sit on top. */
@@ -17,7 +18,7 @@ function rr(w: number, h: number, r: number) {
 }
 function tex(kind: 'glow' | 'dot'): THREE.Texture {
   const c = document.createElement('canvas'); c.width = kind === 'glow' ? 128 : 64; c.height = 64; const g = c.getContext('2d')!;
-  if (kind === 'glow') { g.shadowColor = '#fff'; g.shadowBlur = 14; g.fillStyle = '#fff'; g.fillRect(18, 18, 92, 28); }
+  if (kind === 'glow') { g.shadowColor = paint('ink'); g.shadowBlur = 14; g.fillStyle = paint('ink'); g.fillRect(18, 18, 92, 28); }
   else { const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.25, 'rgba(255,255,255,.8)'); r.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = r; g.fillRect(0, 0, 64, 64); }
   const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
 }
@@ -51,14 +52,14 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
   const build = () => {
     clear(); if (!D) return;
     for (const f of D.frames) {
-      const on = f.st === 'lit' || f.st === 'sel', col = on ? '#9cc8ff' : f.st === 'dim' ? '#24345c' : '#3a5cc0', sh = rr(f.w, f.h, 10), pts = sh.getPoints(12); pts.push(pts[0]!.clone());
+      const on = f.st === 'lit' || f.st === 'sel', col = on ? 'var(--link)' : f.st === 'dim' ? 'var(--link)' : 'var(--link)', sh = rr(f.w, f.h, 10), pts = sh.getPoints(12); pts.push(pts[0]!.clone());
       const ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), on ? new THREE.LineBasicMaterial({ color: col }) : new THREE.LineDashedMaterial({ color: col, dashSize: 5, gapSize: 3 }));
       ln.computeLineDistances(); ln.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -4); root.add(ln);
-      const fm = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat(on ? '#10224e' : '#0a1736', 0.5)); fm.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -6); root.add(fm);
-      if (on) glow(f.x + f.w / 2, f.y + f.h / 2, f.w * 1.2, f.h * 1.25, '#5a9cff', 0.22, -7);
+      const fm = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat(on ? 'var(--card)' : 'var(--card)', 0.5)); fm.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -6); root.add(fm);
+      if (on) glow(f.x + f.w / 2, f.y + f.h / 2, f.w * 1.2, f.h * 1.25, 'var(--link)', 0.22, -7);
     }
     for (const e of D.edges) {
-      const col = e.gold ? (e.st === 'lit' ? '#ffd27a' : '#8a7440') : ACOL[e.st], on = e.st === 'lit' || e.st === 'or', op = e.st === 'dim' ? 0.7 : 0.95, w = on ? 2.4 : 1.4, p = e.pts;
+      const col = e.gold ? (e.st === 'lit' ? 'var(--highlight)' : 'var(--muted)') : ACOL[e.st], on = e.st === 'lit' || e.st === 'or', op = e.st === 'dim' ? 0.7 : 0.95, w = on ? 2.4 : 1.4, p = e.pts;
       const end = p.length - 1; let acc = 0;
       for (let i = 0; i < end; i++) {
         let [a1, b1] = p[i]!; let [a2, b2] = p[i + 1]!;
@@ -70,22 +71,22 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
       if (e.head && end > 0) { const [a1, b1] = p[end - 1]!, [a2, b2] = p[end]!; head(a2, b2, Math.atan2(b2 - b1, a2 - a1), col, op); }
     }
     for (const n of D.nodes) {
-      const c = n.tag ? { fill: '#0d1f4a', stroke: n.tag, glow: 0.15 } : STY[n.st], cx = n.x + n.w / 2, cy = n.y + n.h / 2, sh = rr(n.w, n.h, n.r);
-      const bk = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('#02050f', 0.85)); bk.position.set(X(cx) + 2, Y(cy) - 3, -3); root.add(bk);
+      const c = n.tag ? { fill: 'var(--card)', stroke: n.tag, glow: 0.15 } : STY[n.st], cx = n.x + n.w / 2, cy = n.y + n.h / 2, sh = rr(n.w, n.h, n.r);
+      const bk = new THREE.Mesh(new THREE.ShapeGeometry(sh), mat('var(--bg)', 0.85)); bk.position.set(X(cx) + 2, Y(cy) - 3, -3); root.add(bk);
       const m = new THREE.Mesh(new THREE.ShapeGeometry(sh), new THREE.MeshBasicMaterial({ color: c.fill })); m.position.set(X(cx), Y(cy), 0); m.userData.id = n.id; root.add(m); plates.push(m);
       const op = sh.getPoints(10); op.push(op[0]!.clone());
       const ol = new THREE.Line(new THREE.BufferGeometry().setFromPoints(op), new THREE.LineBasicMaterial({ color: c.stroke })); ol.position.set(X(cx), Y(cy), 0.6); root.add(ol);
       if (c.glow > 0) glow(cx, cy, n.w * 1.3, n.h * 2, c.stroke, c.glow);
-      if (n.plus) { const dm = new THREE.Mesh(new THREE.CircleGeometry(7, 20), new THREE.MeshBasicMaterial({ color: n.st === 'dim' ? '#1a2850' : '#2a56d6' })); dm.position.set(X(n.x + n.w - 11), Y(n.y + n.h / 2), 0.8); root.add(dm); }
+      if (n.plus) { const dm = new THREE.Mesh(new THREE.CircleGeometry(7, 20), new THREE.MeshBasicMaterial({ color: n.st === 'dim' ? 'var(--card)' : 'var(--link)' })); dm.position.set(X(n.x + n.w - 11), Y(n.y + n.h / 2), 0.8); root.add(dm); }
     }
     if (D.conn) {
-      const { x1, x2, y } = D.conn; bar(x1, y, x2, y, 3, '#8fe3ff', 1, 1);
-      const hm = mat('#8fe3ff', 0.55, true); hm.map = dTex; const h = new THREE.Mesh(new THREE.PlaneGeometry(x2 - x1 + 30, 26), hm); h.position.set(X((x1 + x2) / 2), Y(y), 0.9); root.add(h); halos.push({ m: hm, base: 0.5 });
-      const dot = new THREE.Mesh(new THREE.CircleGeometry(4, 16), new THREE.MeshBasicMaterial({ color: '#d6f6ff' })); dot.position.set(X(x2), Y(y), 1.2); root.add(dot);
+      const { x1, x2, y } = D.conn; bar(x1, y, x2, y, 3, 'var(--ink)', 1, 1);
+      const hm = mat('var(--ink)', 0.55, true); hm.map = dTex; const h = new THREE.Mesh(new THREE.PlaneGeometry(x2 - x1 + 30, 26), hm); h.position.set(X((x1 + x2) / 2), Y(y), 0.9); root.add(h); halos.push({ m: hm, base: 0.5 });
+      const dot = new THREE.Mesh(new THREE.CircleGeometry(4, 16), new THREE.MeshBasicMaterial({ color: 'var(--ink)' })); dot.position.set(X(x2), Y(y), 1.2); root.add(dot);
     }
     for (const p of D.flow) {
       const len = [0]; for (let i = 1; i < p.length; i++) len.push(len[i - 1]! + Math.hypot(p[i]![0] - p[i - 1]![0], p[i]![1] - p[i - 1]![1]));
-      for (let i = 0; i < 2; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dTex, color: '#bfe6ff', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); s.scale.set(16, 16, 1); s.position.z = 2; root.add(s); lights.push({ s, p, len, off: i / 2 }); }
+      for (let i = 0; i < 2; i++) { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dTex, color: 'var(--ink)', transparent: true, blending: THREE.AdditiveBlending, depthWrite: false })); s.scale.set(16, 16, 1); s.position.z = 2; root.add(s); lights.push({ s, p, len, off: i / 2 }); }
     }
   };
   const resize = (w: number, h: number) => {

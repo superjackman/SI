@@ -1,3 +1,4 @@
+import { paint } from '../theme/paint';
 /* R38: the real three.js stage (lazy chunk). Everything is procedural: rounded glowing plates with a back plate for
    depth, arrow bars, residual lanes, a dashed decoder frame, the drill connector and travelling light. The camera is
    placed so that z = 0 maps 1:1 to CSS px, which lets DOM labels sit exactly on the plates. The scene tilts a little
@@ -20,7 +21,7 @@ function rr(w: number, h: number, r: number) {
 }
 function glowTex(): THREE.Texture {
   const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d')!;
-  g.shadowColor = '#fff'; g.shadowBlur = 14; g.fillStyle = '#fff';
+  g.shadowColor = paint('ink'); g.shadowBlur = 14; g.fillStyle = paint('ink');
   g.beginPath(); (g as CanvasRenderingContext2D & { roundRect?: (x: number, y: number, w: number, h: number, r: number) => void }).roundRect ? g.roundRect(18, 18, 92, 28, 8) : g.rect(18, 18, 92, 28); g.fill();
   const t = new THREE.CanvasTexture(c); t.needsUpdate = true; return t;
 }
@@ -63,28 +64,28 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
     /* the decoder frame */
     const f = L.frame, fs = rr(f.w, f.h, 10), pts = fs.getPoints(12); pts.push(pts[0]!.clone());
     const fg = new THREE.BufferGeometry().setFromPoints(pts);
-    const fl = new THREE.Line(fg, D.frameLit ? new THREE.LineBasicMaterial({ color: '#9cc8ff' }) : new THREE.LineDashedMaterial({ color: '#4a66b8', dashSize: 5, gapSize: 4 }));
+    const fl = new THREE.Line(fg, D.frameLit ? new THREE.LineBasicMaterial({ color: 'var(--link)' }) : new THREE.LineDashedMaterial({ color: 'var(--link)', dashSize: 5, gapSize: 4 }));
     fl.computeLineDistances(); fl.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -4); root.add(fl);
-    const ff = new THREE.Mesh(new THREE.ShapeGeometry(fs), new THREE.MeshBasicMaterial({ color: D.frameLit ? '#10224e' : '#081230', transparent: true, opacity: D.frameLit ? 0.55 : 0.35, depthWrite: false }));
+    const ff = new THREE.Mesh(new THREE.ShapeGeometry(fs), new THREE.MeshBasicMaterial({ color: D.frameLit ? 'var(--card)' : 'var(--card)', transparent: true, opacity: D.frameLit ? 0.55 : 0.35, depthWrite: false }));
     ff.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -6); root.add(ff);
-    if (D.frameLit) { const hm = new THREE.MeshBasicMaterial({ map: gTex, color: '#5a9cff', transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
+    if (D.frameLit) { const hm = new THREE.MeshBasicMaterial({ map: gTex, color: 'var(--link)', transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
       const h = new THREE.Mesh(new THREE.PlaneGeometry(f.w * 1.28, f.h * 1.5), hm); h.position.set(X(f.x + f.w / 2), Y(f.y + f.h / 2), -7); root.add(h); halos.push({ m: hm, base: 0.3, pulse: true }); }
     /* arrows between boxes */
-    const acol = D.back ? '#ff9a3c' : '#6f9cff';
+    const acol = D.back ? 'var(--highlight)' : 'var(--link)';
     for (const a of L.arrows) {
       const s = D.st[a.lo], hi = D.st[a.hi], dim = s === 'dim' || hi === 'dim', op = dim ? 0.35 : 0.9;
       if (D.back) { bar(a.x, a.y1 - 7, a.x, a.y2 + 1, 2, acol, op); head(a.x, a.y1 - 1, 'down', acol, op, 4); }
       else { bar(a.x, a.y1 - 1, a.x, a.y2 + 7, 2, acol, op); head(a.x, a.y2 + 1, 'up', acol, op, 4); }
     }
     /* residual lanes */
-    const rcol = D.resOn ? '#8fe3ff' : '#4f72c8', rop = D.resOn ? 1 : 0.7;
+    const rcol = D.resOn ? 'var(--ink)' : 'var(--link)', rop = D.resOn ? 1 : 0.7;
     for (const r of L.res) { for (let i = 0; i < r.length - 1; i++) { const [a1, b1] = r[i]!, [a2, b2] = r[i + 1]!; bar(a1, b1, i === r.length - 2 ? a2 + 6 : a2, b2, D.resOn ? 2 : 1.5, rcol, rop, -1); }
       const e = r[r.length - 1]!; head(e[0], e[1], 'left', rcol, rop, 4); }
     /* plates */
     for (const n of NODES) {
       const b = L.box[n], st = D.st[n], c = STY[st], cxp = X(b.x + b.w / 2), cyp = Y(b.y + b.h / 2), r = Math.min(9, bh / 2.6);
       const shape = rr(b.w, b.h, r);
-      const back = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: '#02050f', transparent: true, opacity: 0.85 }));
+      const back = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 'var(--bg)', transparent: true, opacity: 0.85 }));
       back.position.set(cxp + 2, cyp - 3, -3); root.add(back);
       const m = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: c.fill }));
       m.position.set(cxp, cyp, 0); m.userData.nd = n; root.add(m); plates.push(m);
@@ -97,21 +98,21 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
         halos.push({ m: hm, base: c.glow, pulse: st === 'lit' || st === 'sel' || st === 'back' });
       }
       if (PLUS.has(n)) { /* the + disc (the "+" glyph itself is DOM text) */
-        const dm = new THREE.Mesh(new THREE.CircleGeometry(7, 20), new THREE.MeshBasicMaterial({ color: st === 'dim' ? '#1a2850' : '#2a56d6' }));
+        const dm = new THREE.Mesh(new THREE.CircleGeometry(7, 20), new THREE.MeshBasicMaterial({ color: st === 'dim' ? 'var(--card)' : 'var(--link)' }));
         dm.position.set(X(b.x + b.w - 11), cyp, 0.8); root.add(dm);
       }
     }
     /* drill connector */
     if (D.sel && L.panel) {
       const b = L.box[D.sel], y = b.y + b.h / 2, px = L.panel.x;
-      bar(b.x + b.w, y, px, y, 3, '#8fe3ff', 1, 1);
-      const hm = new THREE.MeshBasicMaterial({ map: dTex, color: '#8fe3ff', transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false });
+      bar(b.x + b.w, y, px, y, 3, 'var(--ink)', 1, 1);
+      const hm = new THREE.MeshBasicMaterial({ map: dTex, color: 'var(--ink)', transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false });
       const h = new THREE.Mesh(new THREE.PlaneGeometry(px - b.x - b.w + 30, 26), hm); h.position.set(X((b.x + b.w + px) / 2), Y(y), 0.9); root.add(h); halos.push({ m: hm, base: 0.5, pulse: true });
-      const dot = new THREE.Mesh(new THREE.CircleGeometry(4, 16), new THREE.MeshBasicMaterial({ color: '#d6f6ff' })); dot.position.set(X(px), Y(y), 1.2); root.add(dot);
+      const dot = new THREE.Mesh(new THREE.CircleGeometry(4, 16), new THREE.MeshBasicMaterial({ color: 'var(--ink)' })); dot.position.set(X(px), Y(y), 1.2); root.add(dot);
     }
     /* travelling light */
     if (D.flow) {
-      const p = flowPath(L, D.flow.a, D.flow.b), path = D.flow.back ? [p[1]!, p[0]!] : p, col = D.flow.back ? '#ffb060' : '#bfe6ff';
+      const p = flowPath(L, D.flow.a, D.flow.b), path = D.flow.back ? [p[1]!, p[0]!] : p, col = D.flow.back ? 'var(--highlight)' : 'var(--ink)';
       for (let i = 0; i < 3; i++) {
         const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dTex, color: col, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false }));
         s.scale.set(18, 18, 1); s.position.z = 2; root.add(s); lights.push({ s, path, off: i / 3 });

@@ -38,7 +38,7 @@ function shareData(l: L, url: string, site: string): Data {
     ? [cx('week.empty', l), `${cx('week.next', l)} · ${stName(m.next, l)}`]
     : [names.length ? names.join(l === 'en' ? ', ' : '、') : cx('week.noneMaster', l), `${cx('week.practice', l)} ${m.practice}`, `${cx('week.next', l)} · ${stName(m.next, l)}`];
   return {
-    site, url, lv: cx('week.title', l), lvC: '#c99a2e', path: '', icon: '✦', name: cx('week.title', l), idea: line,
+    site, url, lv: cx('week.title', l), lvC: 'var(--highlight)', path: '', icon: '✦', name: cx('week.title', l), idea: line,
     parts: [], co: '', why: '', head: line, badge: '', scan: l === 'zh' ? '扫码打开我的' : 'Scan to open Me', how: '', whyT: '',
     pts: pts.slice(0, 3), sub: tx(['一层层看懂 AI', 'AI, layer by layer'], l),
   };

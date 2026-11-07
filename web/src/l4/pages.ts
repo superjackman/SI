@@ -70,13 +70,13 @@ function topBars(tr: Trace, chars: string[], pos: number, n: number, l: L, mark?
 const curve = (ls: number[], w = 150, hh = 56) => {
   if (!ls.length) return ''; const mx = Math.max(...ls), mn = Math.min(0, ...ls), n = Math.max(1, ls.length - 1);
   const pts = ls.map((v, i) => `${((i / n) * (w - 4) + 2).toFixed(1)},${(hh - 3 - ((v - mn) / (mx - mn || 1)) * (hh - 8)).toFixed(1)}`).join(' ');
-  return `<svg class="l4-curve" viewBox="0 0 ${w} ${hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="#ffb060" stroke-width="2"/></svg>`;
+  return `<svg class="l4-curve" viewBox="0 0 ${w} ${hh}" preserveAspectRatio="none" aria-hidden="true"><polyline points="${pts}" fill="none" stroke="var(--navy)" stroke-width="2"/></svg>`;
 };
-function arcs(chars: string[], ids: number[], W: ArrayLike<number>, T: number, qi: number, n: number, l: L, col = '#8fe3ff') {
+function arcs(chars: string[], ids: number[], W: ArrayLike<number>, T: number, qi: number, n: number, l: L, col = 'var(--ink)') {
   const cw = 18, w = T * cw, base = 34; const t = Array.from({ length: qi + 1 }, (_, j) => [j, W[qi * T + j]!] as [number, number]).sort((a, b) => b[1] - a[1]).slice(0, n);
   let s = ''; for (const [j, p] of t) { if (j === qi) continue; const x1 = j * cw + cw / 2, x2 = qi * cw + cw / 2, hh = 6 + (qi - j) * 3;
     s += `<path d="M${x2} ${base - 12}Q${(x1 + x2) / 2} ${base - 12 - hh * 1.6} ${x1} ${base - 12}" fill="none" stroke="${col}" stroke-width="${(1 + p * 4).toFixed(1)}" opacity=".9"/>`; }
-  s += ids.slice(0, T).map((id, j) => `<text x="${j * cw + cw / 2}" y="${base + 2}" text-anchor="middle" font-size="13" fill="${j === qi ? '#ffd77a' : '#e6eeff'}">${esc(chars[id]!)}</text>`).join('');
+  s += ids.slice(0, T).map((id, j) => `<text x="${j * cw + cw / 2}" y="${base + 2}" text-anchor="middle" font-size="13" fill="${j === qi ? 'var(--navy)' : 'var(--ink)'}">${esc(chars[id]!)}</text>`).join('');
   return { svg: `<svg class="l4-arc" viewBox="0 0 ${w} ${base + 6}" aria-hidden="true">${s}</svg>`, t: t.map(([j, p]) => `「${chn(chars[ids[j]!]!, l)}」${pc(p)}`).join(' · ') };
 }
 /** the sharper of the two layer-0 heads at the question mark */
@@ -227,7 +227,7 @@ function xpage(path: string, c: Ctx): Page {
     case 'att.dot.one': { const r = dot(tr, hh, qi, kj), W = L0.W[hh]![qi * tr.T + kj]!;
       p.panel = H(tx([`「？」的 Q · 「${esc(ch[tr.ids[kj]!]!)}」的 K`, `Q of ？ · K of ${esc(ch[tr.ids[kj]!]!)}`], l)) + `<table class="l4-tb"><tbody>${r.pr.map(([a, b, x]) => `<tr><td>${f2(a)}</td><td>×</td><td>${f2(b)}</td><td>=</td><td>${f2(x)}</td></tr>`).join('')}</tbody></table>`
         + `<p class="l4-f">${tx(['相加', 'sum'], l)} ${f2(r.sum)} ÷ √8 = <b class="l4-gold">${f2(r.score)}</b></p>` + sub(tx([`这一行 Softmax 后，「${esc(ch[tr.ids[kj]!]!)}」分到 ${pc(W)}。`, `After Softmax over the row, ${esc(ch[tr.ids[kj]!]!)} gets ${pc(W)}.`], l)); p.hint = tx(UI.hintX3, l); break; }
-    case 'att.heads': p.panel = H(tx(['2 个头，各看各的', '2 heads, each its own view'], l)) + [0, 1].map((k) => { const a = arcs(ch, tr.ids, L0.W[k]!, tr.T, qi, 3, l, k ? '#ffb060' : '#8fe3ff'); return `<p class="l4-ph2">${tx(['头', 'Head'], l)} ${k + 1}</p>${a.svg}<p class="l4-sub">${a.t}</p>`; }).join('') + sub(tx(['两个头各得 8 个数，拼成 16 个。', '8 numbers each, joined into 16.'], l)); break;
+    case 'att.heads': p.panel = H(tx(['2 个头，各看各的', '2 heads, each its own view'], l)) + [0, 1].map((k) => { const a = arcs(ch, tr.ids, L0.W[k]!, tr.T, qi, 3, l, k ? 'var(--highlight)' : 'var(--ink)'); return `<p class="l4-ph2">${tx(['头', 'Head'], l)} ${k + 1}</p>${a.svg}<p class="l4-sub">${a.t}</p>`; }).join('') + sub(tx(['两个头各得 8 个数，拼成 16 个。', '8 numbers each, joined into 16.'], l)); break;
     case 'att.mask': { const T = tr.T; let g = `<div class="l4-grid" style="grid-template-columns:14px repeat(${T},1fr)"><span></span>${tr.ids.map((i) => `<span class="hd">${esc(ch[i]!)}</span>`).join('')}`;
       for (let i = 0; i < T; i++) { g += `<span class="hd">${esc(ch[tr.ids[i]!]!)}</span>`; for (let j = 0; j < T; j++) g += `<span class="cell${j <= i ? ' ok' : ' m'}${i === 4 ? ' r' : ''}"></span>`; } g += '</div>';
       p.panel = h(tx(['谁能看谁', 'Who can see whom'], l)) + g + `<p class="l4-lg"><i class="ok"></i>${tx(['能看', 'visible'], l)}<i class="m"></i>${tx(['被挡住', 'masked'], l)}</p>` + sub(tx([`写到「${esc(ch[tr.ids[4]!]!)}」（第 5 行）时，只能看「${esc(tr.ids.slice(0, 5).map((i) => ch[i]).join(''))}」。灰格分数设为 −∞，Softmax 后为 0%。`, `At ${esc(ch[tr.ids[4]!]!)} (row 5) it sees only ${esc(tr.ids.slice(0, 5).map((i) => ch[i]).join(''))}. Grey = −∞ → 0%.`], l)); break; }

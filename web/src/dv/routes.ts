@@ -19,15 +19,15 @@ export interface Route {
 
 /** the five goal routes from the viral audit (参考图 5) */
 export const ROUTES: readonly Route[] = [
-  { id: 'use', n: ['会用 AI', 'Use AI'], s: ['提示、工具、安全确认：先会用再谈原理', 'Prompts, tools, confirmations: use it first'], c: '#0891b2',
+  { id: 'use', n: ['会用 AI', 'Use AI'], s: ['提示、工具、安全确认：先会用再谈原理', 'Prompts, tools, confirmations: use it first'], c: 'var(--link)',
     st: [0, 9, 10, 13, 14, 'S', 'A', 16] },
-  { id: 'model', n: ['看懂大模型', 'Understand LLMs'], s: ['从词向量到 Transformer 到预训练、后训练', 'From word vectors to Transformers to pre/post-training'], c: '#4f46e5',
+  { id: 'model', n: ['看懂大模型', 'Understand LLMs'], s: ['从词向量到 Transformer 到预训练、后训练', 'From word vectors to Transformers to pre/post-training'], c: 'var(--link)',
     st: [6, 7, '8a', '8b', 9, 'E', 10, 11, 12, 16] },
-  { id: 'derive', n: ['从零推导', 'Derive from zero'], s: ['概率 → 损失 → 梯度 → 网络 → 注意力，整条数学链', 'Probability → loss → gradient → net → attention'], c: '#7c3aed',
+  { id: 'derive', n: ['从零推导', 'Derive from zero'], s: ['概率 → 损失 → 梯度 → 网络 → 注意力，整条数学链', 'Probability → loss → gradient → net → attention'], c: 'var(--link)',
     st: [0, 'P', 1, 2, 3, 4, 5, 6, 7, '8a', '8b', 9, 16] },
-  { id: 'agent', n: ['做 Agent', 'Build agents'], s: ['RAG、工具、规划、多模态、安全、应用实战', 'RAG, tools, planning, multimodal, safety, apps'], c: '#0d9488',
+  { id: 'agent', n: ['做 Agent', 'Build agents'], s: ['RAG、工具、规划、多模态、安全、应用实战', 'RAG, tools, planning, multimodal, safety, apps'], c: 'var(--good)',
     st: [9, 13, 14, 'S', '15a', '15b', 'A', 16] },
-  { id: 'interview', n: ['面试冲刺', 'Interview sprint'], s: ['高频考点：损失、梯度、注意力、LoRA、KV 缓存、对齐', 'High-frequency: loss, gradient, attention, LoRA, KV, alignment'], c: '#c99a2e',
+  { id: 'interview', n: ['面试冲刺', 'Interview sprint'], s: ['高频考点：损失、梯度、注意力、LoRA、KV 缓存、对齐', 'High-frequency: loss, gradient, attention, LoRA, KV, alignment'], c: 'var(--highlight)',
     st: [1, 2, '8a', '8b', 9, 10, 11, 12, 16] },
 ];
 
@@ -42,7 +42,7 @@ export const FULL_PATH: Path = {
   id: null,
   n: ['23 站', '23 stops'],
   s: ['从第 0 站按顺序走到回顾', 'From stop 0 through the recap, in order'],
-  c: '#e8b84a',
+  c: 'var(--highlight)',
   st: DV_KEY,
   chosen: false,
 };

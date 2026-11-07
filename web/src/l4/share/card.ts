@@ -7,11 +7,11 @@ import type { Data } from './draw';
 type T2 = readonly [string, string];
 /** the layer a card belongs to: header tag and the share picture's layer line and colour */
 export function lvOf(id: string): { tag: T2 | null; lv: T2; c: string; n: number } {
-  if (id.startsWith('KM')) return { tag: ['第5层 · 知识卡', 'Layer 5 · card'], lv: ['第5层 · 背后的数学', 'Layer 5 · The maths behind it'], c: '#7c3aed', n: 5 };
-  if (id.startsWith('KA')) return { tag: ['第1层 · 知识卡', 'Layer 1 · card'], lv: ['第1层 · 我怎么用 AI', 'Layer 1 · How I use AI'], c: '#0891b2', n: 1 };
-  if (id.startsWith('KB')) return { tag: ['第2层 · 知识卡', 'Layer 2 · card'], lv: ['第2层 · AI 助手怎么工作', 'Layer 2 · How an AI assistant works'], c: '#0d9488', n: 2 };
-  if (id.startsWith('KC')) return { tag: ['第3层 · 知识卡', 'Layer 3 · card'], lv: ['第3层 · 大模型怎么得来', 'Layer 3 · How a big model is made'], c: '#4f46e5', n: 3 };
-  return { tag: ['第4层 · 知识卡', 'Layer 4 · card'], lv: ['第4层 · Transformer 内部', 'Layer 4 · Inside a Transformer'], c: '#2563eb', n: 4 };
+  if (id.startsWith('KM')) return { tag: ['第5层 · 知识卡', 'Layer 5 · card'], lv: ['第5层 · 背后的数学', 'Layer 5 · The maths behind it'], c: 'var(--link)', n: 5 };
+  if (id.startsWith('KA')) return { tag: ['第1层 · 知识卡', 'Layer 1 · card'], lv: ['第1层 · 我怎么用 AI', 'Layer 1 · How I use AI'], c: 'var(--link)', n: 1 };
+  if (id.startsWith('KB')) return { tag: ['第2层 · 知识卡', 'Layer 2 · card'], lv: ['第2层 · AI 助手怎么工作', 'Layer 2 · How an AI assistant works'], c: 'var(--good)', n: 2 };
+  if (id.startsWith('KC')) return { tag: ['第3层 · 知识卡', 'Layer 3 · card'], lv: ['第3层 · 大模型怎么得来', 'Layer 3 · How a big model is made'], c: 'var(--link)', n: 3 };
+  return { tag: ['第4层 · 知识卡', 'Layer 4 · card'], lv: ['第4层 · Transformer 内部', 'Layer 4 · Inside a Transformer'], c: 'var(--link)', n: 4 };
 }
 export const strip = (h: string) => { const d = document.createElement('div'); d.innerHTML = h; return (d.textContent || '').replace(/\s+/g, ' ').trim(); };
 const WHY = /^(设计|为什么行得通|Design|Why it works)\s*/;
