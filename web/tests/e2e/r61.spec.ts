@@ -39,6 +39,8 @@ test('station 9 picture can be replayed and does not cover the page', async ({ p
   const cap = await box.locator('.ly-mcap').innerText();
   expect(cap).not.toMatch(/先猜|调查|推理|验证/);
   await box.locator('[data-mot-go="replay"]').click();
-  await expect(box.locator('.mv-fig')).toBeVisible();
+  await expect(page.locator('.mv-bars')).toHaveCount(0);
+  await expect(page.locator('.vf-bar')).toHaveCount(3);
+  await expect(page.locator('[role="dialog"]')).toHaveCount(0);
   expect(errs).toEqual([]);
 });
