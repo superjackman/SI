@@ -166,8 +166,10 @@ button.dv-from span::before { content: '‹ '; }
 .st-side .conn li { font-size: 13px; padding: 4px 0; }
 @media (min-width: 1100px) {
   .l4 .px.dv-sp { display: grid; grid-template-columns: 240px minmax(0, 1fr) 270px; max-width: none; gap: 8px 18px; align-items: start; }
-  .st-out, .st-side { position: sticky; top: 8px; max-height: calc(100vh - 84px); overflow: auto; margin: 0; }
-  .dv-lead .dv-morn, .dv-lead .ly-life, .dv-lead .dv-morph svg { max-height: 112px; }
+  .st-out { position: static; max-height: none; overflow: visible; margin: 0; }
+  .st-side { position: sticky; top: 8px; max-height: calc(100vh - 84px); overflow: auto; margin: 0; }
+  .st-out h2 { margin: 8px 0 2px; font-size: 13px; }
+  .dv-lead .dv-morn, .dv-lead .ly-life, .dv-lead .dv-morph svg { max-height: 160px; }
   .dv-mcap { min-height: 0; }
   .dv-msl input { min-height: 28px; }
   .dv-lead .ly-life { width: auto; max-width: 100%; }
@@ -176,7 +178,7 @@ button.dv-from span::before { content: '‹ '; }
   .st-side { background: #fffcf7; color: #1c1915; border: 1px solid #d9d3c7; border-radius: 2px; }
   .st-side h2 { color: #3e382f; }
   .st-live div { border-bottom-color: #e4dfd4; }
-  .stn.done .nm { color: #145c3a; }
-  .stn.now { background: #e7eef2; border-left-color: #15202b; }
+  .stn.done .nm { color: #7ef0b0; }
+  .stn.now { background: #15202b; border-left-color: #fff; }
 }
 .dv-so b { font-size: 15px; color: #ffe08a; } .dv-so span { font-size: 13px; color: #fff3c4; }

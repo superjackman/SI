@@ -12,19 +12,21 @@
   .l4 .pt-brand, .l4 .pt-brand *, .l4 .pt-links a, .l4-top, .l4-top .l4-tt, .l4-top .l4-i { color: #f4f1ea !important; }
   .l4 .pt-links a[aria-current="page"] { color: #fff !important; }
   .l4 .hm-card, .l4 .hm-rc, .l4 .hm-rt, .l4 .hm-sh, .l4 .hb-item, .l4 .hb-lead, .l4 .hb-diff, .l4 .hb-cmp,
-  .l4 .dv-st, .l4 .dv-from, .l4 .ly, .l4 .ml-goal, .l4 .ml-i, .l4 .vf, .l4 .formula, .l4 .st-side, .l4 .l4-sheet .l4-sin {
+  .l4 .st-side, .l4 .l4-sheet .l4-sin {
     background: #fffcf7 !important;
     color: #1c1915 !important;
   }
   .l4 .hm-card *, .l4 .hm-rc *, .l4 .hm-rt *, .l4 .hb-item *, .l4 .hb-lead *, .l4 .hb-diff *, .l4 .hb-cmp *,
-  .l4 .dv-st *, .l4 .ly *, .l4 .ml *, .l4 .vf *, .l4 .st-side *, .l4 .hm-rise li {
+  .l4 .st-side *, .l4 .hm-rise li {
     color: #1c1915 !important;
   }
+  .l4 .st-out .stn, .l4 .st-out .stn * { color: #e6eeff !important; }
+  .l4 .stn.now, .l4 .stn.now * { color: #fff !important; }
   .l4 .hm-cta, .l4 .l4-b.gold, .l4 .hm-hub button.on, .l4 .hb-f button.on {
     background: #15202b !important;
     color: #fff !important;
   }
-  .l4 .l4-lt, .l4 .dv-n, .l4 .hm-sqb, .l4 .hm-rdb, .l4 .hm-sq, .l4 .hm-go em { color: #fff !important; }
+  .l4 .hm-sqb, .l4 .hm-rdb, .l4 .hm-sq, .l4 .hm-go em { color: #fff !important; }
   .l4 .hm-dd, .l4 .hm-op { background: #fffcf7 !important; color: #1c1915 !important; border-color: #d9d3c7 !important; }
   .l4 .l4-sheet, .l4 .l4-sheet .l4-sin, .l4 .hm-sh { background: #fffcf7 !important; color: #1c1915 !important; }
   .l4 .l4-sheet *, .l4 .hm-sh * { color: #1c1915 !important; }
@@ -75,7 +77,8 @@
   .l4 .hm-go { border-left: 4px solid #15202b; }
   .l4 .hm-sh button, .l4 .l4-sheet button { background: #fffcf7 !important; color: #1c1915 !important; }
   .l4 .hm-sh .hm-cta, .l4 .l4-sheet .hm-cta, .l4 .hm-sh .on, .l4 .l4-sheet .on, .l4 .hm-sh button.on,
-  .l4 .hm-sh button.on *, .l4 .hb [data-sh], .l4 .hb .l4-b {
+  .l4 .hm-sh button.on *, .l4 .hb [data-sh], .l4 .hb .l4-b, .l4 .hm-cta2 {
     background: #15202b !important; color: #fff !important;
   }
+  .l4 .hm-rvl, .l4 .hm-rvl * { color: #e6eeff !important; }
 }

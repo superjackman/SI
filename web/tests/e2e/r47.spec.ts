@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { dvI, posLabel } from '../../src/dv/links';
 import { textIssues } from './small-text.js';
 import { contrastIssues } from './contrast.js';
 import { DV_KEY } from '../../src/dv/links';
@@ -55,7 +56,7 @@ test.describe('R47 derivation path', () => {
     for (const [k, n, from] of [['KM02', '6', '#L5'], ['K11', '8b', '#L4'], ['K07', '8a', '#L4'], ['K01', '8b', '#L4'], ['KM10', '2', '#L5']] as const) {
       await page.evaluate((h) => { location.replace(h); }, `${from}~${k}`);
       const s = page.locator(`.l4-sheet[data-card="${k}"]`); await expect(s).toBeVisible();
-      await expect(s.locator('.l4-kdv')).toContainText(`第 ${n} 站`); await s.locator('.l4-kdv').click();
+      await expect(s.locator('.l4-kdv')).toContainText(posLabel(dvI(n), 'zh')); await s.locator('.l4-kdv').click();
       await expect(page).toHaveURL(re(`#D/${n}`)); await px(page, `D/${n}.zh`);
       await expect(page.locator(`.dv-ks .dv-kb[data-k="${k}"]`)).toHaveCount(1);
     }

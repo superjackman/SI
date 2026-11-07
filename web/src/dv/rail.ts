@@ -29,9 +29,8 @@ export function outlineHtml(i: number, l: L, seen: ReadonlySet<string>, mastered
       if (j > i && !seen.has(k) && !mastered.has(k)) return `<span class="stn ${cls}"><span class="k">${esc(k)}</span><span class="nm">${esc(name)}</span></span>`;
       return `<a class="stn ${cls}" href="#D/${k}"${j === i ? ' aria-current="true"' : ''}><span class="k">${esc(k)}</span><span class="nm">${esc(name)}</span></a>`;
     }).join('');
-    const count = rows.length;
     const head = zh ? (g.n ? `第 ${g.n} 层 · ${g.zh}` : g.zh) : g.en;
-    return `<section class="grp"><h2>${head} · ${count}</h2>${items}</section>`;
+    return `<section class="grp"><h2>${head}</h2>${items}</section>`;
   }).join('');
   return `<aside class="st-out"><button type="button" class="st-tog" aria-expanded="false">${esc(posLabel(i, zh ? 'zh' : 'en'))}</button><nav aria-label="${zh ? '23 站' : '23 stops'}"><p class="pos"><span>${zh ? '路径位置' : 'Place'}</span><strong>${esc(posLabel(i, zh ? 'zh' : 'en'))}</strong></p>${groups}</nav></aside>`;
 }
