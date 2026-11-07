@@ -3,6 +3,7 @@
    round 地图 / 进度 / 下一步 buttons. Tapping a "+" box opens it in place; tapping the original box closes it. */
 import './l4.css';
 import './portal.css';
+import './home.css';
 import '../lx/lx.css';
 import { useApp } from '../store/app';
 import { layout, type Desc, type Lay } from './layout';
