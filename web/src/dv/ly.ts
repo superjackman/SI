@@ -223,9 +223,8 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     : (l === 'en' ? 'The left side is the result we want, and the right side is how the examples compute it.' : '等号左边是要得到的结果，右边是用样本把它算出来的办法。');
   const symLen = () => [...symFollow.replace(/\s+/g, '')].length;
   if (symLen() < 70) symFollow += l === 'en'
-    ? ' A new input still uses this same line: the left side is the result, and the right side is the procedure the examples taught.'
-    : '新的输入到来时仍然用这一行来算，左边是想要的结果，右边是样本一点点教出来的算法。';
-  if (symLen() < 70) symFollow += Y.hook.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '');
+    ? ' When a new input arrives, this same line still does the work: the left side is the result you want, and the right side is the procedure the examples taught, not a different one.'
+    : '新的输入到来时，仍然用这一行来算：左边是想要的结果，右边是这些样本一点点教出来的算法，而不是另起一套。';
   const leadOf = (i: number) => {
     const rows = LEAD[key];
     const row = rows?.[Math.min(i, rows.length - 1)];
