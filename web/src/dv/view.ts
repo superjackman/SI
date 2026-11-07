@@ -14,6 +14,7 @@ import { vfDone, vfStat, vfStages } from '../vf/ids';
 import { ML_G, masteredSt } from './prog';
 import { stripIds } from './plain';
 import { morph, morphWire } from './morph';
+import { tx as cx } from '../i18n/L';
 
 const LC = ['#0891b2', '#0d9488', '#4f46e5', '#2563eb', '#7c3aed'], GOLD = '#c99a2e';
 const col = (i: number) => { const n = DV_LV[i]!; return n ? LC[n - 1]! : GOLD; };
@@ -37,6 +38,10 @@ const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-
 const stepNo = (i: number, l: L) => tx([`第 ${dvK(i)} 站`, `Stop ${dvK(i)}`], l);
 /** #D/<key> of station i */
 const hD = (i: number) => `#D/${dvK(i)}`;
+/** end of a station: the reason to continue, then the next stop, then share and backup. No dialog. */
+export function stationEnd(lo: string, next: string, share: string, backup: string): string {
+  return `<section class="dv-end" data-st-end="1"><p class="dv-lo">${lo}</p>${next}<div class="px-row dv-end-do"><button type="button" class="l4-b" data-st-share="1">${share}</button><button type="button" class="l4-b" data-go="#R">${backup}</button></div></section>`;
+}
 
 export async function dv(id: string, A: PxApi) {
   const l = A.l, D = await content(l); if (!A.still()) return;
@@ -72,7 +77,7 @@ export async function dv(id: string, A: PxApi) {
 <p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<figure class="dv-lead">${morph(dvK(i), l)}</figure><p class="dv-first">${hook}</p>
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
 ${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
-${sec(5, next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), `<p class="dv-lo">${mk(S.lo)}</p>${nxt}`)}
+${sec(5, next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), stationEnd(mk(S.lo), nxt, esc(cx('end.share', l)), esc(cx('end.backup', l))))}
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
 ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="button" class="l4-b g-act" data-go="#D/ch/${dvK(i)}">${z('✎ 分享挑战题：让朋友算一算', '✎ Share a challenge: let a friend try')}</button></div>` : ''}
@@ -87,6 +92,10 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   if (MLm) MLm.wire(A.host, dvK(i), l, mk, prev?.e ?? '', i > 0 ? dvK(i - 1) : '');
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
   A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, txt: z(`第 ${dvK(i)} 站`, `Stop ${dvK(i)}`) });
+  A.host.querySelector('[data-st-share]')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    void import('./share').then(({ openShare, progressLine }) => openShare(A.root, l, dvK(i), cx('end.share', l), progressLine(dvK(i), l), 'stop', `si-stop-${dvK(i)}`));
+  });
   if (A.still()) morphWire(A.host);
   if (A.still()) A.root.dataset.px = `D/${dvK(i)}.${l}`;
 }

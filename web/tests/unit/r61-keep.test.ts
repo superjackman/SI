@@ -109,7 +109,7 @@ describe('weekly card and progress code', () => {
     localStorage.setItem('si.ml', '{"6":{"m":[1]}}');
     localStorage.setItem('si.l4.my', 'MODEL');
     const code = encode();
-    expect(code.startsWith('SI1.')).toBe(true);
+    expect(code.startsWith('SI2.')).toBe(true);
     localStorage.setItem('si.vf', '["other"]');
     expect(decode('nope').ok).toBe(false);
     expect(decode('SI1.@@@@').ok).toBe(false);
