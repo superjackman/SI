@@ -31,7 +31,8 @@ export function wrap(k: string, lyHtml: string, l: L, mk: Mk): string {
   const by = d0 ? `<p class="st-by">${l === 'en' ? `${esc(d0.year)}, ${esc(d0.who)}. ` : `${esc(d0.year)} 年，${esc(d0.who)}。`}${esc(d0.why)} <a href="${esc(d0.url)}" target="_blank" rel="noopener">${z('出处', 'Source')}</a></p>` : '';
   let h = lyHtml.replace('<div class="ly" ', `<div class="ly ml" data-ml-s="${S.s}" data-ml-k="${k}" `);
   h = h.replace('<div data-ask="by"></div>', by);
-  h = h.replace('<div data-ask="num"></div>', `<section class="ml-p ml-v" aria-live="polite"></section>`);
+  h = h.replace('<div data-ask="num"></div>', `<div class="ml-num ml-v ml-p" aria-live="polite"></div>`);
+  h = h.replace('<div data-ask="pred"></div>', `<div class="ml-pred ml-p"></div>`);
   h = h.replace('<div data-ask="choice"></div>', `<section class="ml-p ml-i" id="q" aria-live="polite"></section>`);
   h = h.replace('<div class="ly-nx"></div>', `<section class="ml-rz" hidden></section><div class="ml-rze" hidden></div><div class="ly-nx"></div>`);
   return h;
@@ -135,7 +136,10 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
 <p class="ml-n">${z('这道记进错题本，今日复习会再考。换一组数继续。', 'This one is in the wrong book; today’s review will bring it back. New numbers, same question.')}</p><button type="button" class="l4-b g-info ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`;
     }
     const inp = judged ? '' : `<div class="vf-row"><input class="vf-in ml-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<button type="button" class="l4-b g-act ml-ck" data-ml-ck="1">${z('检查', 'Check')}</button></div>`;
-    $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${fb}</div>`;
+    const predHost = root.querySelector<HTMLElement>('.ml-pred');
+    const numHost = root.querySelector<HTMLElement>('.ml-num');
+    if (predHost && numHost) { predHost.innerHTML = pr; numHost.innerHTML = `<div class="ml-vq">${head}${inp}${fb}</div>`; }
+    else $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${fb}</div>`;
     const demoAt = M.goals.findIndex((x) => x.ly.includes(3));
     root.dataset.showDemo = demoAt >= 0 && demoAt === S.g ? '1' : '0';
   };

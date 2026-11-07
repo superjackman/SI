@@ -40,9 +40,9 @@
 .ml-h { margin: 0; font-size: 16px; line-height: 1.4; color: var(--ink); font-weight: 800; }
 .ml-pv { margin: 0; display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; border-left: 3px solid var(--highlight); border-radius: 6px; background: var(--card); }
 .ml-pv span { font-size: 12.5px; color: var(--highlight); } .ml-pv b { font-size: 14.5px; color: var(--ink); font-weight: 700; }
-.ml-pv2, .ml-q { margin: 0; } .ml-q b { display: block; color: var(--highlight); font-size: 14.5px; margin-bottom: 2px; }
+.ml-pv2, .ml-q { margin: 0; font-size: 16px; line-height: 1.7; } .ml-q b { display: block; color: var(--highlight); font-size: 16px; margin-bottom: 2px; }
 .ml-ops { display: flex; flex-direction: column; gap: 6px; }
-.ml-op { display: flex; align-items: flex-start; gap: 8px; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); text-align: left; font-size: 14.5px; line-height: 1.5; }
+.ml-op { display: flex; align-items: flex-start; gap: 8px; min-height: 44px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); text-align: left; font-size: 16px; line-height: 1.55; }
 .ml-op > b { flex: none; color: var(--link); } .ml-op > span { flex: 1; min-width: 0; } .ml-op > em { flex: none; font-style: normal; font-size: 12.5px; color: var(--bad); }
 .ml-op.ok { border-color: var(--good); background: var(--card); } .ml-op.ok > b { color: var(--good); }
 .ml-op.bad { border-color: var(--bad); background: var(--card); }
@@ -58,7 +58,8 @@
 .ml-lys { display: flex; flex-wrap: wrap; gap: 6px; max-width: 100%; } .ml-lys .l4-b { min-height: 44px; }
 .ml-rze { display: flex; flex-direction: column; }
 .ml-pr, .ml-vq { display: flex; flex-direction: column; gap: 8px; }
-.ml-vq { padding-top: 8px; border-top: 1px solid var(--line); }
+.ml-num .ml-vq { padding-top: 0; border-top: 0; }
+.ml-fb, .ml-vqq { font-size: 16px; line-height: 1.65; }
 .ml-vqq { margin: 0; }
 .ml-vn { display: block; font-size: 12.5px; color: var(--link); font-weight: 400; }
 .ml-rev { margin: 0; padding: 8px 10px; border-radius: 10px; background: var(--card); font-size: 14px; } .ml-rev b { color: var(--highlight); }

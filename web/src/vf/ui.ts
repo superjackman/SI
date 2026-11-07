@@ -72,15 +72,17 @@ function qItem(id: string, q: Q, l: L, done: boolean) {
     `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤).
     `o` (R56 今日复习): `ids` = just these questions (no demo, no 常见误解), `rev` = answers here clear the wrong book,
     `onJudge` runs after every answer. Every answer also goes into the review queue (px/rv). */
-export interface MountO { ids?: readonly string[]; rev?: boolean; onJudge?: (id: string, right: boolean) => void }
+export interface MountO { ids?: readonly string[]; rev?: boolean; onJudge?: (id: string, right: boolean) => void; myths?: boolean }
 export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void, part?: 'demo' | 'check', o: MountO = {}) {
   const z = (a: string, b: string) => tx([a, b], l), d0 = vfDone();
-  const ids = o.ids ? o.ids.filter((id) => id in QQ) : part === 'demo' ? [] : VF_Q[page] ?? [], mc = o.ids || part === 'demo' ? [] : MCS(page), dk = o.ids || part === 'check' ? undefined : DEMO[page];
+  const ids = o.myths ? [] : (o.ids ? o.ids.filter((id) => id in QQ) : part === 'demo' ? [] : VF_Q[page] ?? []);
+  const mc = o.myths ? MCS(page) : (o.ids || part === 'demo' ? [] : MCS(page));
+  const dk = o.ids || o.myths || part === 'check' ? undefined : DEMO[page];
   if (!ids.length && !mc.length && !dk) { slot.innerHTML = ''; return; }
   const s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
     + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
-    + (mc.length ? `<section class="vf-mc">${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
+    + (mc.length ? `<div class="st-myth">${mc.map((m) => `<p>${mk(tx(m.x, l), l)}${l === 'en' ? ' ' : ''}${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '')
     + '</div>';
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {
     const id = li.dataset.q!, q = QQ[id]!, fb = li.querySelector<HTMLElement>('.vf-fb')!;

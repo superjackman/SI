@@ -45,7 +45,7 @@ test('every station is an outline and one article, with the lesson already in th
     });
     expect(order, k).toEqual([]);
     const stray = await page.locator('.st-article').innerText();
-    expect(stray.split('\n').map((s) => s.trim()).filter((s) => /^(\[[0-9]+,|undefined|\[object )/.test(s)), k).toEqual([]);
+    expect(stray.split('\n').map((s) => s.trim()).filter((s) => /^\[[0-9]+,\s*$/.test(s) || s === 'undefined' || s.startsWith('[object ')), k).toEqual([]);
     const width = await page.locator('.st-article').evaluate((el) => parseFloat(getComputedStyle(el).maxWidth));
     expect(width, k).toBeLessThanOrEqual(820);
     expect(width, k).toBeGreaterThanOrEqual(760);

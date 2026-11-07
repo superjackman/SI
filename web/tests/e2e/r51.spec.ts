@@ -30,7 +30,7 @@ test.describe('R51 layers', () => {
     await expect(page.locator('.ly-l[data-ly="2"] .vf-dm[data-dm="gd"]')).toBeVisible();
     await expect(page.locator('[data-fig]')).toHaveCount(1);
     await expect(page.locator('.ly-fx')).toContainText('∂L/∂w');
-    await expect(page.locator('.vf-qz')).toBeVisible();
+    await expect(page.locator('.vf-qz').first()).toBeVisible();
     await expect(page.locator('.st-code')).toBeVisible();
     await go(page, '#D/1'); await px(page, 'D/1.zh'); await expect(vis(page)).toHaveCount(5);
     await expect(page.locator('.ly-sm')).toContainText('62.5%');
@@ -79,7 +79,7 @@ test.describe('R51 reads on this phone', () => {
       await page.evaluate(() => localStorage.setItem('si.ly.depth', 'd'));
       for (const i of PILOT) {
         await go(page, `#D/${i}`); await px(page, `D/${i}.${l}`);
-        await expect(vis(page)).toHaveCount(5); await expect(page.locator('.vf-qz')).toBeVisible();
+        await expect(vis(page)).toHaveCount(5); await expect(page.locator('.vf-qz').first()).toBeVisible();
         await page.locator('.ly details').evaluateAll((ds) => ds.forEach((d) => ((d as HTMLDetailsElement).open = true)));
         for (let k = 1; k <= 5; k++) {
           await page.locator(`.ly-l[data-ly="${k}"]`).evaluate((e) => e.scrollIntoView({ block: 'start' }));

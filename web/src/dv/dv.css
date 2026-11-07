@@ -220,9 +220,7 @@ button.dv-from span::before { content: '‹ '; }
   .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { max-height: none; overflow: visible; height: auto; }
   .ly.ml[data-ml-s="i"] > .ly-l:has([data-vf-part="demo"]) { display: block !important; min-height: 0; background: none; border: 0; padding: 0; }
   .ly.ml[data-ml-s="i"]:not(:has([data-vf-part="demo"])) > .dv-lead { grid-column: 1 / -1; }
-  .ly.ml[data-ml-s="i"] .vf-h,
-  .ly.ml[data-ml-s="i"] .vf-o,
-  .ly.ml[data-ml-s="i"] .vf-n { display: none; }
+  .ly.ml[data-ml-s="i"] .vf-h { display: none; }
   .st-main .ml-sharep { margin: 12px 0; }
   .st-side .ly-jv summary { display: none; }
   .dv-later .l4-b.g-jump { background: var(--navy); color: var(--on-navy); border: 0; }
@@ -234,7 +232,7 @@ button.dv-from span::before { content: '‹ '; }
   .st-sec { margin: 1.2em 0 0.45em; font-size: 22px; line-height: 1.35; font-weight: 600; }
   .st-by { margin: 0 0 0.8em; font-size: 16px; line-height: 1.7; }
   .st-article .vf-in, .st-article .ml-in, .st-article .vf-op, .st-article .ml-op, .st-article .vf-ck, .st-article .ml-ck, .st-article .vf-sw { min-height: 44px; }
-  .vf-plot { width: 100%; height: 140px; min-height: 0; display: block; }
+  .vf-plot { width: 100%; height: auto; min-height: 0; max-height: 280px; display: block; }
   .vf-axes { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   .vf-dm .vf-ctl { margin-top: 8px; }
   .st-side .formula { font-size: 20px; letter-spacing: 0.03em; line-height: 1.5; padding: 10px 12px; color: var(--ink); }

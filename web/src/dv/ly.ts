@@ -194,18 +194,42 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const motFig = MOT.has(key) ? `<div class="st-fig" data-fig="mot-${key}">${mot}</div>` : '';
   const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}</div>`;
   const figure = still + motFig + exp;
-  const formulas = Y.fx.map((f, i) => {
-    const before = i === 0 ? lead : (l === 'en' ? 'When more than one number changes together, write it this way.' : '不止一个数一起改的时候，写成这样。');
-    const sym = Y.fe[i];
-    return `<p>${esc(before)}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${sym ? `<p>${mk(sym)}</p>` : ''}`;
+  const symBits = Y.fe.map((raw) => {
+    const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
+    const bits = plain.split(/[：:]/);
+    if (bits.length < 2) return plain;
+    const name = bits[0]!.trim(), rest = bits.slice(1).join(l === 'en' ? ': ' : '：').trim();
+    return l === 'en' ? `${name} is ${rest}` : `${name}是${rest}`;
+  }).filter(Boolean);
+  const symSentence = symBits.length
+    ? (l === 'en' ? `Here ${symBits.join('; ')}.` : `其中${symBits.join('，')}。`)
+    : '';
+  const symHtml = symSentence.length > 160
+    ? `<dl class="fx-def">${Y.fe.map((raw) => {
+        const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
+        const bits = plain.split(/[：:]/);
+        const name = (bits[0] ?? plain).trim();
+        const rest = bits.slice(1).join(l === 'en' ? ': ' : '：').trim();
+        return rest ? `<div><dt>${esc(name)}</dt><dd>${esc(rest)}</dd></div>` : `<div><dt></dt><dd>${esc(plain)}</dd></div>`;
+      }).join('')}</dl>`
+    : (symSentence ? `<p>${esc(symSentence)}</p>` : '');
+  const shownFx = Y.fx.filter((f) => /[=←≈]/.test(fxPlain(f)));
+  const displayFx = shownFx.length ? shownFx : Y.fx.slice(0, 1);
+  const aside = Y.fx.filter((f) => !displayFx.includes(f)).map((f) => fxPlain(f)).filter(Boolean);
+  const tail = [symSentence, ...aside].filter(Boolean).join(l === 'en' ? ' ' : '');
+  const explain = tail.length > 180 ? symHtml : (tail ? `<p>${esc(tail)}</p>` : '');
+  const formulas = displayFx.map((f, i) => {
+    const before = i === 0 ? lead : (l === 'en' ? 'The same relation, written once more.' : '同一个关系，再写成一种。');
+    const after = i === displayFx.length - 1 ? explain : '';
+    return `<p>${esc(before)}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${after}`;
   }).join('');
-  const restFe = Y.fe.slice(Y.fx.length);
+  const qSlot = (i: number) => `<div class="st-q" data-vf-part="check" data-vf-i="${i}"></div>`;
   const L5 = [
     `${H('这一步在做什么', 'What this step is doing')}<div data-ask="by"></div><p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
     `${H('看一看', 'Look')}${figure}<div data-ask="num"></div>`,
-    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div>${restFe.length ? flow(restFe) : ''}<div class="vf-slot" data-vf-part="check"></div>`,
-    `${H('另外的办法为什么不行', 'Why the other ways fail')}${why.length ? flow(why) : ''}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
-    `${H('换种办法会怎样', 'What if you chose another way')}<div data-ask="choice"></div>`,
+    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div>${qSlot(0)}`,
+    `${H('另外的办法为什么不行', 'Why the other ways fail')}${why.length ? flow(why) : ''}<div data-ask="pred"></div><div data-vf-part="myth"></div>${qSlot(1)}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>${qSlot(2)}`,
+    `${H('换种办法会怎样', 'What if you chose another way')}${qSlot(3)}<div data-ask="choice"></div>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
   return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;
@@ -240,8 +264,18 @@ export function wire(host: HTMLElement, page: string, l: L) {
     else if (b.dataset.lyA === 'up') openTo(DEPTH_MAX[d] + 1);
   });
   draw();
-  const demo = root.querySelector<HTMLElement>('[data-vf-part="demo"]'), chk = root.querySelector<HTMLElement>('[data-vf-part="check"]');
-  void import('../vf/ui').then((m) => { if (demo?.isConnected) m.mount(demo, page, l, undefined, 'demo'); if (chk?.isConnected) m.mount(chk, page, l, undefined, 'check'); });
+  const demo = root.querySelector<HTMLElement>('[data-vf-part="demo"]');
+  void import('../vf/ui').then(async (m) => {
+    if (demo?.isConnected) m.mount(demo, page, l, undefined, 'demo');
+    const ids = (await import('../vf/ids')).VF_Q[page] ?? [];
+    root.querySelectorAll<HTMLElement>('[data-vf-i]').forEach((slot) => {
+      const id = ids[Number(slot.dataset.vfI)];
+      if (!id || !slot.isConnected) { slot.remove(); return; }
+      m.mount(slot, page, l, undefined, 'check', { ids: [id] });
+    });
+    const myth = root.querySelector<HTMLElement>('[data-vf-part="myth"]');
+    if (myth?.isConnected) m.mount(myth, page, l, undefined, 'check', { myths: true });
+  });
   const at = root.querySelector<HTMLElement>('[data-att]');
   if (at) void import('./att').then((m) => { if (at.isConnected) m.att(at, l); });
   const motEl = root.querySelector<HTMLElement>('[data-mot]');
