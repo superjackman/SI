@@ -82,7 +82,7 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
   const s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
     + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
-    + (mc.length ? `<div class="st-myth">${mc.map((m) => `<p>${mk(tx(m.x, l), l)}${l === 'en' ? ' ' : ''}${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '')
+    + (mc.length ? `<div class="st-myth">${mc.map((m) => `<p><b>${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p><b>${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '')
     + '</div>';
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {
     const id = li.dataset.q!, q = QQ[id]!, fb = li.querySelector<HTMLElement>('.vf-fb')!;
