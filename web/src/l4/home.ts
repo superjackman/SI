@@ -107,8 +107,7 @@ export function home(host: HTMLElement, A: HomeApi) {
     top = `<div class="hm-fold"><div><section class="hm-hero"><p class="hm-k">${z(`自底向上 · 推导之路 · 零基础 · 三题的站约 ${typical} 分钟`, `Bottom up · no prior knowledge · about ${typical} min for a three-part stop`)}</p>
 <h1 class="hm-h">${z('从一个数学函数出发，搭到大模型、安全与应用', 'From one function, up to models, safety and use')}</h1>
 <p class="hm-s">${z(`${DV_N} 站。每一步都在解决上一步留下的问题：先把概率、损失和梯度说清楚，再搭到 Transformer、Agent，以及能用的应用。`, `${DV_N} stops. Each one answers what the previous one left open.`)}</p>
-${startBtn(z(`从「${stN(nxt, l)}」开始`, `Start with “${stN(nxt, l)}”`))}
-<p class="hm-pos">${z(`第 ${pos}/${DV_N} 站`, `${pos}/${DV_N}`)}</p></section>${path}</div>${newsCol}</div>
+<div class="hm-act">${startBtn(z(`从「${stN(nxt, l)}」开始`, `Start with “${stN(nxt, l)}”`))}<p class="hm-pos">${z(`第 ${pos}/${DV_N} 站`, `${pos}/${DV_N}`)}</p></div></section>${path}</div>${newsCol}</div>
 ${feat}${works}
 <section class="hm-card hm-demo" data-hm="demo"><div class="hm-dh"><b>${z('天空是', 'The sky is')} <span class="hm-q">？</span></b><span class="hm-chip">${z('拖一拖', 'Drag')} · ${z('温度', 'temp')} <output>1.0</output></span></div>
 <div class="hm-bars">${skyBars(sky, l)}</div>

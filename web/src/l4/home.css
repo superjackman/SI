@@ -151,7 +151,10 @@ html[data-anim="off"] .hm-bt i { transition: none; }
 .hm-wb { font-size: 12.5px; color: #fecaca; }
 @media (min-width: 1024px) {
   .hm { max-width: 1280px; margin: 0 auto; padding-top: 28px; }
-  .l4 .hm-cta { width: auto; align-self: flex-start; display: inline-flex; }
+  .l4 .hm-cta { width: auto; align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; }
+  .hm-hero .hm-act { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+  .l4 .hm-hero .hm-cta { padding: 12px 24px; }
+  .hm-hero .hm-pos { margin: 0; font-size: 13px; line-height: 1.4; white-space: nowrap; }
   .hm-fold { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 8px 48px; align-items: start; }
   .hm-news { grid-column: 2; grid-row: 1; border-left: 1px solid #d9d3c7; padding-left: 28px; }
   .hm-news h2, .hm-path h2, .hm-feat h2, .hm-works h2 { font-size: 20px; font-weight: 600; margin: 0; }
