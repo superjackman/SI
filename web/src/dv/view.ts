@@ -11,7 +11,7 @@ import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_KEY, DV_LV, DV_N, DV_NM, DV_OF, 
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
-import { ML_G, masteredSt } from './prog';
+import { ML_G, masteredSt, seenSt, stationMin } from './prog';
 import { stripIds } from './plain';
 import { morph, morphWire } from './morph';
 import { tx as cx } from '../i18n/L';
@@ -35,7 +35,7 @@ export const seenKeys = (v: unknown): string[] => !Array.isArray(v) ? [] : [...n
 const seenGet = (): number[] => { try { return seenKeys(JSON.parse(localStorage.getItem(DV_SEEN) || '[]')).map(dvI); } catch { return []; } };
 const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b).map(dvK))); } catch { /* private mode */ } };
 const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="${cv(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };
-const stepNo = (i: number, l: L) => tx([`第 ${dvK(i)} 站`, `Stop ${dvK(i)}`], l);
+const stepNo = (i: number, l: L) => tx([`第 ${i + 1}/${DV_N} 站`, `${i + 1}/${DV_N}`], l);
 /** #D/<key> of station i */
 const hD = (i: number) => `#D/${dvK(i)}`;
 /** end of a station: the reason to continue, then the next stop, then share and backup. No dialog. */
@@ -52,14 +52,19 @@ export async function dv(id: string, A: PxApi) {
   if (id === 'D/ch' || id.startsWith('D/ch/')) { const m = await import('./ch'); if (!A.still()) return; return m.challenge(id, A); }
   const i0 = dvI((DV_ALIAS[id] ?? id).slice(2)), i = i0 >= 0 ? i0 : 0, S = D.st[i]!;
   const C: Record<string, Card> = { ...(await cards(l, 'K01')), ...(await cards(l, 'KA01')), ...(await cards(l, 'KC01')) }; if (!A.still()) return;
+  /* the station count sits in the page title and in .dv-pos, both in the reading column’s frame, so a wide layout still shows it when the bottom pager is not the place to look */
   A.top(`<b class="l4-tt">${stepNo(i, l)} · ${esc(S.n)}</b>`);
   A.crumb([[z('首页', 'Home'), '#home'], [name, '#D'], [`${dvK(i)} ${S.n}`, null]]);
   const sec = (c: number, h: string, body: string) => body ? `<section class="l4-ks"><h3 class="l4-kh c${c}">${h}</h3><div class="l4-kbd">${body}</div></section>` : '';
   const ul = (xs: string[]) => xs.length ? `<ul>${xs.map((x) => `<li>${mk(x)}</li>`).join('')}</ul>` : '';
   const prev = i > 0 ? D.st[i - 1]! : null, next = i < DV_N - 1 ? D.st[i + 1]! : null, n = DV_LV[i]!;
-  const from = prev ? `<button type="button" class="dv-from" data-go="${hD(i - 1)}"><span>${z(`第 ${dvK(i - 1)} 站留下的问题`, `Left open by stop ${dvK(i - 1)}`)}</span><b>${esc(prev.e)}</b></button>` : `<p class="dv-from s"><span>${z('起点', 'The start')}</span><b>${z('地基：一个能调的函数', 'The foundation: a function you can tune')}</b></p>`;
-  const nxt = next ? `<button type="button" class="l4-b g-jump dv-nx" data-go="${hD(i + 1)}">${z(`去第 ${dvK(i + 1)} 站 · `, `On to stop ${dvK(i + 1)} · `)}${esc(next.n)}</button>`
-    : `<div class="px-row l"><button type="button" class="l4-b g-jump" data-go="#D">${z('回链路', 'Back to chain')}</button><button type="button" class="l4-b" data-go="#map">${z('看五层结构', 'The five layers')}</button></div>`;
+  const prevSeen = i > 0 && seenSt().has(dvK(i - 1));
+  const bridge = (S.ly?.hook ?? S.s).split(/[。！？.!?]/)[0] ?? S.s;
+  const from = !prev ? `<p class="dv-from s"><span>${z('起点', 'The start')}</span><b>${z('地基：一个能调的函数', 'The foundation: a function you can tune')}</b></p>`
+    : prevSeen ? `<button type="button" class="dv-from" data-go="${hD(i - 1)}"><span>${z(`第 ${dvK(i - 1)} 站留下的问题`, `Left open by stop ${dvK(i - 1)}`)}</span><b>${esc(prev.e)}</b></button>`
+    : `<p class="dv-from s"><span>${z('从这里接上', 'Pick up here')}</span><b>${esc(bridge)}</b></p>`;
+  const nxt = next ? `<button type="button" class="l4-b g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`去第 ${dvK(i + 1)} 站 · `, `On to stop ${dvK(i + 1)} · `)}${esc(next.n)}</button>`
+    : `<div class="dv-end"><button type="button" class="l4-b g-jump" data-fwd="1" data-go="#D">${z('回链路', 'Back to the chain')}</button><a class="dv-quiet" href="#map">${z('看五层结构', 'The five layers')}</a></div>`;
   /* R48 cards both ways: born here (square 第n层 badge = the card's pyramid layer) / used again here (round 第n步 badge = where it was born) */
   const kb = (k: string, badge: string) => `<button type="button" class="l4-b g-info dv-kb" data-k="${k}">${badge}<span class="dv-kn">${esc(C[k]!.n)}</span></button>`;
   const lvB = (k: string) => { const c = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[c - 1]}">${tx(UI.lv[c - 1]!, l)}</span>`; };
@@ -73,11 +78,13 @@ export async function dv(id: string, A: PxApi) {
   const page = `D/${dvK(i)}`;
   A.root.dataset.topdown = tdh;
   const hook = S.ly?.hook ? mk(S.ly.hook) : mk((S.i[0] ?? S.q).split(/[。！？.!?]/)[0] ?? S.q);
-  A.host.innerHTML = `<div class="px dv dv-sp" style="--c:${col(i)}">
+  const finished = masteredSt().has(dvK(i));
+  A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">
+<p class="dv-pos">${stepNo(i, l)} · ${z(`约 ${stationMin(ML_G[dvK(i)] ?? 3)} 分钟`, `about ${stationMin(ML_G[dvK(i)] ?? 3)} min`)}</p>
 <p class="dv-sum">${lvT(i, l)}<span>${esc(S.s)}</span></p>${from}<figure class="dv-lead">${morph(dvK(i), l)}</figure><p class="dv-first">${hook}</p>
 ${LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('① 要解决的问题', '① The problem'), mk(S.q))}${sec(2, z('② 核心思想', '② The idea'), ul(S.i))}${sec(3, z('③ 关键公式 / 机制', '③ Formula / mechanism'), ul(S.f))}${sec(4, z('④ 小数字例子', '④ A small example'), ul(S.x) + exK)}`}
 ${memKit(i, S, prev, next, l, z, MLm?.take(dvK(i), l) ?? null)}
-${sec(5, next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next'), stationEnd(mk(S.lo), nxt, esc(cx('end.share', l)), esc(cx('end.backup', l))))}
+<section class="l4-ks dv-later"><h3 class="l4-kh c5">${next ? z(LY ? '遗留问题 → 下一步' : '⑤ 遗留问题 → 下一步', LY ? 'Left open → next' : '⑤ Left open → next') : z('⑤ 接下来', '⑤ What next')}</h3><div class="l4-kbd">${stationEnd(mk(S.lo), nxt, esc(cx('end.share', l)), esc(cx('end.backup', l)))}</div></section>
 ${LY ? '' : `<p class="dv-do"><b>${z('动手验证', 'Try it')}</b>${mk(S.h)}</p>
 <div class="vf-slot" data-vf-page="${page}"></div>`}
 ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="button" class="l4-b g-act" data-go="#D/ch/${dvK(i)}">${z('✎ 分享挑战题：让朋友算一算', '✎ Share a challenge: let a friend try')}</button></div>` : ''}
@@ -89,9 +96,9 @@ ${(dvK(i) === '2' || dvK(i) === '8a') ? `<div class="px-row"><button type="butto
   /* R50 验证优化: demo + 自己算一算 + 常见误解, lazy (first load untouched); re-centre a focused card once it has grown */
   const slot = LY ? null : A.host.querySelector<HTMLElement>('.vf-slot');
   if (LY) LY.wire(A.host, page, l);
-  if (MLm) MLm.wire(A.host, dvK(i), l, mk, prev?.e ?? '', i > 0 ? dvK(i - 1) : '');
+  if (MLm) MLm.wire(A.host, dvK(i), l, mk, prevSeen ? (prev?.e ?? '') : '', prevSeen && i > 0 ? dvK(i - 1) : '');
   if (slot) void import('../vf/ui').then((m) => { if (!A.still() || !slot.isConnected) return; m.mount(slot, `D/${dvK(i)}`, l); if (fb) fb.scrollIntoView({ block: 'center' }); });
-  A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, txt: z(`第 ${dvK(i)} 站`, `Stop ${dvK(i)}`) });
+  A.step({ n: DV_N, i, pv: z('上一站', 'Prev stop'), nx: next ? z('下一站', 'Next stop') : z('回链路', 'Chain'), prev: i > 0 ? hD(i - 1) : null, next: next ? hD(i + 1) : '#D', dot: (k) => A.go(hD(k)), z0: true, keys: DV_KEY, hold: true, txt: stepNo(i, l) });
   A.host.querySelector('[data-st-share]')?.addEventListener('click', (e) => {
     e.stopPropagation();
     void import('./share').then(({ openShare, progressLine }) => openShare(A.root, l, dvK(i), cx('end.share', l), progressLine(dvK(i), l), 'stop', `si-stop-${dvK(i)}`));
@@ -117,8 +124,7 @@ function memKit(i: number, S: Dv['st'][number], prev: Dv['st'][number] | null, n
   const why = prev ? z(`上一站留下「${prev.e}」，这一站用「${S.s}」接住${next ? `；它又留下「${S.e}」，下一站解决。` : '。'}`, `The last stop left “${prev.e}”; this one answers with “${S.s}”${next ? `, and leaves “${S.e}” for the next.` : '.'}`) : z(`起点：「${S.s}」，留下「${S.e}」给下一站。`, `The start: “${S.s}”, leaving “${S.e}” for the next.`);
   const chainB = `<section class="dv-chn"><div class="dv-th"><b>🔗 ${z('串起来：你走到了哪', 'The chain: where you are')}</b><span>${z(`第 ${dvK(i)} 站`, `stop ${dvK(i)}`)}</span></div><div class="dv-cl">${line}</div><p class="dv-cw">${mk(why)}</p><p class="dv-cp">${n ? z(`在金字塔里的位置：第 ${n} 层「${tx(UI.lvN[n - 1]!, 'zh')}」`, `In the pyramid: layer ${n}, “${tx(UI.lvN[n - 1]!, 'en')}”`) : z('回顾：把五层串起来', 'Recap: all five layers together')}</p></section>`;
   // the last stop of a pyramid layer offers 阶段排序 for that layer
-  const so = n && DV_LV[i + 1] !== n ? `<button type="button" class="dv-so" data-go="#R/so${n}"><b>🧩 ${z(`阶段回顾：把第 ${n} 层排个序`, `Layer ${n} recap: put its stops in order`)}</b><span>${z(`这一层 ${DV_LV.filter((x) => x === n).length} 站，按推导顺序点一遍`, `${DV_LV.filter((x) => x === n).length} stops, tap them in derivation order`)} ›</span></button>` : '';
-  return take + chainB + so;
+  return take + chainB;
 }
 const DV_NM_ = (j: number, l: L) => tx(DV_NM[j] ?? ['', ''], l);
 
@@ -142,6 +148,7 @@ function chain(A: PxApi, D: Dv, z: (a: string, b: string) => string, name: strin
 <div class="px-row l"><button type="button" class="l4-b g-info dv-mp" data-go="#D/map">${z('知识地图', 'Knowledge map')}</button><button type="button" class="l4-b g-jump" data-go="#D/routes">${z('五条学习路线 ›', 'Five learning routes ›')}</button></div>
 <div class="dv-c">${h}</div>
 <div class="px-row"><button type="button" class="l4-b g-jump big" data-go="${hD(go)}">${nx == null ? z('从第 0 站重读', 'Read again from stop 0') : seen.size ? z(`继续：第 ${dvK(go)} 站`, `Continue: stop ${dvK(go)}`) : z('从第 0 站开始', 'Start at stop 0')}</button></div></div>`;
+  A.host.scrollTop = 0;
   if (A.still()) A.root.dataset.px = `D.${l}`;
 }
 

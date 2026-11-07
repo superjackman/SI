@@ -57,7 +57,7 @@ test.describe('R44 step bar', () => {
     await open(page, './?lang=zh#home'); await page.waitForSelector('.hm'); await expect(page.locator('.l4-ob')).toHaveCount(0);
     await page.locator('.hm-dd').first().click(); const sh = page.locator('.hm-sh'); await expect(sh).toBeVisible();
     await expect(sh.locator('[data-s^="d:"]')).toHaveCount(3); await expect(sh.locator('[data-s^="g:"]')).toHaveCount(5);
-    await expect(sh.locator('[data-s="g:model"]')).toHaveAttribute('aria-checked', 'true');
+    await expect(sh.locator('[data-s^="g:"][aria-checked="true"]')).toHaveCount(0);
     await page.keyboard.press('Escape'); await expect(sh).toHaveCount(0);
   });
 });

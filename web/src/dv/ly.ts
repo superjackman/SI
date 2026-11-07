@@ -133,9 +133,13 @@ export function wire(host: HTMLElement, page: string, l: L) {
       if (k === v) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
     });
     const nx = root.querySelector<HTMLElement>('.ly-nx')!;
-    nx.innerHTML = v >= 5 ? `<p class="ly-end">${z('✓ 看完了。', '✓ That’s the end of this part.')}</p>`
-      : v < max ? `<button type="button" class="l4-b g-jump ly-go" data-ly-a="next">${esc(tx(NXT[v - 1]!, l))}</button>`
+    /* the station loop has its own single forward button; this one would be a second 「继续」 */
+    const end = v >= 5 ? `<p class="ly-end">${z('✓ 看完了。', '✓ That’s the end of this part.')}</p>` : '';
+    const more = v < max
+      ? `<button type="button" class="l4-b g-jump ly-go" data-ly-a="next">${esc(tx(NXT[v - 1]!, l))}</button>`
       : `<button type="button" class="l4-b g-info ly-go" data-ly-a="up">${d === 's' ? z('再往下看？切到 5 分钟', 'More of it? Switch to 5 min') : z('连式子一起？切到深入', 'The formula too? Switch to Deep')}</button>`;
+    /* a station already has one forward button; don’t add a second one */
+    nx.innerHTML = root.classList.contains('ml') ? end : (v >= 5 ? end : more);
   };
   const focus = (k: number) => { const h = root.querySelector<HTMLElement>(`.ly-l[data-ly="${k}"] .ly-h`); if (!h) return; h.focus({ preventScroll: true }); h.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' }); };
   const openTo = (k: number) => { if (k > open) { open = k; openSet(page, k); } if (k > DEPTH_MAX[d]) { d = depthFor(k); depthSet(d); } draw(); focus(k); };

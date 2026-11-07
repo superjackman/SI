@@ -1,8 +1,10 @@
 // After the demo moves, the check uses that state. A wrong tap explains only itself.
 import { test, expect, type Page } from '@playwright/test';
-import { liveQ, type DemoSnap } from '../../src/dv/liveq';
+import { ML } from '../../src/dv/mld';
 
-const DEMO0: DemoSnap = { eta: 0.3, n: 4, T: 1, dk: 3, pred: 4, ang: 40, layer: 0, rank: 4, len: 4, hit: 1 };
+const ML6 = ML['6']!.goals[0]!.pr;
+const ML7 = ML['7']!.goals[0]!.pr;
+const ML10 = ML['10']!.goals[0]!.pr;
 
 const ORIGIN = 'http://localhost:' + (process.env.SI_E2E_PORT || '4173');
 const DONE = [{ name: 'si.fs', value: '0' }, { name: 'si.a2hs', value: '1' }, { name: 'si.onb', value: '1' }];
@@ -28,51 +30,29 @@ async function cont(p: Page, s: 'r' | 'v') {
   }
   if (s === 'v') await p.locator('[data-ml-to="v"]').click();
 }
-const setRange = (p: Page, sel: string, value: string) => p.locator(sel).evaluate((el, v) => {
-  const i = el as HTMLInputElement;
-  i.value = v;
-  i.dispatchEvent(new Event('input', { bubbles: true }));
-}, value);
-
-test('stations 6, 7 and 10: the check follows the demo, and a wrong tap can be retried', async ({ page }) => {
+test('stations 6, 7 and 10: the check is that part’s own question, and a wrong tap can be retried', async ({ page }) => {
   const errs = await open(page, './?lang=zh#D/6');
   await page.locator('[data-dm="emb"] input[data-vs="ang"]').waitFor({ state: 'attached' });
-  await setRange(page, '[data-dm="emb"] input[data-vs="ang"]', '90');
   await cont(page, 'v');
-  const emb = liveQ('6', 0, { k: 'emb', s: { ...DEMO0, ang: 90 } })!;
+  const own = ML6;
   const pr = page.locator('.ml-pr');
-  await expect(pr).toContainText('90');
-  await expect(pr.locator(`[data-ml-p="${emb.a}"]`)).toContainText(emb.o[emb.a]![0]);
-  const wrong = (emb.a + 1) % 3;
+  await expect(pr).toContainText(own.q[0].slice(0, 8));
+  await expect(pr).not.toContainText('夹角拖到');
+  const wrong = (own.a + 1) % 3;
   await pr.locator(`[data-ml-p="${wrong}"]`).click();
   await expect(pr.locator('.ml-dead')).toHaveCount(1);
   await expect(pr.locator('.ml-live')).toHaveCount(0);
   await expect(pr).toContainText('还可以再选');
   await expect(pr).not.toContainText('对了');
-  await pr.locator(`[data-ml-p="${(emb.a + 2) % 3}"]`).click();
-  await expect(pr.locator('.ml-dead')).toHaveCount(2);
-  await expect(pr.locator('.ml-live')).toHaveCount(0);
-  await pr.locator(`[data-ml-p="${emb.a}"]`).click();
+  await pr.locator(`[data-ml-p="${own.a}"]`).click();
   await expect(pr.locator('.ml-live')).toHaveCount(1);
   await expect(pr).toContainText('对了');
-  await setRange(page, '[data-dm="emb"] input[data-vs="ang"]', '40');
-  const back = liveQ('6', 0, { k: 'emb', s: { ...DEMO0, ang: 40 } })!;
-  await expect(pr).toContainText('40');
-  await expect(pr.locator('.ml-live')).toHaveCount(0);
-  await expect(pr.locator(`[data-ml-p="${back.a}"]`)).toContainText(back.o[back.a]![0]);
 
   await go(page, '#D/7');
   await expect(page.locator('#l4')).toHaveAttribute('data-px', 'D/7.zh');
-  await page.locator('[data-morph] input').waitFor({ state: 'attached' });
-  await setRange(page, '[data-morph] input', '0');
   await cont(page, 'v');
-  const life = liveQ('7', 0, null)!;
-  await expect(page.locator('.ml-pr')).toContainText('0%');
-  await expect(page.locator('.ml-pr')).toContainText(life.o[0]![0].slice(0, 6));
-  await setRange(page, '[data-morph] input', '100');
-  const math = liveQ('7', 1, null)!;
-  await expect(page.locator('.ml-pr')).toContainText('100%');
-  await expect(page.locator(`.ml-pr [data-ml-p="${math.a}"]`)).toContainText(math.o[math.a]![0].slice(0, 6));
+  await expect(page.locator('.ml-pr')).toContainText(ML7.q[0].slice(0, 8));
+  await expect(page.locator('.ml-pr')).not.toContainText('滑块在');
 
   await go(page, '#D/10');
   await expect(page.locator('#l4')).toHaveAttribute('data-px', 'D/10.zh');
@@ -89,10 +69,8 @@ test('stations 6, 7 and 10: the check follows the demo, and a wrong tap can be r
   expect(row.bar).toBeLessThan(72);
   expect(row.dep).toBeGreaterThanOrEqual(44);
   expect(row.dot).toBeGreaterThanOrEqual(44);
-  await setRange(page, '[data-morph] input', '100');
   await cont(page, 'v');
-  const ten = liveQ('10', 1, null)!;
-  await expect(page.locator('.ml-pr')).toContainText('100%');
-  await expect(page.locator(`.ml-pr [data-ml-p="${ten.a}"]`)).toContainText(ten.o[ten.a]![0].slice(0, 4));
+  await expect(page.locator('.ml-pr')).toContainText(ML10.q[0].slice(0, 8));
+  await expect(page.locator('.ml-pr')).not.toContainText('滑块在');
   expect(errs).toEqual([]);
 });

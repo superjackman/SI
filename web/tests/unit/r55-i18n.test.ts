@@ -13,8 +13,7 @@ describe('R55 layer tabs and depth labels', () => {
     const ly = rd('dv/ly.ts'), hm = rd('l4/home.ts');
     expect(ly).toMatch(/\['类比', 'Analogy'\]/);
     expect(ly).not.toMatch(/\['类比', 'Hook'\]/);
-    expect(hm).toMatch(/\['类比', 'Analogy'\]/);
-    expect(hm).not.toMatch(/\['类比', 'hook'\]/);
+    expect(hm).not.toMatch(/Hook|hook/);
     for (const f of ['dv/zh-st.json', 'dv/en-st.json']) {
       const t = rd(f);
       expect(t).not.toMatch(/钩子\s*→/);

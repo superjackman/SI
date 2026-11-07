@@ -14,9 +14,10 @@ describe('R52 routes + challenge', () => {
       for (let i = 1; i < ix.length; i++) expect(ix[i]!, r.id).toBeGreaterThan(ix[i - 1]!);
     }
   });
-  it('routeNext prefers unmastered unread, then unmastered, then first', () => {
+  it('routeNext opens a station that was entered but not finished, then the first unfinished', () => {
     const r = ROUTES[2]!; // derive
     expect(routeNext(r, new Set(), new Set())).toBe(String(r.st[0]));
+    expect(routeNext(r, new Set(), new Set([String(r.st[0])]))).toBe(String(r.st[0]));
     expect(routeNext(r, new Set([String(r.st[0])]), new Set([String(r.st[0])]))).toBe(String(r.st[1]));
     const all = new Set(r.st.map(String));
     expect(routeNext(r, all, all)).toBe(String(r.st[0]));

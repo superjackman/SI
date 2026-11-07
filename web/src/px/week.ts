@@ -4,7 +4,7 @@
 import { tx } from '../l4/txt';
 import { DV_NM, dvI } from '../dv/links';
 import { masteredSt, seenSt } from '../dv/prog';
-import { goalGet, routeNext, routeOf } from '../dv/routes';
+import { pathOf, routeNext } from '../dv/routes';
 import { day, log, streak } from './rec';
 import { dayN, rvAll } from './rv';
 
@@ -48,7 +48,7 @@ export function practiceCount(now = Date.now()) {
 export interface WeekModel { empty: boolean; mastered: string[]; practice: number; streak: number; next: string }
 export function weekModel(now = Date.now()): WeekModel {
   const mastered = masteredThisWeek(now), practice = practiceCount(now), sk = streak(now);
-  const r = routeOf(goalGet()) ?? routeOf('model')!;
+  const r = pathOf();
   return { empty: mastered.length === 0 && practice === 0, mastered, practice, streak: sk, next: routeNext(r, masteredSt(), seenSt()) };
 }
 export const stName = (k: string, l: 'zh' | 'en') => tx(DV_NM[dvI(k)] ?? [k, k], l);

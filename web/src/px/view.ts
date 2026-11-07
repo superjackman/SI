@@ -16,13 +16,13 @@ import type { Trace } from '../l4/tf/model';
 import type { Ans } from '../l4/pages';
 import { navBack } from '../l4/hnav';
 import { layerMastery, masteredSt, seenSt } from '../dv/prog';
-import { goalGet, routeNext, routeOf } from '../dv/routes';
+import { pathOf, routeNext } from '../dv/routes';
 import { DV_KEY, DV_LV, DV_N, DV_NM, dvI } from '../dv/links';
 import { VF_Q, vfDone } from '../vf/ids';
 import * as RV from './rv';
 import { keepHtml, wireKeep } from './keep';
 
-export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined; /** R56 the counter text (else 「key / last」) */ txt?: string | undefined }
+export interface Step { n: number; i: number; lab?: string | undefined; pv?: string | undefined; nx?: string | undefined; prev: string | (() => void) | null; next: string | (() => void) | null; dot?: ((k: number) => void) | null; z0?: boolean | undefined; /** labels per dot (else the number) */ keys?: readonly string[] | undefined; /** R56 the counter text (else 「key / last」) */ txt?: string | undefined; /** unfinished station: no solid skip forward */ hold?: boolean | undefined }
 export interface PxApi {
   step: (s: Step | null) => void;
   root: HTMLElement; host: HTMLElement; l: L; go: (h: string) => void; top: (html: string) => void; crumb: (c: [string, string | null][]) => void;
@@ -131,7 +131,7 @@ function list(A: PxApi) {
   const ran = new Set(R.log().filter((e) => e.k === 'exp').map((e) => (e as { id: string }).id)), my = !!localStorage.getItem('si.l4.my');
   const it = (h: string, n: N, name: string, st: string, on: boolean) => `<button type="button" class="px-it" data-go="${h}">${lvT(n, L_)}<b>${esc(name)}</b><i class="${on ? 'on' : ''}">${esc(st)}</i></button>`;
   /* R56 one ledger: 练习 is grouped by station along my route (the same mastery as home / 地图 / 我的), then the rest */
-  const z = (a: string, b: string) => tx([a, b], L_), vd = vfDone(), ms = masteredSt(vd), r = routeOf(goalGet()) ?? routeOf('model')!, on = new Set(r.st.map(String));
+  const z = (a: string, b: string) => tx([a, b], L_), vd = vfDone(), ms = masteredSt(vd), r = pathOf(), on = new Set(r.st.map(String));
   const stB = (k: string) => { const q = VF_Q['D/' + k] ?? [], s = q.filter((id) => vd.has(id)).length, m = ms.has(k), n = DV_LV[dvI(k)] ?? 0;
     return `<button type="button" class="px-st2${m ? ' m' : ''}" data-go="#D/${k}" style="--c:${n ? LC[n - 1] : '#c99a2e'}"><span class="px-sk">${esc(k)}</span><b>${esc(tx(DV_NM[dvI(k)] ?? ['', ''], L_))}</b><i>${m ? z('★ 已掌握', '★ mastered') : `✎ ${s}/${q.length}`}</i></button>`; };
   const rest = DV_KEY.filter((k) => !on.has(k) && (VF_Q['D/' + k] ?? []).length), rp = RV.rvPick(3);
@@ -246,7 +246,7 @@ async function record(A: PxApi) {
   const C = await allCards(A.l); if (!A.still()) return;
   const lg = R.log(), sk = R.streak(), st = layerStats(A.seen, A.opened);
   /* R56 one ledger: the same station mastery as the home ring, the 地图 tab, the chain and 练习 */
-  const vd = vfDone(), ms = masteredSt(vd), sn = seenSt(), lm = layerMastery(ms), r = routeOf(goalGet()) ?? routeOf('model')!, nx = routeNext(r, ms, sn);
+  const vd = vfDone(), ms = masteredSt(vd), sn = seenSt(), lm = layerMastery(ms), r = pathOf(), nx = routeNext(r, ms, sn);
   const rdone = r.st.filter((k) => ms.has(String(k))).length, z = (a: string, b: string) => tx([a, b], L_);
   const C2 = 2 * Math.PI * 30, ring = `<svg class="px-ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="30" fill="none" stroke="#1d2d5c" stroke-width="8"/><circle cx="38" cy="38" r="30" fill="none" stroke="#ffd77a" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C2 * ms.size) / DV_N).toFixed(1)} ${C2.toFixed(1)}" transform="rotate(-90 38 38)"/></svg>`;
   const ft = RV.firstTry();

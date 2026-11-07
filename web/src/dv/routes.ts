@@ -1,7 +1,6 @@
 /* R52 learning routes (metro lines): five goal paths that reuse the same 23 stations in derivation order.
    Data only — the #D/routes view and the home chooser read this. Kept tiny so it can ship in the first chunk. */
-import type { SK } from './links';
-import { dvI } from './links';
+import { DV_KEY, dvI, type SK } from './links';
 
 export const GOAL_KEY = 'si.goal';
 export type GoalId = 'use' | 'model' | 'derive' | 'agent' | 'interview';
@@ -37,9 +36,24 @@ export const goalGet = (): GoalId | null => {
   try { const v = localStorage.getItem(GOAL_KEY); return ROUTES.some((r) => r.id === v) ? (v as GoalId) : null; } catch { return null; }
 };
 export const goalSet = (id: GoalId) => { try { localStorage.setItem(GOAL_KEY, id); } catch { /* private mode */ } };
-/** first unfinished station on a route (by quiz mastery if available, else unread); falls back to the first station */
-export const routeNext = (r: Route, mastered: ReadonlySet<string>, seen: ReadonlySet<string>): string => {
-  for (const k of r.st) { const key = String(k); if (!mastered.has(key) && !seen.has(key)) return key; }
+/** the walk to follow: the route the learner picked, otherwise the 23 stations in order */
+export interface Path { id: GoalId | null; n: readonly [string, string]; s: readonly [string, string]; c: string; st: readonly (SK | string)[]; chosen: boolean }
+export const FULL_PATH: Path = {
+  id: null,
+  n: ['23 站', '23 stops'],
+  s: ['从第 0 站按顺序走到回顾', 'From stop 0 through the recap, in order'],
+  c: '#e8b84a',
+  st: DV_KEY,
+  chosen: false,
+};
+export const pathOf = (): Path => {
+  const id = goalGet();
+  const r = id ? routeOf(id) : null;
+  return r ? { id: r.id, n: r.n, s: r.s, c: r.c, st: r.st, chosen: true } : FULL_PATH;
+};
+/** next stop: one that was opened but not finished, then the first not finished, else the first */
+export const routeNext = (r: { st: readonly (SK | string)[] }, mastered: ReadonlySet<string>, seen: ReadonlySet<string>): string => {
+  for (const k of r.st) { const key = String(k); if (seen.has(key) && !mastered.has(key)) return key; }
   for (const k of r.st) { const key = String(k); if (!mastered.has(key)) return key; }
   return String(r.st[0]!);
 };
