@@ -3,7 +3,7 @@
    Reviewed aliases live in alias.json. No network after the index is in memory. */
 import aliasFile from './alias.json';
 
-export type Kind = 'st' | 'card' | 'news' | 'tool';
+export type Kind = 'st' | 'card' | 'news' | 'tool' | 'work';
 export interface Entry {
   kind: Kind;
   id: string;
@@ -93,7 +93,7 @@ export function scoreOf(e: Entry, q: string): number {
   return s;
 }
 
-const RANK: Record<Kind, number> = { st: 0, card: 1, news: 2, tool: 3 };
+const RANK: Record<Kind, number> = { st: 0, card: 1, news: 2, tool: 3, work: 4 };
 
 export function search(rows: readonly Entry[], q: string, limit = 12): Hit[] {
   const n = norm(q);
@@ -107,7 +107,7 @@ export function search(rows: readonly Entry[], q: string, limit = 12): Hit[] {
   return hits.slice(0, limit);
 }
 
-const GROUP: Kind[] = ['st', 'card', 'tool', 'news'];
+const GROUP: Kind[] = ['st', 'card', 'tool', 'news', 'work'];
 /** First-page hits, kept in score order inside each group. */
 export function grouped(hits: readonly Hit[]): { kind: Kind; hits: Hit[] }[] {
   return GROUP.map((kind) => ({ kind, hits: hits.filter((h) => h.kind === kind) })).filter((g) => g.hits.length);

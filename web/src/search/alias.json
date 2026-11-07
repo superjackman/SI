@@ -13,5 +13,8 @@
   "tool:milvus": ["向量", "向量库"],
   "tool:autogen": ["Agent", "智能体"],
   "tool:ag2": ["Agent", "智能体"],
-  "tool:crewai": ["Agent", "智能体"]
+  "tool:crewai": ["Agent", "智能体"],
+  "work:kb": ["微型知识库", "引用", "纸条"],
+  "work:ask": ["先问再做", "任务助手"],
+  "work:fix": ["修错", "测试结果"]
 }

@@ -110,6 +110,7 @@ export async function px(id: string, A: PxApi) {
   if (!escOn) { escOn = true; addEventListener('keydown', (e) => { const a = api; if (e.key !== 'Escape' || !a || !(curId === 'S' || curId.startsWith('S/')) || !a.host.querySelector('.px-s.g-modal')) return;
     if (pk.open) { pk = { open: false, q: '' }; void share(a, ''); } else navBack(window, '#home'); }); }
   if (!id.startsWith('P/x')) xs.rec = '';
+  if (id === 'W' || id.startsWith('W/')) return (await import('../work/view')).work(id, A);
   if (id === 'P') return list(A);
   if (/^P\/q[1-5]$/.test(id)) return quiz(A, Number(id[3]) as N);
   if (/^P\/x[1-5]$/.test(id)) return exp(A, id.slice(2));

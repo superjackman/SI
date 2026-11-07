@@ -1,5 +1,5 @@
 export interface SearchEntry {
-  kind: 'st' | 'card' | 'news' | 'tool';
+  kind: 'st' | 'card' | 'news' | 'tool' | 'work';
   id: string;
   zh: string;
   en: string;

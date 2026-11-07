@@ -10,7 +10,7 @@ import { UI, tx, type L, type Tx } from './txt';
 import { ROUTES, goalGet, goalSet, routeNext, routeOf, type GoalId, type Route } from '../dv/routes';
 import { CARD_SK, DV_KEY, DV_N, DV_NM, dvI } from '../dv/links';
 import { depthGet, depthSet, jvGet, jvSet, layerMastery, masteredSt, routeMin, seenSt, type Depth } from '../dv/prog';
-import { noteMastered } from '../px/week';
+import { noteMastered, stName as weekName, weekModel } from '../px/week';
 import { VF_Q, order, vfAdd, vfDone } from '../vf/ids';
 import { fmt, softmax } from '../vf/calc';
 import { LBG, LCOL } from './progress';
@@ -33,6 +33,14 @@ export const skyP = (T: number) => softmax(SKY, T);
 /** today's challenge: one of the stations with a choice question, the same every reader sees on that local day */
 export const dayNo = (t = Date.now()) => { const d = new Date(t); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 864e5); };
 export const pickDay = <T>(pool: readonly T[], t = Date.now()) => pool[dayNo(t) % pool.length]!;
+/** returning home: this week, from the real local record, and one step that can be finished */
+export function weekBlock(l: L): string {
+  const m = weekModel(), next = `${cx('week.step', l)} · ${weekName(m.next, l)}`;
+  const body = m.empty
+    ? `<p>${esc(cx('week.empty', l))}</p>`
+    : `<p>${esc(cx('week.master', l))} ${m.mastered.length} · ${esc(cx('week.practice', l))} ${m.practice}</p>`;
+  return `<section class="hm-card hm-wk" data-week="${m.empty ? 'empty' : 'on'}"><h2>${esc(cx('week.home', l))}</h2>${body}<button type="button" class="hm-wk-go" data-go="#D/${esc(m.next)}">${esc(next)}</button><a class="hm-lk" href="#R">${esc(cx('week.open', l))}</a></section>`;
+}
 const DLAB: Readonly<Record<Depth, Tx>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 const DSUB: Readonly<Record<Depth, Tx>> = { s: ['一句一幅', 'Line + picture'], m: ['把数算清', 'The numbers'], d: ['连式子', 'Formulas'] };
 const CIRC = ['①', '②', '③', '④', '⑤'], LYN: readonly Tx[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
@@ -73,7 +81,7 @@ ${chooser}
     const ls = layerMastery(m), mm = m.size;
     const C = 2 * Math.PI * 34, ring = `<svg class="hm-ring" viewBox="0 0 84 84" aria-hidden="true"><circle cx="42" cy="42" r="34" fill="none" stroke="#1d2d5c" stroke-width="8"/><circle cx="42" cy="42" r="34" fill="none" stroke="#ffd77a" stroke-width="8" stroke-linecap="round" stroke-dasharray="${((C * mm) / DV_N).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 42 42)"/></svg>`;
     const bars = ls.map(([s, t], i) => `<li><span class="hm-sq" style="--cb:${LBG[i]}" title="${esc(tx(UI.lvN[i]!, l))}" aria-label="${esc(tx(UI.lv[i]!, l))}">${i + 1}</span><span class="hm-pb" style="--c:${LCOL[i]}"><i style="width:${t ? Math.round((100 * s) / t) : 0}%"></i></span><span class="hm-pn">${s}/${t}</span></li>`).join('');
-    top = `<section class="hm-card hm-go"><div class="hm-gh"><span>${z('继续上次', 'Pick up where you left off')} · ${esc(tx(DLAB[d], l))}</span><em>${esc(tx(r.n, l))} ${done}/${r.st.length}</em></div>
+    top = `${weekBlock(l)}<section class="hm-card hm-go"><div class="hm-gh"><span>${z('继续上次', 'Pick up where you left off')} · ${esc(tx(DLAB[d], l))}</span><em>${esc(tx(r.n, l))} ${done}/${r.st.length}</em></div>
 <h2 class="hm-gt">${esc(stN(nxt, l))}</h2><p class="hm-gs">${where}${how}</p>
 <ol class="hm-metro" style="--c:${r.c}" aria-label="${esc(tx(r.n, l))}">${metro}</ol>
 <button type="button" class="hm-cta" data-go="#D/${nxt}">${z('继续学习', 'Keep learning')} ›</button></section>
@@ -104,7 +112,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 <p class="hm-n hm-c">${z('两边随时互相跳：每张卡都写着它在第几站诞生', 'Jump between them anytime: every card says the stop where it is born')}</p>
 <div class="hm-sec"><b>${z('今天的挑战', 'Today’s challenge')}</b></div>
 <section class="hm-card hm-ch" data-hm="ch"><p class="hm-n">${z('题目加载中…', 'Loading the question…')}</p></section>
-<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer><p class="hm-ft2"><a href="#about">${esc(cx('about.title', l))}</a></p>`;
+<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer><p class="hm-ft2"><a href="#W">${esc(cx('home.works', l))}</a><span aria-hidden="true"> · </span><a href="#about">${esc(cx('about.title', l))}</a></p>`;
 
   const pane0 = A.pane ?? 'learn';
   const tab = (id: 'learn' | 'news' | 'tools', name: string) => `<button type="button" role="tab" class="${pane0 === id ? 'on' : ''}" data-h="tab:${id}" aria-selected="${pane0 === id}">${name}</button>`;

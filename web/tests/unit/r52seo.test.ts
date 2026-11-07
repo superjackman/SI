@@ -8,7 +8,7 @@ const BASE = '/SI/';
 const KEYS = ['0', 'P', '1', '2', '3', '4', '5', '6', '7', '8a', '8b', '9', 'E', '10', '11', '12', '13', '14', 'S', '15a', '15b', 'A', '16'];
 let F: Map<string, string>;
 const doc = (html: string) => new DOMParser().parseFromString(html, 'text/html');
-const pages = () => [...F.keys()].filter((k) => /^(en\/)?s\/(?!news\/|tools\/)[^/]+\/index\.html$/.test(k));
+const pages = () => [...F.keys()].filter((k) => /^(en\/)?s\/(?!news\/|tools\/|w\/)[^/]+\/index\.html$/.test(k));
 const urlOf = (file: string) => ORIGIN + BASE + file.replace(/index\.html$/, '');
 
 beforeAll(() => { F = buildSeo({ web, base: BASE, lastmod: '2026-11-06' }); }, 30_000);
