@@ -101,4 +101,18 @@ test.describe('hub, reminder, certificate, demos', () => {
     await spill('en 15b');
     expect(errs).toEqual([]);
   });
+  test('a tool filter is part of the address and survives refresh and back', async ({ page }) => {
+    const errs = await open(page, './?lang=zh#tools');
+    await page.locator('[data-task="code"]').click();
+    await expect(page).toHaveURL(/#tools\/t\/code$/);
+    await expect(page.locator('[data-task="code"]')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('.hb-list [data-tasks="write"]').first()).toBeHidden();
+    await page.reload();
+    await page.locator('[data-task="code"]').waitFor({ state: 'visible' });
+    await expect(page.locator('[data-task="code"]')).toHaveAttribute('aria-selected', 'true');
+    await page.goBack();
+    await expect(page).toHaveURL(/#tools$/);
+    await expect(page.locator('[data-task="all"]')).toHaveAttribute('aria-selected', 'true');
+    expect(errs).toEqual([]);
+  });
 });

@@ -1,0 +1,17 @@
+{
+  "st:13": ["RAG", "检索增强", "知识库", "retrieval"],
+  "st:14": ["Agent", "Agents", "智能体"],
+  "st:8a": ["注意力", "attention"],
+  "st:6": ["向量", "词向量", "embedding"],
+  "st:2": ["梯度", "梯度下降", "gradient"],
+  "tool:ragflow": ["RAG", "RAGFlow", "检索增强", "知识库"],
+  "tool:dify": ["RAG", "Dify", "检索增强", "智能体", "Agent", "知识库"],
+  "tool:llamaindex": ["RAG", "LlamaIndex", "检索增强", "知识库"],
+  "tool:haystack": ["RAG", "Haystack", "检索增强"],
+  "tool:flowise": ["Agent", "智能体", "检索"],
+  "tool:chroma": ["向量", "知识库"],
+  "tool:milvus": ["向量", "向量库"],
+  "tool:autogen": ["Agent", "智能体"],
+  "tool:ag2": ["Agent", "智能体"],
+  "tool:crewai": ["Agent", "智能体"]
+}

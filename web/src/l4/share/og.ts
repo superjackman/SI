@@ -16,8 +16,8 @@ export function site(ic: CanvasImageSource): HTMLCanvasElement {
   const [cv, g] = base();
   g.drawImage(ic, 64, 124, 104, 104);
   g.fillStyle = '#fff'; g.font = font(92, 900); g.fillText('大白话拆解 AI', 60, 248);
-  g.fillStyle = '#ffd34d'; g.font = font(50, 800); g.fillText('一层层看懂 AI', 64, 362);
-  g.fillStyle = '#c8d6ff'; g.font = font(29, 500); g.fillText('从「我怎么用」到 Transformer 内部和背后的数学', 64, 452); g.fillText('点一点就能看懂 · 不用会编程', 64, 496);
+  g.fillStyle = '#ffd34d'; g.font = font(46, 800); g.fillText('从一道小学算术，一路搭到 ChatGPT', 64, 362);
+  g.fillStyle = '#c8d6ff'; g.font = font(29, 500); g.fillText('零基础 · 每站 5 分钟 · 不用注册', 64, 452); g.fillText('现在做一道', 64, 496);
   LV.forEach(([n, t, c], i) => {
     const w = 250 + i * 40, x = 960 - w / 2, y = 112 + i * 66, bar = g.createLinearGradient(x, 0, x + w, 0);
     bar.addColorStop(0, c); bar.addColorStop(1, '#1e3a8a'); g.fillStyle = bar; rr(g, x, y, w, 52, 10); g.fill();
