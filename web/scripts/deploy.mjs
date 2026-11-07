@@ -63,7 +63,7 @@ step('size budget', 'node', ['scripts/size.mjs']);
 const dist = join(web, 'dist');
 // The learner must never see the old procedure labels. Fail the deploy if a built chunk still contains them.
 {
-  const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做', '接着看', '来算一下', '为什么要关心', 'Why it matters', 'ml-ss', 'ml-sg'];
+  const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做', '接着看', '来算一下', '为什么要关心', 'Why it matters', 'ml-ss', 'ml-sg', '先自己算，再填进去', '拖一下，从图到式子', '同一件事，写成图', '这几个词'];
   const hit = [];
   for (const rel of walk(dist)) {
     if (!/\.(js|html|css)$/.test(rel)) continue;

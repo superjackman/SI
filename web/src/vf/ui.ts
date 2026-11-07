@@ -5,7 +5,7 @@ import './vf.css';
 import { tx, type L } from '../l4/txt';
 import { fillDvText } from '../dv/nums';
 import { QQ, MCS, DEMO, type Q, type DemoK } from './data';
-import { VF_Q, order, vfAdd, vfDone, vfStat } from './ids';
+import { VF_Q, order, vfAdd, vfDone } from './ids';
 import { masteredSt } from '../dv/prog';
 import { noteMastered } from '../px/week';
 import { rvAns } from '../px/rv';
@@ -16,7 +16,7 @@ const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 /** **keyword** · `formula` · {~approximate} · {#shared number}, as on the stage pages */
 // keep the last few characters together so a line never ends with a lone ？ or letter
 const glue = (h: string) => h.replace(/((?:&[a-z#0-9]+;|[^<>&\s]){1,4}(?:\s(?:&[a-z#0-9]+;|[^<>&\s]){1,3})?)$/, '<span class="nw">$1</span>');
-export const mk = (s: string, l: L) => glue(esc(fillDvText(s, l)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, (_, f: string) => `<span class="formula${f.length <= 16 ? ' nw' : ''}">${f}</span>`).replace(/\{~([^}]+)\}/g, '<span class="vf-ap">≈ $1</span>'));
+export const mk = (s: string, l: L) => glue(esc(fillDvText(s, l)).replace(/\*\*(.+?)\*\*/g, '<span class="k">$1</span>').replace(/`([^`]+)`/g, '$1').replace(/\{~([^}]+)\}/g, '<span class="vf-ap">≈ $1</span>'));
 /** is the typed value right? (choice questions are checked by index) */
 export const ok = (q: Q, v: number) => Math.abs(v - q.a) <= (q.tol ?? 0.5 * 10 ** -q.d) + 1e-9;
 /** the answer the way it is shown */
@@ -48,7 +48,7 @@ export function demoOut(k: DemoK, s: DemoS, l: L): string {
   const dk = D_DK[s.dk]!, p = attW(D_ATT, dk), sc = D_ATT.map((v) => v / Math.sqrt(dk));
   return `${bars([z('词 1', 'word 1'), z('词 2', 'word 2'), z('词 3', 'word 3')], p)}<p class="vf-o">[${D_ATT.join(', ')}] ÷ √${dk} = [${sc.map((v) => fmt(v, 2)).join(', ')}]</p><p class="vf-n">${dk === 1 ? z('d_k = 1 等于不缩放：几乎只看词 1', 'd_k = 1 is no scaling: almost only word 1') : z('d_k 越大除得越多，权重越平均，不会全压在一个词上', 'The bigger d_k, the more it divides: the weights even out instead of piling onto one word')}</p>`;
 }
-const DT = { gd: ['拖一拖 · 梯度下降', 'Drag it · gradient descent'], sm: ['拖一拖 · 温度', 'Drag it · temperature'], att: ['拖一拖 · 注意力缩放', 'Drag it · attention scaling'] } as const;
+const DT = { gd: ['梯度下降', 'Gradient descent'], sm: ['温度', 'Temperature'], att: ['注意力缩放', 'Attention scaling'] } as const;
 const sl = (k: keyof DemoS, lab: string, a: number, b: number, st: number, v: number, out: string) => `<label class="vf-sl"><span>${esc(lab)}</span><input type="range" data-vs="${k}" min="${a}" max="${b}" step="${st}" value="${v}" aria-label="${esc(lab)}"><output>${out}</output></label>`;
 const slOut = (k: keyof DemoS, v: number) => (k === 'dk' ? String(D_DK[v] ?? v) : k === 'n' || k === 'layer' || k === 'rank' || k === 'len' || k === 'hit' || k === 'play' || k === 'frame' ? String(Math.round(v)) : k === 'ang' ? `${fmt(v, 0)}°` : fmt(v, k === 'eta' ? 2 : 1));
 function demo(k: DemoK, s: DemoS, l: L) {
@@ -68,8 +68,6 @@ function qItem(id: string, q: Q, l: L, done: boolean) {
   return `<li class="vf-q${done ? ' done' : ''}" data-q="${id}"><p class="vf-qq">${mk(tx(q.q, l), l)}${done ? `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>` : ''}</p>${inp}<p class="vf-fb" role="status" aria-live="polite"></p>
 <button type="button" class="l4-b vf-sw" data-vf="sol" aria-expanded="false">${z('看解答', 'Show the working')}</button><div class="vf-sol" hidden><p>${mk(tx(q.w, l), l)}</p><p class="vf-an">${z('答案：', 'Answer: ')}<b>${mk(ansT(q, l), l)}</b></p></div></li>`;
 }
-const pcT = (s: number, t: number, l: L) => tx([`做对 ${s}/${t}`, `${s}/${t} solved`], l);
-
 /** fill `slot` for page `page` ('D/n' or a card id); resolves when drawn. `onTick` runs after a newly solved question.
     `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤).
     `o` (R56 今日复习): `ids` = just these questions (no demo, no 常见误解), `rev` = answers here clear the wrong book,
@@ -79,12 +77,11 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
   const z = (a: string, b: string) => tx([a, b], l), d0 = vfDone();
   const ids = o.ids ? o.ids.filter((id) => id in QQ) : part === 'demo' ? [] : VF_Q[page] ?? [], mc = o.ids || part === 'demo' ? [] : MCS(page), dk = o.ids || part === 'check' ? undefined : DEMO[page];
   if (!ids.length && !mc.length && !dk) { slot.innerHTML = ''; return; }
-  const st = vfStat(page, d0), s: DemoS = { ...DEMO0 };
+  const s: DemoS = { ...DEMO0 };
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
-    + (ids.length ? `<section class="vf-b vf-qz"><h3 class="vf-h"><span class="vf-ic">✎</span>${z('自己算一算', 'Work it out')}${o.ids ? '' : `<span class="vf-pc${st.s === st.t ? ' all' : ''}">${pcT(st.s, st.t, l)}</span>`}</h3><p class="vf-sub">${z('先自己算，再填进去：答错会给提示，随时可以看解答。', 'Work it out first, then type it in: a miss gives a hint, and the working is always one tap away.')}</p><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
-    + (mc.length ? `<section class="vf-b vf-mc"><h3 class="vf-h"><span class="vf-ic">⚠</span>${z('常见误解', 'Common misconceptions')}</h3>${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
+    + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol></section>` : '')
+    + (mc.length ? `<section class="vf-mc">${mc.map((m) => `<div class="vf-m"><p class="vf-x"><b>✗ ${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p class="vf-r"><b>✓ ${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p></div>`).join('')}</section>` : '')
     + '</div>';
-  const pc = slot.querySelector<HTMLElement>('.vf-pc');
   const judge = (li: HTMLElement, right: boolean, pick?: number) => {
     const id = li.dataset.q!, q = QQ[id]!, fb = li.querySelector<HTMLElement>('.vf-fb')!;
     li.dataset.st = right ? 'ok' : 'bad'; rvAns(id, right, undefined, !!o.rev); o.onJudge?.(id, right);
@@ -93,7 +90,6 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
     if (right && !vfDone().has(id)) {
       const prev = masteredSt(); vfAdd(id); noteMastered(prev); li.classList.add('done');
       const qq = li.querySelector('.vf-qq'); if (qq && !qq.querySelector('.vf-tk')) qq.insertAdjacentHTML('beforeend', `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>`);
-      const r = vfStat(page); if (pc && !o.ids) { pc.textContent = pcT(r.s, r.t, l); pc.classList.toggle('all', r.s === r.t); }
       onTick?.();
     }
   };

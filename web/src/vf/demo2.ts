@@ -8,13 +8,13 @@ const EXTRA = ['mse', 'xor', 'bp', 'emb', 'lora', 'kv', 'rag'] as const;
 export type ExtraK = (typeof EXTRA)[number];
 export const isExtra = (k: DemoK): k is ExtraK => (EXTRA as readonly string[]).includes(k);
 const TITLE: Record<ExtraK, readonly [string, string]> = {
-  mse: ['拖一拖 · 差的平方', 'Drag · squared gap'],
-  xor: ['拖一拖 · 一条线切不开', 'Drag · one line fails'],
-  bp: ['拖一拖 · 坡度逐层变小', 'Drag · the slope shrinks'],
-  emb: ['拖一拖 · 两个方向', 'Drag · two directions'],
-  lora: ['拖一拖 · 秩和参数量', 'Drag · rank and parameter count'],
-  kv: ['拖一拖 · 记过的不用重算', 'Drag · stored values are not recomputed'],
-  rag: ['拖一拖 · 哪一块最像', 'Drag · which chunk is closest'],
+  mse: ['差的平方', 'Squared gap'],
+  xor: ['一条线切不开', 'One line fails'],
+  bp: ['坡度逐层变小', 'The slope shrinks'],
+  emb: ['两个方向', 'Two directions'],
+  lora: ['秩和参数量', 'Rank and parameter count'],
+  kv: ['记过的不用重算', 'Stored values are not recomputed'],
+  rag: ['哪一块最像', 'Which chunk is closest'],
 };
 export const extraTitle = (k: ExtraK) => TITLE[k];
 

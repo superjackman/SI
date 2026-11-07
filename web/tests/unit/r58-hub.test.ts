@@ -27,7 +27,7 @@ describe('voice', () => {
   });
   it('published ml bundles do not contain the old procedure labels', () => {
     const dir = resolve(web, '../assets');
-    const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做'];
+    const banned = ['每个小目标走一遍', '先别看答案', '调查 · 研究者', '进入 💡 推理', '推理完了', '"先猜"', '你会怎么做', '先自己算，再填进去', '拖一下，从图到式子', '同一件事，写成图', '这几个词'];
     let files: string[] = [];
     try { files = readdirSync(dir).filter((f) => f.startsWith('ml-') && f.endsWith('.js')); } catch { return; }
     for (const f of files) {

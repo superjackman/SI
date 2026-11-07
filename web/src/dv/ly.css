@@ -1,6 +1,6 @@
 .ly .nw, .ly .formula.nw { white-space: nowrap; }
 /* R51 逐层展开: the pilot's layered body. Body text 15px; every colour ≥ 4.5:1 on the dark panels; svg text drawn ≥ 12px. */
-.ly { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.6; color: var(--ink); }
+.ly { display: flex; flex-direction: column; gap: 0; font-size: 18px; line-height: 1.8; color: var(--ink); }
 /* R54 the depth switch and the segment dots stay pinned, on one row, while reading */
 .ly-top { position: sticky; top: -4px; z-index: 3; display: block; margin: 0; padding: 4px 0 6px; background: var(--bg); border-bottom: 1px solid var(--line); box-shadow: 0 6px 10px -6px var(--bg); min-width: 0; max-width: 100%; }
 .ly-row { display: flex; flex-flow: row nowrap; align-items: center; gap: 2px; min-width: 0; max-width: 100%; }
@@ -17,24 +17,29 @@
 .ly-pg button.done i { background: var(--good-bg); }
 .ly-pg button.on i { width: 10px; max-width: 100%; height: 10px; background: var(--navy); box-shadow: 0 0 0 3px var(--link); }
 .ly-pg button.out i { background: transparent; box-shadow: inset 0 0 0 1.5px var(--link); }
-.ly-l { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.ly-l { position: relative; display: flex; flex-direction: column; gap: 0; padding: 0; border: 0; border-radius: 0; background: none; margin: 0 0 1.1em; }
 .ly-l[hidden] { display: none; }
-.ly-l p, .ly-l ul { margin: 0; }
+.ly-l p, .ly-l ul { margin: 0 0 0.85em; }
 .ly-l ul { padding-left: 1.2em; display: flex; flex-direction: column; gap: 4px; }
 .ly-h { margin: 0; outline: none; scroll-margin-top: 132px; }
 .ly-h:empty { position: absolute; top: 0; left: 0; width: 1px; height: 1px; margin: 0; padding: 0; overflow: hidden; }
 .ly-h:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; border-radius: 4px; }
 .ly-hook b { display: block; color: var(--highlight); font-size: 13px; letter-spacing: .02em; }
 .ly .k { color: var(--ink); font-weight: 700; }
-.ly .formula { display: inline; margin: 0 1px; padding: 0 4px; border: 1px solid var(--highlight); border-radius: 4px; background: var(--card); color: var(--highlight); -webkit-box-decoration-break: clone; box-decoration-break: clone; overflow-wrap: anywhere; }
+.ly .formula { display: inline; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; box-decoration-break: unset; }
+.ly .fx-line { display: block; margin: 0.4em 0 0.8em; padding: 0.35em 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; color: var(--ink); text-align: center; font-size: 22px; line-height: 1.5; letter-spacing: 0.01em; }
+.ly .fx-lead, .ly .fx-sym p, .ly .st-why p { margin: 0 0 0.85em; }
+.ly .st-fig { margin: 0 0 0.6em; padding: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+.ly .st-live { margin: 0.6em 0 0; font-variant-numeric: tabular-nums; }
+.ly .st-live div { padding: 2px 0; }
 .ly-c { font-weight: 700; }
 .ly-c { color: var(--link); } .ly-q { color: var(--highlight); } .ly-k { color: var(--good); } .ly-v { color: var(--link); } .ly-r { color: var(--bad); }
 .ly-jv { border: 1px dashed var(--line); border-radius: 10px; padding: 4px 10px; }
 .ly-jv summary, .ly-more summary { min-height: 40px; display: flex; align-items: center; cursor: pointer; color: var(--link); font-size: 14px; font-weight: 700; }
 .ly-jv p { padding-bottom: 6px; }
 .ly-cap { color: var(--ink); }
-.ly-fx { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; background: var(--card); }
-.ly-fx .formula { font-size: 15px; }
+.ly-fx { display: flex; flex-direction: column; gap: 0; padding: 0; border: 0; background: none; }
+.ly-fx .formula { font-size: 22px; }
 .ly-more { border-top: 1px solid var(--line); padding-top: 4px; }
 .ly-more > * + * { margin-top: 6px !important; }
 .ly-more .dv-do { font-size: 14px; }
