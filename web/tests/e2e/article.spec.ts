@@ -39,7 +39,7 @@ test('every station is an outline and one article, with the lesson already in th
     const figs = await page.locator('[data-fig]').evaluateAll((els) => els.map((e) => e.getAttribute('data-fig') || ''));
     expect(new Set(figs).size, k).toBe(figs.length);
     await expect(page.locator('[data-fig="scene"] svg')).toBeVisible();
-    const adjacent = await page.evaluate(() => {
+    const stacked = await page.evaluate(() => {
       const cards = [...document.querySelectorAll('.st-article .ml-num, .st-article .ml-pred, .st-article .st-q, .st-article .ml-i')].filter((el) => (el as HTMLElement).offsetParent);
       const bad: string[] = [];
       for (let i = 0; i < cards.length - 1; i++) {
@@ -53,7 +53,7 @@ test('every station is an outline and one article, with the lesson already in th
       }
       return bad;
     });
-    expect(adjacent, k).toEqual([]);
+    expect(stacked, k).toEqual([]);
     const order = await page.evaluate(() => {
       const take = document.querySelector('.dv-take');
       if (!take) return ['no-take'];
