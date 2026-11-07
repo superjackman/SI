@@ -14,6 +14,7 @@ const BANNED = ['先自己算，再填进去', '拖一下，从图到式子', '�
 
 describe('station chapter', () => {
   it('no formula or term block is repeated, and the worked step follows the experiment', () => {
+    const short: string[] = [];
     for (const [D, l] of [[zh, 'zh'], [en, 'en']] as const) for (const k of DV_KEY) {
       const S = D.st[dvI(k)]! as Stage & { ly: Ly };
       const el = document.createElement('div');
@@ -23,7 +24,15 @@ describe('station chapter', () => {
       const figs = [...el.querySelectorAll('[data-fig]')].map((e) => e.getAttribute('data-fig') || '');
       expect(new Set(figs).size, `${l} ${k} fig`).toBe(figs.length);
       expect(el.querySelector('[data-fig="scene"] svg'), `${l} ${k} scene`).toBeTruthy();
-      expect(el.textContent || '', `${l} ${k} lead`).not.toMatch(/写成式子，就是|同一步，再写一行|Written as a formula|The same step, on the next line/);
+      expect(el.textContent || '', `${l} ${k} lead`).not.toMatch(/写成式子，就是|同一步，再写一行|Written as a formula|The same step, on the next line|这一行里|新的输入到来时|In that line,/);
+      const slots = [...el.querySelectorAll('[data-ask="num"], .st-q, [data-ask="pred"], [data-ask="choice"]')];
+      const paras = [...el.querySelectorAll('p')].filter((p) => !p.classList.contains('fx-line') && !p.classList.contains('formula'));
+      for (const card of slots) {
+        const before = paras.filter((p) => (p.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0);
+        const last = before[before.length - 1];
+        const n = (last?.textContent || '').replace(/\s+/g, '').length;
+        if (n < 60) short.push(`${l} ${k} ${n} ${(last?.textContent || '').slice(0, 40)}`);
+      }
       for (const sec of el.querySelectorAll('.ly-l')) {
         let run = 0;
         for (const p of sec.querySelectorAll('p')) {
@@ -49,5 +58,6 @@ describe('station chapter', () => {
       const step = demo?.nextElementSibling;
       expect(step && formula && (step.compareDocumentPosition(formula) & Node.DOCUMENT_POSITION_FOLLOWING), `${l} ${k} formula after step`).toBeTruthy();
     }
+    expect(short, short.join('\n')).toEqual([]);
   });
 });

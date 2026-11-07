@@ -229,8 +229,10 @@ button.dv-from span::before { content: '‹ '; }
   .st-side .ly-jv summary { font-size: 13px; color: var(--muted); }
   .st-article .st-code { margin: 0 0 16px; padding: 12px 14px; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace; font-size: 16px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal; width: 100%; }
   .st-fig, .st-article .vf-dm, .st-article .vf-q, .st-article .ml-pr, .st-article .st-code, .st-article .st-by { max-width: 820px; width: 100%; }
+  .st-article .ly .st-fig.ly-tight { width: max-content; max-width: min(460px, 100%); margin-inline: auto; }
   .st-fig svg, .st-article .vf-plot { width: 100%; height: auto; max-height: none; }
   .st-fig svg.ly-life, .st-fig svg.ly-pen, .st-fig svg.ly-asvg { width: 100%; max-width: none; height: auto; margin: 0; }
+  .st-article .ly .st-fig.ly-tight svg.ly-life { width: min(440px, 100%); max-width: 440px; }
   .st-sec { margin: 32px 0 12px; font-size: 22px; line-height: 1.35; font-weight: 600; }
   .ly-l:first-child .st-sec { margin-top: 18px; }
   .st-by { margin: 0 0 4px; font-size: 16px; line-height: 1.7; }
@@ -255,6 +257,12 @@ button.dv-from span::before { content: '‹ '; }
     position: relative;
     left: 50%;
     transform: translateX(-50%);
+  }
+  .st-article .ly .st-fig.ly-tight {
+    width: max-content;
+    max-width: 460px;
+    left: auto;
+    transform: none;
   }
 }
   .dv-mcap { min-height: 0; }

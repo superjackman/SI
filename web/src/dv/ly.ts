@@ -8,7 +8,7 @@ import { tx, type L } from '../l4/txt';
 import type { Ly, Stage } from './types';
 import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
-import { life } from './ill';
+import { LIFE_CAP, life } from './ill';
 import { workedHtml } from './rail';
 import { ML } from './mld';
 import { DEMO } from '../vf/data';
@@ -112,6 +112,33 @@ const LEAD: Record<string, readonly (readonly [string, string])[]> = {
   '16': [['整条链走完以后，进度不看翻过多少页，而看一次只验证一个想法、并且连着做对。', 'After the whole chain, progress is not how many pages were turned. It is verifying one idea at a time, and getting it right twice.']],
 };
 
+/** what the symbols mean in this station's story. No shared closer. */
+const SYM: Record<string, readonly [string, string]> = {
+  '0': ['收音机上，x 是你拧到的那一格，θ 是还在转的旋钮，y预测 是喇叭里此刻收出来的声音。样本教的是旋钮停在哪，没听过的台也用同一对去收。', 'On the radio, x is the mark you turned to, theta is the knobs still moving, and the prediction is the sound coming out of the speaker. The examples teach where the knobs stop; an unheard station uses the same pair.'],
+  P: ['骰子上，每个朝向分到一份可能性，这些份数必须刚好分完。已知“今天晴”再问要不要带伞，就是在已经知道的前提下把剩下的可能性重新分一遍。', 'On the die, each face gets a share of the chance, and the shares have to use up the whole amount. Asking about an umbrella once you know it is sunny means sharing what is left again, given what you already know.'],
+  '1': ['猜错的罚分看着正确答案有多意外：它越不像会发生，罚得越重。要预测的如果是一个数，就改看猜的和卷面上的差了多少，再把差平方平均。', 'The penalty for a wrong guess watches how surprising the right answer was: the less it looked likely, the heavier the fine. When the target is a number, look at how far the guess sits from the marked value, then average the squared gaps.'],
+  '2': ['雾里看不见谷底。w 是你脚下这一站，η 是这一步肯迈多远，坡度告诉你该往上还是往下。新的一站等于旧的减去步长乘坡度，脚下的坡还在就按这个再走。', 'The valley is hidden in fog. w is the spot under your feet, eta is how far this step is willing to go, and the slope says whether to walk up or down. The next spot is the old one minus the step times the slope, and if the slope is still there you walk it again.'],
+  '3': ['四个点对角站队，一条直线怎么切都有一个站错。先做旋转和缩放，再在中间弯一下，弯完的结果才送去最后一层，错队的点这才分开。', 'The four dots stand on the diagonals, and every straight cut leaves one on the wrong side. Rotate and scale first, then put a bend in the middle, and only the bent result goes on to the last layer, which is what finally splits the mismatched dots.'],
+  '4': ['齿轮一环扣一环。损失对更前面那片的影响，是上游传来的坡乘上这一片自己的坡。残差把原稿原样加回去，这样总有一条不会越乘越小的直路。', 'The gears catch one another. How the loss reaches an earlier gear is the slope arriving from upstream times that gear’s own slope. A residual adds the original back unchanged, so there is always a path that does not shrink at every step.'],
+  '5': ['仓库太大，不能一次扛起来。每一小袋样本估一次坡，动量把以前的坡攒着一起走，步长再按最近的晃动自己变，上百万条也走得动、走得稳。', 'The warehouse is too big to lift at once. Each small bag of examples estimates the slope once, momentum keeps the earlier slopes walking with you, and the step size changes itself from the recent wobble, so a million examples still move and stay steady.'],
+  '6': ['两个词有多像，看它们在空间里的方向齐不齐，用对应位相乘再相加来量。用一个词去猜周围会出现什么，最后仍把分数收成加起来等于 1 的可能性。', 'How alike two words are is whether their directions line up, measured by multiplying matching positions and adding. Guessing which words show up around a given word still turns the scores into chances that add up to 1.'],
+  '7': ['纸条太小，传远了开头就淡。该听谁、听多少，不是事先写死的，而是拿这句话里每个词的名牌现对一遍，再按对上的程度去听，听完才开口。', 'The note is too small, and the opening fades on a long trip. Whom to listen to, and how much, is not written down in advance. It is matched against every word’s name tag in this sentence, then heard by how well it matched, and only then does anyone speak.'],
+  '8a': ['“它”要确定指谁，就拿自己的需求去对每个词的名牌，对上的程度决定从那一词的内容里取多少，再混成一个新的说法，这才是这一步的输出。', 'To decide who “it” points at, take its own request and match it against every word’s name tag. How well they match decides how much of that word’s content to take, and the pieces mix into a new wording, which is this step’s output.'],
+  '8b': ['一层楼先开会。宽度一次看不过来，就切开，每一份各自看一种关系，再拼回去。会上说的和各自消化的，都加回原稿，原稿才不会在楼层之间丢掉。', 'One floor meets first. The width is too much to look at once, so it is cut, each piece watches one kind of relation, and they join back. What the meeting said, and what each person digested, is added back onto the draft so it is not lost between floors.'],
+  '9': ['完形填空做到每一步都在猜下一个字，标签就是文本自己。损失是这些猜测平均有多出乎意料。不想改已经训好的参数，只想把分布拧尖或拧平，就在收成概率之前把分数除以温度。', 'The cloze goes so far that every step guesses the next word, and the text itself is the label. The loss is how surprising those guesses were, on average. To sharpen or flatten the shares without touching the trained knobs, divide the scores by a temperature before they become probabilities.'],
+  E: ['同一套期末卷才比得了分。把平均的意外变回“相当于在几个候选里犹豫”，那个数是困惑度。题到底做对了多少，是另一把尺子：做对的次数除以总题数。', 'Scores can be compared only on the same final exam. Turn the average surprise back into “torn among about this many candidates”, and that number is the perplexity. How many questions were actually right is a different ruler: correct answers divided by the number of questions.'],
+  '10': ['两份回答谁更好，不去拟合一个绝对分数，而是拟合“这份胜过那份”的可能性。奖励的差经过一个把实数收成 0 到 1 的函数，训练就往人偏好的那边靠。', 'Which of two answers is better is not fit as an absolute score. It is fit as the chance that this one beats that one. The gap in reward passes through a function that folds a real number into the range from 0 to 1, and training leans toward the side a person preferred.'],
+  '11': ['大矩阵冻住。旁边那条又细又长的支路才在学，学完加回原来的权重。每个数少写几位的时候，存下来的是一个整数，用的时候再乘上缩放。', 'The big matrix stays frozen. Only the long thin side path is learning, and once it has learned it is added back onto the original weights. When each number is stored with fewer digits, what is kept is an integer, scaled back up when it is used.'],
+  '12': ['已经问过的人，名牌和本事都留在本子上。新来的只算自己的一份，不必把前面的人重新打听一遍。本子变厚，是因为每一层、每一个头的名牌和内容都要占地方。', 'People already asked keep their name tags and their skills in the notebook. A newcomer computes only their own share, and does not ask about the earlier people again. The notebook thickens because every floor and every head’s tag and content take room.'],
+  '13': ['书架上比的是方向，不是书有多厚。问题是你要找的那一页朝哪，资料是抽出来的那一页朝哪，余弦把点积再除掉两边的长度，免得更厚的那本只因更厚而得分高。', 'On the shelf we compare direction, not how thick a book is. The question is which way the page you want faces, the note is which way the page you pulled faces, and cosine takes the dot product and then divides out both lengths, so a thicker book does not win just by being thick.'],
+  '14': ['工具箱里每一步都可能失手。步数一多，全程都做对的机会是把每一步的成功率连乘，掉得很快。所以长链条要有人看着，不能指望一步都不错。', 'Every tool in the box can slip. After enough steps, the chance that all of them succeed is the success of each step multiplied together, and it falls quickly. A long chain needs someone watching; it cannot be trusted to miss nothing.'],
+  S: ['门关着。会付钱、会删除的动作停下来等人点头，只读的查询可以自己做。从门外塞进来的纸条是数据，不能把它当成老板的新吩咐去执行。', 'The gate stays shut. An action that pays or deletes stops until a person nods, while a read-only lookup can run alone. A note slipped in from outside is data. It must not be carried out as a new order from the boss.'],
+  '15a': ['眼睛先被切成小方块，每块当成一个词，再和文字走同一条路。扩散学的不是一步画出整张图，而是认出这一步里被加进去的噪声，再一点点洗掉。', 'The eye is first cut into small squares. Each square is treated as a word, then it walks the same path as the text. Diffusion does not learn to draw the whole picture in one step. It learns to recognise the noise added at this step, and washes a little of it off.'],
+  '15b': ['同一道题多想几次，想法一节比一节长，最后留下出现最多的那一节。窗口变长只说明这些词放得下，并不说明中间那些词也被用到了。', 'Think the same question through several times. Each thought is longer than the last, and what is kept is the one that shows up most. A longer window only means the words fit. It does not mean the words in the middle were used.'],
+  A: ['桌上三个窗口同时开着：代码、文稿、屏幕。一个能用的应用不是再训一个新模型，而是把已经会的预训练、检索、工具和这些窗口编排到一起。', 'Three windows sit open on the desk: code, a page, a screen. A usable application is not another newly trained model. It is the pre-training, the retrieval and the tools you already have, arranged together with these windows.'],
+  '16': ['整条链走完，进度不看翻过多少页。一次只核对一个想法，并且连着做对，才算这一站真的站住了。翻页本身不算学会，一次对两次才往下走。', 'After the whole chain, progress is not how many pages were turned. One idea is checked at a time, and it counts only when it comes out right twice in a row. Turning the page is not the same as having learned it; right twice is what lets you move on.'],
+};
+
 /** one chapter: picture, experiment and its step, the formula once, why the other ways fail, then code */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
   void exK;
@@ -152,20 +179,27 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
   for (const f of Y.fx) note(fxPlain(f));
   const goals = ML[key]?.goals ?? [];
-  const whyParas: string[] = [];
+  const tries: string[] = [];
   for (const g of goals) {
-    const bits = g.why.map((w, i) => (i === g.a ? '' : fillDvText(tx(w, l), l))).filter((s) => s && keep(s, false));
-    if (bits.length) whyParas.push(bits.join(l === 'en' ? ' ' : ''));
+    for (let i = 0; i < g.o.length && tries.length < 3; i++) {
+      if (i === g.a) continue;
+      const why = fillDvText(tx(g.why[i]!, l), l);
+      if (!why.trim() || !keep(why, false)) continue;
+      const name = fillDvText(tx(g.o[i]!, l), l);
+      const n = tries.length;
+      const lead = l === 'en'
+        ? (n === 0 ? `The first attempt was “${name}”. ` : n === 1 ? `When that failed, the next attempt was “${name}”. ` : `Later came “${name}”, and that breaks too. `)
+        : (n === 0 ? `先试了「${name}」。` : n === 1 ? `这一下不行，于是改成「${name}」。` : `后来又试「${name}」，还是不行。`);
+      tries.push(lead + why);
+    }
   }
   const merged: string[] = [];
-  for (const p of whyParas) {
-    const prev = merged[merged.length - 1];
-    if (prev && [...prev].length < 60) merged[merged.length - 1] = prev + (l === 'en' ? ' ' : '') + p;
-    else if ([...p].length < 40 && prev) merged[merged.length - 1] = prev + (l === 'en' ? ' ' : '') + p;
-    else merged.push(p);
+  if (tries.length >= 3) merged.push(tries[0]! + (l === 'en' ? ' ' : '') + tries[1]!, tries[2]!);
+  else if (tries.length) merged.push(tries.join(l === 'en' ? ' ' : ''));
+  if (merged.length >= 2 && [...merged[merged.length - 1]!.replace(/\s+/g, '')].length < 60) {
+    const last = merged.pop()!;
+    merged[merged.length - 1] += (l === 'en' ? ' ' : '') + last;
   }
-  while (merged.length > 3) { const extra = merged.pop()!; merged[merged.length - 1] += (l === 'en' ? ' ' : '') + extra; }
-  if (merged.length && [...merged[merged.length - 1]!.replace(/\s+/g, '')].length < 80) merged[merged.length - 1] += (l === 'en' ? ' ' : '') + S.lo + S.e;
   const codeLead = l === 'en'
     ? 'Written so a program can run the same step, it is the lines below.'
     : '交给程序去跑的时候，算的仍是上面这件事，只是换成它能执行的写法。';
@@ -193,38 +227,16 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const scene = Y.pic === 'sm' ? '' : life(key, l);
   const motWhere = key === '8b' ? 'diagram' : key === '9' || key === '12' ? 'exp' : 'scene';
   const putMot = (where: string) => mot && motWhere === where ? mot : '';
-  const sceneFig = (scene || Y.pic === 'sm') ? `<div class="st-fig" data-fig="scene">${scene}${Y.pic === 'sm' ? diagram : ''}${P(caps, mk, 'ly-cap')}${putMot('scene')}</div>` : '';
+  const capHtml = LIFE_CAP[key] ? `<p class="ly-cap">${esc(tx(LIFE_CAP[key], l))}</p>` : P(caps, mk, 'ly-cap');
+  const sceneFig = (scene || Y.pic === 'sm') ? `<div class="st-fig${LIFE_CAP[key] ? ' ly-tight' : ''}" data-fig="scene">${scene}${Y.pic === 'sm' ? diagram : ''}${capHtml}${putMot('scene')}</div>` : '';
   const diagramFig = diagram && Y.pic !== 'sm' ? `<div class="st-fig" data-fig="pic-${Y.pic}">${diagram}${putMot('diagram')}</div>` : '';
   const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}${putMot('exp')}</div>`;
   const figure = sceneFig + diagramFig + exp;
-  const syms = Y.fe.map((raw) => {
-    const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
-    const bits = plain.split(/[：:]/);
-    if (bits.length < 2) return { name: '', rest: plain };
-    return { name: bits[0]!.trim(), rest: bits.slice(1).join(l === 'en' ? ': ' : '：').trim() };
-  }).filter((s) => s.rest);
   const mathish = (s: string) => /[=←≈→≠∑Σ∂√×÷]|softmax|log |σ\(/.test(s);
   const plainFx = Y.fx.map((f) => fxPlain(f)).filter(Boolean);
   const shownFx = plainFx.filter(mathish);
   const displayFx = shownFx.length ? shownFx : plainFx.slice(0, 1);
-  const aside = plainFx.filter((s) => !displayFx.includes(s)).map((s) => (/[。！？.!?]$/.test(s) ? s : s + (l === 'en' ? '.' : '。')));
-  const defs = syms.filter((s) => s.name);
-  const notes = syms.filter((s) => !s.name);
-  const shorts = notes.filter((s) => [...s.rest].length <= 12 && !/[，,。！？.!]/.test(s.rest));
-  const longs = notes.filter((s) => !shorts.includes(s));
-  const symBits = [
-    ...defs.map((s) => (l === 'en' ? `${s.name} is ${s.rest}` : `${s.name}是${s.rest}`)),
-    ...longs.map((s) => s.rest),
-    ...shorts.map((s) => s.rest),
-    ...aside,
-  ].filter(Boolean);
-  let symFollow = symBits.length
-    ? (l === 'en' ? `In that line, ${symBits.join('; ')}.` : `这一行里，${symBits.join('，')}。`)
-    : (l === 'en' ? 'The left side is the result we want, and the right side is how the examples compute it.' : '等号左边是要得到的结果，右边是用样本把它算出来的办法。');
-  const symLen = () => [...symFollow.replace(/\s+/g, '')].length;
-  if (symLen() < 70) symFollow += l === 'en'
-    ? ' When a new input arrives, this same line still does the work: the left side is the result you want, and the right side is the procedure the examples taught, not a different one.'
-    : '新的输入到来时，仍然用这一行来算：左边是想要的结果，右边是这些样本一点点教出来的算法，而不是另起一套。';
+  const symFollow = tx(SYM[key] ?? SYM['0']!, l);
   const leadOf = (i: number) => {
     const rows = LEAD[key];
     const row = rows?.[Math.min(i, rows.length - 1)];

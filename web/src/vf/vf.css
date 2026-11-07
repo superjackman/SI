@@ -36,7 +36,12 @@
 .vf-m p { margin: 0; overflow-wrap: anywhere; } .vf-m p + p { margin-top: 4px; }
 .vf-m b { display: block; font-size: 16px; } .vf-x b { color: var(--bad); } .vf-r b { color: var(--good); }
 .vf-x { color: var(--ink); }
-.vf-ctl { display: grid; gap: 6px; margin-bottom: 6px; }
+.vf-ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 6px; }
+.vf-ctl .vf-sl { flex: 1 1 200px; min-width: 0; }
+.vf-ctl > .l4-b, .st-article .vf-ctl .l4-b, .st-article .ly-mot .l4-b, .st-article .ly-actl .l4-b,
+.st-article .vf-ck, .st-article .ml-ck, .st-article .vf-sw, .st-article .ml-again {
+  flex: 0 0 auto; width: auto; max-width: 8em; min-width: 72px; justify-self: start; align-self: center;
+}
 .vf-sl { display: grid; grid-template-columns: minmax(72px, auto) 1fr 52px; align-items: center; gap: 8px; font-size: 16px; }
 .vf-sl input, .vf-ctl input[type="range"] { width: 100%; min-height: 40px; accent-color: var(--navy); } .vf-sl output, .vf-ctl output { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--navy); }
 .vf-res { display: grid; gap: 4px; }
