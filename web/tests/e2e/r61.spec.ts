@@ -33,9 +33,6 @@ test('empty week and a bad progress code leave the record alone', async ({ page 
 
 test('station 9 picture can be replayed and does not cover the page', async ({ page }) => {
   const errs = await open(page, './?lang=zh#D/9');
-  const cont = page.locator('[data-ml-to="r"]');
-  for (let i = 0; i < 3 && await cont.count() === 0; i++) await page.locator(`[data-ml-o="${i}"]`).click();
-  await cont.click();
   const box = page.locator('[data-mot="9"]');
   await expect(box).toBeVisible();
   await expect(box.locator('[data-mot-go="replay"]')).toBeVisible();
