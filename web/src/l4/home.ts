@@ -104,7 +104,7 @@ ${rts}<div class="hm-lm" aria-hidden="true">${marks}</div></section>
 <p class="hm-n hm-c">${z('两边随时互相跳：每张卡都写着它在第几站诞生', 'Jump between them anytime: every card says the stop where it is born')}</p>
 <div class="hm-sec"><b>${z('今天的挑战', 'Today’s challenge')}</b></div>
 <section class="hm-card hm-ch" data-hm="ch"><p class="hm-n">${z('题目加载中…', 'Loading the question…')}</p></section>
-<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><a href="#about">${esc(cx('about.title', l))}</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer>`;
+<footer class="hm-ft"><a href="https://github.com/superjackman/SI" target="_blank" rel="noopener">GitHub</a><span aria-hidden="true">·</span><button type="button" data-a="lang">${l === 'zh' ? 'EN' : '中文'}</button><span aria-hidden="true">·</span><a href="https://github.com/superjackman/SI/issues" target="_blank" rel="noopener">${z('反馈', 'Feedback')}</a></footer><p class="hm-ft2"><a href="#about">${esc(cx('about.title', l))}</a></p>`;
 
   const pane0 = A.pane ?? 'learn';
   const tab = (id: 'learn' | 'news' | 'tools', name: string) => `<button type="button" role="tab" class="${pane0 === id ? 'on' : ''}" data-h="tab:${id}" aria-selected="${pane0 === id}">${name}</button>`;

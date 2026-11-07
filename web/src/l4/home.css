@@ -112,8 +112,10 @@
 .l4 .hm-op.ok { border-color: #34d399; background: #0b2a24; color: #d9ffe9; } .l4 .hm-op.bad { border-color: #ff8a80; background: #2a1020; color: #ffe1de; }
 .hm-fb { margin: 0; min-height: 18px; font-size: 13px; color: #d9ffe9; } .hm-fb:empty { display: none; }
 .hm-chr { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.hm-ft { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 6px; font-size: 12.5px; color: #8fa4d8; }
-.hm-ft a, .l4 .hm-ft button { display: inline-flex; align-items: center; color: #9cc8ff; text-decoration: none; background: none; border: 0; padding: 0 4px; min-height: 36px; font-size: 12.5px; line-height: 1; }
+.hm-ft { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 6px; font-size: 12.5px; color: #8fa4d8; }
+.hm-ft a, .l4 .hm-ft button { display: inline-flex; align-items: center; color: #9cc8ff; text-decoration: none; background: none; border: 0; padding: 0 4px; min-height: 44px; font-size: 12.5px; line-height: 1; white-space: nowrap; }
+.hm-ft2 { margin: 0; text-align: center; }
+.hm-ft2 a { min-height: 44px; display: inline-flex; align-items: center; white-space: nowrap; }
 /* 调整我的学法 */
 .hm-sh .l4-sh { flex-wrap: wrap; } .hm-shm { font-size: 12px; color: #a9b9e0; }
 .hm-sht { margin: 8px 0 6px; font-size: 14px; color: #e6eeff; }
