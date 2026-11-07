@@ -279,7 +279,7 @@
           "Forward values → backward gradients → every ∂L/∂w."
         ],
         "num": [
-          "{#bp}; see the ReLU toy numbers on this page."
+          "{#bp}. Once a ReLU is in the chain, the slope still has to cross that bend."
         ],
         "fx": [
           "`⟦v:dL/dx⟧ = ⟦q:dL/df⟧ × ⟦k:df/dx⟧`",
@@ -707,7 +707,7 @@
           "Frozen W ∥ side path B×A; or INT4 weights."
         ],
         "num": [
-          "Full {#loraF} vs LoRA {#lora}; 7B INT4 ≈ {#q7b}."
+          "The full matrix holds {#loraF} numbers; the side path trains {#lora}. Memory for seven billion parameters, by bit width: {#q7b}."
         ],
         "fx": [
           "`W′ = W + ⟦k:B⟧⟦k:A⟧`",

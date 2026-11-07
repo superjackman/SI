@@ -10,8 +10,8 @@ import { fillDvText } from './nums';
 import { D_SM4, fmt, softmax } from '../vf/calc';
 import { LIFE_CAP, life } from './ill';
 import { workedHtml } from './rail';
-import { ML } from './mld';
 import { DEMO } from '../vf/data';
+import { CLOSE, LOOK, WHY } from './voice';
 
 import { LY_DEPTH, depthGet, depthSet, okD, type Depth } from './prog';
 
@@ -178,28 +178,7 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   let stepSrc = '';
   if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
   for (const f of Y.fx) note(fxPlain(f));
-  const goals = ML[key]?.goals ?? [];
-  const tries: string[] = [];
-  for (const g of goals) {
-    for (let i = 0; i < g.o.length && tries.length < 3; i++) {
-      if (i === g.a) continue;
-      const why = fillDvText(tx(g.why[i]!, l), l);
-      if (!why.trim() || !keep(why, false)) continue;
-      const name = fillDvText(tx(g.o[i]!, l), l);
-      const n = tries.length;
-      const lead = l === 'en'
-        ? (n === 0 ? `The first attempt was “${name}”. ` : n === 1 ? `When that failed, the next attempt was “${name}”. ` : `Later came “${name}”, and that breaks too. `)
-        : (n === 0 ? `先试了「${name}」。` : n === 1 ? `这一下不行，于是改成「${name}」。` : `后来又试「${name}」，还是不行。`);
-      tries.push(lead + why);
-    }
-  }
-  const merged: string[] = [];
-  if (tries.length >= 3) merged.push(tries[0]! + (l === 'en' ? ' ' : '') + tries[1]!, tries[2]!);
-  else if (tries.length) merged.push(tries.join(l === 'en' ? ' ' : ''));
-  if (merged.length >= 2 && [...merged[merged.length - 1]!.replace(/\s+/g, '')].length < 60) {
-    const last = merged.pop()!;
-    merged[merged.length - 1] += (l === 'en' ? ' ' : '') + last;
-  }
+  const whyParas = (WHY[key] ?? WHY['0']!).map((row) => tx(row, l));
   const codeLead = l === 'en'
     ? 'Written so a program can run the same step, it is the lines below.'
     : '交给程序去跑的时候，算的仍是上面这件事，只是换成它能执行的写法。';
@@ -246,26 +225,9 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     const last = i === displayFx.length - 1;
     return `<p>${esc(leadOf(i))}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${last ? `<p>${esc(symFollow)}</p>` : ''}`;
   }).join('');
-  const plainLen = (s: string) => [...s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').replace(/\s+/g, '')].length;
-  const glue = (xs: string[]) => {
-    let t = '';
-    for (const s of xs) {
-      const bit = s.trim();
-      if (!bit) continue;
-      t += t && l === 'en' ? ` ${bit}` : bit;
-      if (plainLen(t) >= 90) break;
-    }
-    return t;
-  };
-  const lookText = glue([...Y.num, ...S.x, Y.hook, S.e]);
-  const lastG = goals[goals.length - 1];
-  const choiceText = glue([
-    lastG ? fillDvText(tx(lastG.why[lastG.a]!, l), l) : '',
-    S.lo,
-    S.e,
-    Y.hook,
-  ]);
-  const whyOpen = merged.map((s) => `<p>${mk(s)}</p>`).join('');
+  const lookText = tx(LOOK[key] ?? LOOK['0']!, l);
+  const choiceText = tx(CLOSE[key] ?? CLOSE['0']!, l);
+  const whyOpen = whyParas.map((s) => `<p class="ly-why">${mk(s)}</p>`).join('');
   const L5 = [
     `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
     `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p><div data-ask="num"></div>`,

@@ -30,11 +30,11 @@
 .ly .fx-line { display: block; margin: 0.4em 0 0.8em; padding: 0.35em 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; color: var(--ink); text-align: center; font-size: 22px; line-height: 1.5; letter-spacing: 0.01em; }
 .ly .fx-lead, .ly .fx-sym p, .ly .st-why p { margin: 0 0 0.85em; }
 .ly .st-fig { margin: 0 0 16px; padding: 8px 12px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); width: 100%; }
-.ly .st-fig.ly-tight { width: max-content; max-width: 100%; margin-inline: auto; padding: 4px 4px 8px; }
+.ly .st-fig.ly-tight { width: 100%; max-width: 100%; margin: 0 0 16px; padding: 4px 4px 8px; }
 .ly .st-fig svg, .ly .vf-plot { width: 100%; height: auto; display: block; }
 .ly .st-fig svg.ly-life, .ly .st-fig svg.ly-pen { width: 100%; max-width: none; height: auto; margin: 0; display: block; }
-.ly .st-fig.ly-tight svg.ly-life { width: min(440px, 100%); max-width: 440px; height: auto; }
-.ly .st-fig.ly-tight .ly-cap { max-width: 440px; margin: 6px 4px 0; }
+.ly .st-fig.ly-tight svg.ly-life { width: 100%; max-width: none; height: auto; }
+.ly .st-fig.ly-tight .ly-cap { max-width: none; margin: 6px 4px 0; }
 .ly .st-fig svg.ly-asvg { width: 100%; max-width: none; height: auto; margin: 0; }
 .ly-mot { margin: 10px 0 0; padding: 0; border: 0; background: none; }
 .vf-slot:empty, [data-vf-part="myth"]:empty, .st-q:empty { display: none; }

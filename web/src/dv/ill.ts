@@ -6,8 +6,6 @@ import { CAST_KEYS, castLife } from './cast';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 const frame = (label: string, body: string, h = 132) => `<svg class="ly-life" viewBox="0 0 300 ${h}" role="img" aria-label="${esc(label)}"><rect width="300" height="${h}" rx="12" fill="var(--card)"/>${body}</svg>`;
-const ground = (y: number, h = 176) => `<rect x="0" y="${y}" width="300" height="${h - y}" fill="var(--bg)"/>`;
-const person = (x: number, foot: number, shirt: string) => `<circle cx="${x}" cy="${foot - 36}" r="8" fill="var(--card)" stroke="var(--ink)" stroke-width="2"/><path d="M${x - 12} ${foot - 8} q12 -18 24 0 v8 h-24 z" fill="${shirt}"/><path d="M${x - 5} ${foot - 4} l-3 16 M${x + 5} ${foot - 4} l3 16" stroke="var(--ink)" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
 
 const Y = 'var(--highlight)', G = 'var(--good)', P = 'var(--link)', B = 'var(--link)', R = 'var(--bad)', D = 'var(--link)';
 
@@ -29,92 +27,77 @@ const SCENE: Record<string, readonly [string, string, string]> = {
   '0': ['一串点，和穿过它们的一条线', 'Dots, and one line through them',
     `<circle cx="48" cy="88" r="6" fill="${R}"/><circle cx="96" cy="70" r="6" fill="${Y}"/><circle cx="150" cy="58" r="6" fill="${G}"/><circle cx="210" cy="40" r="6" fill="${B}"/><circle cx="258" cy="28" r="6" fill="${P}"/><path d="M30 100 C90 80 180 50 280 22" fill="none" stroke="${Y}" stroke-width="3"/>`],
   P: ['两枚硬币，正面和反面', 'Two coins, heads and tails',
-    `${ground(148)}${person(46, 164, B)}${person(250, 164, Y)}
-<rect x="70" y="118" width="160" height="14" rx="3" fill="var(--card)" stroke="${D}" stroke-width="2"/>
-<circle cx="108" cy="78" r="34" fill="var(--card)" stroke="${Y}" stroke-width="3"/><circle cx="108" cy="78" r="8" fill="${Y}"/>
-<path d="M96 70 h24 M108 58 v24" stroke="${Y}" stroke-width="2"/>
-<circle cx="192" cy="78" r="34" fill="var(--card)" stroke="${B}" stroke-width="3"/>
-<path d="M176 78 h32" stroke="${B}" stroke-width="3"/>
-<path d="M150 40 h8 v28 h-8 z" fill="${G}"/><path d="M146 48 h16" stroke="var(--ink)" stroke-width="2"/>
-<circle cx="150" cy="22" r="14" fill="var(--card)" stroke="${Y}" stroke-width="2"/><path d="M140 22 h20" stroke="${Y}" stroke-width="2"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<circle cx="78" cy="78" r="62" fill="var(--card)" stroke="${Y}" stroke-width="8"/><circle cx="78" cy="78" r="14" fill="${Y}"/>
+<path d="M78 48 v60 M48 78 h60" stroke="${Y}" stroke-width="6" stroke-linecap="round"/>
+<circle cx="222" cy="78" r="62" fill="var(--card)" stroke="${B}" stroke-width="8"/>
+<path d="M178 78 h88" stroke="${B}" stroke-width="8" stroke-linecap="round"/>
+<circle cx="150" cy="36" r="28" fill="var(--card)" stroke="${G}" stroke-width="6"/><path d="M134 36 h32" stroke="${G}" stroke-width="5"/>`],
   '1': ['三根高低不同的柱子', 'Three bars of different heights',
     `<rect x="40" y="70" width="28" height="40" rx="4" fill="${B}"/><rect x="90" y="36" width="28" height="74" rx="4" fill="${Y}"/><rect x="140" y="88" width="28" height="22" rx="4" fill="${R}"/><path d="M190 96c20-40 40-8 60-28" fill="none" stroke="${G}" stroke-width="3"/>`],
   '2': ['雾里的一道下坡', 'A slope down through fog',
     `<path d="M20 30 C80 28 100 70 160 78 C210 86 240 100 290 108" fill="none" stroke="${D}" stroke-width="8" opacity="0.35"/><path d="M24 40 L70 48 L110 70 L150 74" fill="none" stroke="${Y}" stroke-width="3"/><circle cx="150" cy="74" r="6" fill="${R}"/><circle cx="250" cy="108" r="7" fill="${G}"/>`],
   '3': ['四个点，一条直线切不开', 'Four dots a straight line cannot split',
-    `${ground(150)}<rect x="28" y="18" width="200" height="124" rx="8" fill="var(--card)" stroke="${D}" stroke-width="2"/>
-<circle cx="70" cy="42" r="11" fill="${R}"/><circle cx="186" cy="42" r="11" fill="${G}"/><circle cx="70" cy="108" r="11" fill="${G}"/><circle cx="186" cy="108" r="11" fill="${R}"/>
-<path d="M44 118 L210 28" fill="none" stroke="${Y}" stroke-width="2.4" stroke-dasharray="6 4"/>
-<path d="M48 78 C90 28 140 130 196 70" fill="none" stroke="${B}" stroke-width="3"/>
-<path d="M36 18 L64 18 L64 46" fill="none" stroke="${Y}" stroke-width="2"/>
-${person(258, 164, Y)}`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<circle cx="70" cy="40" r="26" fill="${R}"/><circle cx="230" cy="40" r="26" fill="${G}"/>
+<circle cx="70" cy="110" r="26" fill="${G}"/><circle cx="230" cy="110" r="26" fill="${R}"/>
+<path d="M36 128 L264 18" fill="none" stroke="${Y}" stroke-width="5" stroke-dasharray="10 7"/>
+<path d="M40 78 C100 18 180 132 268 60" fill="none" stroke="${B}" stroke-width="7"/>`],
   '4': ['三块越来越小的色块', 'Three blocks, each smaller than the last',
-    `${ground(150)}${person(36, 164, B)}
-<rect x="70" y="36" width="64" height="96" rx="8" fill="${R}"/>
-<rect x="148" y="64" width="46" height="68" rx="8" fill="${Y}"/>
-<rect x="208" y="96" width="30" height="36" rx="8" fill="${G}"/>
-<path d="M102 36 C130 18 168 18 196 36" fill="none" stroke="${D}" stroke-width="2.4" stroke-dasharray="5 3"/>
-<path d="M250 110 h28" stroke="${D}" stroke-width="3" marker-end="url(#none)"/>
-<path d="M246 78 l18 8 -18 8 z" fill="${B}"/>
-<circle cx="102" cy="84" r="12" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M102 72 v24 M90 84 h24" stroke="var(--ink)" stroke-width="2"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<rect x="12" y="18" width="88" height="118" rx="8" fill="${R}"/>
+<rect x="112" y="48" width="72" height="88" rx="8" fill="${Y}"/>
+<rect x="196" y="78" width="52" height="58" rx="8" fill="${G}"/>
+<path d="M250 40 C210 8 120 8 56 28" fill="none" stroke="${B}" stroke-width="6"/>
+<path d="M56 28 l16 -2 -4 16 z" fill="${B}"/>`],
   '5': ['三个旋钮', 'Three knobs',
-    `${ground(150)}<rect x="24" y="28" width="188" height="108" rx="10" fill="var(--card)" stroke="${D}" stroke-width="2.4"/>
-<circle cx="62" cy="78" r="26" fill="none" stroke="${B}" stroke-width="7"/><path d="M62 78 L80 62" stroke="${Y}" stroke-width="3" stroke-linecap="round"/>
-<circle cx="118" cy="78" r="26" fill="none" stroke="${G}" stroke-width="7"/><path d="M118 78 L118 54" stroke="${Y}" stroke-width="3" stroke-linecap="round"/>
-<circle cx="174" cy="78" r="26" fill="none" stroke="${P}" stroke-width="7"/><path d="M174 78 L158 94" stroke="${Y}" stroke-width="3" stroke-linecap="round"/>
-<path d="M228 120 C248 90 268 70 286 48" fill="none" stroke="${Y}" stroke-width="3"/>
-<rect x="214" y="36" width="26" height="20" rx="4" fill="${Y}"/><circle cx="222" cy="46" r="3" fill="var(--ink)"/><circle cx="232" cy="46" r="3" fill="var(--ink)"/>
-${person(262, 164, B)}`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<circle cx="58" cy="78" r="46" fill="none" stroke="${B}" stroke-width="14"/><path d="M58 78 L90 52" stroke="${Y}" stroke-width="7" stroke-linecap="round"/>
+<circle cx="158" cy="78" r="46" fill="none" stroke="${G}" stroke-width="14"/><path d="M158 78 L158 36" stroke="${Y}" stroke-width="7" stroke-linecap="round"/>
+<circle cx="250" cy="78" r="42" fill="none" stroke="${P}" stroke-width="14"/><path d="M250 78 L222 108" stroke="${Y}" stroke-width="7" stroke-linecap="round"/>
+<rect x="214" y="8" width="74" height="28" rx="6" fill="${Y}"/><circle cx="232" cy="22" r="6" fill="var(--ink)"/><circle cx="256" cy="22" r="6" fill="var(--ink)"/>`],
   '13': ['一排书，其中一本被抽出来', 'A row of books, one pulled out',
-    `${ground(150)}<rect x="18" y="86" width="176" height="14" rx="2" fill="${D}"/>
-<rect x="26" y="40" width="24" height="58" fill="${B}"/><rect x="54" y="46" width="24" height="52" fill="${P}"/>
-<rect x="82" y="16" width="28" height="82" fill="${Y}"/><path d="M88 30 h16 M88 42 h12 M88 54 h16 M88 66 h10" stroke="var(--ink)" stroke-width="1.6"/>
-<rect x="114" y="44" width="24" height="54" fill="${G}"/><rect x="142" y="48" width="24" height="50" fill="${R}"/>
-<rect x="186" y="58" width="52" height="36" rx="3" fill="var(--card)" stroke="${Y}" stroke-width="2"/><path d="M194 70 h36 M194 80 h28" stroke="${Y}" stroke-width="1.6"/>
-<path d="M168 40 H188" stroke="${Y}" stroke-width="2.4"/>
-<rect x="214" y="108" width="40" height="22" rx="2" fill="var(--bg)" stroke="${D}" stroke-width="1.6"/>
-${person(262, 158, B)}<path d="M240 100 H210" stroke="${B}" stroke-width="3" stroke-linecap="round"/>
-<circle cx="250" cy="36" r="12" fill="var(--card)" stroke="${Y}" stroke-width="2"/><path d="M246 40 h8 M250 32 v8" stroke="${Y}" stroke-width="2"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<rect x="8" y="28" width="36" height="114" fill="${B}"/><rect x="48" y="40" width="36" height="102" fill="${P}"/>
+<rect x="88" y="8" width="48" height="134" fill="${Y}"/><path d="M98 28 h28 M98 48 h22 M98 68 h28 M98 88 h18 M98 108 h26" stroke="var(--ink)" stroke-width="3"/>
+<rect x="142" y="36" width="36" height="106" fill="${G}"/><rect x="182" y="48" width="36" height="94" fill="${R}"/>
+<rect x="228" y="18" width="64" height="86" rx="6" fill="var(--card)" stroke="${Y}" stroke-width="4"/><path d="M240 40 h40 M240 58 h32 M240 76 h36" stroke="${Y}" stroke-width="3"/>
+<rect x="236" y="112" width="52" height="26" rx="4" fill="var(--card)" stroke="${D}" stroke-width="3"/>`],
   '14': ['一个工具箱，旁边一个来回的环', 'A toolbox, and a loop beside it',
-    `${ground(150)}${person(40, 164, B)}
-<rect x="78" y="78" width="96" height="52" rx="6" fill="var(--card)" stroke="${Y}" stroke-width="3"/>
-<path d="M104 78 V58 H148 V78" fill="none" stroke="${Y}" stroke-width="3"/>
-<rect x="96" y="92" width="28" height="8" rx="2" fill="${B}"/><rect x="132" y="90" width="22" height="14" rx="2" fill="${G}"/>
-<path d="M118 104 l18 16" stroke="${B}" stroke-width="3" stroke-linecap="round"/><circle cx="140" cy="124" r="5" fill="none" stroke="${B}" stroke-width="2"/>
-<path d="M196 118 C236 118 250 48 210 42 C176 36 174 86 204 90" fill="none" stroke="${G}" stroke-width="3"/>
-<path d="M198 84 l8 8 -2 2 z" fill="${G}"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<rect x="12" y="48" width="150" height="90" rx="10" fill="var(--card)" stroke="${Y}" stroke-width="6"/>
+<path d="M48 48 V22 H124 V48" fill="none" stroke="${Y}" stroke-width="8"/>
+<rect x="32" y="78" width="48" height="16" rx="4" fill="${B}"/><rect x="92" y="72" width="46" height="28" rx="4" fill="${G}"/>
+<path d="M178 118 C250 130 286 40 214 22 C160 10 150 78 196 86" fill="none" stroke="${G}" stroke-width="8"/>
+<path d="M188 78 l16 12 -6 4 z" fill="${G}"/>`],
   S: ['一扇门挡住一张纸条', 'A gate stopping a slipped-in note',
-    `${ground(150)}<rect x="150" y="28" width="78" height="112" rx="4" fill="var(--card)" stroke="${D}" stroke-width="3"/>
-<rect x="206" y="74" width="16" height="14" rx="2" fill="${Y}"/><path d="M210 74 v-6 a4 4 0 0 1 8 0 v6" fill="none" stroke="${Y}" stroke-width="2"/>
-${person(246, 164, B)}
-<rect x="36" y="70" width="78" height="40" rx="4" fill="${R}" transform="rotate(-8 75 90)"/>
-<path d="M48 84 h48 M48 94 h36" stroke="var(--ink)" stroke-width="1.6"/>
-<path d="M118 96 H146" stroke="${G}" stroke-width="3" stroke-dasharray="4 3"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<rect x="150" y="8" width="138" height="134" rx="6" fill="var(--card)" stroke="${D}" stroke-width="6"/>
+<rect x="196" y="64" width="28" height="22" rx="3" fill="${Y}"/><path d="M202 64 v-12 a8 8 0 0 1 16 0 v12" fill="none" stroke="${Y}" stroke-width="4"/>
+<rect x="12" y="46" width="118" height="64" rx="6" fill="${R}" transform="rotate(-6 70 78)"/>
+<path d="M28 70 h84 M28 88 h64" stroke="var(--ink)" stroke-width="4"/>
+<path d="M118 100 H148" stroke="${G}" stroke-width="6" stroke-dasharray="6 5"/>`],
   '15a': ['一只眼睛，被切成小方块', 'An eye, cut into small squares',
-    `${ground(150)}${person(36, 164, B)}
-<circle cx="108" cy="78" r="42" fill="none" stroke="${B}" stroke-width="3"/><circle cx="108" cy="78" r="16" fill="${Y}"/>
-<path d="M70 78 h-16 M146 78 h16 M108 40 v-14 M108 116 v14" stroke="${D}" stroke-width="2"/>
-<rect x="188" y="36" width="28" height="28" fill="${P}"/><rect x="220" y="36" width="28" height="28" fill="${B}"/>
-<rect x="252" y="36" width="28" height="28" fill="${G}"/><rect x="188" y="68" width="28" height="28" fill="${Y}"/>
-<rect x="220" y="68" width="28" height="28" fill="${R}"/><rect x="252" y="68" width="28" height="28" fill="${P}"/>
-<path d="M168 86 H184" stroke="${Y}" stroke-width="3"/>
-<path d="M78 50 H138 M108 28 V128" stroke="${D}" stroke-width="1.4" stroke-dasharray="3 3"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<circle cx="78" cy="75" r="62" fill="var(--card)" stroke="${B}" stroke-width="8"/><circle cx="78" cy="75" r="24" fill="${Y}"/>
+<path d="M78 18 v-8 M78 132 v8 M16 75 h-6 M140 75 h8" stroke="${D}" stroke-width="4"/>
+<rect x="162" y="10" width="40" height="40" fill="${P}"/><rect x="206" y="10" width="40" height="40" fill="${B}"/><rect x="250" y="10" width="42" height="40" fill="${G}"/>
+<rect x="162" y="54" width="40" height="40" fill="${Y}"/><rect x="206" y="54" width="40" height="40" fill="${R}"/><rect x="250" y="54" width="42" height="40" fill="${P}"/>
+<rect x="162" y="98" width="40" height="42" fill="${B}"/><rect x="206" y="98" width="40" height="42" fill="${G}"/><rect x="250" y="98" width="42" height="42" fill="${Y}"/>`],
   '15b': ['一串越来越长的想法', 'A chain of thoughts, each longer',
-    `${ground(150)}${person(40, 164, B)}
-<circle cx="78" cy="118" r="12" fill="${B}"/>
-<rect x="100" y="96" width="40" height="28" rx="12" fill="${P}"/>
-<rect x="148" y="72" width="58" height="40" rx="14" fill="${Y}"/>
-<rect x="214" y="40" width="72" height="52" rx="16" fill="${G}"/>
-<path d="M24 28 H276" stroke="${D}" stroke-width="8" stroke-linecap="round" opacity="0.35"/>
-<rect x="120" y="20" width="36" height="16" rx="3" fill="${R}"/>
-<path d="M248 58 l6 6 14 -14" fill="none" stroke="var(--ink)" stroke-width="2.4"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<circle cx="36" cy="108" r="26" fill="${B}"/>
+<rect x="70" y="78" width="52" height="52" rx="16" fill="${P}"/>
+<rect x="132" y="46" width="70" height="70" rx="18" fill="${Y}"/>
+<rect x="212" y="12" width="80" height="100" rx="20" fill="${G}"/>
+<path d="M236 48 l12 14 22 -26" fill="none" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+<rect x="8" y="12" width="70" height="28" rx="6" fill="${R}"/>`],
   A: ['桌面上的三个窗口：代码、文稿、屏幕', 'Three windows on a desk: code, a page, a screen',
-    `${ground(150)}<rect x="16" y="128" width="268" height="16" rx="3" fill="${D}"/>
-${person(150, 164, Y)}
-<rect x="20" y="28" width="78" height="86" rx="6" fill="var(--card)" stroke="${B}" stroke-width="2.4"/><path d="M32 48 H86 M32 62 H74 M32 76 H80 M32 90 H60" stroke="${B}" stroke-width="2.4"/>
-<rect x="110" y="28" width="78" height="86" rx="6" fill="var(--card)" stroke="${Y}" stroke-width="2.4"/><path d="M122 52 H176 M122 70 H160 M122 88 H168" stroke="${Y}" stroke-width="2.4"/>
-<rect x="200" y="28" width="78" height="86" rx="6" fill="var(--card)" stroke="${G}" stroke-width="2.4"/><circle cx="238" cy="72" r="18" fill="${G}" opacity="0.85"/>
-<path d="M98 72 H110 M188 72 H200" stroke="${D}" stroke-width="2.4"/>`],
+    `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
+<rect x="8" y="8" width="90" height="134" rx="8" fill="var(--card)" stroke="${B}" stroke-width="5"/><path d="M20 32 H84 M20 54 H72 M20 76 H80 M20 98 H60 M20 120 H76" stroke="${B}" stroke-width="4"/>
+<rect x="106" y="8" width="90" height="134" rx="8" fill="var(--card)" stroke="${Y}" stroke-width="5"/><path d="M118 40 H182 M118 68 H160 M118 96 H176" stroke="${Y}" stroke-width="5"/>
+<rect x="204" y="8" width="90" height="134" rx="8" fill="var(--card)" stroke="${G}" stroke-width="5"/><circle cx="248" cy="78" r="32" fill="${G}"/>
+<path d="M98 74 H106 M196 74 H204" stroke="${D}" stroke-width="6"/>`],
 };
 
 /** the station's own everyday picture (empty string if the key is unknown) */
@@ -122,7 +105,7 @@ export function life(key: string, l: L): string {
   if (CAST_KEYS.has(key)) return castLife(key, l);
   const s = SCENE[key]; if (!s) return '';
   const tall = new Set(['P', '3', '4', '5', '13', '14', 'S', '15a', '15b', 'A']);
-  return frame(tx([s[0], s[1]], l), s[2], tall.has(key) ? 168 : 132);
+  return frame(tx([s[0], s[1]], l), s[2], tall.has(key) ? 150 : 132);
 }
 
 /** the same scene after it has become the diagram. Paired with SCENE, not the cast stations. */
