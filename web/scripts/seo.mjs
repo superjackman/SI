@@ -214,14 +214,14 @@ export function buildSeo({ web, base, lastmod } = {}) {
   const pagePath = (k, L) => (L === 'en' ? 'en/' : '') + `s/${k}/`;
   const catPath = (L) => (L === 'en' ? 'en/' : '') + 's/';
   const appHref = (hash, L) => base + (L === 'en' ? '?lang=en' : '') + (hash ? '#' + hash : '');
-  const CSS = 'body{margin:0;font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1e293b;background:#f8fafc}'
+  const CSS = 'body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}'
     + 'header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}'
-    + 'a{color:#4338ca}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#64748b;font-size:.9em}'
-    + '.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#94a3b8}'
-    + '.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#4f46e5;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none;font-weight:600}'
-    + '.bd{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}'
-    + 'ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#64748b;font-size:.85em}'
-    + 'details.ex{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}';
+    + 'a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}'
+    + '.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}'
+    + '.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}'
+    + '.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}'
+    + 'ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}'
+    + 'details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}';
   const head = ({ L, title, desc, path, alt, type = 'article', ld, noindex = false, image }) => `<!doctype html>
 <html lang="${HL[L]}">
 <head>
@@ -247,7 +247,7 @@ ${noindex ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" 
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${image || ORIGIN + base + 'og.png'}">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#15202b">
 <link rel="icon" href="${base}icon-192.png">
 ${ld ? jsonLd(ld) + '\n' : ''}<style>${CSS}</style>
 </head>
