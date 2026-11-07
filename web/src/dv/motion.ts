@@ -21,12 +21,9 @@ function fig(k: string, l: L): string {
     return `<div class="mv-fig mv-lookup" role="img" aria-label="${label}"><b>${zh ? '猫' : 'cat'}</b><i class="mv-line" aria-hidden="true"></i>${chips([zh ? '0.8 · 0.1 · 0.6' : '0.8 · 0.1 · 0.6', zh ? '狗  0.7' : 'dog  0.7', zh ? '车  0.1' : 'car  0.1'], 0)}</div>`;
   }
   if (k === '7') return `<div class="mv-fig" role="img" aria-label="${label}">${chips(zh ? ['我', '很', '累'] : ['I', 'am', 'tired'], 2)}<i class="mv-line" aria-hidden="true"></i></div>`;
-  if (k === '8b') return `<div class="mv-fig mv-stack" role="img" aria-label="${label}">${chips(zh ? ['输入', '交流', '消化', '加回'] : ['in', 'talk', 'digest', 'add back'], 3)}<i class="mv-line down" aria-hidden="true"></i></div>`;
-  if (k === '9') {
-    const lab = zh ? ['蓝', '灰', '白'] : ['blue', 'grey', 'white'], w = [78, 36, 14];
-    return `<div class="mv-fig mv-bars" role="img" aria-label="${label}">${lab.map((t, i) => `<div><span>${esc(t)}</span><i class="mv-grow" style="width:${w[i]!}%"></i></div>`).join('')}</div>`;
-  }
-  return `<div class="mv-fig" role="img" aria-label="${label}">${chips(zh ? ['旧 K', '旧 V', '新'] : ['old K', 'old V', 'new'], 2)}<i class="mv-line" aria-hidden="true"></i></div>`;
+  /* 8b, 9 and 12 already draw this data in the block, the temperature card, or the cache card */
+  if (k === '8b' || k === '9' || k === '12') return `<div class="mv-fig" hidden></div>`;
+  return `<div class="mv-fig" hidden></div>`;
 }
 
 export function mount(el: HTMLElement, k: string, l: L) {

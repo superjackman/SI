@@ -23,6 +23,16 @@ describe('station chapter', () => {
       const figs = [...el.querySelectorAll('[data-fig]')].map((e) => e.getAttribute('data-fig') || '');
       expect(new Set(figs).size, `${l} ${k} fig`).toBe(figs.length);
       expect(el.querySelector('[data-fig="scene"] svg'), `${l} ${k} scene`).toBeTruthy();
+      expect(el.textContent || '', `${l} ${k} lead`).not.toMatch(/写成式子，就是|同一步，再写一行|Written as a formula|The same step, on the next line/);
+      for (const sec of el.querySelectorAll('.ly-l')) {
+        let run = 0;
+        for (const p of sec.querySelectorAll('p')) {
+          if (p.classList.contains('fx-line') || p.classList.contains('formula') || p.classList.contains('ly-cap')) { run = 0; continue; }
+          const n = (p.textContent || '').replace(/\s+/g, '').length;
+          run = n < 40 ? run + 1 : 0;
+          expect(run, `${l} ${k} short`).toBeLessThanOrEqual(2);
+        }
+      }
       expect(el.querySelector('.st-inline'), `${l} ${k} tail`).toBeNull();
       const lines = (el.textContent || '').split('\n').map((s) => s.trim());
       expect(lines.filter((s) => /^(\[[0-9]+,|undefined|\[object )/.test(s)), `${l} ${k} stray`).toEqual([]);

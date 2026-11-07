@@ -85,6 +85,33 @@ const skipLine = (s: string) => /NumPy|数字层|看动画/.test(s) || s.include
 const fxPlain = (s: string) => s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').replace(/\{#[^}]+\}/gi, '').replace(/\s+/g, ' ').trim();
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
+/** what each displayed formula is doing, in that station's own story */
+const LEAD: Record<string, readonly (readonly [string, string])[]> = {
+  '0': [['要找的不是背下来的样本，而是一条带着旋钮的函数，没见过的输入也能算出预测。', 'What we want is not a memorised sample, but a function with knobs, so an unseen input still gets a prediction.']],
+  P: [['语言模型每一步都在给下一个字分配可能性，而且这些可能性必须分完。', 'At every step a language model hands out chances for the next word, and those chances have to use up the whole share.'], ['后面要比一串数的中心落在哪、散得有多开，用的就是均值和方差。', 'Later we need where a list of numbers sits, and how spread out it is: that is the mean and the variance.']],
+  '1': [['把可以是负数的分数收成加起来等于 1 的概率，靠的是 softmax。', 'Softmax is what turns scores that may be negative into probabilities that add up to 1.'], ['训练时只盯着正确答案那一格有多意外，损失就是它的负对数。', 'While training we watch only how surprising the correct answer was. The loss is the negative log of that probability.'], ['要预测的如果是一个数而不是一个类别，就改用预测和真实值之差的平方平均。', 'When the target is a number rather than a class, use the average of the squared gaps instead.']],
+  '2': [['看不见谷底的时候，每一步只顺着脚下的坡挪一小段。', 'When the valley is out of sight, each step only moves a little way down the slope underfoot.'], ['旋钮不止一个时，每个方向的坡排成一个向量，那就是梯度。', 'With more than one knob, the slope in every direction lines up into a vector: the gradient.'], ['于是两个旋钮在同一步里一起改，而不是先改完一个再改另一个。', 'So both knobs move in the same step, rather than one finishing before the other starts.']],
+  '3': [['只做旋转和缩放，弯的边界分不开；先线性变换，再弯一下。', 'Rotation and scaling alone cannot separate a bent boundary. Transform linearly, then bend.'], ['弯完之后，再用一层把新的表示收成最后的输出。', 'After the bend, one more layer turns that new representation into the output.']],
+  '4': [['损失对更前面一层的影响，是上游传来的坡，乘上这一层自己的坡。', 'How the loss reaches an earlier layer is the slope arriving from upstream, times this layer’s own slope.'], ['残差把输入原样加回去，这样梯度里总有一条不会越乘越小的直路。', 'A residual adds the input back unchanged, so the gradient always has a path that does not shrink at every layer.']],
+  '5': [['真的训练不会一次看完全部样本，而是一小批一小批地走，并用动量和自适应的步长。', 'Real training does not look at every sample at once. It walks in small batches, with momentum and a step size that adapts.']],
+  '6': [['两个词有多像，就是它们在空间里的方向有多齐，用点积来量。', 'How alike two words are is how aligned their directions are, and the dot product measures that.'], ['用一个词去猜它周围会出现什么，最后仍把分数交给 softmax 变成概率。', 'Guessing which words show up around a given word still hands the scores to softmax to become probabilities.']],
+  '7': [['该听谁、听多少，不是事先记死的权重，而是看着当前这句话现算出来的。', 'Whom to listen to, and how much, is not a weight stored in advance. It is computed from the sentence in front of us.']],
+  '8a': [['“它”要确定指谁，就是拿自己的需求去对每个词的名牌，再按对上的程度把内容混进来。', 'To decide who “it” is, take its own request, match it against every word’s name tag, and mix their contents by how well they matched.']],
+  '8b': [['一次看不过来，就把宽度切开，每一份各自看一遍，再拼回去。', 'When the width is too much to look at once, split it, let each piece look on its own, and join them back.'], ['交流得到的结果要加回原来的输入，原稿才不会在层与层之间丢掉。', 'What the words told each other is added back onto the original input, so the draft is not lost between layers.'], ['每个词再独自过一个小网络消化一遍，消化的结果同样加回输入。', 'Each word then passes alone through a small network, and that result is added back onto the input too.']],
+  '9': [['预训练的损失，就是平均每一次猜下一个词时，那个词有多出乎意料。', 'The pre-training loss is how surprising the next word was, averaged over every guess.'], ['不想改已经训好的参数，只想把分布拧尖或拧平，就在 softmax 之前把分数除以温度。', 'To sharpen or flatten the distribution without touching the trained parameters, divide the scores by a temperature before softmax.']],
+  E: [['把平均损失变回“相当于在几个候选里犹豫”，得到的数叫做困惑度。', 'Turn the average loss back into “torn among about this many candidates”, and that number is the perplexity.'], ['题到底做对了多少，是另一把尺子，用做对的次数除以总题数。', 'How many questions were actually right is a different ruler: correct answers divided by the number of questions.']],
+  '10': [['两份回答谁更好，不去拟合一个绝对分数，而是拟合“A 胜过 B”的概率。', 'Which of two answers is better is not fit as an absolute score. It is fit as the probability that A beats B.']],
+  '11': [['大矩阵冻住不动，只训练旁边那条又细又长的支路，把它加回原来的权重。', 'The big matrix stays frozen. Only the long thin side path is trained, and it is added back onto the original weights.'], ['每个数少写几位的时候，存下来的是一个整数，用的时候再乘上缩放。', 'When each number is stored with fewer bits, what is kept is an integer, scaled back up when it is used.']],
+  '12': [['已经问过的词，名牌和内容可以留在缓存里，新词只算自己的一份。', 'Words already asked can keep their name tags and contents in a cache. A new word computes only its own share.']],
+  '13': [['先找出和问题方向最像的几块资料。比的是方向而不是长度，所以用余弦。', 'First find the few notes whose direction is closest to the question. Direction, not length, is what cosine compares.']],
+  '14': [['每一步都有一次失手的可能，步数一多，全程都做对的机会会掉得很快。', 'Every step has a chance of slipping. After enough steps, the chance that all of them succeed falls quickly.']],
+  S: [['会改数据、会花钱的动作，不能让模型自己做完，得停下来等人点头。', 'An action that changes data or spends money cannot finish on its own. It stops until a person agrees.'], ['从外面读进来的文字是数据，不能把它当成一条新的系统指令去执行。', 'Text read in from outside is data. It must not be carried out as a new system instruction.']],
+  '15a': [['扩散学的不是一步就画出整张图，而是认出这一步里被加进去的噪声。', 'Diffusion does not learn to draw the whole picture in one step. It learns to recognise the noise added at this step.'], ['一张图先切成小块，每块当成一个词，再和文字走同一套注意力。', 'An image is first cut into small patches. Each patch is a word, and then it shares the same attention as the text.']],
+  '15b': [['同一道题多想几次，把出现最多的那个答案留下，往往比只想一次更稳。', 'Thinking through the same question several times and keeping the answer that shows up most is often steadier than one pass.'], ['窗口变长只说明这些词放得下，并不说明中间的那些词也被用到了。', 'A longer window only means the words fit. It does not mean the words in the middle were used.']],
+  A: [['一个能用的应用不是另一个新模型，而是把预训练、检索、工具和多模态编排到一起。', 'A usable application is not another new model. It is pre-training, retrieval, tools and more than one modality, arranged together.']],
+  '16': [['整条链走完以后，进度不看翻过多少页，而看一次只验证一个想法、并且连着做对。', 'After the whole chain, progress is not how many pages were turned. It is verifying one idea at a time, and getting it right twice.']],
+};
+
 /** one chapter: picture, experiment and its step, the formula once, why the other ways fail, then code */
 export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: string): string {
   void exK;
@@ -124,32 +151,51 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   let stepSrc = '';
   if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
   for (const f of Y.fx) note(fxPlain(f));
-  const why: string[] = [];
-  for (const g of ML[key]?.goals ?? []) g.why.forEach((w, i) => {
-    if (i === g.a) return;
-    const s = fillDvText(tx(w, l), l);
-    if (keep(s, false)) why.push(s);
-  });
-  const codeLead = l === 'en' ? 'In a program, that is the same step.' : '放到程序里，还是这一步。';
+  const goals = ML[key]?.goals ?? [];
+  const whyParas: string[] = [];
+  for (const g of goals) {
+    const bits = g.why.map((w, i) => (i === g.a ? '' : fillDvText(tx(w, l), l))).filter((s) => s && keep(s, false));
+    if (bits.length) whyParas.push(bits.join(l === 'en' ? ' ' : ''));
+  }
+  const merged: string[] = [];
+  for (const p of whyParas) {
+    const prev = merged[merged.length - 1];
+    if (prev && [...prev].length < 60) merged[merged.length - 1] = prev + (l === 'en' ? ' ' : '') + p;
+    else if ([...p].length < 40 && prev) merged[merged.length - 1] = prev + (l === 'en' ? ' ' : '') + p;
+    else merged.push(p);
+  }
+  while (merged.length > 3) { const extra = merged.pop()!; merged[merged.length - 1] += (l === 'en' ? ' ' : '') + extra; }
+  if (merged.length && [...merged[merged.length - 1]!.replace(/\s+/g, '')].length < 80) merged[merged.length - 1] += (l === 'en' ? ' ' : '') + S.lo + S.e;
+  const codeLead = l === 'en'
+    ? 'Written so a program can run the same step, it is the lines below.'
+    : '交给程序去跑的时候，算的仍是上面这件事，只是换成它能执行的写法。';
   const code = codeLines(Y.jv).split('\n').map((line) => { const pad = line.match(/^ */)?.[0] ?? ''; return pad + mk(line); }).join('\n');
   const H = (zh: string, en: string) => `<h2 class="st-sec">${l === 'en' ? en : zh}</h2>`;
   const flow = (xs: string[]) => {
     const bits = xs.map((s) => s.trim()).filter(Boolean);
     const groups: string[][] = [];
     let cur: string[] = [];
+    let len = 0;
+    const flush = () => { if (cur.length) groups.push(cur); cur = []; len = 0; };
     for (const s of bits) {
-      cur.push(s);
-      if (cur.length >= 2 || s.length > 90) { groups.push(cur); cur = []; }
+      cur.push(s); len += [...s].length;
+      if (cur.length >= 2 && len >= 80) flush();
     }
-    if (cur.length) groups.push(cur);
+    if (cur.length) {
+      if (groups.length && len < 60) groups[groups.length - 1]!.push(...cur);
+      else groups.push(cur);
+    }
+    while (groups.length > 3) { const extra = groups.pop()!; groups[groups.length - 1]!.push(...extra); }
     return groups.map((g) => `<p>${g.map(mk).join('')}</p>`).join('');
   };
   const hasDemo = !!DEMO[`D/${key}`];
-  const scene = life(key, l);
   const diagram = Y.pic === 'sm' ? picSm(l, mk) : Y.pic === 'blk' ? picBlk(l) : Y.pic === 'att' ? `<div class="ly-att" data-att="1"></div>` : '';
-  const sceneFig = scene ? `<div class="st-fig" data-fig="scene">${scene}${P(caps, mk, 'ly-cap')}${mot}</div>` : (mot ? `<div class="st-fig" data-fig="mot-${key}">${mot}</div>` : '');
-  const diagramFig = diagram ? `<div class="st-fig" data-fig="pic-${Y.pic}">${diagram}</div>` : '';
-  const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}</div>`;
+  const scene = Y.pic === 'sm' ? '' : life(key, l);
+  const motWhere = key === '8b' ? 'diagram' : key === '9' || key === '12' ? 'exp' : 'scene';
+  const putMot = (where: string) => mot && motWhere === where ? mot : '';
+  const sceneFig = (scene || Y.pic === 'sm') ? `<div class="st-fig" data-fig="scene">${scene}${Y.pic === 'sm' ? diagram : ''}${P(caps, mk, 'ly-cap')}${putMot('scene')}</div>` : '';
+  const diagramFig = diagram && Y.pic !== 'sm' ? `<div class="st-fig" data-fig="pic-${Y.pic}">${diagram}${putMot('diagram')}</div>` : '';
+  const exp = `<div class="${hasDemo ? 'st-fig' : 'st-step'}" ${hasDemo ? 'data-fig="exp"' : ''}><div class="vf-slot" id="fig" data-vf-part="demo"></div>${workedHtml(key, l, stepSrc ? mk(stepSrc) : '')}${putMot('exp')}</div>`;
   const figure = sceneFig + diagramFig + exp;
   const syms = Y.fe.map((raw) => {
     const plain = raw.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').trim();
@@ -166,36 +212,55 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const notes = syms.filter((s) => !s.name);
   const shorts = notes.filter((s) => [...s.rest].length <= 12 && !/[，,。！？.!]/.test(s.rest));
   const longs = notes.filter((s) => !shorts.includes(s));
-  const shortSentence = shorts.length
-    ? (l === 'en' ? `The roles in that line are ${shorts.map((s) => s.rest).join(', ')}.` : `式子里的角色是${shorts.map((s) => s.rest).join('、')}。`)
-    : '';
-  const defList = defs.length
-    ? `<p>${esc(l === 'en' ? 'What the symbols mean:' : '符号的意思：')}</p><dl class="fx-def">${defs.map((s) => `<div><dt>${esc(s.name)}</dt><dd>${esc(s.rest)}</dd></div>`).join('')}</dl>`
-    : '';
-  const asideHtml = [...longs.map((s) => s.rest), shortSentence, ...aside].filter(Boolean).map((s) => `<p>${esc(/[。！？.!?]$/.test(s) ? s : s + (l === 'en' ? '.' : '。'))}</p>`).join('');
+  const symBits = [
+    ...defs.map((s) => (l === 'en' ? `${s.name} is ${s.rest}` : `${s.name}是${s.rest}`)),
+    ...longs.map((s) => s.rest),
+    ...shorts.map((s) => s.rest),
+    ...aside,
+  ].filter(Boolean);
+  let symFollow = symBits.length
+    ? (l === 'en' ? `In that line, ${symBits.join('; ')}.` : `这一行里，${symBits.join('，')}。`)
+    : (l === 'en' ? 'The left side is the result we want, and the right side is how the examples compute it.' : '等号左边是要得到的结果，右边是用样本把它算出来的办法。');
+  const symLen = () => [...symFollow.replace(/\s+/g, '')].length;
+  if (symLen() < 70) symFollow += l === 'en'
+    ? ' A new input still uses this same line: the left side is the result, and the right side is the procedure the examples taught.'
+    : '新的输入到来时仍然用这一行来算，左边是想要的结果，右边是样本一点点教出来的算法。';
+  if (symLen() < 70) symFollow += Y.hook.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '');
+  const leadOf = (i: number) => {
+    const rows = LEAD[key];
+    const row = rows?.[Math.min(i, rows.length - 1)];
+    return row ? tx(row, l) : symFollow;
+  };
   const formulas = displayFx.map((f, i) => {
     const last = i === displayFx.length - 1;
-    const before = i === 0
-      ? (l === 'en' ? 'Written as a formula, that step is:' : '写成式子，就是：')
-      : (l === 'en' ? 'The same step, on the next line:' : '同一步，再写一行：');
-    const after = last ? (defList + asideHtml || `<p>${esc(l === 'en' ? 'The left side is the result; the right side is how it is computed.' : '左边是结果，右边是怎么算出来。')}</p>`) : '';
-    return `<p>${esc(before)}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${after}`;
+    return `<p>${esc(leadOf(i))}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${last ? `<p>${esc(symFollow)}</p>` : ''}`;
   }).join('');
-  const qSlot = (i: number) => `<div class="st-q" data-vf-part="check" data-vf-i="${i}"></div>`;
-  const sent = (s: string) => s.split(/(?<=[。！？])|(?<=[.!?])\s+/).map((x) => x.trim()).filter((x) => x.length > 1);
-  const pool = [...why.flatMap(sent)];
-  const fallback = [S.e, S.lo, S.s].flatMap(sent).filter((s) => s !== stepSrc);
-  const takeP = () => `<p>${mk(pool.shift() || fallback.shift() || S.e)}</p>`;
-  const betweenPred = takeP();
-  const beforeLast = takeP();
-  const beforeChoice = takeP();
-  const whyOpen = pool.length ? pool.map((s) => `<p>${mk(s)}</p>`).join('') : takeP();
+  const plainLen = (s: string) => [...s.replace(/⟦[a-z]:([^⟧]*)⟧/g, '$1').replace(/[`*]/g, '').replace(/\s+/g, '')].length;
+  const glue = (xs: string[]) => {
+    let t = '';
+    for (const s of xs) {
+      const bit = s.trim();
+      if (!bit) continue;
+      t += t && l === 'en' ? ` ${bit}` : bit;
+      if (plainLen(t) >= 90) break;
+    }
+    return t;
+  };
+  const lookText = glue([...Y.num, ...S.x, Y.hook, S.e]);
+  const lastG = goals[goals.length - 1];
+  const choiceText = glue([
+    lastG ? fillDvText(tx(lastG.why[lastG.a]!, l), l) : '',
+    S.lo,
+    S.e,
+    Y.hook,
+  ]);
+  const whyOpen = merged.map((s) => `<p>${mk(s)}</p>`).join('');
   const L5 = [
     `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
-    `${H('看一看', 'Look')}${figure}<div data-ask="num"></div>`,
-    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div>${qSlot(0)}`,
-    `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div>${betweenPred}${qSlot(1)}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>${qSlot(2)}`,
-    `${H('换种办法会怎样', 'What if you chose another way')}${beforeLast}${qSlot(3)}${beforeChoice}<div data-ask="choice"></div>`,
+    `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p><div data-ask="num"></div>`,
+    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div><div class="st-q" data-vf-part="check" data-vf-i="0"></div>`,
+    `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div><p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
+    `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
   return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;

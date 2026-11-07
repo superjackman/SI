@@ -41,15 +41,15 @@ test('every station is an outline and one article, with the lesson already in th
     await expect(page.locator('[data-fig="scene"] svg')).toBeVisible();
     const stacked = await page.evaluate(() => {
       const cards = [...document.querySelectorAll('.st-article .ml-num, .st-article .ml-pred, .st-article .st-q, .st-article .ml-i')].filter((el) => (el as HTMLElement).offsetParent);
+      const paras = [...document.querySelectorAll('.st-article p')].filter((p) => !p.classList.contains('fx-line') && !p.classList.contains('formula') && !p.closest('.ml-num, .ml-pred, .st-q, .ml-i, .vf-qz'));
       const bad: string[] = [];
-      for (let i = 0; i < cards.length - 1; i++) {
-        const a = cards[i]!, b = cards[i + 1]!;
-        if (a.contains(b) || b.contains(a)) continue;
-        const range = document.createRange();
-        range.setStartAfter(a);
-        range.setEndBefore(b);
-        const prose = range.cloneContents().querySelector('p, pre, .st-fig, .ly-fx, .st-code');
-        if (!prose) bad.push(`${a.className} → ${b.className}`);
+      for (let i = 0; i < cards.length; i++) {
+        const card = cards[i]!;
+        const before = paras.filter((p) => p.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING);
+        const last = before[before.length - 1];
+        const n = (last?.textContent || '').replace(/\s+/g, '').length;
+        const crossed = cards.slice(0, i).some((q) => last && (last.compareDocumentPosition(q) & Node.DOCUMENT_POSITION_FOLLOWING) && (q.compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING));
+        if (!last || n < 60 || crossed) bad.push(`${n}${crossed ? ' crossed' : ''} before ${card.className}`);
       }
       return bad;
     });

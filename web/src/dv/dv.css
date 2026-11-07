@@ -246,8 +246,16 @@ button.dv-from span::before { content: '‹ '; }
   .st-main { padding-left: 16px; padding-right: 16px; }
 }
 @media (min-width: 1600px) {
-  .l4 .px.dv-sp { grid-template-columns: 260px minmax(0, 1fr); }
-  .st-article { font-size: 18px; }
+  .l4 .px.dv-sp { grid-template-columns: 260px minmax(0, 1fr); overflow: visible; }
+  .st-article { font-size: 18px; overflow: visible; }
+  .st-article .ly, .st-article .ly-l { overflow: visible; }
+  .st-article .ly .st-fig {
+    width: min(1080px, calc(100vw - 340px));
+    max-width: 1080px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
   .dv-mcap { min-height: 0; }
   .dv-msl input { min-height: 28px; }
