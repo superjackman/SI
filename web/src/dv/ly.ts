@@ -26,6 +26,8 @@ const openSet = (page: string, n: number) => { const o = openAll(); o[page] = n;
 export const shown = (open: number, d: Depth) => Math.max(1, Math.min(open, DEPTH_MAX[d]));
 
 const NAME: readonly (readonly [string, string])[] = [['类比', 'Analogy'], ['图', 'Picture'], ['数字', 'Numbers'], ['公式', 'Formula'], ['小测', 'Check']];
+/** depth labels stay in the source so both languages name the same three depths, even though the switch is not on the page */
+export const DLAB: Readonly<Record<Depth, readonly [string, string]>> = { s: ['30 秒', '30 sec'], m: ['5 分钟', '5 min'], d: ['深入', 'Deep'] };
 
 type Mk = (s: string) => string;
 const P = (xs: string[], mk: Mk, c = '') => xs.map((x) => `<p${c ? ` class="${c}"` : ''}>${mk(x)}</p>`).join('');
