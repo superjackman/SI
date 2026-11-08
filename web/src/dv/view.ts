@@ -61,8 +61,8 @@ export async function dv(id: string, A: PxApi) {
   const prevSeen = i > 0 && seenSt().has(dvK(i - 1));
   const openP = prev?.e ? `<p class="st-open">${mk(prev.e)}</p>` : '';
   const layerShift = next && DV_LV[i] !== DV_LV[i + 1] ? `<p class="st-nextlay">${z(`下一层从「${next.n}」接上。`, `The next layer starts with “${next.n}”.`)}</p>` : '';
-  const nxt = next ? `${layerShift}<button type="button" class="l4-b g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`下一站 · ${stepNo(i + 1, l)} · `, `Next · ${stepNo(i + 1, l)} · `)}${esc(next.n)}</button>`
-    : `<button type="button" class="l4-b g-jump" data-fwd="1" data-go="#me">${z('回到我的进度', 'Back to my progress')} ›</button>`;
+  const nxt = next ? `${layerShift}<button type="button" class="l4-b ui-pri g-jump dv-nx" data-fwd="1" data-go="${hD(i + 1)}">${z(`下一站 · ${stepNo(i + 1, l)} · `, `Next · ${stepNo(i + 1, l)} · `)}${esc(next.n)}</button>`
+    : `<button type="button" class="l4-b ui-pri g-jump" data-fwd="1" data-go="#me">${z('回到我的进度', 'Back to my progress')} ›</button>`;
   /* R48 cards both ways: born here (square 第n层 badge = the card's pyramid layer) / used again here (round 第n步 badge = where it was born) */
   const kb = (k: string, badge: string) => `<button type="button" class="l4-b g-info dv-kb" data-k="${k}">${badge}<span class="dv-kn">${esc(C[k]!.n)}</span></button>`;
   const lvB = (k: string) => { const c = cardLv(k); return `<span class="l4-lt" style="--cb:${LBG[c - 1]}">${tx(UI.lv[c - 1]!, l)}</span>`; };
@@ -77,7 +77,7 @@ export async function dv(id: string, A: PxApi) {
   const finished = masteredSt().has(dvK(i));
   const seenNow = seenSt();
   const kicker = `${stepNo(i, l)}${finished ? ` · ${z('过了', 'Done')}` : ''}`;
-  const share = `<p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
+  const share = `<p class="ml-sharep share-row"><span>${z('这一站', 'This stop')}</span><code data-share-url></code><button type="button" class="ui-sec" data-ml-share="1">${z('复制链接', 'Copy link')}</button></p>`;
   const lesson = LY && S.ly ? (MLm ? MLm.wrap(dvK(i), LY.html({ ...S, ly: S.ly }, page, l, mk, exK), l, mk) : LY.html({ ...S, ly: S.ly }, page, l, mk, exK)) : `${sec(1, z('要解决的问题', 'The problem'), mk(S.q))}${sec(2, z('想法', 'The idea'), ul(S.i))}${sec(3, z('式子', 'Formula'), ul(S.f))}${sec(4, z('一个小数例子', 'A small example'), ul(S.x) + exK)}`;
   A.host.innerHTML = `<div class="px dv dv-sp" data-done="${finished ? '1' : '0'}" style="--c:${col(i)}">${outlineHtml(i, l, seenNow, masteredSt())}<article class="st-main st-article">
 <p class="dv-pos">${kicker}</p>

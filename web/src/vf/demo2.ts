@@ -27,7 +27,7 @@ export function extraCtl(k: DemoK, s: DemoS, l: L): string | null {
   const sl = (key: string, lab: string, a: number, b: number, st: number, v: number, out: string) =>
     `<label class="vf-sl"><span>${esc(lab)}</span><input type="range" data-vs="${key}" min="${a}" max="${b}" step="${st}" value="${v}" aria-label="${esc(lab)}"><output>${out}</output></label>`;
   const play = s.play ? 1 : 0;
-  const btn = `<button type="button" class="l4-b sm" data-vs="play" aria-pressed="${play ? 'true' : 'false'}">${play ? z('暂停', 'Pause') : z('播放', 'Play')}</button>`;
+  const btn = `<button type="button" class="l4-b ui-sec" data-vs="play" aria-pressed="${play ? 'true' : 'false'}">${play ? z('暂停', 'Pause') : z('播放', 'Play')}</button>`;
   const pred = s.pred ?? 4, ang = s.ang ?? 40, layer = s.layer ?? 0, rank = s.rank ?? 4, len = s.len ?? 4, hit = s.hit ?? 1;
   if (k === 'mse') return sl('pred', z('预测值', 'Prediction'), 0, 10, 0.5, pred, num(pred, 1)) + btn;
   if (k === 'xor') return sl('ang', z('直线角度', 'Line angle'), 15, 75, 1, ang, num(ang) + '°') + btn;

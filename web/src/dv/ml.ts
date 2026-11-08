@@ -65,9 +65,10 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
       return `<button type="button" class="ml-op${ok ? ' ok' : bad ? ' bad' : ''}" data-ml-o="${i}"${off ? ' aria-disabled="true"' : ''}><b>${ABC[i]}</b><span>${t(o)}</span>${bad || ok ? `<em>${z('你选了', 'your pick')}</em>` : ''}</button>`;
     }).join('');
     const shown = solved ? g.why.map((_, i) => i) : wrongs;
-    const whyBits = shown.map((i) => i === g.a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(g.why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(g.why[i]!)}</p>`).join('');
+    const whyBits = shown.map((i) => i === g.a ? `<p class="ml-live ui-panel"><b>→ ${ABC[i]}</b>${t(g.why[i]!)}</p>` : `<p class="ml-dead ui-panel"><b>✗ ${ABC[i]}</b>${t(g.why[i]!)}</p>`).join('');
     const why = shown.length ? `<div class="ml-why">${whyBits}</div>` : '';
-    $('.ml-i').innerHTML = `<p class="ml-q">${t(g.q)}</p><div class="ml-ops">${ops}</div>${why}`;
+    const sol = `<div class="vf-foot"><button type="button" class="l4-b ui-sec vf-sw" data-ml-sol="1" aria-expanded="false">${z('看解答', 'Show the working')}</button></div><div class="vf-sol ui-panel" hidden><p>${t(g.why[g.a]!)}</p></div>`;
+    $('.ml-i').innerHTML = `<p class="ml-q">${t(g.q)}</p><div class="ml-ops">${ops}</div>${sol}${why}`;
   };
   const rz = () => {
     $('.ml-rz').innerHTML = '';
@@ -106,9 +107,10 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
       return `<button type="button" class="ml-op${ok ? ' ok' : bad ? ' bad' : ''}" data-ml-p="${i}"${off ? ' aria-disabled="true"' : ''}><b>${ABC[i]}</b><span>${t(opt)}</span>${bad || ok ? `<em>${z('你选了', 'your pick')}</em>` : ''}</button>`;
     }).join('');
     const shown = solved ? why.map((_, i) => i) : wrongs;
-    const bits = shown.map((i) => i === a ? `<p class="ml-live"><b>→ ${ABC[i]}</b>${t(why[i]!)}</p>` : `<p class="ml-dead"><b>✗ ${ABC[i]}</b>${t(why[i]!)}</p>`).join('');
+    const bits = shown.map((i) => i === a ? `<p class="ml-live ui-panel"><b>→ ${ABC[i]}</b>${t(why[i]!)}</p>` : `<p class="ml-dead ui-panel"><b>✗ ${ABC[i]}</b>${t(why[i]!)}</p>`).join('');
     const foot = bits ? `<div class="ml-why">${bits}</div>${solved ? `<p class="ml-n">${z('✓ 对了。', '✓ Right.')}</p>` : ''}` : '';
-    return `<div class="ml-pr"><p class="ml-q">${t(q)}</p><div class="ml-ops">${ops}</div>${foot}</div>`;
+    const sol = `<div class="vf-foot"><button type="button" class="l4-b ui-sec vf-sw" data-ml-sol="1" aria-expanded="false">${z('看解答', 'Show the working')}</button></div><div class="vf-sol ui-panel" hidden><p>${t(why[a]!)}</p></div>`;
+    return `<div class="ml-pr"><p class="ml-q">${t(q)}</p><div class="ml-ops">${ops}</div>${sol}${foot}</div>`;
   };
   const prBlock = () => {
     const g0 = M.goals[S.g]!;
@@ -124,22 +126,23 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     let fb = '';
     if (last === 'ok') {
       const allM = S.m.every(Boolean);
-      fb = `<p class="ml-fb ok"><b>✓ ${z('对了！', 'Right!')}</b>${done ? z(`「${tx(g.t, 'zh')}」过了。`, `“${tx(g.t, 'en')}” is done.`) : ''}</p>`
-        + (done ? (S.g < N - 1 ? `<button type="button" class="l4-b g-jump ml-go" data-ml-next="1">${z(`${tx(M.goals[S.g + 1]!.t, 'zh')} ›`, `${tx(M.goals[S.g + 1]!.t, 'en')} ›`)}</button>` : allM ? `<p class="ml-fb ok"><b>★ ${z('这一站过了。', 'This stop is done.')}</b></p>` : `<button type="button" class="l4-b g-jump ml-go" data-ml-todo="1">${z('还有一处没过 ›', 'One part is still open ›')}</button>`)
-          : `<button type="button" class="l4-b g-info ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`);
+      fb = `<p class="ml-fb ok ui-panel"><b>✓ ${z('对了！', 'Right!')}</b>${done ? z(`「${tx(g.t, 'zh')}」过了。`, `“${tx(g.t, 'en')}” is done.`) : ''}</p>`
+        + (done ? (S.g < N - 1 ? `<button type="button" class="l4-b ui-sec ml-go" data-ml-next="1">${z(`${tx(M.goals[S.g + 1]!.t, 'zh')} ›`, `${tx(M.goals[S.g + 1]!.t, 'en')} ›`)}</button>` : allM ? `<p class="ml-fb ok ui-panel"><b>★ ${z('这一站过了。', 'This stop is done.')}</b></p>` : `<button type="button" class="l4-b ui-sec ml-go" data-ml-todo="1">${z('还有一处没过 ›', 'One part is still open ›')}</button>`)
+          : `<button type="button" class="l4-b ui-sec ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`);
       if (allM) host.querySelector('.dv-sp')?.setAttribute('data-done', '1');
     } else if (last === 'bad') {
       const m = lastMis;
       const work = g.rz.filter((x) => !/拖一拖|数字层|看动画|NumPy|先自己算|组数|连对/.test(tx(x, l))).map((x) => `<li>${t(x)}</li>`).join('') || `<li>${m ? tx(m.why, l).replace(/`/g, '') : t(q.w)}</li>`;
-      fb = `<p class="ml-fb bad"><b>✗ ${m ? tx(m.why, l).replace(/`/g, '') : z('还不对。', 'Not yet.')}</b>${m ? '' : z(`对一下：${tx(q.w, 'zh').replace(/`/g, '')}`, `Check: ${tx(q.w, 'en').replace(/`/g, '')}`)}</p>
+      fb = `<p class="ml-fb bad ui-panel"><b>✗ ${m ? tx(m.why, l).replace(/`/g, '') : z('还不对。', 'Not yet.')}</b>${m ? '' : z(`对一下：${tx(q.w, 'zh').replace(/`/g, '')}`, `Check: ${tx(q.w, 'en').replace(/`/g, '')}`)}</p>
 <ol class="ml-work">${work}</ol>
-<p class="ml-n">${z('这道记进错题本，今日复习会再考。换一组数继续。', 'This one is in the wrong book; today’s review will bring it back. New numbers, same question.')}</p><button type="button" class="l4-b g-info ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`;
+<p class="ml-n">${z('这道记进错题本，今日复习会再考。换一组数继续。', 'This one is in the wrong book; today’s review will bring it back. New numbers, same question.')}</p><button type="button" class="l4-b ui-sec ml-go" data-ml-again="1">${z('换一组数 ›', 'New numbers ›')}</button>`;
     }
-    const inp = judged ? '' : `<div class="vf-row"><input class="vf-in ml-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<button type="button" class="l4-b g-act ml-ck" data-ml-ck="1">${z('检查', 'Check')}</button></div>`;
+    const sol = `<div class="vf-sol ui-panel" hidden><p>${t(q.w)}</p><p class="vf-an">${z('答案：', 'Answer: ')}<b>${fmt(q.a, q.d)}${q.u ? esc(tx(q.u, l)) : ''}</b></p></div>`;
+    const inp = judged ? '' : `<div class="vf-row"><input class="vf-in ml-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<span class="vf-acts"><button type="button" class="l4-b ui-sec vf-sw" data-ml-sol="1" aria-expanded="false">${z('看解答', 'Show the working')}</button><button type="button" class="l4-b ui-pri ml-ck" data-ml-ck="1">${z('检查', 'Check')}</button></span></div>`;
     const predHost = root.querySelector<HTMLElement>('.ml-pred');
     const numHost = root.querySelector<HTMLElement>('.ml-num');
-    if (predHost && numHost) { predHost.innerHTML = pr; numHost.innerHTML = `<div class="ml-vq">${head}${inp}${fb}</div>`; }
-    else $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${fb}</div>`;
+    if (predHost && numHost) { predHost.innerHTML = pr; numHost.innerHTML = `<div class="ml-vq">${head}${inp}${judged ? '' : sol}${fb}</div>`; }
+    else $('.ml-v').innerHTML = `${pr}<div class="ml-vq">${head}${inp}${judged ? '' : sol}${fb}</div>`;
     const demoAt = M.goals.findIndex((x) => x.ly.includes(3));
     root.dataset.showDemo = demoAt >= 0 && demoAt === S.g ? '1' : '0';
   };
@@ -155,7 +158,7 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
   const check = () => {
     const inp = root.querySelector<HTMLInputElement>('.ml-in'), q = cur; if (!inp || !q) return;
     const v = parseNum(inp.value); const fbx = root.querySelector('.ml-vq');
-    if (v == null) { fbx?.querySelector('.ml-fb')?.remove(); fbx?.insertAdjacentHTML('beforeend', `<p class="ml-fb bad"><b>${z('先填一个数字。', 'Type a number first.')}</b></p>`); return; }
+    if (v == null) { fbx?.querySelector('.ml-fb')?.remove(); fbx?.insertAdjacentHTML('beforeend', `<p class="ml-fb bad ui-panel"><b>${z('先填一个数字。', 'Type a number first.')}</b></p>`); return; }
     const g = M.goals[S.g]!, right = Math.abs(v - q.a) <= q.tol + 1e-9, base = (S.v[S.g]! % varN(g.vk)) === 0 ? BASE[g.vk] : undefined;
     if (base) { rvAns(base, right); if (right) { const prev = masteredSt(); vfAdd(base); noteMastered(prev); } }
     if (!S.c || S.c.length !== N) S.c = Array.from({ length: N }, (_, i) => S.c?.[i] ?? 0);
@@ -166,8 +169,14 @@ export function wire(host: HTMLElement, k: string, l: L, mk: Mk, prevQ: string, 
     root.dataset.mlLast = last;
   };
   root.addEventListener('click', (e) => {
-    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ml-g],[data-ml-s],[data-ml-o],[data-ml-to],[data-ml-ly],[data-ml-p],[data-ml-ck],[data-ml-again],[data-ml-next],[data-ml-end],[data-ml-todo]'); if (!b || b.classList.contains('ly')) return;
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-ml-g],[data-ml-s],[data-ml-o],[data-ml-to],[data-ml-ly],[data-ml-p],[data-ml-ck],[data-ml-again],[data-ml-next],[data-ml-end],[data-ml-todo],[data-ml-sol]'); if (!b || b.classList.contains('ly')) return;
     const d = b.dataset;
+    if (d.mlSol) {
+      const sol = b.closest('.ml-vq, .ml-pr, .ml-i')?.querySelector<HTMLElement>('.vf-sol');
+      if (!sol) return;
+      const open = sol.hidden; sol.hidden = !open; b.setAttribute('aria-expanded', String(open)); b.textContent = open ? z('收起解答', 'Hide the working') : z('看解答', 'Show the working');
+      return;
+    }
     if (d.mlG) { S.g = Number(d.mlG); last = null; save(); draw(); return; }
     if (d.mlS && b.getAttribute('role') === 'tab') { last = null; go(d.mlS as MlS['s'], false); return; }
     if (d.mlO) {

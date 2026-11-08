@@ -47,12 +47,12 @@ export function att(el: HTMLElement, l: L) {
   const reduce = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } })();
   let f = 0, timer = 0, played = false;
   el.classList.add('ly-anim'); if (reduce) el.classList.add('rm');
-  el.innerHTML = `<div class="ly-stage" aria-live="polite"></div><p class="ly-acap"></p><div class="ly-actl"><button type="button" class="l4-b" data-at="prev" aria-label="${z('上一个镜头', 'Previous shot')}">‹</button>${reduce ? '' : `<button type="button" class="l4-b ly-play" data-at="play"></button>`}<span class="ly-afn"></span><button type="button" class="l4-b" data-at="next" aria-label="${z('下一个镜头', 'Next shot')}">›</button></div>`;
+  el.innerHTML = `<div class="ly-stage" aria-live="polite"></div><p class="ly-acap"></p><div class="ly-actl"><button type="button" class="l4-b ui-step" data-at="prev" aria-label="${z('上一个镜头', 'Previous shot')}">‹</button>${reduce ? '' : `<button type="button" class="l4-b ui-sec ly-play" data-at="play"></button>`}<span class="ly-afn"></span><button type="button" class="l4-b ui-step" data-at="next" aria-label="${z('下一个镜头', 'Next shot')}">›</button></div>`;
   const st = el.querySelector<HTMLElement>('.ly-stage')!, cap = el.querySelector<HTMLElement>('.ly-acap')!, fn = el.querySelector<HTMLElement>('.ly-afn')!, pb = el.querySelector<HTMLElement>('[data-at="play"]');
   const playing = () => timer !== 0;
   const show = () => {
     st.innerHTML = frame(f, l); cap.textContent = tx(CAP[f]!, l); fn.textContent = z(`镜头 ${f + 1} / ${N}`, `Shot ${f + 1} / ${N}`); el.dataset.f = String(f + 1);
-    if (pb) { pb.textContent = playing() ? z('⏸ 暂停', '⏸ Pause') : f === N - 1 ? z('↺ 重播', '↺ Replay') : z('▶ 播放', '▶ Play'); pb.setAttribute('aria-pressed', String(playing())); }
+    if (pb) { pb.textContent = playing() ? z('暂停', 'Pause') : f === N - 1 ? z('重播', 'Replay') : z('播放', 'Play'); pb.setAttribute('aria-pressed', String(playing())); }
   };
   const stop = () => { if (timer) { clearInterval(timer); timer = 0; } };
   const play = () => { stop(); if (f === N - 1) f = 0; timer = window.setInterval(() => { if (!el.isConnected) { stop(); return; } if (f < N - 1) f++; if (f === N - 1) stop(); show(); }, 4200); show(); };

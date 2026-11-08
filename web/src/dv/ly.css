@@ -116,7 +116,7 @@
 .ly-flow { fill: none; stroke: var(--link); stroke-opacity: .75; stroke-linecap: round; }
 .ly-acap { margin: 0; min-height: 3.2em; color: var(--ink); }
 .ly-actl { display: flex; align-items: center; justify-content: flex-end; gap: 8px; width: 100%; }
-.ly-actl .l4-b { min-width: 48px; min-height: 44px; font-size: 15px; }
+.ly-actl .l4-b { min-width: 40px; height: 40px; min-height: 40px; font-size: 16px; }
 .ly-afn { min-width: 6em; text-align: center; font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: no-preference) {
   .ly-anim:not(.rm) .ly-af { animation: ly-in .6s ease-out both; }
@@ -128,7 +128,7 @@
 /* on-demand pictures (dv/motion.ts): last frame is the resting state; motion only while .play */
 .ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; display: flex; flex-direction: column; align-items: stretch; width: 100%; }
 .ly-mcap, .ly-mnote { margin: 6px 0; font-size: 16px; line-height: 1.7; color: var(--ink); }
-.ly-mot .l4-b { align-self: flex-end; min-height: 44px; min-width: 72px; width: auto; }
+.ly-mot .l4-b { align-self: flex-end; width: auto; }
 .mv-fig { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .mv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .mv-chips li, .mv-fig > b { min-height: 40px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 16px; line-height: 1.4; }

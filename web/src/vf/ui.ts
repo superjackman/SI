@@ -62,11 +62,13 @@ function demo(k: DemoK, s: DemoS, l: L) {
 /* ---------- the questions ---------- */
 function qItem(id: string, q: Q, l: L, done: boolean) {
   const z = (a: string, b: string) => tx([a, b], l);
-  const inp = q.o
-    ? `<div class="vf-opts">${order(id, q.o.length).map((i) => `<button type="button" class="vf-op" data-vf="pick:${i}">${mk(tx(q.o![i]!, l), l)}</button>`).join('')}</div>`
-    : `<div class="vf-row"><input class="vf-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<button type="button" class="l4-b g-info vf-ck" data-vf="ck">${z('检查', 'Check')}</button></div>`;
-  return `<li class="vf-q${done ? ' done' : ''}" data-q="${id}"><p class="vf-qq">${mk(tx(q.q, l), l)}${done ? `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>` : ''}</p>${inp}<p class="vf-fb" role="status" aria-live="polite"></p>
-<button type="button" class="l4-b vf-sw" data-vf="sol" aria-expanded="false">${z('看解答', 'Show the working')}</button><div class="vf-sol" hidden><p>${mk(tx(q.w, l), l)}</p><p class="vf-an">${z('答案：', 'Answer: ')}<b>${mk(ansT(q, l), l)}</b></p></div></li>`;
+  const sw = `<button type="button" class="l4-b ui-sec vf-sw" data-vf="sol" aria-expanded="false">${z('看解答', 'Show the working')}</button>`;
+  const sol = `<div class="vf-sol ui-panel" hidden><p>${mk(tx(q.w, l), l)}</p><p class="vf-an">${z('答案：', 'Answer: ')}<b>${mk(ansT(q, l), l)}</b></p></div>`;
+  const fb = `<p class="vf-fb ui-panel" role="status" aria-live="polite"></p>`;
+  const body = q.o
+    ? `<div class="vf-opts">${order(id, q.o.length).map((i) => `<button type="button" class="vf-op" data-vf="pick:${i}">${mk(tx(q.o![i]!, l), l)}</button>`).join('')}</div><div class="vf-foot">${sw}</div>`
+    : `<div class="vf-row"><input class="vf-in" type="text" inputmode="decimal" enterkeyhint="done" autocomplete="off" spellcheck="false" aria-label="${z('你的答案', 'Your answer')}" placeholder="${z('填数字', 'a number')}">${q.u ? `<span class="vf-u">${esc(tx(q.u, l))}</span>` : ''}<span class="vf-acts">${sw}<button type="button" class="l4-b ui-pri vf-ck" data-vf="ck">${z('检查', 'Check')}</button></span></div>`;
+  return `<li class="vf-q${done ? ' done' : ''}" data-q="${id}"><p class="vf-qq">${mk(tx(q.q, l), l)}${done ? `<span class="vf-tk" aria-label="${z('做对过', 'solved')}">✓</span>` : ''}</p>${body}${sol}${fb}</li>`;
 }
 /** fill `slot` for page `page` ('D/n' or a card id); resolves when drawn. `onTick` runs after a newly solved question.
     `part` (R51 layered pages): 'demo' = only the slider demo (layer ③), 'check' = only the questions + 常见误解 (layer ⑤).
@@ -82,8 +84,8 @@ export function mount(slot: HTMLElement, page: string, l: L, onTick?: () => void
   const s: DemoS = { ...DEMO0 };
   const myth = mc.length ? `<div class="vf-myth"${o.ids ? ' hidden' : ''}>${mc.map((m) => `<p><b>${z('误解：', 'Myth: ')}</b>${mk(tx(m.x, l), l)}</p><p><b>${z('其实：', 'Actually: ')}</b>${mk(tx(m.r, l), l)}</p>`).join('')}</div>` : '';
   slot.innerHTML = `<div class="vf" lang="${l === 'en' ? 'en' : 'zh-CN'}">${dk ? demo(dk, s, l) : ''}`
-    + (ids.length ? `<section class="vf-b vf-qz"><ol class="vf-ql">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol>${o.ids ? myth : ''}</section>` : '')
-    + (!o.ids && myth ? `<div class="st-myth">${myth}</div>` : '')
+    + (ids.length ? `<ol class="vf-ql vf-qz">${ids.map((id) => qItem(id, QQ[id]!, l, d0.has(id))).join('')}</ol>` : '')
+    + (myth && (!o.ids || ids.length) ? `<div class="st-myth">${myth}</div>` : '')
     + '</div>';
   const held = slot.querySelector<HTMLElement>('.vf-myth');
   if (held && ids.some((id) => d0.has(id))) held.hidden = false;

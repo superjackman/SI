@@ -30,7 +30,7 @@ export function mount(el: HTMLElement, k: string, l: L) {
   if (!MOTION_AT.includes(k as (typeof MOTION_AT)[number])) return;
   const key = k as (typeof MOTION_AT)[number];
   const z = (a: string, b: string) => tx([a, b], l);
-  el.innerHTML = `${fig(key, l)}<p class="ly-mcap">${esc(tx(CAP[key], l))}</p><p class="ly-mnote" data-mot-note hidden></p><button type="button" class="l4-b" data-mot-go="replay">${esc(z('重播', 'Replay'))}</button>`;
+  el.innerHTML = `${fig(key, l)}<p class="ly-mcap">${esc(tx(CAP[key], l))}</p><p class="ly-mnote" data-mot-note hidden></p><button type="button" class="l4-b ui-sec" data-mot-go="replay">${esc(z('重播', 'Replay'))}</button>`;
   const note = el.querySelector<HTMLElement>('[data-mot-note]')!;
   const still = z('画面保持不动。', 'The picture stays still.');
   let played = false, timer = 0;
