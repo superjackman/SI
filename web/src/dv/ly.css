@@ -29,13 +29,15 @@
 .ly .formula { display: inline; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit; box-decoration-break: unset; }
 .ly .fx-line { display: block; margin: 0.4em 0 0.8em; padding: 0.35em 0; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: none; color: var(--ink); text-align: center; font-size: 22px; line-height: 1.5; letter-spacing: 0.01em; }
 .ly .fx-lead, .ly .fx-sym p, .ly .st-why p { margin: 0 0 0.85em; }
-.ly .st-fig { margin: 0 0 16px; padding: 8px 12px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); width: 100%; }
-.ly .st-fig.ly-tight { width: 100%; max-width: 100%; margin: 0 0 16px; padding: 4px 4px 8px; }
-.ly .st-fig svg, .ly .vf-plot { width: 100%; height: auto; display: block; }
-.ly .st-fig svg.ly-life, .ly .st-fig svg.ly-pen { width: 100%; max-width: none; height: auto; margin: 0; display: block; }
-.ly .st-fig.ly-tight svg.ly-life { width: 100%; max-width: none; height: auto; }
-.ly .st-fig.ly-tight .ly-cap { max-width: none; margin: 6px 4px 0; }
-.ly .st-fig svg.ly-asvg { width: 100%; max-width: none; height: auto; margin: 0; }
+.ly .st-fig { margin: 0 0 16px; padding: 8px 12px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); width: 100%; max-width: 100%; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; }
+.ly .st-fig.ly-tight { width: 100%; max-width: 100%; margin: 0 0 16px; padding: 6px 8px 8px; }
+.ly .st-fig svg, .ly .vf-plot, .ly .ly-stage svg { width: min(100%, 440px); max-width: min(100%, 440px); height: auto; max-height: 260px; margin-inline: auto; display: block; }
+.ly .st-fig svg.ly-life, .ly .st-fig svg.ly-pen, .ly .st-fig svg.ly-asvg,
+.ly .st-fig.ly-tight svg.ly-life { width: min(100%, 440px); max-width: min(100%, 440px); height: auto; max-height: 260px; margin-inline: auto; display: block; }
+.st-article .st-fig svg.vf-plot, .st-article .vf-plot { width: min(100%, 360px); max-width: min(100%, 360px); max-height: 140px; }
+.st-article .st-fig:has(.ly-mot) svg.ly-life,
+.st-article .st-fig:has(.ly-anim) svg { max-height: 180px; width: min(100%, 340px); max-width: min(100%, 340px); }
+.ly .st-fig.ly-tight .ly-cap { max-width: 100%; margin: 6px 0 0; align-self: stretch; }
 .ly-mot { margin: 10px 0 0; padding: 0; border: 0; background: none; }
 .vf-slot:empty, [data-vf-part="myth"]:empty, .st-q:empty { display: none; }
 .ly .st-sec { margin: 32px 0 12px; font-size: 22px; line-height: 1.35; font-weight: 600; color: var(--ink); }
@@ -66,10 +68,15 @@
 .ly-go { min-height: 48px; font-size: 15px; font-weight: 700; }
 .ly-end { margin: 0; color: var(--good); font-size: 14px; }
 .ly-leg { text-wrap: pretty; } .ly-leg { list-style: none; padding: 0 !important; font-size: 16px; color: var(--ink); }
+.st-article .ly-leg { display: flex; flex-wrap: wrap; gap: 0 14px; margin: 2px 0 0; font-size: 14px; line-height: 1.35; }
+.st-article .ly-sm { gap: 2px; }
 .ly-dot { display: inline-block; width: 10px; height: 10px; margin-right: 6px; border-radius: 50%; vertical-align: 0; background: currentColor; }
 .ly-dot.ly-q { background: var(--navy); } .ly-dot.ly-k { background: var(--good-bg); } .ly-dot.ly-v { background: var(--link); } .ly-dot.ly-r { background: var(--bad-bg); } .ly-dot.ly-y { background: var(--navy); border-radius: 2px; }
 /* ② softmax rows */
-.ly-sm { display: flex; flex-direction: column; gap: 4px; }
+.ly-sm { display: flex; flex-direction: column; gap: 2px; }
+.st-article .ly-smh, .st-article .ly-smr { font-size: 14px; line-height: 1.25; }
+.st-article .ly-smb { height: 8px; }
+.st-article .st-fig svg.ly-pen { width: min(100%, 330px); max-height: 110px; }
 .ly-smh, .ly-smr { display: grid; grid-template-columns: 2.6em 2.6em 1.2em 1fr 3.6em; align-items: center; gap: 6px; }
 .ly-smh { font-size: 15px; } .ly-smh span:last-child { grid-column: 4 / 6; }
 .ly-sml { font-weight: 700; } .ly-sms, .ly-smp { text-align: right; font-variant-numeric: tabular-nums; }
@@ -80,6 +87,10 @@
 .ly-bowl { max-width: 360px; }
 /* ② the block stack */
 .ly-blk { display: flex; flex-direction: column; gap: 6px; font-size: 16px; }
+.st-article .ly-blk { gap: 3px; font-size: 14px; }
+.st-article .ly-bx, .st-article .ly-br { padding: 3px 8px; }
+.st-article .ly-bs { padding: 12px 8px 4px; gap: 2px; }
+.st-article .ly-br small { display: inline; margin-left: 6px; font-size: 13px; }
 .ly-bx { padding: 6px 10px; border-radius: 8px; background: var(--card); color: var(--ink); text-align: center; }
 .ly-bs { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 26px 10px 8px; border: 2px dashed var(--line); border-radius: 12px; }
 .ly-bn { position: absolute; top: 4px; right: 10px; font-weight: 800; color: var(--link); font-size: 15px; }
@@ -104,7 +115,7 @@
 .ly-beam { fill: none; stroke: var(--highlight); stroke-width: 2; stroke-dasharray: 5 4; }
 .ly-flow { fill: none; stroke: var(--link); stroke-opacity: .75; stroke-linecap: round; }
 .ly-acap { margin: 0; min-height: 3.2em; color: var(--ink); }
-.ly-actl { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.ly-actl { display: flex; align-items: center; justify-content: flex-end; gap: 8px; width: 100%; }
 .ly-actl .l4-b { min-width: 48px; min-height: 44px; font-size: 15px; }
 .ly-afn { min-width: 6em; text-align: center; font-size: 13px; color: var(--ink); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: no-preference) {
@@ -115,9 +126,9 @@
 @keyframes ly-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* on-demand pictures (dv/motion.ts): last frame is the resting state; motion only while .play */
-.ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; }
+.ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; display: flex; flex-direction: column; align-items: stretch; width: 100%; }
 .ly-mcap, .ly-mnote { margin: 6px 0; font-size: 16px; line-height: 1.7; color: var(--ink); }
-.ly-mot .l4-b { min-height: 44px; min-width: 72px; }
+.ly-mot .l4-b { align-self: flex-end; min-height: 44px; min-width: 72px; width: auto; }
 .mv-fig { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .mv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .mv-chips li, .mv-fig > b { min-height: 40px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 16px; line-height: 1.4; }
