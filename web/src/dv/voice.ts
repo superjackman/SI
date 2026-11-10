@@ -55,6 +55,33 @@ export const CLOSE: Record<string, B> = {
   '16': ['重读时若把整条链当成必须一次背完，进度就又变回翻过多少页。一次只核对一个想法，并且连着做对，才知道这一站是站住了还是只是眼熟。下面用完全不会时的损失，把犹豫的程度读回来。', 'Rereading the whole chain as something that must be memorised in one sitting turns progress back into how many pages were turned. Checking one idea at a time, and getting it right twice, tells whether the station is standing or only looks familiar. Use the loss of knowing nothing, and read the hesitation back out of it.'],
 };
 
+/** one closing line: what this station settled, and what the next one has to pick up */
+export const BRIDGE: Record<string, B> = {
+  '0': ['这一站先说清：用看见的例子把旋钮拧对，没见过的数也能算。下一站要说的是，下一个字有多大可能。', 'This station settles that examples can set the knobs, so an unseen number still gets an answer. Next is how possible the next word is.'],
+  P: ['可能性说完了：每个候选从 0 到 1，全部加起来必须是 1。下一站用这个数来量这次猜得有多离谱。', 'Chances are in place: each candidate is from 0 to 1, and they must add to 1. Next uses that number to say how far off a guess was.'],
+  '1': ['罚分把“猜得有多离谱”收成一个能比较的数。下一站要在看不见碗底的时候，顺着脚下的坡把旋钮拧下去。', 'The penalty turns “how far off” into one number you can compare. Next turns the knobs downhill when the bottom of the bowl is out of sight.'],
+  '2': ['顺着坡一小步一小步走，两颗旋钮可以在同一步里一起改。下一站要对付一条直线怎么切都切不开的那些点。', 'Walking the slope a little at a time, both knobs can change in the same step. Next is the points that no straight cut can separate.'],
+  '3': ['中间的神经元各自弯一小段，加起来才能贴住先升后降的点，也能把对角上的点分开。下一站要把“谁让罚分变大”从最后一层传回最前面。', 'The neurons in the middle each bend a little, and adding those bends is what fits a rise and a fall and separates the opposite corners. Next sends “who made the penalty worse” from the last layer back to the first.'],
+  '4': ['坡可以一层层乘回去，前面的旋钮才收得到信号。下一站要面对很多条数据，不能每一步都把它们全部看完。', 'The slope can be multiplied back layer by layer, so an earlier knob still hears a signal. Next faces so many rows that one step cannot look at all of them.'],
+  '5': ['一小袋一小袋地走，再留住方向没变的那一段坡，走起来才又快又稳。下一站要把一个词变成一排能比较方向的数。', 'Walking one small bag at a time, and keeping the part of the slope that did not change sign, is what makes the walk both fast and steady. Next turns a word into a row of numbers whose directions can be compared.'],
+  '6': ['词不再是互不相干的编号，方向更齐的两个词，乘出来的数更大。下一站要让后面的词还能回头看见开头。', 'A word is no longer an unrelated label. Two words whose directions line up multiply into a larger number. Next has to let a later word still see the opening.'],
+  '7': ['纸条越传越远越淡，所以每个词都要能回头看整句。下一站就看“它”到底在看前面的哪个词。', 'A note fades the further it is passed, so each word has to be able to look back over the whole sentence. Next asks which earlier word “it” is actually looking at.'],
+  '8a': ['“它”按对得上的程度去取前面那些词的内容，而不是按离得近不近。下一站把这样的一层层楼叠成能接着写的房子。', '“It” takes content from earlier words by how well they match, not by how close they sit. Next stacks floors like that into a house that can continue a sentence.'],
+  '8b': ['一层楼里，词先对一下名牌，再加回原来的说法，再各自消化。下一站用大段文字自己当答案，把这栋房子练起来。', 'On one floor the words match name tags, add the original wording back, then each digests alone. Next trains the house on long text whose own next word is the answer.'],
+  '9': ['每一步都在猜下一个字，文字自己就是答案。下一站要分清：练完以后它是真的会了，还是只是很有把握地胡编。', 'Every step guesses the next word, and the text itself is the answer. Next has to tell a real skill from a confident fabrication.'],
+  E: ['犹豫变少只说明它更敢下判断，并不等于答对了。下一站让人指出哪一份回答更好，再按这个信号去拧旋钮。', 'Less hesitation only means it is more willing to judge. It does not mean the answer was right. Next lets a person say which reply is better, and the knobs move by that signal.'],
+  '10': ['人指出哪份更好之后，旋钮才按这个偏好挪。下一站要在不把整块都解开的情况下，给一个新任务留一条细路。', 'Once a person says which reply is better, the knobs move toward that preference. Next keeps the big block frozen and leaves a thin side path for a new task.'],
+  '11': ['大块冻住，只拧旁边那条细路，再加回原来的结果。下一站要让已经算过的内容不用每次从头再算。', 'The big block stays frozen. Only the thin side path turns, and its result is added back. Next keeps work that was already done from being computed again every time.'],
+  '12': ['问过的内容记在本子上，下一步就不用重算。下一站要在开口之前，先从资料里找出相关的一段。', 'What was already asked stays in the notebook, so the next step does not recompute it. Next finds a relevant passage in the notes before the reply begins.'],
+  '13': ['先按方向找出相关的段落，再让它根据这段来答。下一站让它在回答之外，还能去用一个外面的工具。', 'First find a relevant passage by direction, then answer from that passage. Next lets it use an outside tool as well as write a reply.'],
+  '14': ['它可以用一个工具，但会改掉东西的那一步，要等人点头。下一站要分清哪些动作必须停下来问，哪些不用。', 'It may use a tool, but a step that changes something waits for a person to nod. Next sorts which actions must stop and ask, and which need not.'],
+  S: ['只读的查询不必每次都打断人，会改数据或花钱的动作必须停下来问。下一站把一张图也切成小块，走和文字同一条路。', 'A read-only lookup need not interrupt a person. An action that changes data or spends money must stop and ask. Next cuts a picture into small patches and walks them down the same path as the words.'],
+  '15a': ['图先切成小块，每块当成一个词，再和文字一起走。下一站要让它在很长的一段里少走神，并且多写几份再挑稳的那份。', 'A picture is cut into patches, each patch is treated as a word, and then it walks with the text. Next asks it to drift less in a long passage, and to write several tries before keeping the steady one.'],
+  '15b': ['窗口变长不等于中间也被用到；多写几份再留下一致的那份，答得更稳。下一站把检索、工具和这些窗口排成一个能交出去的顺序。', 'A longer window does not mean the middle was used. Writing several tries and keeping the one they agree on is steadier. Next puts retrieval, tools and these windows into an order you can hand to someone.'],
+  A: ['一个能交出去的用法，是把续写、检索和工具排好顺序，而不是再加一排新旋钮。下一站回头把整条链核对一遍。', 'A use you can hand over is continuation, retrieval and tools put in order, not another row of new knobs. Next checks the whole chain once more.'],
+  '16': ['从一条直线走到能看图、能用工具，换过的是任务和数据；罚分往下走、旋钮跟着坡动，这一套没有换。到这里，这条链就合上了。', 'From a straight line to seeing a picture and using a tool, the task and the data changed. The penalty still walks downward and the knobs still follow the slope. That part did not change. Here the chain closes.'],
+};
+
 /** two paragraphs, each station in its own order and wording */
 export const WHY: Record<string, readonly [B, B]> = {
   '0': [

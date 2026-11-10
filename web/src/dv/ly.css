@@ -172,6 +172,7 @@ svg [data-i] { cursor: grab; }
 .lab-fb.bad { background: var(--bad-bg); border-left-color: var(--bad); }
 .lab-fb:empty { display: none; }
 .lab-say { margin: 0 0 8px; }
+.ly-bridge { margin: 16px 0 0; color: var(--ink); }
 .lab-in { flex: 1 1 auto; min-width: 0; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); padding: 0 12px; font: inherit; }
 .lab-ops { display: flex; flex-direction: column; gap: 8px; }
 .lab-op { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); text-align: left; font: inherit; font-size: 16px; }

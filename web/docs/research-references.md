@@ -29,6 +29,17 @@
 | [vicapow/explained-visually](https://github.com/vicapow/explained-visually)（站在 setosa.io/ev） | 882 星，61 fork，2023-08-22 | MIT | 一个概念一个可拖的图，拖的时候公式上的数一起变 | 温度旋钮和抽样句子绑在同一个实验里 |
 | [Better Explained](https://betterexplained.com/) | 无对应 GitHub 星标。站点自己写“每年触达数百万”，这是它的原话，不是我们测到的计数 | 只学做法 | 先给“啊哈”的画面，再补细节（作者称为 ADEPT） | 开篇禁止先出现只有程序员才懂的词 |
 
+## 2026-11-10 又打开核对
+
+下面只写这次实际打开页面后读到的句子，不补星标，也不补播放量。
+
+- [3Blue1Brown《But what is a Neural Network?》](https://www.3blue1brown.com/lessons/neural-networks/)（2017-10-05，Grant Sanderson；文字改编 Josh Pullen）：开篇是认手写数字。神经元先被说成“装着一个 0 到 1 的数”。一张 28×28 的图有 784 个像素，输入层就有 784 个这样的格子，输出层是 10 个，每个对应一个数字。下一课才讲怎么用带标签的例子训练。我们已有的顺序与此相同：先看见格子里的数，再谈坡。
+- [Jay Alammar《The Illustrated Transformer》](https://jalammar.github.io/illustrated-transformer/)：先把模型看成一只黑箱，进去一句一种语言，出来是另一句。论文里的编码器叠了六层，文中写明“六并没有魔力”。每一层先让词互相看（self-attention），再对每个位置单独做同一个前馈。解码器在这两层之间多一层，用来看输入那一句。文中 2025 年的更新指向 LLM-book.com 第 3 章。我们第 11 站用的就是“先对名牌，再各自消化”，不把六层当成必须。
+- [TensorFlow Playground](https://playground.tensorflow.org/)：页面标题是 “Tinker With a Neural Network Right Here in Your Browser”。Daniel Smilkov 与 Shan Carter 所作，按 Apache 许可证开源。橙色表示负、蓝色表示正，线的粗细是连接的权重。致谢里点名 Andrej Karpathy 的 convnet.js 和 Chris Olah 的文章。我们的旋钮网络同样把线的粗细留给数值，颜色留给这一颗神经元。
+- [Seeing Theory](https://seeing-theory.brown.edu/)：Brown 的视觉概率课，章节是 Basic Probability、Compound Probability、Probability Distributions、Frequentist Inference、Bayesian Inference、Regression Analysis。署名 Daniel Kunin、Jingru Guo、Tyler Dae Devlin、Daniel Xiang。概率站仍先给能拨的图，不先下定义。
+- [Brilliant 课程目录](https://brilliant.org/courses/)：公开目录按年级段分（4–7 年级到 11–12 年级），从 pre-algebra、代数、概率与数据分析往上排，不是一上来就给模型名字。我们的课文同样先给能动手的一步，再给简写。
+- 李宏毅《生成式 AI 导论 2024》课表页 [speech.ee.ntu.edu.tw/~hylee/genai/2024-spring.php](https://speech.ee.ntu.edu.tw/~hylee/genai/2024-spring.php)：检索结果里的课表把“提示与代理人”“Transformer”“评估与道德”“生成策略”“影像生成”分成不同周。这次没有从该校课程系统读到学分和选课人数，所以不写这些数。我们只借用“一讲一件事”：评估、安全和多模态各自成站。
+
 ## 不怎么搬
 
 三维大模型全景（Bycroft）好看，但一上来就是整网，高度和加载都压过课文。我们只取“跟着这一次计算走”。nanoGPT 的训练循环是对的，但页内模型必须小到笔记本 CPU 一两分钟能看出损失下降，所以宽度、层数、语料都砍到能背下来的几句。
