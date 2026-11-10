@@ -1,104 +1,159 @@
-/* The loss of the two-knob line, drawn as a lit bowl. The ball follows the knobs on this station. */
+/* A round bowl. The real knobs still move the ball; the picture is a circular cup so the shape is obvious. */
 import { tx, type L } from '../l4/txt';
 import { paint } from '../theme/paint';
 import * as THREE from 'three';
+import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
 
-const LINE: [number, number][] = [[1, 3], [2, 5], [3, 7]];
-const lossAt = (w: number, b: number) => LINE.reduce((s, [x, y]) => s + (w * x + b - y) ** 2, 0) / LINE.length;
-const W0 = -1, W1 = 4, B0 = -1, B1 = 4, SPAN = 4.4, N = 40;
+const WSTAR = 2, BSTAR = 1, RPARAM = 2.55, R = 1.7, H = 1.55;
+
+function cup(w: number, b: number) {
+  let dw = w - WSTAR, db = b - BSTAR;
+  const rad = Math.hypot(dw, db);
+  const clipped = Math.min(rad, RPARAM);
+  const s = rad > 1e-6 ? clipped / rad : 0;
+  dw *= s; db *= s;
+  const t = clipped / RPARAM;
+  return new THREE.Vector3((dw / RPARAM) * R, t * t * H, (db / RPARAM) * R);
+}
 
 export function mount(host: HTMLElement, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
   const gl = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
-  const say = z('罚分是一只碗。旋钮停在哪，球就在碗的哪一处。自动拧的时候，球顺着碗壁往下滚，留下一道痕迹。圈住的那一点是最低。拖动可以换个角度看。', 'The penalty is a bowl. Where the knobs sit, the ball sits. When they auto-turn, the ball rolls down and leaves a trail. The ring marks the lowest point. Drag to look from another side.');
+  const say = z('罚分是一只圆碗。球从碗边滚向圈住的最低点，路上留下一串点。拖动可以换个角度看。', 'The penalty is a round bowl. The ball rolls from the rim to the ring at the bottom and leaves a trail of dots. Drag to look from another side.');
   if (!gl) { host.innerHTML = `<div class="lab-say">${say}</div>`; return; }
-  host.innerHTML = `<div class="lab-say">${say}</div><div class="bowl-stage"><canvas class="lab-gl"></canvas></div><div class="bowl-axes"><span>${z('旋钮 w', 'knob w')}</span><span>${z('旋钮 b', 'knob b')}</span><span>${z('罚分', 'penalty')}</span><span>${z('圈 = 最低', 'ring = lowest')}</span></div>`;
+  host.innerHTML = `<div class="lab-say">${say}</div><div class="bowl-stage"><canvas class="lab-gl"></canvas></div>`;
+  const stage = host.querySelector('.bowl-stage')!;
   const canvas = host.querySelector('canvas')!;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+  const labels = new CSS2DRenderer();
+  labels.domElement.className = 'bowl-overlay';
+  stage.appendChild(labels.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(paint('card'));
-  scene.add(new THREE.AmbientLight(paint('white'), 0.72));
-  const sun = new THREE.DirectionalLight(paint('white'), 1.25);
-  sun.position.set(3.2, 7, 2.4);
+  scene.add(new THREE.AmbientLight(paint('white'), 0.7));
+  const sun = new THREE.DirectionalLight(paint('white'), 1.15);
+  sun.position.set(2.4, 6.5, 3.2);
   scene.add(sun);
-  const fill = new THREE.DirectionalLight(paint('mark-bg'), 0.55);
-  fill.position.set(-4, 3.5, -2);
+  const fill = new THREE.DirectionalLight(paint('mark-bg'), 0.45);
+  fill.position.set(-3.2, 2.4, -2);
   scene.add(fill);
-  const geo = new THREE.PlaneGeometry(SPAN, SPAN, N - 1, N - 1);
-  const pos = geo.attributes.position as THREE.BufferAttribute;
-  const Ls: number[] = [];
-  let maxL = 1;
-  for (let i = 0; i < pos.count; i++) {
-    const w = W0 + ((pos.getX(i) + SPAN / 2) / SPAN) * (W1 - W0);
-    const b = B0 + ((pos.getY(i) + SPAN / 2) / SPAN) * (B1 - B0);
-    const L = lossAt(w, b);
-    Ls.push(L);
-    if (L > maxL) maxL = L;
-  }
+  const NR = 22, NA = 56;
+  const positions: number[] = [0, 0, 0];
+  const colors: number[] = [];
   const floor = new THREE.Color(paint('good-bg'));
   const wall = new THREE.Color(paint('mark-bg'));
-  const colors = new Float32Array(pos.count * 3);
-  const height = (L: number) => (L / maxL) ** 0.62 * 2.7;
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), py = pos.getY(i), L = Ls[i] ?? 0;
-    pos.setXYZ(i, x, height(L), -py);
-    const c = floor.clone().lerp(wall, Math.min(1, (L / maxL) ** 0.55));
-    colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  geo.computeVertexNormals();
-  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55, metalness: 0, side: THREE.DoubleSide })));
-  scene.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: new THREE.Color(paint('link')), wireframe: true, transparent: true, opacity: 0.28 })));
-  const toWorld = (w: number, b: number) => {
-    const x = ((w - W0) / (W1 - W0) - 0.5) * SPAN;
-    const z = -((b - B0) / (B1 - B0) - 0.5) * SPAN;
-    return new THREE.Vector3(x, height(lossAt(w, b)), z);
+  const pushColor = (t: number) => {
+    const c = floor.clone().lerp(wall, t * 0.85);
+    colors.push(c.r, c.g, c.b);
   };
+  pushColor(0);
+  for (let ir = 1; ir <= NR; ir++) {
+    const t = ir / NR;
+    for (let ia = 0; ia < NA; ia++) {
+      const th = (ia / NA) * Math.PI * 2;
+      positions.push(Math.cos(th) * t * R, t * t * H, Math.sin(th) * t * R);
+      pushColor(t);
+    }
+  }
+  const indices: number[] = [];
+  for (let ia = 0; ia < NA; ia++) indices.push(0, 1 + (ia + 1) % NA, 1 + ia);
+  for (let ir = 0; ir < NR - 1; ir++) {
+    for (let ia = 0; ia < NA; ia++) {
+      const a = 1 + ir * NA + ia, b = 1 + ir * NA + (ia + 1) % NA;
+      const c = a + NA, d = b + NA;
+      indices.push(a, b, d, a, d, c);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  geo.computeVertexNormals();
+  scene.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0, side: THREE.DoubleSide })));
+  const link = new THREE.Color(paint('link'));
+  for (const t of [0.33, 0.55, 0.77, 1]) {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= NA; i++) {
+      const th = (i / NA) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(th) * t * R, t * t * H + 0.012, Math.sin(th) * t * R));
+    }
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: link, transparent: true, opacity: t === 1 ? 0.9 : 0.45 })));
+  }
+  const seam = (along: 'w' | 'b') => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 40; i++) {
+      const u = -1 + (i / 40) * 2;
+      const x = along === 'w' ? u * R : 0;
+      const zz = along === 'b' ? u * R : 0;
+      pts.push(new THREE.Vector3(x, u * u * H + 0.02, zz));
+    }
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: new THREE.Color(paint('ink')) })));
+  };
+  seam('w'); seam('b');
+  const rimX = R * 0.92, rimZ = -R * 0.28;
+  scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(rimX, 0.02, rimZ), new THREE.Vector3(rimX, H, rimZ)]), new THREE.LineBasicMaterial({ color: new THREE.Color(paint('ink')) })));
+  const tag = (text: string, x: number, y: number, zz: number, extra = '') => {
+    const el = document.createElement('span');
+    el.className = `bowl-tag ${extra}`;
+    el.textContent = text;
+    const o = new CSS2DObject(el);
+    o.position.set(x, y, zz);
+    scene.add(o);
+  };
+  tag(z('旋钮 w', 'knob w'), R * 0.78, 0.16, 0.02);
+  tag(z('旋钮 b', 'knob b'), 0.02, 0.16, R * 0.78);
+  tag(z('罚分', 'penalty'), rimX * 0.92, H * 0.62, rimZ, 'up');
   const ball = new THREE.Mesh(
-    new THREE.SphereGeometry(0.34, 28, 20),
-    new THREE.MeshStandardMaterial({ color: new THREE.Color(paint('highlight')), emissive: new THREE.Color(paint('highlight')), emissiveIntensity: 0.65, roughness: 0.28 }),
+    new THREE.SphereGeometry(0.2, 28, 20),
+    new THREE.MeshStandardMaterial({ color: new THREE.Color(paint('highlight')), emissive: new THREE.Color(paint('highlight')), emissiveIntensity: 0.7, roughness: 0.25 }),
   );
   scene.add(ball);
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.55, 0.04, 10, 32),
-    new THREE.MeshBasicMaterial({ color: new THREE.Color(paint('good')) }),
-  );
-  const low = toWorld(2, 1);
-  ring.position.set(low.x, 0.05, low.z);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.05, 10, 36), new THREE.MeshBasicMaterial({ color: new THREE.Color(paint('good')) }));
   ring.rotation.x = Math.PI / 2;
+  ring.position.set(0, (0.46 / R) ** 2 * H + 0.06, 0);
   scene.add(ring);
-  const trail: THREE.Mesh[] = [];
+  const trail: THREE.Object3D[] = [];
+  let lastPoint: THREE.Vector3 | null = null;
   const dotGeo = new THREE.SphereGeometry(0.07, 10, 8);
   const dotMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(paint('highlight')) });
   const place = (w: number, b: number) => {
-    const p = toWorld(w, b);
-    ball.position.set(p.x, p.y + 0.34, p.z);
-    const last = trail[trail.length - 1]?.position;
-    if (last && last.distanceTo(p) < 0.08) return;
+    const p = cup(w, b);
+    ball.position.set(p.x, p.y + 0.2, p.z);
+    if (lastPoint && lastPoint.distanceTo(p) < 0.03) return;
+    if (lastPoint) {
+      const dir = new THREE.Vector3().subVectors(p, lastPoint);
+      const rod = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, Math.max(0.02, dir.length()), 6), dotMat);
+      rod.position.copy(lastPoint).add(p).multiplyScalar(0.5);
+      rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+      scene.add(rod);
+      trail.push(rod);
+    }
     const dot = new THREE.Mesh(dotGeo, dotMat);
     dot.position.copy(p);
     scene.add(dot);
     trail.push(dot);
-    if (trail.length > 22) scene.remove(trail.shift()!);
+    lastPoint = p.clone();
+    while (trail.length > 48) scene.remove(trail.shift()!);
   };
   place(0, 0);
-  const center = new THREE.Vector3(0, 0.7, 0);
-  const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 40);
-  let yaw = 0.85, pitch = 0.72, drag = false, lx = 0, ly = 0;
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 40);
+  const lookAt = new THREE.Vector3(0, 0.42, 0);
+  let yaw = 0.78, pitch = 0.58, drag = false, lx = 0, ly = 0;
   const look = () => {
-    const r = 7.4;
-    camera.position.set(center.x + r * Math.cos(pitch) * Math.sin(yaw), center.y + r * Math.sin(pitch), center.z + r * Math.cos(pitch) * Math.cos(yaw));
-    camera.lookAt(center);
+    const dist = 6.15;
+    camera.position.set(lookAt.x + dist * Math.cos(pitch) * Math.sin(yaw), lookAt.y + dist * Math.sin(pitch), lookAt.z + dist * Math.cos(pitch) * Math.cos(yaw));
+    camera.lookAt(lookAt);
   };
   look();
   const resize = () => {
-    const w = canvas.clientWidth || 440, h = canvas.clientHeight || 220;
+    const w = stage.clientWidth || 440, h = stage.clientHeight || 270;
     renderer.setSize(w, h, false);
+    labels.setSize(w, h);
     camera.aspect = w / Math.max(1, h);
     camera.updateProjectionMatrix();
   };
-  const draw = () => { resize(); renderer.render(scene, camera); };
+  const draw = () => { resize(); renderer.render(scene, camera); labels.render(scene, camera); };
   draw();
   const onMove = (ev: Event) => {
     const d = (ev as CustomEvent<{ v: number[] }>).detail;
@@ -112,9 +167,9 @@ export function mount(host: HTMLElement, l: L) {
   canvas.addEventListener('pointermove', (e) => {
     if (!drag) return;
     yaw += (e.clientX - lx) * 0.008;
-    pitch = Math.min(1.15, Math.max(0.28, pitch + (e.clientY - ly) * 0.006));
+    pitch = Math.min(1.05, Math.max(0.34, pitch + (e.clientY - ly) * 0.005));
     lx = e.clientX; ly = e.clientY;
     look(); draw();
   });
-  new ResizeObserver(() => draw()).observe(canvas);
+  new ResizeObserver(() => draw()).observe(stage);
 }

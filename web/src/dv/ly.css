@@ -131,7 +131,7 @@
 .ly-mot .l4-b { align-self: flex-end; width: auto; }
 [data-lab] { width: 100%; max-width: 100%; margin: 16px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
 [data-lab] svg { width: min(100%, 440px); max-width: 100%; max-height: 220px; height: auto; display: block; margin-inline: auto; }
-[data-lab="net"] svg.net-knobs { max-height: 360px; }
+[data-lab="net"] svg.net-knobs { max-height: 400px; }
 [data-lab="gpt"] svg.gpt-loss { max-height: 120px; }
 .loss-box { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 4px; }
 .loss-y, .loss-x, .lab-cap, .lab-pair b, .lab-words span, .heat button, .heat span { color: var(--ink); font-size: 16px; line-height: 1.4; }
@@ -145,9 +145,11 @@
 .heat i { display: block; height: 1.3em; border-radius: 3px; background: var(--navy); }
 .heat span { text-align: center; }
 .lab-gl { width: min(100%, 440px); height: 280px; display: block; margin: 8px auto; background: var(--card); border-radius: 8px; }
-.bowl-stage { width: min(100%, 440px); margin: 8px auto; }
-.bowl-stage .lab-gl { height: 220px; margin: 0 auto; }
-.bowl-axes { display: flex; justify-content: flex-end; gap: 14px; margin-top: 4px; color: var(--ink); font-size: 16px; }
+.bowl-stage { position: relative; width: min(100%, 440px); height: 270px; margin: 8px auto; overflow: hidden; }
+.bowl-stage .lab-gl { width: 100%; height: 100%; margin: 0; }
+.bowl-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.bowl-tag { color: var(--ink); background: var(--card); font-size: 16px; line-height: 1.2; padding: 0 4px; border-radius: 4px; white-space: nowrap; }
+.bowl-tag.up { writing-mode: vertical-rl; }
 .cloud-stage { position: relative; width: min(100%, 440px); height: 250px; margin: 8px auto; overflow: hidden; }
 .cloud-stage .lab-gl { width: 100%; height: 100%; margin: 0; }
 .cloud-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
@@ -158,7 +160,7 @@
 .lab-words span[data-g="animal"].on { border-color: var(--good); }
 .lab-words span[data-g="royal"].on { border-color: var(--highlight); }
 .lab-words span[data-g="travel"].on { border-color: var(--link); }
-[data-lab="net"] svg.net-knobs { max-height: 320px; }
+[data-lab="net"] svg.net-knobs { max-height: 400px; }
 svg [data-i] { cursor: grab; }
 .lab-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .lab-words span { border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; background: var(--card); }
