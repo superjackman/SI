@@ -54,7 +54,7 @@ export function mount(host: HTMLElement, mode: string, l: L) {
     : m === 'bend'
       ? z('这些点先升后降。直线拧不平，中间要有一颗“弯一下”的旋钮。', 'These points rise, then fall. A straight line cannot sit on them. The middle knob is the bend.')
       : z('样本是 (1, 3)、(2, 5)、(3, 7)。拧 w 和 b，让直线靠近这些点。损失是差的平方的平均。', 'The samples are (1, 3), (2, 5), (3, 7). Turn w and b so the line sits near the points. Loss is the average squared gap.');
-  host.innerHTML = `<p class="lab-say">${say}</p><svg class="knob-svg" viewBox="0 0 440 200" role="img"></svg><div class="lab-row"><span class="lab-read" data-knob-read></span><button type="button" class="l4-b ui-sec" data-knob="auto">${z('自动拧', 'Auto-turn')}</button><button type="button" class="l4-b ui-pri" data-knob="check">${z('检查', 'Check')}</button></div><p class="lab-fb" data-knob-fb></p>`;
+  host.innerHTML = `<div class="lab-say">${say}</div><svg class="knob-svg" viewBox="0 0 440 200" role="img"></svg><div class="lab-row"><span class="lab-read" data-knob-read></span><button type="button" class="l4-b ui-sec" data-knob="auto">${z('自动拧', 'Auto-turn')}</button><button type="button" class="l4-b ui-pri" data-knob="check">${z('检查', 'Check')}</button></div><div class="lab-fb" data-knob-fb></div>`;
   const svg = host.querySelector('svg')!, read = host.querySelector('[data-knob-read]')!, fb = host.querySelector<HTMLElement>('[data-knob-fb]')!;
   const paint = () => {
     const [lo, hi] = RANGE[m];

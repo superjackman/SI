@@ -3,11 +3,11 @@ import { tx, type L } from '../l4/txt';
 
 export function mount(host: HTMLElement, l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  host.innerHTML = `<p class="lab-say">${z('这是一个很小的、只有一层的 Transformer。它在几句短话上现学现用：床前明月光，和几句日常的话。按开始训练，看损失下降，再让它接着写。', 'This is a tiny one-layer Transformer. It learns a few short lines live, including a public-domain poem. Start training, watch the loss fall, then let it continue a line.')}</p>
+  host.innerHTML = `<div class="lab-say">${z('这是一个很小的、只有一层的 Transformer。它在几句短话上现学现用：床前明月光，和几句日常的话。按开始训练，看损失下降，再让它接着写。', 'This is a tiny one-layer Transformer. It learns a few short lines live, including a public-domain poem. Start training, watch the loss fall, then let it continue a line.')}</div>
 <svg class="gpt-loss" viewBox="0 0 440 80" role="img" aria-label="${z('损失曲线', 'Loss curve')}"></svg>
 <div class="lab-row"><span class="lab-read" data-gpt-read>${z('还没开始', 'Not started')}</span><button type="button" class="l4-b ui-pri" data-gpt="start">${z('开始训练', 'Start training')}</button><button type="button" class="l4-b ui-sec" data-gpt="pause">${z('暂停', 'Pause')}</button></div>
 <div class="lab-row"><input class="lab-in" data-gpt-prompt value="${z('床前', '床前')}" aria-label="${z('开头几个字', 'Opening characters')}"><span class="lab-read">${z('温度', 'temperature')}</span><input type="range" min="0.2" max="1.4" step="0.1" value="0.8" data-gpt-temp><button type="button" class="l4-b ui-sec" data-gpt="go">${z('接着写', 'Continue')}</button></div>
-<p class="lab-read" data-gpt-out></p>
+<div class="lab-read" data-gpt-out></div>
 <svg class="gpt-heat" viewBox="0 0 440 160" role="img" aria-label="${z('注意力', 'Attention')}"></svg>`;
   const read = host.querySelector('[data-gpt-read]')!, out = host.querySelector('[data-gpt-out]')!, lossSvg = host.querySelector('.gpt-loss')!, heat = host.querySelector('.gpt-heat')!;
   const worker = new Worker(new URL('./tiny-gpt.worker.ts', import.meta.url), { type: 'module' });

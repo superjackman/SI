@@ -20,7 +20,7 @@ const DRILL: Record<string, Drill> = {
 export function mount(host: HTMLElement, key: string, l: L) {
   const d = DRILL[key]; if (!d) { host.remove(); return; }
   const z = (a: string, b: string) => tx([a, b], l);
-  host.innerHTML = `<p class="lab-say">${z(d.q[0], d.q[1])}</p><div class="lab-ops">${d.options.map((o, i) => `<button type="button" class="lab-op" data-drill="${i}">${z(o[0], o[1])}</button>`).join('')}</div><div class="lab-row"><button type="button" class="l4-b ui-pri" data-drill="check">${z('检查', 'Check')}</button></div><p class="lab-fb" data-drill-fb hidden></p>`;
+  host.innerHTML = `<div class="lab-say">${z(d.q[0], d.q[1])}</div><div class="lab-ops">${d.options.map((o, i) => `<button type="button" class="lab-op" data-drill="${i}">${z(o[0], o[1])}</button>`).join('')}</div><div class="lab-row"><button type="button" class="l4-b ui-pri" data-drill="check">${z('检查', 'Check')}</button></div><div class="lab-fb" data-drill-fb hidden></div>`;
   let pick = -1;
   host.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-drill]'); if (!b) return;
