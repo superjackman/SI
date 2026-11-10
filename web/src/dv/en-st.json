@@ -213,7 +213,7 @@
         "`ReLU(z) = max(0, z)`, `sigmoid(z) = 1 / (1 + e^(−z))`"
       ],
       "x": [
-        "XOR by hand: `h1 = ReLU(x1 + x2)`, `h2 = ReLU(x1 + x2 − 1)`, `y = h1 − 2 × h2`",
+        "Two bends, in words: the first adds the two numbers and treats anything below 0 as 0; the second subtracts 1 first and does the same; the result is the first minus twice the second.",
         "(0,0): 0; (0,1): 1; (1,0): 1; (1,1): 2 − 2 × 1 = 0 ✓"
       ],
       "lo": "With many layers, how do we get the loss’s gradient for a parameter **in an early layer**? Nudging parameters one by one is far too slow.",
@@ -231,7 +231,7 @@
           "Four XOR points; one line fails; two layers + ReLU work."
         ],
         "num": [
-          "Hand-built net separates all four inputs."
+          "Each box on the right is one neuron’s bend. The plus signs stack them into the curve at the bottom."
         ],
         "fx": [
           "`⟦k:h⟧ = act(⟦q:W1 x + b1⟧)`",

@@ -90,61 +90,63 @@ export function mount(host: HTMLElement, mode: string, l: L) {
   const lr = m === 'colors' ? 0.3 : 0.2;
   let timer = 0;
   const say = m === 'colors'
-    ? z('一个入口，中间四颗各弯一下，右边收成一个数。每种颜色对一条线。圆心里的小旋钮是起点。', 'One way in, four bends in the middle, one number out. Each colour is one neuron. The small knob inside a circle is where that bend starts.')
-    : z('一个入口，中间四颗各贡献一条小弯线，加起来才贴住这些点。圆心里的小旋钮是起点，可以一颗颗拖。', 'One way in. Each of the four middle neurons adds one small bent line, and together they sit on the points. The small knob inside a circle is where that bend starts. Drag any knob.');
-  const legend = z('每条线和它旁边的小弯线是同一颗。线越粗，这颗旋钮拧得越狠。圆心里的小旋钮是起点，决定这条弯从哪开始。', 'Each line matches the small bent line beside that neuron. A thicker line is a harder turn. The small knob inside the circle is the start of that bend.');
-  host.innerHTML = `<div class="lab-say">${say}</div><svg class="net-knobs" viewBox="0 0 440 400" role="img"></svg><div class="lab-cap">${legend}</div><div class="lab-row"><span class="lab-read" data-net-read></span><button type="button" class="l4-b ui-sec" data-net="auto">${z('自动拧', 'Auto-turn')}</button><button type="button" class="l4-b ui-pri" data-net="check">${z('检查', 'Check')}</button></div><div class="lab-fb" data-net-fb></div>`;
+    ? z('这就是一个最小的人工神经网络：左边进一个位置，中间四颗神经元各自弯出一小段，右边把它们加起来，得到一条能把两种颜色分开的界线。', 'This is a tiny artificial neural network: a position comes in on the left, four neurons each bend a little, and the right side adds them into a boundary that separates the two colours.')
+    : z('这就是一个最小的人工神经网络：左边进一个数，中间四颗神经元各自弯出一小段，右边把它们加起来，得到一条能贴住点的线。', 'This is a tiny artificial neural network: a number comes in on the left, four neurons each bend a little, and the right side adds them into a line that sits on the points.');
+  const legend = z('线上的旋钮管弯得多陡，圆圈里的旋钮管从哪里开始弯。', 'A knob on a line sets how steep that bend is. A knob inside a circle sets where the bend starts.');
+  host.innerHTML = `<div class="lab-say">${say}</div><svg class="net-knobs" viewBox="0 0 440 390" role="img"></svg><div class="lab-cap">${legend}</div><div class="lab-row"><span class="lab-read" data-net-read></span><button type="button" class="l4-b ui-sec" data-net="auto">${z('自动拧', 'Auto-turn')}</button><button type="button" class="l4-b ui-pri" data-net="check">${z('检查', 'Check')}</button></div><div class="lab-fb" data-net-fb></div>`;
   const knobs = host.querySelector('.net-knobs')!, read = host.querySelector('[data-net-read]')!, fb = host.querySelector<HTMLElement>('[data-net-fb]')!;
   const paint = () => {
     const list = slots(p);
     const col = ['var(--link)', 'var(--good)', 'var(--highlight)', 'var(--lv4)'];
-    const hy = [70, 160, 250, 340];
-    const ix = 64, hx = 176, ox = 392, iy = 205;
-    const mid = (x1: number, y1: number, x2: number, y2: number): [number, number] => [(x1 + x2) / 2, (y1 + y2) / 2];
-    const dial = (slot: number, cx: number, cy: number, r: number) => {
-      const s = list[slot];
-      const v = s ? s.get() : 0;
-      const t = Math.min(1, Math.max(0, (v + 2) / 4));
-      const ang = -140 + t * 280;
-      return `<g data-i="${slot}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="var(--card)" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(cx + Math.sin(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" y2="${(cy - Math.cos(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
+    const hy = [78, 148, 218, 288];
+    const ix = 78, iy = 183, hx = 196, ox = 300;
+    const boxX = 352, boxW = 76, boxH = 36;
+    const wire = (x1: number, y1: number, x2: number, y2: number, color: string, v: number) => {
+      const width = (1.8 + Math.min(2, Math.abs(v)) * 2.2).toFixed(1);
+      return `<path class="net-wire" data-x1="${x1}" data-y1="${y1}" data-x2="${x2}" data-y2="${y2}" d="M${x1} ${y1}L${x2} ${y2}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
     };
-    let lines = '', charts = '', dials = '';
+    const dial = (slot: number, cx: number, cy: number, r: number) => {
+      const v = list[slot] ? list[slot]!.get() : 0;
+      const ang = -140 + Math.min(1, Math.max(0, (v + 2) / 4)) * 280;
+      return `<g class="net-knob" data-i="${slot}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="none" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(cx + Math.sin(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" y2="${(cy - Math.cos(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
+    };
     const piece = (i: number, x: number) => p.W2[i]! * relu(p.W1[i]![0]! * x + p.W1[i]![1]! + p.b1[i]!);
+    let lines = '', boxes = '', dials = '';
     for (let i = 0; i < 4; i++) {
       const y = hy[i]!;
-      const sw = (v: number) => `stroke="${col[i]}" stroke-width="${(1.8 + Math.min(2, Math.abs(v)) * 2.4).toFixed(1)}"`;
-      lines += `<line x1="${ix}" y1="${iy}" x2="${hx}" y2="${y}" ${sw(p.W1[i]![0]!)}/>`;
-      lines += `<line x1="${hx}" y1="${y}" x2="${ox}" y2="${iy}" ${sw(p.W2[i]!)}/>`;
-      const a = mid(ix, iy, hx, y), b = mid(hx, y, ox, iy);
-      dials += dial(i, a[0], a[1], 11);
-      dials += dial(12 + i, b[0], b[1], 11);
+      lines += wire(ix, iy, hx, y, col[i]!, p.W1[i]![0]!);
+      lines += wire(hx, y, ox, iy, col[i]!, p.W2[i]!);
+      dials += dial(i, (ix + hx) / 2, (iy + y) / 2, 9);
+      dials += dial(12 + i, (hx + ox) / 2, (y + iy) / 2, 9);
       dials += dial(8 + i, hx, y, 7);
       const ys: number[] = [];
       for (let k = 0; k <= 12; k++) ys.push(piece(i, k / 12));
       const lo = Math.min(...ys), hi = Math.max(...ys), span = Math.max(0.2, hi - lo);
-      const x0 = hx + 22, y0 = y - 16;
+      const x0 = boxX, y0 = y - boxH / 2;
       let d = '';
-      ys.forEach((v, k) => { d += `${k ? 'L' : 'M'}${(x0 + (k / 12) * 46).toFixed(1)} ${(y0 + 28 - ((v - lo) / span) * 24).toFixed(1)}`; });
-      charts += `<rect x="${x0}" y="${y0}" width="46" height="28" fill="var(--card)"/><path d="${d}" fill="none" stroke="${col[i]}" stroke-width="2"/>`;
+      ys.forEach((v, k) => { d += `${k ? 'L' : 'M'}${(x0 + 6 + (k / 12) * (boxW - 12)).toFixed(1)} ${(y0 + boxH - 6 - ((v - lo) / span) * (boxH - 12)).toFixed(1)}`; });
+      boxes += `<path class="net-box" d="M${x0} ${y0}h${boxW}v${boxH}h${-boxW}z" fill="none" stroke="${col[i]}" stroke-width="1.5"/><path class="net-bend" d="${d}" fill="none" stroke="${col[i]}" stroke-width="2"/>`;
+      if (i < 3) boxes += `<text x="${boxX + boxW / 2}" y="${((hy[i]! + hy[i + 1]!) / 2 + 5).toFixed(1)}" text-anchor="middle" fill="var(--ink)" font-size="16">＋</text>`;
     }
     dials += dial(16, ox, iy, 8);
-    let corner = '';
+    const sumY = hy[3]! + boxH / 2 + 28;
+    let sum = '';
     if (m === 'curve') {
-      const X = (x: number) => 300 + x * 120, Y = (y: number) => 48 - y * 32;
-      let sum = '';
-      for (let k = 0; k <= 24; k++) { const x = k / 24; sum += `${k ? 'L' : 'M'}${X(x).toFixed(1)} ${Y(forward(p, [x, 1]).y).toFixed(1)}`; }
-      corner = `<path d="${sum}" fill="none" stroke="var(--navy)" stroke-width="2"/>${curveData().map(([x, y]) => `<circle cx="${X(x[0]!)}" cy="${Y(y)}" r="2.4" fill="var(--highlight)"/>`).join('')}<text x="360" y="62" text-anchor="middle" fill="var(--ink)" font-size="16">${z('加起来', 'added')}</text>`;
+      const X = (x: number) => boxX + 6 + x * (boxW - 12), Y = (y: number) => sumY + 22 - y * 16;
+      for (let k = 0; k <= 16; k++) { const x = k / 16; sum += `${k ? 'L' : 'M'}${X(x).toFixed(1)} ${Y(forward(p, [x, 1]).y).toFixed(1)}`; }
+      sum = `<path class="net-box" d="M${boxX} ${sumY}h${boxW}v${30}h${-boxW}z" fill="none" stroke="var(--navy)" stroke-width="1.5"/><path class="net-bend" d="${sum}" fill="none" stroke="var(--navy)" stroke-width="2"/>`;
     } else {
-      const X = (x: number) => 312 + x * 100, Y = (y: number) => 58 - y * 46;
       let cells = '';
-      for (let j = 0; j < 8; j++) for (let i = 0; i < 8; i++) {
-        const x = i / 7, y = j / 7;
-        cells += `<rect x="${(X(x) - 6).toFixed(1)}" y="${(Y(y) - 3).toFixed(1)}" width="12" height="6" fill="${forward(p, [x, y]).y >= 0.5 ? 'var(--link)' : 'var(--mark)'}" opacity="0.45"/>`;
+      for (let j = 0; j < 6; j++) for (let i = 0; i < 6; i++) {
+        const x = i / 5, y = j / 5;
+        const px = boxX + 4 + i * 11, py = sumY + 4 + (5 - j) * 4;
+        cells += `<path d="M${px} ${py}h9v3h-9z" fill="${forward(p, [x, y]).y >= 0.5 ? 'var(--link)' : 'var(--mark)'}" opacity="0.55"/>`;
       }
-      corner = cells + colorData.map(([x, t]) => `<circle cx="${X(x[0]!)}" cy="${Y(x[1]!)}" r="3.5" fill="${t ? 'var(--link)' : 'var(--highlight)'}"/>`).join('');
+      sum = `<path class="net-box" d="M${boxX} ${sumY}h${boxW}v${30}h${-boxW}z" fill="none" stroke="var(--navy)" stroke-width="1.5"/>${cells}`;
     }
-    const nodes = `<text x="36" y="${iy + 5}" text-anchor="end" fill="var(--ink)" font-size="16">${z('输入', 'in')}</text><circle cx="${ix}" cy="${iy}" r="14" fill="var(--card)" stroke="var(--ink)"/>${hy.map((y) => `<circle cx="${hx}" cy="${y}" r="16" fill="var(--card)" stroke="var(--ink)"/>`).join('')}<circle cx="${ox}" cy="${iy}" r="16" fill="var(--card)" stroke="var(--ink)"/><text x="${ox}" y="${iy + 34}" text-anchor="middle" fill="var(--ink)" font-size="16">${z('结果', 'out')}</text>`;
-    knobs.innerHTML = `${lines}${nodes}${charts}${corner}${dials}`;
+    const labels = `<text x="${ix}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('输入', 'in')}</text><text x="${hx}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('神经元（4 颗）', 'neurons (4)')}</text><text x="${ox}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('结果', 'out')}</text><text x="${boxX + boxW / 2}" y="${(sumY - 6).toFixed(1)}" text-anchor="middle" fill="var(--ink)" font-size="16">${z('加起来', 'added')}</text>`;
+    const nodes = `<circle cx="${ix}" cy="${iy}" r="14" fill="none" stroke="var(--ink)" stroke-width="2"/>${hy.map((y) => `<circle cx="${hx}" cy="${y}" r="16" fill="none" stroke="var(--ink)" stroke-width="2"/>`).join('')}<circle cx="${ox}" cy="${iy}" r="16" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+    knobs.innerHTML = `${lines}${boxes}${sum}${nodes}${dials}${labels}`;
     read.textContent = `${z('误差', 'error')} ${lossOf(m, p).toFixed(3)}`;
   };
   knobs.addEventListener('pointerdown', (e) => {

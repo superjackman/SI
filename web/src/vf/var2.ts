@@ -91,19 +91,19 @@ export const extraG: Partial<Record<VarK, (p: readonly number[]) => Q2>> = {
   },
   xoh: ([x1, x2]) => {
     const h = xor(x1!, x2!);
-    return box('xoh', [`XOR 小网络：\`h2 = ReLU(${f(x1!, 0)} + ${f(x2!, 0)} − 1)\`。h2 = ？`, `The XOR net: \`h2 = ReLU(${f(x1!, 0)} + ${f(x2!, 0)} − 1)\`. h2 = ?`],
+    return box('xoh', [`两个数是 ${f(x1!, 0)} 和 ${f(x2!, 0)}。第二条弯等于 ReLU(${f(x1!, 0)} + ${f(x2!, 0)} − 1)。这条弯等于多少？`, `The two numbers are ${f(x1!, 0)} and ${f(x2!, 0)}. The second bend is ReLU(${f(x1!, 0)} + ${f(x2!, 0)} − 1). What is that bend?`],
       h.h2, 0, 0.05, [`\`ReLU(${f(x1! + x2! - 1, 0)})\``, `\`ReLU(${f(x1! + x2! - 1, 0)})\``],
-      [M(h.h1, ['这是 h1（两个输入直接相加），题目问的是 h2。', 'That is h1, the plain sum. The question asks for h2.'], ['h2 先减 1', 'h2 subtracts 1 first'], 3),
-        M(h.y, ['这是最后的 y，不是 h2。', 'That is the final y, not h2.'], ['先算隐藏层', 'The hidden layer first'], 4),
+      [M(h.h1, ['这是第一条弯（两个数直接相加），题目问的是第二条。', 'That is the first bend, the plain sum. The question asks for the second.'], ['第二条弯先减 1', 'The second bend subtracts 1 first'], 3),
+        M(h.y, ['这是最后加出来的结果，不是第二条弯。', 'That is the final result, not the second bend.'], ['先算第二条弯', 'The second bend first'], 4),
         M(x1! + x2!, ['你没做 ReLU，也没减 1。', 'No ReLU, and you did not subtract 1.'], ['ReLU(z) = max(0, z)', 'ReLU(z) = max(0, z)'], 1)]);
   },
   xoy: ([x1, x2]) => {
     const h = xor(x1!, x2!);
-    return box('xoy', [`同一网络，输入 (${f(x1!, 0)}, ${f(x2!, 0)}) 时 y = h1 − 2×h2 = ？`, `Same net, input (${f(x1!, 0)}, ${f(x2!, 0)}): y = h1 − 2×h2 = ?`],
-      h.y, 0, 0.05, [`\`h1 = ${f(h.h1, 0)}\`，\`h2 = ${f(h.h2, 0)}\`，\`y = ${f(h.h1, 0)} − 2 × ${f(h.h2, 0)}\``, `\`h1 = ${f(h.h1, 0)}\`, \`h2 = ${f(h.h2, 0)}\`, \`y = ${f(h.h1, 0)} − 2 × ${f(h.h2, 0)}\``],
-      [M(h.h2, ['你停在 h2 了。y 还要把 h2 乘 2 再从 h1 里减去。', 'You stopped at h2. y still subtracts twice h2 from h1.'], ['y = h1 − 2×h2', 'y = h1 − 2×h2'], 4),
-        M(h.h1, ['你只报了 h1。负的那一路（h2）还没减。', 'You reported only h1. The negative path, h2, is still missing.'], ['两条隐藏路', 'Both hidden paths'], 3),
-        M(2 * h.h1, ['你把 h1 翻倍了，没有减去 2×h2。', 'You doubled h1 and never subtracted 2×h2.'], ['减的是 2×h2', 'Subtract 2×h2'], 1)]);
+    return box('xoy', [`同一条网络，两个数是 ${f(x1!, 0)} 和 ${f(x2!, 0)}。第一条弯是 ${f(h.h1, 0)}，第二条弯是 ${f(h.h2, 0)}。用第一条减去第二条的两倍，得到多少？`, `Same net, the two numbers are ${f(x1!, 0)} and ${f(x2!, 0)}. The first bend is ${f(h.h1, 0)} and the second is ${f(h.h2, 0)}. Subtract twice the second from the first. What do you get?`],
+      h.y, 0, 0.05, [`第一条弯是 ${f(h.h1, 0)}，第二条弯是 ${f(h.h2, 0)}，结果是 ${f(h.h1, 0)} − 2 × ${f(h.h2, 0)}`, `The first bend is ${f(h.h1, 0)}, the second is ${f(h.h2, 0)}, and the result is ${f(h.h1, 0)} − 2 × ${f(h.h2, 0)}`],
+      [M(h.h2, ['你停在第二条弯了。结果还要把第二条弯乘 2，再从第一条里减去。', 'You stopped at the second bend. The result still subtracts twice that bend from the first.'], ['用第一条减去第二条的两倍', 'Subtract twice the second from the first'], 4),
+        M(h.h1, ['你只报了第一条弯。第二条弯还没减。', 'You reported only the first bend. The second bend is still missing.'], ['两条弯都要算', 'Both bends count'], 3),
+        M(2 * h.h1, ['你把第一条弯翻倍了，没有减去第二条弯的两倍。', 'You doubled the first bend and never subtracted twice the second.'], ['减的是第二条弯的两倍', 'Subtract twice the second bend'], 1)]);
   },
   relu1: ([z]) => box('relu1', [`\`ReLU(${f(z!)})\` = ？`, `\`ReLU(${f(z!)})\` = ?`],
     relu(z!), 1, 0.05, ['负数变 0，正数原样留下。', 'Negatives become 0; positives stay as they are.'],
