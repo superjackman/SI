@@ -25,6 +25,7 @@ import { navInit, navNote, navTo } from './hnav';
 import { DV_ALIAS, isDv } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
 import { lessonHash, redirectTo } from './go';
+import { installDials } from '../ui/dial';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q|W)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
@@ -32,6 +33,7 @@ const isHub = (id: string) => id === 'news' || id.startsWith('news/') || id === 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 export function start(doc: Document = document, win: Window = window) {
+  installDials(doc);
   if (doc.getElementById('l4')) return;
   const root = doc.createElement('div'); root.id = 'l4'; root.className = 'l4'; doc.body.appendChild(root);
   doc.documentElement.classList.add('l4-mode'); applyAnim(doc);

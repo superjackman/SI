@@ -444,3 +444,8 @@ html[data-anim="off"] *, html[data-anim="off"] *::before, html[data-anim="off"] 
 .l4-top * { color: var(--on-navy); }
 .pt-q { background: var(--card); color: var(--ink); }
 .l4-b, .hm-cta, .hm-cta2, .l4-b.gold { background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
+/* shared linear dial: knobs and range sliders */
+.dial, input[type="range"] { touch-action: none; cursor: grab; }
+input[type="range"] { min-width: 32px; min-height: 32px; }
+body.dial-drag, body.dial-drag * { user-select: none !important; -webkit-user-select: none !important; cursor: grabbing !important; }
+.dial-read { position: fixed; z-index: 80; transform: translateY(-50%); pointer-events: none; padding: 2px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); color: var(--ink); font: 16px/1.4 system-ui, sans-serif; font-variant-numeric: tabular-nums; }

@@ -1,5 +1,6 @@
 /* A real 2-4-1 network drawn as one knob per weight. Loaded only on stations 5 and 6. */
 import { tx, type L } from '../l4/txt';
+import { bindDials, dialHitRadius, dialNeedle, dialText } from '../ui/dial';
 
 export interface NetP { W1: number[][]; b1: number[]; W2: number[]; b2: number }
 
@@ -105,10 +106,13 @@ export function mount(host: HTMLElement, mode: string, l: L) {
       const width = (1.8 + Math.min(2, Math.abs(v)) * 2.2).toFixed(1);
       return `<path class="net-wire" data-x1="${x1}" data-y1="${y1}" data-x2="${x2}" data-y2="${y2}" d="M${x1} ${y1}L${x2} ${y2}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
     };
+    const scaleW = (knobs as SVGSVGElement).getBoundingClientRect().width;
+    const focusI = document.activeElement instanceof Element ? document.activeElement.getAttribute('data-i') : null;
     const dial = (slot: number, cx: number, cy: number, r: number) => {
       const v = list[slot] ? list[slot]!.get() : 0;
-      const ang = -140 + Math.min(1, Math.max(0, (v + 2) / 4)) * 280;
-      return `<g class="net-knob" data-i="${slot}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="none" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${(cx + Math.sin(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" y2="${(cy - Math.cos(ang * Math.PI / 180) * (r - 3)).toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
+      const hit = dialHitRadius(440, scaleW, r);
+      const n = dialNeedle(cx, cy, Math.max(4, r - 3), v, -2, 2);
+      return `<g class="net-knob dial" data-i="${slot}" data-v="${v}" tabindex="0" role="slider" aria-valuemin="-2" aria-valuemax="2" aria-valuenow="${dialText(v)}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="none" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
     };
     const piece = (i: number, x: number) => p.W2[i]! * relu(p.W1[i]![0]! * x + p.W1[i]![1]! + p.b1[i]!);
     let lines = '', boxes = '', dials = '';
@@ -147,21 +151,20 @@ export function mount(host: HTMLElement, mode: string, l: L) {
     const labels = `<text x="${ix}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('输入', 'in')}</text><text x="${hx}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('神经元（4 颗）', 'neurons (4)')}</text><text x="${ox}" y="28" text-anchor="middle" fill="var(--ink)" font-size="16">${z('结果', 'out')}</text><text x="${boxX + boxW / 2}" y="${(sumY - 6).toFixed(1)}" text-anchor="middle" fill="var(--ink)" font-size="16">${z('加起来', 'added')}</text>`;
     const nodes = `<circle cx="${ix}" cy="${iy}" r="14" fill="none" stroke="var(--ink)" stroke-width="2"/>${hy.map((y) => `<circle cx="${hx}" cy="${y}" r="16" fill="none" stroke="var(--ink)" stroke-width="2"/>`).join('')}<circle cx="${ox}" cy="${iy}" r="16" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
     knobs.innerHTML = `${lines}${boxes}${sum}${nodes}${dials}${labels}`;
+    if (focusI && !document.body.classList.contains('dial-drag')) (knobs.querySelector(`[data-i="${focusI}"]`) as SVGElement | null)?.focus({ preventScroll: true });
     read.textContent = `${z('误差', 'error')} ${lossOf(m, p).toFixed(3)}`;
   };
-  knobs.addEventListener('pointerdown', (e) => {
-    const g = (e.target as Element).closest('[data-i]'); if (!g) return;
-    const i = Number((g as HTMLElement).dataset.i);
-    const list = slots(p);
-    const box = knobs.getBoundingClientRect();
-    const move = (ev: PointerEvent) => {
-      const t = Math.min(1, Math.max(0, (ev.clientY - box.top) / box.height));
-      list[i]?.set(2 - t * 4);
-      paint();
+  bindDials(knobs, (target) => {
+    const g = target.closest('[data-i]'); if (!g) return null;
+    const i = Number(g.getAttribute('data-i'));
+    const slot = slots(p)[i];
+    if (!slot) return null;
+    return {
+      min: -2, max: 2,
+      get: () => slot.get(),
+      set: (n) => { slot.set(Math.min(2, Math.max(-2, n))); paint(); },
+      anchor: () => knobs.querySelector(`[data-i="${i}"]`),
     };
-    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); };
-    addEventListener('pointermove', move); addEventListener('pointerup', up);
-    move(e as PointerEvent);
   });
   host.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-net]'); if (!b) return;

@@ -1,6 +1,7 @@
 /* A bank of knobs. The same picture is the lesson on stations 1, 4, 5 and 6:
    turn them by hand, then let the slope turn them. Loaded only on those stations. */
 import { tx, type L } from '../l4/txt';
+import { bindDials, dialHitRadius, dialNeedle, dialText } from '../ui/dial';
 
 type Mode = 'line' | 'bend' | 'chain';
 type Pt = readonly [number, number];
@@ -58,11 +59,14 @@ export function mount(host: HTMLElement, mode: string, l: L) {
   const svg = host.querySelector('svg')!, read = host.querySelector('[data-knob-read]')!, fb = host.querySelector<HTMLElement>('[data-knob-fb]')!;
   const paint = () => {
     const [lo, hi] = RANGE[m];
+    const scaleW = svg.getBoundingClientRect().width;
+    const focusI = document.activeElement instanceof Element ? document.activeElement.getAttribute('data-i') : null;
     const knobs = LABELS[m].map((name, i) => {
       const cur = at(v, i);
-      const t = (cur - lo) / (hi - lo), ang = -140 + t * 280;
       const cx = 70 + i * 120, cy = 150;
-      return `<g data-i="${i}"><circle cx="${cx}" cy="${cy}" r="28" fill="var(--card)" stroke="var(--navy)" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${cx + Math.sin(ang * Math.PI / 180) * 20}" y2="${cy - Math.cos(ang * Math.PI / 180) * 20}" stroke="var(--navy)" stroke-width="3"/><text x="${cx}" y="${cy + 46}" text-anchor="middle" fill="var(--ink)" font-size="14">${name} ${cur.toFixed(2)}</text></g>`;
+      const hit = dialHitRadius(440, scaleW, 28);
+      const n = dialNeedle(cx, cy, 20, cur, lo, hi);
+      return `<g class="dial" data-i="${i}" data-v="${cur}" tabindex="0" role="slider" aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${dialText(cur)}" aria-label="${name}"><circle cx="${cx}" cy="${cy}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="28" fill="var(--card)" stroke="var(--navy)" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="3"/><text x="${cx}" y="${cy + 46}" text-anchor="middle" fill="var(--ink)" font-size="14">${name} ${dialText(cur)}</text></g>`;
     }).join('');
     let plot = '';
     if (m !== 'chain') {
@@ -77,24 +81,21 @@ export function mount(host: HTMLElement, mode: string, l: L) {
       plot = `<text x="300" y="70" fill="var(--ink)" font-size="16">${z('乘积', 'product')} ${prod.toFixed(2)}</text><text x="300" y="96" fill="var(--ink)" font-size="16">${z('目标 3', 'target 3')}</text>`;
     }
     svg.innerHTML = `${plot}${knobs}`;
+    if (focusI && !document.body.classList.contains('dial-drag')) (svg.querySelector(`[data-i="${focusI}"]`) as SVGElement | null)?.focus({ preventScroll: true });
     const loss = m === 'chain' ? (at(v, 0) * at(v, 1) * at(v, 2) - 3) ** 2 : m === 'bend' ? lossBend(at(v, 0), at(v, 1), at(v, 2)) : lossLine(at(v, 0), at(v, 1));
     read.textContent = `${z('损失', 'loss')} ${loss.toFixed(3)}`;
     host.dispatchEvent(new CustomEvent('knob-move', { bubbles: true, detail: { mode: m, v: v.slice(), loss } }));
   };
-  const drag = (i: number, clientY: number, top: number) => {
+  bindDials(svg, (target) => {
+    const g = target.closest('[data-i]'); if (!g) return null;
+    const i = Number(g.getAttribute('data-i'));
     const [lo, hi] = RANGE[m];
-    const t = Math.min(1, Math.max(0, (clientY - top) / 80));
-    v[i] = hi - t * (hi - lo);
-    paint();
-  };
-  svg.addEventListener('pointerdown', (e) => {
-    const g = (e.target as Element).closest('[data-i]'); if (!g) return;
-    const i = Number((g as HTMLElement).dataset.i);
-    const box = svg.getBoundingClientRect();
-    const move = (ev: PointerEvent) => drag(i, ev.clientY, box.top + 110);
-    const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); };
-    addEventListener('pointermove', move); addEventListener('pointerup', up);
-    drag(i, e.clientY, box.top + 110);
+    return {
+      min: lo, max: hi,
+      get: () => at(v, i),
+      set: (n) => { v[i] = Math.min(hi, Math.max(lo, n)); paint(); },
+      anchor: () => svg.querySelector(`[data-i="${i}"]`),
+    };
   });
   host.addEventListener('click', (e) => {
     const b = (e.target as HTMLElement).closest<HTMLElement>('[data-knob]'); if (!b) return;
