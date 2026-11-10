@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>后训练：SFT、对齐与推理 · 大白话拆解 AI</title>
-<meta name="description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。后面还要教它照着示范做，并且按人的比较来改。">
+<meta name="description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。还要先照着示范改格式，再按人指出的哪一份更好去靠。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/10/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/10/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/10/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="后训练：SFT、对齐与推理 · 大白话拆解 AI">
-<meta property="og:description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。后面还要教它照着示范做，并且按人的比较来改。">
+<meta property="og:description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。还要先照着示范改格式，再按人指出的哪一份更好去靠。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/10/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/10.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="后训练：SFT、对齐与推理 · 大白话拆解 AI">
-<meta name="twitter:description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。后面还要教它照着示范做，并且按人的比较来改。">
+<meta name="twitter:description" content="让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。还要先照着示范改格式，再按人指出的哪一份更好去靠。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/10.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/10/#lesson","name":"后训练：SFT、对齐与推理","headline":"后训练：SFT、对齐与推理 · 大白话拆解 AI","description":"让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。后面还要教它照着示范做，并且按人的比较来改。","url":"https://superjackman.github.io/SI/s/10/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"后训练：SFT、对齐与推理","item":"https://superjackman.github.io/SI/s/10/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/10/#lesson","name":"后训练：SFT、对齐与推理","headline":"后训练：SFT、对齐与推理 · 大白话拆解 AI","description":"让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。只会接着往下写，还不等于听得懂吩咐。还要先照着示范改格式，再按人指出的哪一份更好去靠。","url":"https://superjackman.github.io/SI/s/10/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"后训练：SFT、对齐与推理","item":"https://superjackman.github.io/SI/s/10/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,13 +39,13 @@
 <p class="open"><a href="/SI/#D/10">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">让模型听懂指令、回答有用、足够安全，并学会“想清楚再回答”。</p>
 
-<section><p>只会接着往下写，还不等于听得懂吩咐。后面还要教它照着示范做，并且按人的比较来改。</p></section>
+<section><p>只会接着往下写，还不等于听得懂吩咐。还要先照着示范改格式，再按人指出的哪一份更好去靠。</p></section>
 
-<section><ul><li>先看示范：人家怎么答，它就学那个格式。</li><li>人指出哪一份更好，旋钮就往那边挪。</li><li>能自动判对错的题上，它可以多写几步再给答案。</li></ul></section>
+<section><ul><li>先看示范：人家怎么答，它就学那个格式。</li><li>人指出哪一份更好，两份的差先收成 0 到 1 之间的数，旋钮再往那边挪。</li><li>能自动判对错的题上，它可以多写几步再给答案。</li></ul></section>
 
 <section><ul><li>SFT：用“指令 → 优质回答”的示范数据，按同样的下一个词元损失继续训练（通常只对回答部分算损失），学会对话格式和风格。</li><li>RLHF：人类比较两个回答哪个好，比自己写好回答容易。先用偏好对训练奖励模型，再用强化学习（如 PPO）最大化奖励，并加 KL 惩罚防止偏离原模型太远、钻奖励模型的空子。</li><li>DPO（Rafailov 等，2023）：带 KL 约束的目标有闭式最优解，于是可以绕过奖励模型和强化学习，直接用偏好对训练，更简单、更稳定。</li><li>推理型模型（2024 年起的主流方向）：在答案能自动验证的任务上（数学有标准答案、代码能跑测试）用强化学习，奖励只看最终答案对不对，模型逐渐学会写很长的思维链：分解、尝试、检查、回溯。部分厂商细节没有公开；公开方法中，GRPO 最早在 DeepSeekMath（2024）中提出，DeepSeek-R1（2025）也用它训练推理。</li></ul></section>
 
-<section><ul><li>预训练基座 → SFT → 偏好对齐 →（可选）推理 RL。</li></ul></section>
+<section><ul><li>先学会接着写，再照着示范改格式，再按人的比较去靠。难题上可以再多写几步。</li></ul></section>
 
 <section><ul><li>奖励分 r_A = 1.5、r_B = 0.5 → P(A&gt;B)=P(A 优于 B) = σ(1.5 − 0.5) = σ(1.0) ≈ 0.73。</li><li>同一问题“天空是什么颜色？”两个回答：A 讲清了原因，B 说“不知道，自己查”，标注者选 A。</li><li>奖励模型打分 r_A = 1.5、r_B = 0.5，则 P(A 优于 B) = σ(1.5 − 0.5) = σ(1.0) ≈ 0.73，训练会继续拉大差距。</li></ul></section>
 

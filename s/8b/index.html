@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>组装成 Transformer · 大白话拆解 AI</title>
-<meta name="description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先让词互相看，再各自消化，并且把原来的说法加回去。">
+<meta name="description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先对名牌，再把原来的说法加回去，然后各自消化。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/8b/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/8b/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/8b/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="组装成 Transformer · 大白话拆解 AI">
-<meta property="og:description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先让词互相看，再各自消化，并且把原来的说法加回去。">
+<meta property="og:description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先对名牌，再把原来的说法加回去，然后各自消化。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/8b/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/8b.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="组装成 Transformer · 大白话拆解 AI">
-<meta name="twitter:description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先让词互相看，再各自消化，并且把原来的说法加回去。">
+<meta name="twitter:description" content="把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先对名牌，再把原来的说法加回去，然后各自消化。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/8b.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/8b/#lesson","name":"组装成 Transformer","headline":"组装成 Transformer · 大白话拆解 AI","description":"把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先让词互相看，再各自消化，并且把原来的说法加回去。","url":"https://superjackman.github.io/SI/s/8b/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"组装成 Transformer","item":"https://superjackman.github.io/SI/s/8b/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/8b/#lesson","name":"组装成 Transformer","headline":"组装成 Transformer · 大白话拆解 AI","description":"把注意力做成能叠很多层、又稳又能分辨词序的完整模型。回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先对名牌，再把原来的说法加回去，然后各自消化。","url":"https://superjackman.github.io/SI/s/8b/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"组装成 Transformer","item":"https://superjackman.github.io/SI/s/8b/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,13 +39,13 @@
 <p class="open"><a href="/SI/#D/8b">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">把注意力做成能叠很多层、又稳又能分辨词序的完整模型。</p>
 
-<section><p>回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先让词互相看，再各自消化，并且把原来的说法加回去。</p></section>
+<section><p>回头看名牌，只是一层里的一件事。大模型像一栋楼，同一种楼层叠很多层。每一层先对名牌，再把原来的说法加回去，然后各自消化。</p></section>
 
-<section><ul><li>像一个侦探小组开会：几个人各查一条线索，一个查“它指谁”，一个看挨着的词，一个找原因。开完会每人回到自己的位子把记下的消化一遍。</li><li>每次只在原稿上写批注，不把原稿涂掉。开会前先把每个人的音量调到一样。每个人还带着座位号，不然分不清谁先谁后。</li></ul></section>
+<section><ul><li>像一个侦探小组开会：几个人各查一条线索，一个查“它指谁”，一个看挨着的词，一个找原因。开完会每人回到自己的位子，把记下的消化一遍，原稿还留着。</li><li>每次只在原稿上写批注，不把原稿涂掉。开会前先把每个人的音量调到一样。每个人还带着座位号，不然分不清谁先谁后。</li></ul></section>
 
 <section><ul><li>多头：维度切成 h 份各做注意力再拼起来，每个头可以学一种关系（例如指代、相邻、因果）。</li><li>位置编码：注意力本身不管顺序；如今多用 RoPE（苏剑林等，2021，RoFormer），按位置旋转 q、k，使点积只取决于相对距离；演进：正弦（原论文）→ 可学习（GPT-1/2）→ RoPE（如今主流）。</li><li>FFN：每个位置独立的两层网络，中间维度常为模型维度的约 4 倍 常见值，各模型不同，激活演进：ReLU（原版）→ GELU（GPT）→ SwiGLU（如今常用）。</li><li>残差 + 归一化让它能叠很多层；归一化演进：原版 Post-LN（本站图）→ GPT-2 起 Pre-LN → 新模型常用 RMSNorm。</li></ul></section>
 
-<section><ul><li>一个解码块：输入先归一化，多头注意力交流，结果加回输入；再归一化，FFN消化，再加回。同样的块叠 N 层，最后接输出头。位置在注意力里旋转 q、k（RoPE）。</li></ul></section>
+<section><ul><li>一层先把音量调齐，再让几个人分头对名牌，结果加回原来的话；然后再调齐一次，各自消化一遍，再加回去。同样的一层叠很多层。座位号用来分清谁先谁后。</li></ul></section>
 
 <section><ul><li>原论文的解码器叠了 N = 6 层；如今的大模型常叠几十层。</li><li>原论文：模型维度 d = 512、h = 8 个头，每个头 512 ÷ 8 = 64 维。</li><li>参数量粗算：每个解码块约 12 × d² 个参数（注意力 4 × d² + 前馈 8 × d²） 粗算，不含词向量表。</li></ul></section>
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>梯度下降 · 大白话拆解 AI</title>
-<meta name="description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就顺着坡迈一小步。顺着坡往下走，这件事叫梯度下降。">
+<meta name="description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就朝反方向迈一小步。顺着坡往下走，这件事叫梯度下降。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/2/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/2/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/2/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="梯度下降 · 大白话拆解 AI">
-<meta property="og:description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就顺着坡迈一小步。顺着坡往下走，这件事叫梯度下降。">
+<meta property="og:description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就朝反方向迈一小步。顺着坡往下走，这件事叫梯度下降。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/2/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/2.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="梯度下降 · 大白话拆解 AI">
-<meta name="twitter:description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就顺着坡迈一小步。顺着坡往下走，这件事叫梯度下降。">
+<meta name="twitter:description" content="求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就朝反方向迈一小步。顺着坡往下走，这件事叫梯度下降。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/2.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/2/#lesson","name":"梯度下降","headline":"梯度下降 · 大白话拆解 AI","description":"求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就顺着坡迈一小步。顺着坡往下走，这件事叫梯度下降。","url":"https://superjackman.github.io/SI/s/2/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"梯度下降","item":"https://superjackman.github.io/SI/s/2/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/2/#lesson","name":"梯度下降","headline":"梯度下降 · 大白话拆解 AI","description":"求 L(θ) 的最小值，而且参数很多。旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就朝反方向迈一小步。顺着坡往下走，这件事叫梯度下降。","url":"https://superjackman.github.io/SI/s/2/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"梯度下降","item":"https://superjackman.github.io/SI/s/2/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,13 +39,13 @@
 <p class="open"><a href="/SI/#D/2">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">求 L(θ) 的最小值，而且参数很多。</p>
 
-<section><p>旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就顺着坡迈一小步。顺着坡往下走，这件事叫梯度下降。</p></section>
+<section><p>旋钮有几十亿颗，不可能一颗颗去试。蒙着眼走下一只碗：每一步只摸脚下哪边最陡，就朝反方向迈一小步。顺着坡往下走，这件事叫梯度下降。</p></section>
 
-<section><ul><li>你蒙着眼站在碗的内壁上，想走到碗底。看不见碗底，但脚能感到坡：左右有多陡，前后有多陡。</li><li>两个方向的坡合在一起，就是最陡的上坡。朝反方向迈一小步，再重新摸。两个方向在同一步里一起走。</li></ul></section>
+<section><ul><li>你蒙着眼站在碗的内壁上，想走到碗底。看不见碗底，但脚能感到坡：左右有多陡，前后有多陡。</li><li>两个方向的坡合在一起，就是最陡的上坡。朝反方向迈一小步，再重新摸。左右和前后要在同一步里一起走。</li></ul></section>
 
 <section><ul><li>一个参数时，导数表示“参数增加一点点，损失怎么变”。两个参数时，损失像一只碗 L(w1, w2)：偏导 ∂L/∂w1 是 w2 不动、只动 w1 时的坡度，∂L/∂w2 同理。所有偏导排成一个向量，就是梯度，指向损失上升最快的方向。</li><li>朝梯度的反方向走一小步，损失就下降；反复迭代。每一步都在同一点把所有偏导一起算出来，所有参数同时更新，不是先调完 w1 再调 w2（那是坐标下降）。</li><li>为什么不用解析解：线性回归有正规方程，但要求矩阵逆，代价是立方级；神经网络的损失非线性、非凸，根本没有封闭解。梯度下降只要“能算梯度”。</li></ul></section>
 
-<section><ul><li>碗从上看：圈越小，罚分越低。最低处是两颗旋钮停在 (2, 1)。</li><li>从边上出发。只拧第一颗是一个方向，只拧第二颗是另一个方向。两个方向合在一起，一步同时拧两颗。白点是接下来几步。</li></ul></section>
+<section><ul><li>碗从上看：圈越小，罚分越低。最低处是两颗旋钮停在 (2, 1)。</li><li>从边上出发。只拧第一颗是一个方向，只拧第二颗是另一个方向。两个方向合在一起，同一步里两颗一起拧。白点是接下来几步。</li></ul></section>
 
 <section><ul><li>偏导就是“只动一个、别的不动”：从 (0, 0) 把 w1 改成 0.001，L 从 6 变成 5.996001，变化量 ÷ 0.001 ≈ −4，正是 ∂L/∂w1。</li><li>L(w) = (w − 2)² + 0.5，导数 2(w − 2)，从 w = 0 出发：</li><li>η = 0.3：第 1 步梯度 −4，w = 1.20；接着 w = 0.00, 1.20, 1.68, 1.87, 1.95…，逐步逼近最低点 w = 2。</li><li>η = 1.1 时：w = 0.00, 4.40, −0.88, 5.46, −2.15，离 2 的距离 2 → 2.4 → 2.88 → …，越来越远，即发散。单个参数的一步：新 w = 0.50 − 0.1 × 0.20 = 0.48。</li><li>两个参数：L(w1, w2) = (w1 − 2)² + 2 × (w2 − 1)²；在 (0, 0) 处 ∂L/∂w1 = 2 × (0 − 2) = −4，∂L/∂w2 = 4 × (0 − 1) = −4，梯度 = (−4, −4)；η = 0.1：(w1, w2) = (0, 0) → (0.4, 0.4) → (0.72, 0.64)，L = 6 → 3.28 → 1.90。</li></ul></section>
 
