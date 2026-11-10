@@ -78,13 +78,25 @@ export async function openCard(host: HTMLElement, l: L, id: string, p: 1 | 2, go
     else if (s === 'sib' && b.dataset.k) go(b.dataset.k);
     else if (s === 'share') void import('./share/modal').then((M) => M.cardShare(host, l, id, c));
   });
-  // the reference's gestures: swipe down to close, left / right to turn the page
-  let x0 = 0, y0 = 0, on = false;
-  el.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (!t || e.touches.length > 1) { on = false; return; } x0 = t.clientX; y0 = t.clientY; on = true; }, { passive: true });
-  el.addEventListener('touchend', (e) => {
-    const t = e.changedTouches[0]; if (!on || !t) return; on = false; const dx = t.clientX - x0, dy = t.clientY - y0;
+  // swipe down to close, left / right to turn the page. Pointer capture so the finger can leave the card.
+  let x0 = 0, y0 = 0, pid = -1;
+  const blockSel = (e: Event) => { if (pid >= 0) e.preventDefault(); };
+  el.addEventListener('selectstart', blockSel);
+  el.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || pid >= 0) return;
+    if ((e.target as HTMLElement).closest('input, textarea, button, a')) return;
+    x0 = e.clientX; y0 = e.clientY; pid = e.pointerId;
+    el.setPointerCapture?.(e.pointerId);
+    document.body.style.userSelect = 'none';
+  });
+  el.addEventListener('pointerup', (e) => {
+    if (e.pointerId !== pid) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    pid = -1;
+    document.body.style.userSelect = '';
     if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) go(p === 1 ? `${id}.2` : id);
     else if (dy > 80 && dy > 2 * Math.abs(dx) && sb.scrollTop <= 0) go(null);
-  }, { passive: true });
+  });
+  el.addEventListener('pointercancel', (e) => { if (e.pointerId === pid) { pid = -1; document.body.style.userSelect = ''; } });
   el.querySelector<HTMLElement>('.g-shx')?.focus({ preventScroll: true });
 }

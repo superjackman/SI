@@ -186,7 +186,76 @@ function rangeSpec(input: HTMLInputElement): DialSpec {
 }
 
 export function bindRange(input: HTMLInputElement): void {
+  input.dataset.drag = 'range';
   bindDials(input, () => rangeSpec(input));
+}
+
+/** A press-and-drag that is not a number knob: lock the pointer, do not select text,
+    and report travel from the press point. `value` is what an e2e reads back. */
+export function bindOrbit(el: HTMLElement, o: { value: () => number; begin?: () => void; move: (dx: number, dy: number) => void }): void {
+  if (el.dataset.dragBound) return;
+  el.dataset.dragBound = '1';
+  el.dataset.drag = el.dataset.drag || 'orbit';
+  el.classList.add('dial');
+  let drag: { id: number; x: number; y: number } | null = null;
+  const sync = () => { el.dataset.v = String(o.value()); };
+  sync();
+  el.addEventListener('pointerdown', (ev) => {
+    if (!(ev instanceof PointerEvent) || ev.button !== 0 || drag) return;
+    ev.preventDefault();
+    el.setPointerCapture?.(ev.pointerId);
+    o.begin?.();
+    armDrag();
+    drag = { id: ev.pointerId, x: ev.clientX, y: ev.clientY };
+    sync();
+  });
+  el.addEventListener('pointermove', (ev) => {
+    if (!(ev instanceof PointerEvent) || !drag || ev.pointerId !== drag.id) return;
+    ev.preventDefault();
+    if (!el.hasPointerCapture?.(ev.pointerId)) el.setPointerCapture?.(ev.pointerId);
+    o.move(ev.clientX - drag.x, ev.clientY - drag.y);
+    sync();
+  });
+  const end = (ev: Event) => {
+    if (!drag) return;
+    if (ev instanceof PointerEvent && ev.pointerId !== drag.id) return;
+    if (ev.type === 'lostpointercapture' && ev instanceof PointerEvent && ev.buttons > 0) return;
+    drag = null;
+    disarmDrag();
+    sync();
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', end);
+}
+
+/** Hover tilt and other presses that must not select text. Keeps the caller's own move handler. */
+export function guardPointer(el: HTMLElement, value: () => number): void {
+  if (el.dataset.dragBound) return;
+  el.dataset.dragBound = '1';
+  el.dataset.drag = el.dataset.drag || 'tilt';
+  el.classList.add('dial');
+  let id = -1;
+  const sync = () => { el.dataset.v = String(value()); };
+  sync();
+  el.addEventListener('pointerdown', (ev) => {
+    if (!(ev instanceof PointerEvent) || ev.button !== 0) return;
+    el.setPointerCapture?.(ev.pointerId);
+    armDrag();
+    id = ev.pointerId;
+    sync();
+  });
+  el.addEventListener('pointermove', () => { if (id >= 0) sync(); });
+  const end = (ev: Event) => {
+    if (id < 0) return;
+    if (ev instanceof PointerEvent && ev.pointerId !== id) return;
+    if (ev.type === 'lostpointercapture' && ev instanceof PointerEvent && ev.buttons > 0) return;
+    id = -1;
+    disarmDrag();
+  };
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('lostpointercapture', end);
 }
 
 let installed = false;

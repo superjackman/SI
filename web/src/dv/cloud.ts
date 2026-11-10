@@ -1,5 +1,6 @@
 /* Words as a labelled cloud. Drag to turn it; until then it turns slowly by itself. */
 import { tx, type L } from '../l4/txt';
+import { bindOrbit } from '../ui/dial';
 import { paint } from '../theme/paint';
 import * as THREE from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
@@ -99,7 +100,7 @@ export function mount(host: HTMLElement, l: L) {
       `“${me.en}” is nearest “${WORDS[a!.j]!.en}” (${a!.d.toFixed(1)}) and “${WORDS[b!.j]!.en}” (${b!.d.toFixed(1)}).`,
     );
   };
-  let yaw = 0.5, pitch = 0.35, drag = false, user = false, lx = 0, ly = 0;
+  let yaw = 0.5, pitch = 0.35, user = false;
   const reduce = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } })();
   if (reduce) user = true;
   const look = () => {
@@ -123,13 +124,14 @@ export function mount(host: HTMLElement, l: L) {
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
-  canvas.addEventListener('pointerdown', (e) => { user = true; drag = true; lx = e.clientX; ly = e.clientY; });
-  addEventListener('pointerup', () => { drag = false; });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    yaw += (e.clientX - lx) * 0.01;
-    pitch = Math.min(1.05, Math.max(-0.2, pitch + (e.clientY - ly) * 0.008));
-    lx = e.clientX; ly = e.clientY;
+  let y0 = yaw, p0 = pitch;
+  bindOrbit(canvas, {
+    value: () => yaw,
+    begin: () => { user = true; y0 = yaw; p0 = pitch; },
+    move: (dx, dy) => {
+      yaw = y0 + dx * 0.01;
+      pitch = Math.min(1.05, Math.max(-0.2, p0 + dy * 0.008));
+    },
   });
   host.addEventListener('click', (e) => {
     const chip = (e.target as HTMLElement).closest<HTMLElement>('.lab-words span');

@@ -112,7 +112,7 @@ export function mount(host: HTMLElement, mode: string, l: L) {
       const v = list[slot] ? list[slot]!.get() : 0;
       const hit = dialHitRadius(440, scaleW, r);
       const n = dialNeedle(cx, cy, Math.max(4, r - 3), v, -2, 2);
-      return `<g class="net-knob dial" data-i="${slot}" data-v="${v}" tabindex="0" role="slider" aria-valuemin="-2" aria-valuemax="2" aria-valuenow="${dialText(v)}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="none" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
+      return `<g class="net-knob dial" data-drag="knob" data-i="${slot}" data-v="${v}" tabindex="0" role="slider" aria-valuemin="-2" aria-valuemax="2" aria-valuenow="${dialText(v)}"><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}" fill="none" stroke="var(--navy)" stroke-width="2"/><line x1="${cx.toFixed(1)}" y1="${cy.toFixed(1)}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="2"/></g>`;
     };
     const piece = (i: number, x: number) => p.W2[i]! * relu(p.W1[i]![0]! * x + p.W1[i]![1]! + p.b1[i]!);
     let lines = '', boxes = '', dials = '';

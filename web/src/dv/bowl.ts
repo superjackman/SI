@@ -1,5 +1,6 @@
 /* A round bowl. The real knobs still move the ball; the picture is a circular cup so the shape is obvious. */
 import { tx, type L } from '../l4/txt';
+import { bindOrbit } from '../ui/dial';
 import { paint } from '../theme/paint';
 import * as THREE from 'three';
 import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer.js';
@@ -139,7 +140,7 @@ export function mount(host: HTMLElement, l: L) {
   place(0, 0);
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 40);
   const lookAt = new THREE.Vector3(0, 0.42, 0);
-  let yaw = 0.78, pitch = 0.58, drag = false, lx = 0, ly = 0;
+  let yaw = 0.78, pitch = 0.58;
   const look = () => {
     const dist = 6.15;
     camera.position.set(lookAt.x + dist * Math.cos(pitch) * Math.sin(yaw), lookAt.y + dist * Math.sin(pitch), lookAt.z + dist * Math.cos(pitch) * Math.cos(yaw));
@@ -162,14 +163,15 @@ export function mount(host: HTMLElement, l: L) {
     draw();
   };
   (host.closest('.st-article') || host).addEventListener('knob-move', onMove);
-  canvas.addEventListener('pointerdown', (e) => { drag = true; lx = e.clientX; ly = e.clientY; });
-  addEventListener('pointerup', () => { drag = false; });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    yaw += (e.clientX - lx) * 0.008;
-    pitch = Math.min(1.05, Math.max(0.34, pitch + (e.clientY - ly) * 0.005));
-    lx = e.clientX; ly = e.clientY;
-    look(); draw();
+  let y0 = yaw, p0 = pitch;
+  bindOrbit(canvas, {
+    value: () => yaw,
+    begin: () => { y0 = yaw; p0 = pitch; },
+    move: (dx, dy) => {
+      yaw = y0 + dx * 0.008;
+      pitch = Math.min(1.05, Math.max(0.34, p0 + dy * 0.005));
+      look(); draw();
+    },
   });
   new ResizeObserver(() => draw()).observe(stage);
 }

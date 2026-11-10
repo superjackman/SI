@@ -66,7 +66,7 @@ export function mount(host: HTMLElement, mode: string, l: L) {
       const cx = 70 + i * 120, cy = 150;
       const hit = dialHitRadius(440, scaleW, 28);
       const n = dialNeedle(cx, cy, 20, cur, lo, hi);
-      return `<g class="dial" data-i="${i}" data-v="${cur}" tabindex="0" role="slider" aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${dialText(cur)}" aria-label="${name}"><circle cx="${cx}" cy="${cy}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="28" fill="var(--card)" stroke="var(--navy)" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="3"/><text x="${cx}" y="${cy + 46}" text-anchor="middle" fill="var(--ink)" font-size="14">${name} ${dialText(cur)}</text></g>`;
+      return `<g class="dial" data-drag="knob" data-i="${i}" data-v="${cur}" tabindex="0" role="slider" aria-valuemin="${lo}" aria-valuemax="${hi}" aria-valuenow="${dialText(cur)}" aria-label="${name}"><circle cx="${cx}" cy="${cy}" r="${hit.toFixed(1)}" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="28" fill="var(--card)" stroke="var(--navy)" stroke-width="3"/><line x1="${cx}" y1="${cy}" x2="${n.x2.toFixed(1)}" y2="${n.y2.toFixed(1)}" stroke="var(--navy)" stroke-width="3"/><text x="${cx}" y="${cy + 46}" text-anchor="middle" fill="var(--ink)" font-size="14">${name} ${dialText(cur)}</text></g>`;
     }).join('');
     let plot = '';
     if (m !== 'chain') {

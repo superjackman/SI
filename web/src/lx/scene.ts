@@ -1,4 +1,5 @@
 import { paint } from '../theme/paint';
+import { guardPointer } from '../ui/dial';
 /* R39: the three.js stage for layers 1, 2, 3 and 5 (lazy; three.js is shared with the layer-4 chunk). Same look as
    layer 4: rounded glowing plates with a back plate for depth, arrow bars with heads, dashed frames, the glowing
    connector into an opened box's panel and a travelling light. z = 0 maps 1:1 to CSS px so DOM labels sit on top. */
@@ -113,6 +114,7 @@ export function lxStage3d(host: HTMLElement, onPick: (id: string) => void): LxSt
     ray.setFromCamera(v, cam); const hit = ray.intersectObjects(plates, false)[0]; const id = hit?.object.userData.id as string | undefined; if (id) onPick(id);
   };
   el.addEventListener('pointermove', move); el.addEventListener('click', click);
+  guardPointer(el, () => tx);
   raf = requestAnimationFrame(frame);
   return {
     el,

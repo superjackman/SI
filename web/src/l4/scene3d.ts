@@ -1,4 +1,5 @@
 import { paint } from '../theme/paint';
+import { guardPointer } from '../ui/dial';
 /* R38: the real three.js stage (lazy chunk). Everything is procedural: rounded glowing plates with a back plate for
    depth, arrow bars, residual lanes, a dashed decoder frame, the drill connector and travelling light. The camera is
    placed so that z = 0 maps 1:1 to CSS px, which lets DOM labels sit exactly on the plates. The scene tilts a little
@@ -142,6 +143,7 @@ export function stage3d(host: HTMLElement, onPick: (n: Nd) => void): Stage {
     ray.setFromCamera(v, cam); const hit = ray.intersectObjects(plates, false)[0]; const n = hit?.object.userData.nd as Nd | undefined; if (n) onPick(n);
   };
   el.addEventListener('pointermove', move); el.addEventListener('click', click);
+  guardPointer(el, () => tx);
   raf = requestAnimationFrame(frame);
   return {
     el,
