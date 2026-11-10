@@ -47,7 +47,7 @@
 
 <section><ul><li>RNN updates h; attention scores all h and mixes them.</li></ul></section>
 
-<section><ul><li>Scores [2, 1, 0] → weights [0.665, 0.245, 0.090] .</li><li>Scores for 3 source words [2, 1, 0]: e² ≈ 7.389, e¹ ≈ 2.718, e⁰ = 1, total 11.107.</li><li>Weights ≈ [0.665, 0.245, 0.090]: the model mostly “looks at” the first word (“Attention: who relates to whom” and card use the same numbers).</li><li>RNN : inputs x = 1, 0, 0, 0 → h = 0.76 → 0.36 → 0.18 → 0.09: the first token’s influence roughly halves each step.</li><li>Softmax : scores 2.0 / 1.0 / 0.1 / −0.5 → 62.5% / 23.0% / 9.4% / 5.1%.</li></ul></section>
+<section><ul><li>Scores [2, 1, 0] → shares [0.665, 0.245, 0.090] .</li><li>Scores for 3 source words [2, 1, 0]: e² ≈ 7.389, e¹ ≈ 2.718, e⁰ = 1, total 11.107.</li><li>Weights ≈ [0.665, 0.245, 0.090]: the model mostly “looks at” the first word (“Attention: who relates to whom” and card use the same numbers).</li><li>RNN : inputs x = 1, 0, 0, 0 → h = 0.76 → 0.36 → 0.18 → 0.09: the first token’s influence roughly halves each step.</li><li>Softmax : scores 2.0 / 1.0 / 0.1 / −0.5 → 62.5% / 23.0% / 9.4% / 5.1%.</li></ul></section>
 
 <section><ul><li>aᵢ = softmax(eᵢ); c = Σ aᵢ hᵢ</li><li>h_t = tanh(W × h_(t−1) + U × x_t + b)</li><li>Weights a_i = e^(e_i) / Σ e^(e_j); context c = Σ a_i × h_i</li></ul><ul><li>Weights are computed, not stored parameters</li></ul></section>
 

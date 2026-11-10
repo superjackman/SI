@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Backpropagation · AI, explained plainly</title>
-<meta name="description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<meta name="description" content="Get the gradients of all parameters, efficiently. How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is…">
 <link rel="canonical" href="https://superjackman.github.io/SI/en/s/4/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/4/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/4/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI, explained plainly">
 <meta property="og:title" content="Backpropagation · AI, explained plainly">
-<meta property="og:description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<meta property="og:description" content="Get the gradients of all parameters, efficiently. How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is…">
 <meta property="og:url" content="https://superjackman.github.io/SI/en/s/4/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/en/4.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="zh_CN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Backpropagation · AI, explained plainly">
-<meta name="twitter:description" content="Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.">
+<meta name="twitter:description" content="Get the gradients of all parameters, efficiently. How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is…">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/en/4.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/4/#lesson","name":"Backpropagation","headline":"Backpropagation · AI, explained plainly","description":"Get the gradients of all parameters, efficiently. How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.","url":"https://superjackman.github.io/SI/en/s/4/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Backpropagation","item":"https://superjackman.github.io/SI/en/s/4/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/4/#lesson","name":"Backpropagation","headline":"Backpropagation · AI, explained plainly","description":"Get the gradients of all parameters, efficiently. How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is…","url":"https://superjackman.github.io/SI/en/s/4/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Backpropagation","item":"https://superjackman.github.io/SI/en/s/4/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,13 +39,13 @@
 <p class="open"><a href="/SI/?lang=en#D/4">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
 <p class="bd">Get the gradients of all parameters, efficiently.</p>
 
-<section><p>How do early knobs get their gradients? The chain rule, run backwards efficiently — backprop.</p></section>
+<section><p>How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is the chain rule.</p></section>
 
 <section><ul><li>Gears in a row: how much the last turned tells how to nudge earlier ones.</li><li>Backprop does this automatically.</li><li>Long chains vanish — ReLU, residuals, normalisation keep a path.</li></ul></section>
 
 <section><ul><li>A network is nested functions L = f3(f2(f1(x))); the chain rule multiplies the local derivatives.</li><li>Backpropagation: run forward to get each layer’s values, then pass “upstream gradient × local derivative” back layer by layer. Reusing the intermediate results makes one backward pass cost about one forward pass (Rumelhart, Hinton and Williams made it widely known in 1986); it is what “autograd” in every framework does.</li><li>New problem — vanishing / exploding gradients: sigmoid’s slope is at most 0.25, and 0.25^10 ≈ 0.00000095 over 10 layers. Fixes: ReLU (slope 1 when positive), residuals (y = x + F(x) always has a path with slope 1; ResNet, He et al., 2015), normalisation (LayerNorm and others), and initialisation scaled to layer width (never all zeros).</li></ul></section>
 
-<section><ul><li>Forward values → backward gradients → every ∂L/∂w.</li></ul></section>
+<section><ul><li>Numbers going forward, then the slope passed back, so each knob knows which way to turn.</li></ul></section>
 
 <section><ul><li>dL/dx = 0.5 × 3 × 2 = 3. Once a ReLU is in the chain, the slope still has to cross that bend.</li><li>Chain rule : dL/dx = 0.5 × 3 × 2 = 3; now a small network with a ReLU.</li><li>y = w2 × ReLU(w1 × x), L = (y − t)², with x = 1, w1 = 2, w2 = 3, t = 5.</li><li>Forward: h = 2, y = 6, L = 1. Backward: dL/dy = 2(6 − 5) = 2.</li><li>dL/dw2 = 2 × h = 4; dL/dh = 2 × w2 = 6, and h &gt; 0 so dh/dw1 = x = 1, giving dL/dw1 = 6.</li></ul></section>
 
