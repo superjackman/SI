@@ -25,5 +25,7 @@ export function clipHtml(key: string, lang: ClipLang, base: string): string {
   if (!c) return '';
   const esc = (s: string) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]!);
   const name = lang === 'en' ? 'What this stop is saying' : '这一站在说什么';
-  return `<figure class="ly-clip"><video controls preload="none" poster="${esc(c.poster)}" aria-label="${esc(name)}"><source src="${esc(c.src)}" type="video/mp4"><track kind="subtitles" src="${esc(c.vtt)}" srclang="${c.srclang}" label="${esc(c.label)}" default></video></figure>`;
+  const speed = lang === 'en' ? 'Speed' : '速度';
+  const rates = ['1', '1.25', '1.5', '2'].map((r) => `<button type="button" class="l4-b ui-sec" data-clip-rate="${r}">${r}x</button>`).join('');
+  return `<figure class="ly-clip"><video controls preload="none" poster="${esc(c.poster)}" aria-label="${esc(name)}"><source src="${esc(c.src)}" type="video/mp4"><track kind="subtitles" src="${esc(c.vtt)}" srclang="${c.srclang}" label="${esc(c.label)}" default></video><div class="ly-clip-rate" role="group" aria-label="${esc(speed)}">${rates}</div></figure>`;
 }

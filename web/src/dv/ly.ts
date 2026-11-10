@@ -304,6 +304,25 @@ export function wire(host: HTMLElement, page: string, l: L) {
     else if (b.dataset.lyA === 'up') openTo(DEPTH_MAX[d] + 1);
   });
   draw();
+  const clipVideo = root.querySelector<HTMLVideoElement>('.ly-clip video');
+  const clipRates = [...root.querySelectorAll<HTMLButtonElement>('[data-clip-rate]')];
+  if (clipVideo && clipRates.length) {
+    const key = 'si.clip.rate';
+    const ok = (r: string | null) => r === '1' || r === '1.25' || r === '1.5' || r === '2';
+    let saved = '1.25';
+    try { const v = localStorage.getItem(key); if (ok(v)) saved = v!; } catch { /* private */ }
+    const apply = (r: string) => {
+      clipVideo.playbackRate = Number(r);
+      clipVideo.defaultPlaybackRate = Number(r);
+      clipRates.forEach((b) => { const on = b.dataset.clipRate === r; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+    };
+    apply(saved);
+    clipRates.forEach((b) => b.addEventListener('click', () => {
+      const r = b.dataset.clipRate || '1.25';
+      try { localStorage.setItem(key, r); } catch { /* private */ }
+      apply(r);
+    }));
+  }
   const demo = root.querySelector<HTMLElement>('[data-vf-part="demo"]');
   void import('../vf/ui').then(async (m) => {
     if (demo?.isConnected) m.mount(demo, page, l, undefined, 'demo');
