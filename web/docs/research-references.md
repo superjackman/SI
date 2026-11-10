@@ -12,7 +12,7 @@
 | [bbycroft/llm-viz](https://github.com/bbycroft/llm-viz)（页面在 bbycroft.net/llm） | 5591 星，678 fork，2026-08-10 | MIT | 把一次前向摊成可以跟着走的结构，而不是一张总图 | 热力图只画当前这句话的注意力，不搬它的三维场景 |
 | [karpathy/micrograd](https://github.com/karpathy/micrograd) | 18807 星，2993 fork，2026-08-03 | MIT | 一个标量就把“坡怎么传回去”说完 | 反向那一站用三个旋钮的连乘，自动拧从最后一格往前转 |
 | [karpathy/nanoGPT](https://github.com/karpathy/nanoGPT) | 64600 星，11112 fork，2025-11-12 | MIT | 字符级、小到能在笔记本上跑完，损失下降就是学会了 | 页内小 Transformer：一层、很小的宽度、几句公开的短句，Worker 里训练 |
-| [karpathy/minGPT](https://github.com/karpathy/minGPT) | 25014 星，3328 fork，2024-08-15 | MIT | 一块注意力写清楚，再叠层 | 实验模型只做一层、两个头，生成时能指出每个字在看谁 |
+| [karpathy/minGPT](https://github.com/karpathy/minGPT) | 25014 星，3328 fork，2024-08-15 | MIT | 一块注意力写清楚，再叠层 | 实验模型只做一层、一个头，生成时能指出每个字在看谁 |
 | [karpathy/nn-zero-to-hero](https://github.com/karpathy/nn-zero-to-hero) | 25433 星，3697 fork，2024-08-18 | MIT | 从下一个字的预测搭起，每集只加一个零件 | 课文顺序不变：旋钮 → 坡 → 注意力 → 预训练 → 自己训一个小的 |
 | [3Blue1Brown 神经网络](https://www.3blue1brown.com/lessons/neural-networks) 与 [注意力](https://www.youtube.com/watch?v=eMlx5fFNoYc) | 播放量未从 YouTube 官方接口核对，不记整数 | 动画库 manim 另有仓库；片子本身不整段搬 | 先给一个日常画面（认数字、猜下一个词），再揭开结构；神经元先说成“装着一个数的格子” | 正文先讲旋钮和纸条，术语放在这个画面之后 |
 | [Jay Alammar《图解 Transformer》](https://jalammar.github.io/illustrated-transformer/)（仓库 [jalammar/jalammar.github.io](https://github.com/jalammar/jalammar.github.io) 885 星，391 fork） | 仓库 885 星；文章阅读量未核对 | MIT（仓库） | 同一句话配一张图，Q/K/V 用“查询 / 钥匙 / 值”而不是先甩矩阵 | 热力图下面用一句话：这个字在看前面的哪个字 |
