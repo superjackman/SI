@@ -51,7 +51,7 @@
 
 <section><ul><li>aᵢ = softmax(eᵢ)；c = Σ aᵢ hᵢ</li><li>h_t = tanh(W × h_(t−1) + U × x_t + b)</li><li>权重 a_i = e^(e_i) / Σ e^(e_j)；上下文 c = Σ a_i × h_i</li></ul><ul><li>权重现算，不是固定参数</li></ul></section>
 
-<p><b>留下的问题</b> 注意力很好用，但它还挂在 RNN 上，顺序计算无法并行。既然注意力已经能直接连接任意两个位置，能不能去掉循环，只留注意力？</p>
+<p><b>留下的问题</b> 注意力很好用，但它还挂在必须一个词等一个词的记忆上。既然任意两个位置已经能直接说话，能不能拿掉排队，只留注意力？</p>
 <nav class="pn"><a href="/SI/s/6/" rel="prev">← 上一站：词向量</a><a href="/SI/s/8a/" rel="next">下一站：注意力：谁和谁有关 →</a></nav>
 <section><h2>🗺 全部站点</h2><ol><li><a href="/SI/s/0/">用样本找函数</a></li><li><a href="/SI/s/P/">概率基础</a></li><li><a href="/SI/s/1/">损失函数</a></li><li><a href="/SI/s/2/">梯度下降</a></li><li><a href="/SI/s/3/">多层 + 非线性</a></li><li><a href="/SI/s/4/">反向传播</a></li><li><a href="/SI/s/5/">训练工程</a></li><li><a href="/SI/s/6/">词向量</a></li><li><b>RNN + 注意力</b></li><li><a href="/SI/s/8a/">注意力：谁和谁有关</a></li><li><a href="/SI/s/8b/">组装成 Transformer</a></li><li><a href="/SI/s/9/">预训练</a></li><li><a href="/SI/s/E/">评估</a></li><li><a href="/SI/s/10/">后训练：SFT、对齐与推理</a></li><li><a href="/SI/s/11/">低成本适配</a></li><li><a href="/SI/s/12/">推理效率</a></li><li><a href="/SI/s/13/">RAG</a></li><li><a href="/SI/s/14/">工具与 Agent</a></li><li><a href="/SI/s/S/">安全</a></li><li><a href="/SI/s/15a/">多模态</a></li><li><a href="/SI/s/15b/">推理模型与长上下文</a></li><li><a href="/SI/s/A/">应用实战</a></li><li><a href="/SI/s/16/">回顾</a></li></ol></section>
 </main>

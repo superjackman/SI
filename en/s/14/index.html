@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tools + agents · AI, explained plainly</title>
-<meta name="description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough — act: call tools. The model writes the call; a program runs it.">
+<meta name="description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough. It also has to act: check the weather, move a meeting. The model…">
 <link rel="canonical" href="https://superjackman.github.io/SI/en/s/14/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/14/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/14/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI, explained plainly">
 <meta property="og:title" content="Tools + agents · AI, explained plainly">
-<meta property="og:description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough — act: call tools. The model writes the call; a program runs it.">
+<meta property="og:description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough. It also has to act: check the weather, move a meeting. The model…">
 <meta property="og:url" content="https://superjackman.github.io/SI/en/s/14/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/en/14.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="zh_CN">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Tools + agents · AI, explained plainly">
-<meta name="twitter:description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough — act: call tools. The model writes the call; a program runs it.">
+<meta name="twitter:description" content="Let the model act in the outside world and finish multi-step tasks. Talking is not enough. It also has to act: check the weather, move a meeting. The model…">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/en/14.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/14/#lesson","name":"Tools + agents","headline":"Tools + agents · AI, explained plainly","description":"Let the model act in the outside world and finish multi-step tasks. Talking is not enough — act: call tools. The model writes the call; a program runs it.","url":"https://superjackman.github.io/SI/en/s/14/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Tools + agents","item":"https://superjackman.github.io/SI/en/s/14/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"AI, explained plainly","alternateName":"大白话拆解 AI","url":"https://superjackman.github.io/SI/","inLanguage":"en"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/en/s/14/#lesson","name":"Tools + agents","headline":"Tools + agents · AI, explained plainly","description":"Let the model act in the outside world and finish multi-step tasks. Talking is not enough. It also has to act: check the weather, move a meeting. The model…","url":"https://superjackman.github.io/SI/en/s/14/","inLanguage":"en","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/en/s/#course","name":"AI, explained plainly: from examples to agents"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://superjackman.github.io/SI/?lang=en"},{"@type":"ListItem","position":2,"name":"All stops","item":"https://superjackman.github.io/SI/en/s/"},{"@type":"ListItem","position":3,"name":"Tools + agents","item":"https://superjackman.github.io/SI/en/s/14/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/?lang=en#D/14">▶ Open the interactive version (diagrams, labs, quizzes)</a></p>
 <p class="bd">Let the model act in the outside world and finish multi-step tasks.</p>
 
-<section><p>Talking is not enough — act: call tools. The model writes the call; a program runs it.</p></section>
+<section><p>Talking is not enough. It also has to act: check the weather, move a meeting. The model only writes what should be done. Someone beside it does the work.</p></section>
 
-<section><ul><li>Show tool schemas first.</li><li>It emits call JSON; the program runs and returns results.</li><li>Loop observe → think → act until done.</li></ul></section>
+<section><ul><li>First show the model what can be done.</li><li>It writes the one job. The person beside it does that job and writes the result back.</li><li>Lap: look, think, do, look again, until it stops.</li></ul></section>
 
 <section><ul><li>Tool calling: describe the tools (name, JSON Schema for arguments); when needed the model outputs a structured request such as {&quot;name&quot;: &quot;get_weather&quot;, &quot;arguments&quot;: {&quot;city&quot;: &quot;Shanghai&quot;}}; your program runs it and puts the result back in the context. The model executes nothing — it only decides what to call.</li><li>The agent loop: observe → think → act → see the result → … until done (ReAct, Yao et al., 2022), plus planning (sub-tasks), memory (the context is short-term; outside stores are long-term) and reflection (run tests, compare with the goal, retry).</li><li>MCP: an open protocol Anthropic released in November 2024 — JSON-RPC 2.0, client-server — exposing tools, resources and prompt templates to model apps in one way, turning M apps × N tools of glue code into M + N.</li><li>Hard parts: compounding errors, permissions and safety (prompt injection, overreach — least privilege, sandboxes, a human confirms risky steps, keep instructions apart from data), evaluation and cost. Several cooperating agents sometimes help, but not always more than one.</li></ul></section>
 
