@@ -156,7 +156,7 @@ const BOARDS = {
     B('steps', '讲清原因的那份被人选中，分数 1.5。', (t) => ({ kind: 'steps', items: ['1.5 选中', '0.5'], on: 1 + t, note: '人选了左边' })),
     B('tally', '奖励的差是 1.5 减 0.5，等于 1。', (t) => ({ kind: 'tally', big: lerp(1.5, 1, t).toFixed(2), unit: '差', rows: [{ label: '1.5−0.5', v: lerp(0, 1, t), max: 1.5 }] })),
     B('tally', '收成 0 到 1 之间的数，大约是 0.73。', (t) => ({ kind: 'tally', big: (1 / (1 + Math.exp(-lerp(0, 1, t)))).toFixed(2), unit: '靠向选中的那份', rows: [{ label: '差从 0 收到 1', v: 1 / (1 + Math.exp(-lerp(0, 1, t))), max: 1 }] })),
-    B('line', '旋钮就往被选中的那边靠。', (t) => ({ kind: 'line', w: lerp(0, 1.2, t), b: lerp(0, 0.4, t), fall: 1, line: 1, hot: 'both' })),
+    B('prefer', '旋钮就往被选中的那边靠。', (t) => ({ kind: 'prefer', tilt: t })),
   ],
   /* 第 15 站 */
   '11': [
@@ -207,9 +207,9 @@ const BOARDS = {
   '15a': [
     B('words', '世界不只有字。截图、照片、声音也要能读。', (t) => ({ kind: 'words', words: ['图', '声音', '字'], flow: t, scores: [] })),
     B('tally', '一张图，边长是 224。', (t) => ({ kind: 'tally', big: String(Math.round(lerp(0, 224, t))), unit: '边长', rows: [{ label: '一条边', v: lerp(0, 224, t), max: 224 }] })),
-    B('grid', '切成边长 16 的小块。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t * 0.15, cap: '小块边长 16' })),
+    B('grid', '切成边长 16 的小块。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t * 0.15 })),
     B('tally', '224 除以 16，一条边是 14 块。', (t) => ({ kind: 'tally', big: '14', unit: '一条边的块数', rows: [{ label: '224÷16', v: lerp(0, 14, t), max: 14 }] })),
-    B('grid', '14 乘 14，整张是 196 个小块。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t, cap: Math.round(t * 196) + ' / 196' })),
+    B('grid', '14 乘 14，整张是 196 个小块。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: Math.min(1, t / 0.72) })),
     B('words', '每一块当成一个词，和文字排进同一句。声音也照这个切。', (t) => ({ kind: 'words', words: ['小块', '当成', '词'], flow: t, scores: [{ name: '196 个', v: t }] })),
   ],
   /* 第 21 站 */
@@ -325,7 +325,7 @@ const EXTRA = {
     B('tally', '1.5 比 0.5 高 1。这个 1 还不是可能性。', (t) => ({ kind: 'tally', big: lerp(0, 1, t).toFixed(2), unit: '1.5−0.5', rows: [{ label: '差', v: lerp(0, 1, t), max: 1.5 }] })),
     B('tally', '差如果直接当成可能性，超过 1 就不像样。', (t) => ({ kind: 'tally', big: '1.00', unit: '还不能当可能性', rows: [{ label: '差', v: lerp(0, 1, t), max: 1 }] })),
     B('tally', '收进 0 到 1 以后，1 变成大约 0.73。', (t) => ({ kind: 'tally', big: (1 / (1 + Math.exp(-lerp(0, 1, t)))).toFixed(2), unit: '0 到 1 之间', rows: [{ label: '收进去', v: 1 / (1 + Math.exp(-lerp(0, 1, t))), max: 1 }] })),
-    B('line', '0.73 的意思是，旋钮更靠被选中的那份。', (t) => ({ kind: 'line', w: lerp(0, 0.73, t) * 2, b: 0.2, fall: 1, line: 1, hot: 'w' })),
+    B('prefer', '0.73 的意思是，旋钮更靠被选中的那份。', (t) => ({ kind: 'prefer', tilt: lerp(0.35, 1, t), mark: '0.73' })),
   ],
   '11': [
     B('steps', '整块冻住不动，细路单独拧，再把结果加回去。', (t) => ({ kind: 'steps', items: ['整块冻住', '细路拧', '加回去'], on: t * 3, note: '只动细路', scan: t })),
@@ -369,10 +369,10 @@ const EXTRA = {
     B('tally', '四个动作里，该停的是会改东西的那一个，不是四个都停。', (t) => ({ kind: 'tally', big: String(Math.round(lerp(4, 1, t))), unit: '该停下来的', rows: [{ label: '不是每一个', v: lerp(4, 1, t), max: 4 }] })),
   ],
   '15a': [
-    B('grid', '边长 224 的图，先按 16 一块一块铺开。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t * 0.3, cap: '小块边长 16' })),
+    B('grid', '边长 224 的图，先按 16 一块一块铺开。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t * 0.3 })),
     B('tally', '224 除以 16 正好是 14，没有剩下的边。', (t) => ({ kind: 'tally', big: '14', unit: '224÷16', rows: [{ label: '一条边', v: lerp(0, 14, t), max: 14 }] })),
     B('tally', '14 乘 14。十条边是 140，再加 56，是 196。', (t) => ({ kind: 'tally', big: '196', unit: '14×14', rows: [{ label: '整张的小块', v: lerp(0, 196, t), max: 196 }] })),
-    B('grid', '196 个小块铺满以后，每一块当成一个词。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: t, cap: Math.round(lerp(0, 196, t)) + ' / 196' })),
+    B('grid', '196 个小块铺满以后，每一块当成一个词。', (t) => ({ kind: 'grid', cols: 14, rows: 14, fill: Math.min(1, t / 0.7) })),
     B('words', '这些词和原来的文字排进同一句，一起往下走。', (t) => ({ kind: 'words', words: ['图的词', '文字'], flow: t, scores: [{ name: '196 个一起走', v: t }] })),
   ],
   '15b': [
@@ -505,18 +505,22 @@ function tally(m){
 }
 function steps(m){
   const items=m.items||[];
+  const cols=items.length>6?5:3;
+  const bw=cols===5?210:340;
+  const gapY=96;
   let s='';
   items.forEach((label,i)=>{
     const on=clamp(m.on-i,0,1);
     if(on<=0) return;
-    const col=i%2? 150: 150;
-    const x=80+(i%3)*380, y=150+Math.floor(i/3)*150;
-    s+='<rect x="'+x+'" y="'+y+'" width="'+(40+on*280)+'" height="80" fill="none" stroke="'+COLS[i%4]+'" stroke-width="6"/>';
-    s+=tx(x+16, y+50, label, 30);
+    const x=70+(i%cols)*(bw+18), y=130+Math.floor(i/cols)*gapY;
+    s+='<rect x="'+x+'" y="'+y+'" width="'+(36+on*(bw-36))+'" height="72" fill="none" stroke="'+COLS[i%4]+'" stroke-width="6"/>';
+    s+=tx(x+14, y+46, label, 28);
   });
-  s+=tx(80, 620, m.note||'', 32);
-  const cursor=m.scan!=null?m.scan*Math.max(1,items.length-1):clamp(m.on,0,Math.max(1,items.length));
-  s+='<circle cx="'+lerp(80,1100,m.scan!=null?m.scan:(cursor%3)/3).toFixed(1)+'" cy="'+(140+Math.floor(cursor/3)*40)+'" r="18" fill="'+HL+'"/>';
+  const rows=Math.max(1, Math.ceil(items.length/cols));
+  const noteY=Math.min(640, 130+rows*gapY+28);
+  s+=tx(70, noteY, m.note||'', 30);
+  const along=m.scan!=null?m.scan:clamp(m.on/Math.max(1,items.length),0,1);
+  s+='<circle cx="'+lerp(90,1180,along).toFixed(1)+'" cy="'+(noteY-46)+'" r="16" fill="'+HL+'"/>';
   return s;
 }
 function words(m){
@@ -550,13 +554,36 @@ function flow(m){
 function grid(m){
   const cols=m.cols, rows=m.rows, n=cols*rows;
   const shown=Math.round(clamp(m.fill,0,1)*n);
-  const cell=Math.min(36, Math.floor(520/cols));
+  const cell=Math.min(28, Math.floor(460/cols));
   let s='';
   for(let i=0;i<shown;i++){
     const c=i%cols, r=Math.floor(i/cols);
-    s+='<rect x="'+(80+c*cell)+'" y="'+(80+r*cell)+'" width="'+(cell-3)+'" height="'+(cell-3)+'" fill="'+COLS[(c+r)%4]+'"/>';
+    s+='<rect x="'+(70+c*cell)+'" y="'+(90+r*cell)+'" width="'+(cell-3)+'" height="'+(cell-3)+'" fill="'+COLS[(c+r)%4]+'"/>';
   }
-  s+=tx(80, 660, (m.cap||'')+'  '+shown+' 块', 32);
+  const lx=70+cols*cell+36;
+  s+=tx(lx, 180, '已铺', 32);
+  s+=tx(lx, 250, String(shown), 64);
+  s+=tx(lx, 300, '块', 32);
+  s+=tx(lx, 360, '一共 '+n, 28);
+  return s;
+}
+function prefer(m){
+  const tilt=m.tilt==null?1:m.tilt;
+  let s='<rect x="80" y="120" width="460" height="200" fill="none" stroke="'+GOOD+'" stroke-width="8"/>';
+  s+=tx(310, 190, '讲清原因', 36, 'middle');
+  s+=tx(310, 250, '1.50', 48, 'middle');
+  s+=tx(310, 290, '人选中', 26, 'middle');
+  s+='<rect x="740" y="120" width="460" height="200" fill="none" stroke="'+LINE+'" stroke-width="4"/>';
+  s+=tx(970, 190, '自己去查', 36, 'middle');
+  s+=tx(970, 250, '0.50', 48, 'middle');
+  s+=tx(970, 290, '落选', 26, 'middle');
+  const ang=lerp(-0.3, -Math.PI/2, tilt);
+  const cx=640, cy=470, r=58;
+  const x2=cx+Math.sin(ang)*(r-8), y2=cy-Math.cos(ang)*(r-8);
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+CARD+'" stroke="'+NAVY+'" stroke-width="6"/>';
+  s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+HL+'" stroke-width="10" stroke-linecap="round"/>';
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+HL+'"/>';
+  s+=tx(cx, cy+r+34, m.mark?('靠向选中的那份  '+m.mark):'朝选中的那份转', 26, 'middle');
   return s;
 }
 function crowd(m){
@@ -578,6 +605,7 @@ function frame(m){
   else if(m.kind==='words') body=words(m);
   else if(m.kind==='flow') body=flow(m);
   else if(m.kind==='grid') body=grid(m);
+  else if(m.kind==='prefer') body=prefer(m);
   else if(m.kind==='crowd') body=crowd(m);
   body+=tx(48, 700, m.cap, 28);
   document.getElementById('s').innerHTML='<rect width="1280" height="720" fill="'+CARD+'"/>'+body;

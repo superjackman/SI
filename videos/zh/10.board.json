@@ -63,12 +63,12 @@
     "say": "0.73 的意思是，旋钮更靠被选中的那份。",
     "start": 37.39,
     "end": 40.92,
-    "shot": "line"
+    "shot": "prefer"
   },
   {
     "say": "旋钮就往被选中的那边靠。",
     "start": 41.12,
     "end": 43.47,
-    "shot": "line"
+    "shot": "prefer"
   }
 ]
