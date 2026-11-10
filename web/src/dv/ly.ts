@@ -12,6 +12,7 @@ import { LIFE_CAP, life } from './ill';
 import { workedHtml } from './rail';
 import { DEMO } from '../vf/data';
 import { BRIDGE, CLOSE, LOOK, WHY } from './voice';
+import { clipHtml } from './clip';
 
 import { LY_DEPTH, depthGet, depthSet, okD, type Depth } from './prog';
 
@@ -270,7 +271,8 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>${H('写成程序', 'As a program')}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre><p class="ly-bridge">${esc(tx(BRIDGE[key] ?? BRIDGE['0']!, l))}</p>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
-  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;
+  const clip = clipHtml(key, l === 'en' ? 'en' : 'zh', import.meta.env.BASE_URL || '/');
+  return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${clip}${secs}<div class="ly-nx"></div></div>`;
 }
 
 /** wire the layered body inside `host`: depth, 懂了 → next layer, the bar, the two 验证 parts, the pictures */
