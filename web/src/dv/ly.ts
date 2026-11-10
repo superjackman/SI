@@ -225,12 +225,16 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     const last = i === displayFx.length - 1;
     return `<p>${esc(leadOf(i))}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${last ? `<p>${esc(symFollow)}</p>` : ''}`;
   }).join('');
+  const KNOB: Record<string, string> = { '0': 'line', '2': 'line', '3': 'bend', '4': 'chain' };
+  const GPT = new Set(['8a', '8b', '9']);
+  const DRILL = new Set(['9', 'E', '10', '11', '12', '13', '14', 'S', '15a', '15b', 'A']);
+  const lab = `${KNOB[key] ? `<div data-lab="knob" data-mode="${KNOB[key]}"></div>` : ''}${GPT.has(key) ? `<div data-lab="gpt"></div>` : ''}${DRILL.has(key) ? `<div data-lab="drill"></div>` : ''}`;
   const lookText = tx(LOOK[key] ?? LOOK['0']!, l);
   const choiceText = tx(CLOSE[key] ?? CLOSE['0']!, l);
   const whyOpen = whyParas.map((s) => `<p class="ly-why">${mk(s)}</p>`).join('');
   const L5 = [
     `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
-    `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p><div data-ask="num"></div>`,
+    `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p>${lab}<div data-ask="num"></div>`,
     `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div><div class="st-q" data-vf-part="check" data-vf-i="0"></div>`,
     `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div>`,
     `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>${H('写成程序', 'As a program')}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
@@ -285,4 +289,10 @@ export function wire(host: HTMLElement, page: string, l: L) {
   if (at) void import('./att').then((m) => { if (at.isConnected) m.att(at, l); });
   const motEl = root.querySelector<HTMLElement>('[data-mot]');
   if (motEl) void import('./motion').then((m) => { if (motEl.isConnected) m.mount(motEl, motEl.dataset.mot ?? '', l); });
+  const knob = root.querySelector<HTMLElement>('[data-lab="knob"]');
+  if (knob) void import('./knob').then((m) => { if (knob.isConnected) m.mount(knob, knob.dataset.mode || 'line', l); });
+  const gpt = root.querySelector<HTMLElement>('[data-lab="gpt"]');
+  if (gpt) void import('./gpt-ui').then((m) => { if (gpt.isConnected) m.mount(gpt, l); });
+  const drill = root.querySelector<HTMLElement>('[data-lab="drill"]');
+  if (drill) void import('./drill').then((m) => { if (drill.isConnected) m.mount(drill, page.slice(2), l); });
 }

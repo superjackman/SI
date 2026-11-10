@@ -129,6 +129,20 @@
 .ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; display: flex; flex-direction: column; align-items: stretch; width: 100%; }
 .ly-mcap, .ly-mnote { margin: 6px 0; font-size: 16px; line-height: 1.7; color: var(--ink); }
 .ly-mot .l4-b { align-self: flex-end; width: auto; }
+[data-lab] { width: 100%; max-width: 100%; margin: 16px 0; }
+[data-lab] svg { width: min(100%, 440px); max-width: 100%; max-height: 220px; height: auto; display: block; margin-inline: auto; }
+.lab-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; margin-top: 8px; }
+.lab-row .lab-read { margin-right: auto; font-variant-numeric: tabular-nums; color: var(--ink); }
+.lab-fb { margin: 12px 0 0; padding: 12px 16px; border: 0; border-left: 3px solid var(--navy); border-radius: 8px; background: var(--mark-bg); color: var(--ink); }
+.lab-fb.ok { background: var(--good-bg); border-left-color: var(--good); }
+.lab-fb.bad { background: var(--bad-bg); border-left-color: var(--bad); }
+.lab-fb:empty { display: none; }
+.lab-say { margin: 0 0 8px; }
+.lab-in { flex: 1 1 auto; min-width: 0; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); padding: 0 12px; font: inherit; }
+.lab-ops { display: flex; flex-direction: column; gap: 8px; }
+.lab-op { min-height: 44px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); text-align: left; font: inherit; font-size: 16px; }
+.lab-op.on { border-color: var(--navy); }
+.lab-row input[type="range"] { flex: 0 1 120px; accent-color: var(--navy); }
 .mv-fig { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .mv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .mv-chips li, .mv-fig > b { min-height: 40px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 16px; line-height: 1.4; }
