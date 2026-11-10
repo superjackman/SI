@@ -47,7 +47,7 @@
 
 <section><ul><li>四个 XOR 点；一条直线分不开；两层 + ReLU 后可以。</li></ul></section>
 
-<section><ul><li>手工网：h1=ReLU(x1+x2)，h2=ReLU(x1+x2−1)，y=h1−2·h2；四个输入全对。</li><li>手工构造 XOR：h1 = ReLU(x1 + x2)，h2 = ReLU(x1 + x2 − 1)，y = h1 − 2 × h2</li><li>(0,0)：0；(0,1)：1；(1,0)：1；(1,1)：2 − 2 × 1 = 0 ✓</li></ul></section>
+<section><ul><li>右边四个小方框里，各是一颗神经元弯出来的那一段，用加号叠进最下面的总曲线。</li><li>两条弯写成白话：第一条把两个数相加，小于 0 就当成 0；第二条先减 1 再同样处理；最后用第一条减去第二条的两倍。</li><li>(0,0)：0；(0,1)：1；(1,0)：1；(1,1)：2 − 2 × 1 = 0 ✓</li></ul></section>
 
 <section><ul><li>h = 激活(W1 x + b1)</li><li>y = W2 h + b2</li><li>h = 激活(W1 × x + b1)，y = W2 × h + b2</li><li>ReLU(z) = max(0, z)，sigmoid(z) = 1 / (1 + e^(−z))</li></ul><ul><li>线性变换：旋转缩放</li><li>激活：弯曲（如 ReLU）</li><li>输出：在新空间里分类</li></ul></section>
 
