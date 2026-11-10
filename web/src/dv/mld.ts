@@ -91,7 +91,7 @@ const PILOT: Record<string, Ml> = {
           ['在 10 亿维里随便挑，几乎总是挑到没用的方向，试一次还要算一整遍损失。', 'In a billion dimensions a random pick is almost always useless, and every try costs a full loss evaluation.']],
         rz: [['偏导 = 只动一个、别的不动时的坡。', 'A partial derivative = the slope when you move one knob and hold the rest.'], ['两个偏导排成梯度 ∇L = (∂L/∂w1, ∂L/∂w2)。', 'Together they make the gradient ∇L = (∂L/∂w1, ∂L/∂w2).'], ['`新(w1, w2) = 旧(w1, w2) − η × ∇L`：同一点算、一起改。', '`new (w1, w2) = old (w1, w2) − η × ∇L`: measured at one point, changed together.']],
         ly: [2, 4],
-        pr: { q: ['在 (0, 0)，∂L/∂w1 = −4，∂L/∂w2 = −4。下一步两个参数怎么变？', 'At (0, 0), ∂L/∂w1 = −4 and ∂L/∂w2 = −4. How do the two parameters change next?'], o: [['都变大', 'Both grow'], ['w1 变大，w2 不动', 'w1 grows, w2 stays'], ['都变小', 'Both shrink']], a: 0, why: ['减去负的坡就是加：两个一起往碗底 (2, 1) 的方向走。', 'Subtracting a negative slope adds: both move together toward the bottom (2, 1).'] },
+        pr: { q: ['在 (0, 0)，两颗旋钮的坡都是 −4。下一步两颗怎么变？', 'At (0, 0) both knobs have slope −4. What happens to both on the next step?'], o: [['都变大', 'Both grow'], ['第一颗变大，第二颗不动', 'The first grows, the second stays'], ['都变小', 'Both shrink']], a: 0, why: ['减去负的坡就是加：两个一起往碗底 (2, 1) 的方向走。', 'Subtracting a negative slope adds: both move together toward the bottom (2, 1).'] },
         vk: 'bowl', nx: ['方向有了。每一步迈多大？', 'The direction is settled. How big should each step be?'] },
       { t: ['步子多大', 'How big a step'],
         pv: ['`新w = 旧w − η × 坡度` 里的 η（学习率）决定每一步迈多远。', 'In `new w = old w − η × slope`, η (the learning rate) sets how far each step goes.'],

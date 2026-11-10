@@ -145,6 +145,21 @@
 .heat i { display: block; height: 1.3em; border-radius: 3px; background: var(--navy); }
 .heat span { text-align: center; }
 .lab-gl { width: min(100%, 440px); height: 280px; display: block; margin: 8px auto; background: var(--card); border-radius: 8px; }
+.bowl-stage { width: min(100%, 440px); margin: 8px auto; }
+.bowl-stage .lab-gl { height: 220px; margin: 0 auto; }
+.bowl-axes { display: flex; justify-content: flex-end; gap: 14px; margin-top: 4px; color: var(--ink); font-size: 16px; }
+.cloud-stage { position: relative; width: min(100%, 440px); height: 250px; margin: 8px auto; overflow: hidden; }
+.cloud-stage .lab-gl { width: 100%; height: 100%; margin: 0; }
+.cloud-overlay { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.wlab { color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 4px; font-size: 14px; line-height: 1.2; padding: 0 3px; white-space: nowrap; }
+.wlab.g-animal { border-color: var(--good); }
+.wlab.g-royal { border-color: var(--highlight); }
+.wlab.g-travel { border-color: var(--link); }
+.lab-words span[data-g="animal"].on { border-color: var(--good); }
+.lab-words span[data-g="royal"].on { border-color: var(--highlight); }
+.lab-words span[data-g="travel"].on { border-color: var(--link); }
+[data-lab="net"] svg.net-knobs { max-height: 320px; }
+svg [data-i] { cursor: grab; }
 .lab-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .lab-words span { border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; background: var(--card); }
 [data-lab] .l4-b.on { background: var(--navy); color: var(--on-navy); border-color: var(--navy); }

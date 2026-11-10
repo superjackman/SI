@@ -49,7 +49,7 @@ export const QQ: Record<string, Q> = {
     h: ['现在 w = 1.20，坡度 `2 × (1.20 − 2)`。', 'Now w = 1.20, slope `2 × (1.20 − 2)`.'], w: ['坡度 `−1.6`；`1.20 − 0.3 × (−1.6)`', 'Slope `−1.6`; `1.20 − 0.3 × (−1.6)`'] },
   s2c: { q: ['同一条曲线，η 改成 1.1，从 w = 0 走 1 步，w = ？', 'Same curve, η = 1.1, one step from w = 0: w = ?'], a: gdSeq(1.1, 1)[1]!, d: 2, n: 'gd11',
     h: ['坡度还是 −4，只是步子乘了 1.1。', 'The slope is still −4; only the step is × 1.1.'], w: ['`0 − 1.1 × (−4)`：离 2 的距离从 2 变成 2.4，越走越远', '`0 − 1.1 × (−4)`: the distance to 2 grows from 2 to 2.4, moving away'] },
-  s2d: { q: ['在 {#bowlL} 上，点 (w1, w2) = (0.4, 0.4) 处，∂L/∂w2 = ？', 'On {#bowlL}, at the point (w1, w2) = (0.4, 0.4): ∂L/∂w2 = ?'], a: 4 * (0.4 - 1), d: 1,
+  s2d: { q: ['两颗旋钮停在 (0.4, 0.4)。只拧第二颗，第一颗按住不动，坡是多少？', 'Two knobs sit at (0.4, 0.4). Hold the first and turn only the second. What is the slope?'], a: 4 * (0.4 - 1), d: 1,
     h: ['w1 不动，只看 w2 那一项 2 × (w2 − 1)²，它对 w2 的导数是 4 × (w2 − 1)。', 'Keep w1 fixed and look only at the term 2 × (w2 − 1)²; its derivative in w2 is 4 × (w2 − 1).'], w: ['`4 × (0.4 − 1)`：负数，说明 w2 还要变大', '`4 × (0.4 − 1)`: negative, so w2 should still grow'] },
   // ── 3 ──
   s3a: { q: ['XOR 小网络：`h1 = ReLU(x1 + x2)`，`h2 = ReLU(x1 + x2 − 1)`，`y = h1 − 2 × h2`。输入 (1, 1) 时 h2 = ？', 'The XOR net: `h1 = ReLU(x1 + x2)`, `h2 = ReLU(x1 + x2 − 1)`, `y = h1 − 2 × h2`. For input (1, 1), h2 = ?'], a: xor(1, 1).h2, d: 0,
