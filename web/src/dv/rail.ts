@@ -38,7 +38,7 @@ export function workedHtml(key: string, l: L, stepHtml: string): string {
   if (key === '2') {
     const zh = l !== 'en';
     const row = (k: string, lab: string, v: string) => `<div><span>${lab}</span> <b data-k="${k}">${v}</b></div>`;
-    return `<div class="st-live" data-rail="gd">${row('w0', zh ? '旧 w =' : 'old w =', '0')}${row('slope', '∂L/∂w =', '−4')}${row('eta', 'η =', '0.30')}${row('w1', zh ? '新 w =' : 'new w =', '1.20')}<div>L <b data-k="L0">4.50</b> → <b data-k="L1">1.14</b></div></div>`;
+    return `<div class="st-live" data-rail="gd">${row('w0', zh ? '脚下这一站' : 'spot underfoot', '0')}${row('slope', zh ? '坡' : 'slope', '−4')}${row('eta', zh ? '这一步迈多远' : 'how far this step', '0.30')}${row('w1', zh ? '新的一站' : 'next spot', '1.20')}<div>${zh ? '罚分' : 'penalty'} <b data-k="L0">4.50</b> → <b data-k="L1">1.14</b></div></div>`;
   }
   return `<div class="st-live" data-rail="text"><p data-k="step">${stepHtml}</p></div>`;
 }

@@ -18,7 +18,7 @@
 | [Jay Alammar《图解 Transformer》](https://jalammar.github.io/illustrated-transformer/)（仓库 [jalammar/jalammar.github.io](https://github.com/jalammar/jalammar.github.io) 885 星，391 fork） | 仓库 885 星；文章阅读量未核对 | MIT（仓库） | 同一句话配一张图，Q/K/V 用“查询 / 钥匙 / 值”而不是先甩矩阵 | 热力图下面用一句话：这个字在看前面的哪个字 |
 | [Distill](https://distill.pub/) | 没有单一仓库星标可记 | 文章各自授权，这里只学做法 | 正文、图、公式联动，读者拖一个量，三处一起动 | 旋钮、损失、预测点画在同一张卡片里 |
 | [microsoft/generative-ai-for-beginners](https://github.com/microsoft/generative-ai-for-beginners) | 123287 星，66232 fork，2026-11-05 | MIT | 一课一件事，结尾才是动手 | 情景题放在该站末尾，先读懂再做 |
-| [microsoft/ML-For-Beginners](https://github.com/microsoft/ML-For-Beginners) | 92100 星，22895 fork，2026-11-07 | MIT | 每周一个经典题目，先直觉后公式 | 符号段仍在“用符号写下来”，不进开篇 |
+| [microsoft/ML-For-Beginners](https://github.com/microsoft/ML-For-Beginners) | 92100 星，22895 fork，2026-11-07 | MIT | 每周一个经典题目，先直觉后公式 | 符号段放在“记个简写”，每个符号对回旋钮或坡，不进开篇 |
 | [microsoft/ai-agents-for-beginners](https://github.com/microsoft/ai-agents-for-beginners) | 79343 星，25985 fork，2026-11-07 | MIT | 智能体用“想一步、用一个工具、看结果”的回合，而不是框架名 | 情景题让人自己排这几步，排对才通过 |
 | [datawhalechina/happy-llm](https://github.com/datawhalechina/happy-llm) | 34858 星，3294 fork，2026-08-08 | 接口返回的许可证名是 Other（spdx `NOASSERTION`），不搬代码 | 中文、从零搭，每章能跑 | 训练语料用公有领域的短句，界面中文 |
 | [datawhalechina/hello-agents](https://github.com/datawhalechina/hello-agents) | 86602 星，10806 fork，2026-10-13 | 同上，Other / `NOASSERTION`，不搬代码 | 先原理后一个能点的例子 | 安全和检索各给一个能判定对错的情景 |

@@ -129,8 +129,25 @@
 .ly-mot { margin: 12px 0 0; padding: 0; border: 0; border-radius: 0; background: none; display: flex; flex-direction: column; align-items: stretch; width: 100%; }
 .ly-mcap, .ly-mnote { margin: 6px 0; font-size: 16px; line-height: 1.7; color: var(--ink); }
 .ly-mot .l4-b { align-self: flex-end; width: auto; }
-[data-lab] { width: 100%; max-width: 100%; margin: 16px 0; }
+[data-lab] { width: 100%; max-width: 100%; margin: 16px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
 [data-lab] svg { width: min(100%, 440px); max-width: 100%; max-height: 220px; height: auto; display: block; margin-inline: auto; }
+[data-lab="net"] svg.net-knobs { max-height: 360px; }
+[data-lab="gpt"] svg.gpt-loss { max-height: 120px; }
+.loss-box { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto; align-items: center; gap: 4px; }
+.loss-y, .loss-x, .lab-cap, .lab-pair b, .lab-words span, .heat button, .heat span { color: var(--ink); font-size: 16px; line-height: 1.4; }
+.loss-x { grid-column: 2; text-align: center; }
+.lab-cap { margin: 8px 0; }
+.lab-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-top: 8px; }
+.lab-pair b { display: block; font-weight: 700; margin-bottom: 4px; }
+.heat { display: grid; gap: 3px; align-items: center; width: min(100%, 440px); margin-inline: auto; }
+.heat-ch { min-height: 1.5em; min-width: 1.5em; padding: 0; border: 0; background: transparent; font: inherit; font-size: 16px; line-height: 1.4; color: var(--ink); text-align: center; cursor: pointer; }
+.heat-ch.hot { outline: 2px solid var(--navy); border-radius: 4px; }
+.heat i { display: block; height: 1.3em; border-radius: 3px; background: var(--navy); }
+.heat span { text-align: center; }
+.lab-gl { width: min(100%, 440px); height: 280px; display: block; margin: 8px auto; background: var(--card); border-radius: 8px; }
+.lab-words { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+.lab-words span { border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; background: var(--card); }
+[data-lab] .l4-b.on { background: var(--navy); color: var(--on-navy); border-color: var(--navy); }
 .lab-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: nowrap; margin-top: 8px; }
 .lab-row .lab-read { margin-right: auto; font-variant-numeric: tabular-nums; color: var(--ink); }
 .lab-fb { margin: 12px 0 0; padding: 12px 16px; border: 0; border-left: 3px solid var(--navy); border-radius: 8px; background: var(--mark-bg); color: var(--ink); }

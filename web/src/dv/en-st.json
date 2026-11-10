@@ -26,13 +26,13 @@
       "ly": {
         "hook": "Some jobs cannot be finished as a list written ahead of time: “is this a cat?”, “what comes next?”. Start with a row of knobs, then turn them with the examples you can see.",
         "an": [
-          "Like a radio: ⟦q:knobs⟧ are parameters; ⟦k:reception⟧ is tuned by many samples.",
+          "Like a radio: turn the ⟦q:knobs⟧ and the ⟦k:reception⟧ changes, tuned by many listens.",
           "The goal is ⟦v:songs you have not heard⟧ still come through — generalisation."
         ],
         "jv": "Fit y = f(x; θ) with supervised pairs; generalisation = accuracy on a test set.",
         "pic": "fit",
         "pc": [
-          "x → function with θ → prediction; examples tune θ."
+          "On the left is the number you give, in the middle a row of knobs, on the right the result. The examples park the knobs."
         ],
         "num": [
           "Samples (1,3), (2,5), (3,7) → y = 2x + 1 by eye."
@@ -51,7 +51,7 @@
     {
       "n": "Probability basics",
       "s": "Distributions, conditionals, mean/variance, Gaussians",
-      "e": "How do we tell good parameters from bad?",
+      "e": "How do we tell a well-turned knob from a poor one?",
       "q": "To predict the next token, we must speak in possibilities.",
       "i": [
         "**Distribution**: each candidate gets a probability in [0,1]; they sum to 1.",
@@ -97,7 +97,7 @@
     {
       "n": "Loss functions",
       "s": "Mean squared error, maximum likelihood, cross-entropy",
-      "e": "How do we find the parameters with the lowest loss?",
+      "e": "How do we turn the knobs until the penalty is smallest?",
       "q": "We need one number for “how wrong is the model” — smaller is better.",
       "i": [
         "Regression (predict a number): square the errors and average them — **mean squared error**.",
@@ -170,7 +170,7 @@
       "lo": "We can tune parameters now, but a linear model can’t express some problems no matter how it is tuned.",
       "h": "Fit y = 2x + 1 with gradient descent in NumPy; try learning rates 0.01, 0.1 and 1.1.",
       "ly": {
-        "hook": "A large model has billions of parameters; you cannot try them one by one. **Gradient descent** is “walking downhill blindfolded”: at each step, feel which way is steepest under your feet and take a small step down. Every large model is trained this way.",
+        "hook": "A large model has billions of knobs. You cannot try them one by one. Walk downhill with your eyes covered: each step feels which way is steepest and takes a small step down the slope. Walking down the slope is called **gradient descent**. Every large model is trained this way.",
         "an": [
           "You stand blindfolded on the inside of a big bowl and want to reach the bottom. You cannot see it, but your feet feel the slope: how steep it is ⟦q:east–west⟧, and how steep ⟦k:north–south⟧.",
           "Put the two slopes together and you get the ⟦v:steepest way up⟧. Take a small step the **opposite** way, feel again, and step by step you reach the bottom. Both slopes are felt **at the same spot**, and the step moves in both directions **at once**."
@@ -179,7 +179,7 @@
         "pic": "bowl",
         "pc": [
           "The bowl seen from above: each ring is a contour line, smaller rings mean lower loss, and the bottom is at (2, 1).",
-          "From (0, 0): the ⟦q:yellow arrow⟧ is downhill when only w1 moves, the ⟦k:green arrow⟧ when only w2 moves; together they make the ⟦v:purple arrow⟧, the negative gradient: one step changes both parameters. The white dots are the next few steps."
+          "From (0, 0): the ⟦q:yellow arrow⟧ is downhill when only the first knob moves, the ⟦k:green arrow⟧ when only the second moves; together they make the ⟦v:purple arrow⟧, the steepest way down, and one step turns both knobs. The white dots are the next few steps."
         ],
         "num": [
           "A partial derivative means “move one, keep the rest”: from (0, 0) set w1 to 0.001 and L goes from 6 to 5.996001; the change ÷ 0.001 ≈ −4, which is ∂L/∂w1."
@@ -200,7 +200,7 @@
     {
       "n": "Layers + non-linearity",
       "s": "Hidden layers + activation functions",
-      "e": "How do we get gradients through many layers?",
+      "e": "How do we find the slope for the earlier knobs?",
       "q": "A linear model (a single perceptron too) can only split two classes with a straight line (a hyperplane in more dimensions).",
       "i": [
         "**XOR**: (0,0)→0, (0,1)→1, (1,0)→1, (1,1)→0 — no straight line separates them (Minsky and Papert’s 1969 analysis of single-layer perceptrons is the famous milestone).",
@@ -247,7 +247,7 @@
     {
       "n": "Backpropagation",
       "s": "The chain rule; ReLU, residuals, normalisation",
-      "e": "Training is slow, unstable and overfits",
+      "e": "Training is slow, unsteady, and can memorise the workbook",
       "q": "Get the gradients of all parameters, efficiently.",
       "i": [
         "A network is nested functions L = f3(f2(f1(x))); the **chain rule** multiplies the local derivatives.",
@@ -267,7 +267,7 @@
       "lo": "Gradients work, but with millions of examples a full pass per step is too slow; different parameters want different step sizes; and the model may just memorise the training set.",
       "h": "Write backprop by hand and check it with numerical gradients (L(w+h) − L(w−h)) / 2h.",
       "ly": {
-        "hook": "How do early knobs get their gradients? The **chain rule**, run backwards efficiently — backprop.",
+        "hook": "How do the earlier knobs learn which way to turn? Pass the slope back along the gears. That backward pass is the **chain rule**.",
         "an": [
           "Gears in a row: how much the last turned ⟦q:tells⟧ how to nudge earlier ones.",
           "⟦k:Backprop⟧ does this automatically.",
@@ -276,7 +276,7 @@
         "jv": "Autograd is backprop; residual y=x+F(x) keeps a gradient path of 1.",
         "pic": "slope",
         "pc": [
-          "Forward values → backward gradients → every ∂L/∂w."
+          "Numbers going forward, then the slope passed back, so each knob knows which way to turn."
         ],
         "num": [
           "{#bp}. Once a ReLU is in the chain, the slope still has to cross that bend."
@@ -320,12 +320,12 @@
         "an": [
           "⟦q:Mini-batches⟧ estimate the slope cheaply.",
           "⟦k:Adam⟧ gives each knob its own step size.",
-          "⟦v:Regularisation / early stopping⟧ fight overfitting."
+          "⟦v:Regularisation / early stopping⟧ keep the workbook from being memorised."
         ],
         "jv": "SGD + momentum + AdamW; train/val/test splits.",
         "pic": "knob",
         "pc": [
-          "Sample a batch → gradient → Adam → check val."
+          "Take a small bag, estimate the slope, give each knob its own step, then see whether unseen examples say to stop."
         ],
         "num": [
           "1M / 256 ≈ 3900 updates per epoch; momentum {#mom}."
@@ -365,7 +365,7 @@
       "lo": "① Each word has **one fixed vector**, so “apple” can’t tell the fruit from the company. ② Sentences are ordered and of any length: we need a network for sequences.",
       "h": "Train skip-gram on a small corpus and print a word’s nearest neighbours.",
       "ly": {
-        "hook": "Computers need numbers, not the word “cat”. Learn **vectors that carry meaning**; decide token size with **BPE**.",
+        "hook": "Computers need numbers, not the word “cat”. Learn a **row of numbers that carries meaning**; decide how big each piece is with **BPE**.",
         "an": [
           "⟦q:One-hot⟧ IDs are unique but say nothing about similarity.",
           "⟦k:Embeddings⟧ place words that share contexts nearby.",
@@ -425,7 +425,7 @@
           "RNN updates h; attention scores all h and mixes them."
         ],
         "num": [
-          "Scores {#attS1} → weights {#attW} (same as 8a / KM12)."
+          "Scores {#attS1} → shares {#attW} (same as 8a / KM12)."
         ],
         "fx": [
           "`aᵢ = softmax(eᵢ)`; `c = Σ aᵢ hᵢ`"
@@ -704,10 +704,10 @@
         "jv": "W′=W+BA; QLoRA = 4-bit base + LoRA.",
         "pic": "lora",
         "pc": [
-          "Frozen W ∥ side path B×A; or INT4 weights."
+          "The big block stays frozen, a thin side path learns, or each knob is stored with fewer bits."
         ],
         "num": [
-          "The full matrix holds {#loraF} numbers; the side path trains {#lora}. Memory for seven billion parameters, by bit width: {#q7b}."
+          "The full block holds {#loraF} numbers; the side path turns {#lora}. Room for seven billion knobs, by how many bits each one keeps: {#q7b}."
         ],
         "fx": [
           "`W′ = W + ⟦k:B⟧⟦k:A⟧`",
@@ -1041,7 +1041,7 @@
       "lo": "Go back to the chain and re-read a step, or see how the parts fit together in the pyramid.",
       "h": "Start with step 0’s y = 2x + 1 and check one idea per step.",
       "ly": {
-        "hook": "One sentence holds the chain: from fitting a function to agents and apps, each step answering the last gap.",
+        "hook": "One sentence holds the chain: from lining a function up with examples, on to assistants, each step answering the last gap.",
         "an": [
           "The pyramid shows structure; this path shows how it was forced into being.",
           "Progress is mastery (quizzes), not merely “visited”."
@@ -1052,7 +1052,7 @@
           "0→…→A as one chain; recap = map + next action."
         ],
         "num": [
-          "From y=2x+1 to multimodal agents, same loss and gradients."
+          "From a straight line to an assistant that can see, the penalty still walks down and the knobs still follow the slope."
         ],
         "fx": [
           "`Verify one idea at a time`"

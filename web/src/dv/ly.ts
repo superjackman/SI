@@ -55,7 +55,7 @@ function picSm(l: L, mk: Mk) {
 }
 function picBlk(l: L) {
   const z = (a: string, b: string) => tx([a, b], l);
-  return `<div class="ly-blk" role="group" aria-label="${z('一个解码块', 'One decoder block')}"><div class="ly-bx">${z('输入：每个词一串数（词向量）', 'In: one list of numbers per word (word vectors)')}</div>
+  return `<div class="ly-blk" role="group" aria-label="${z('一个解码块', 'One decoder block')}"><div class="ly-bx">${z('输入：每个词一串数', 'In: one list of numbers per word')}</div>
 <div class="ly-bs"><span class="ly-bn">${z('× N 层', '× N layers')}</span>
 <div class="ly-br c">${z('归一化', 'Normalise')}</div><div class="ly-br q">${z('多头注意力：词和词交流', 'Multi-head attention: words talk')}<small class="ly-c ly-r">${z('位置：RoPE 旋转 q、k', 'Position: RoPE rotates q, k')}</small></div><div class="ly-ba">${z('⊕ 加回输入（残差）', '⊕ add back the input (residual)')}</div>
 <div class="ly-br c">${z('归一化', 'Normalise')}</div><div class="ly-br k">${z('FFN：每个词各自消化', 'FFN: each word thinks alone')}</div><div class="ly-ba">${z('⊕ 加回（残差）', '⊕ add back (residual)')}</div></div>
@@ -110,6 +110,33 @@ const LEAD: Record<string, readonly (readonly [string, string])[]> = {
   '15b': [['同一道题多想几次，把出现最多的那个答案留下，往往比只想一次更稳。', 'Thinking through the same question several times and keeping the answer that shows up most is often steadier than one pass.'], ['窗口变长只说明这些词放得下，并不说明中间的那些词也被用到了。', 'A longer window only means the words fit. It does not mean the words in the middle were used.']],
   A: [['一个能用的应用不是另一个新模型，而是把预训练、检索、工具和多模态编排到一起。', 'A usable application is not another new model. It is pre-training, retrieval, tools and more than one modality, arranged together.']],
   '16': [['整条链走完以后，进度不看翻过多少页，而看一次只验证一个想法、并且连着做对。', 'After the whole chain, progress is not how many pages were turned. It is verifying one idea at a time, and getting it right twice.']],
+};
+
+/** one line that names every shorthand symbol with the picture already on the page */
+const MAP: Record<string, readonly [string, string]> = {
+  '0': ['简写里，x 是你给进去的那个数，θ 是那一排旋钮，y预测 是旋钮算出来的结果。旋钮两个也好，几十亿个也好，都叫 θ。', 'In the short line, x is the number you hand in, theta is the row of knobs, and the prediction is what the knobs produce. Two knobs or billions of them, they are still theta.'],
+  P: ['简写里，P 是分到的那一份可能性，前文是已经听见的话，μ 是一排数的中心，方差是它们散得有多开。', 'In the short line, P is one share of the chance, the words already heard are the given part, mu is the centre of a row of numbers, and variance is how spread out they are.'],
+  '1': ['简写里，p 是正确答案分到的那一份，罚分是它有多意外。要猜的是一个数时，就把每个差先平方再平均。', 'In the short line, p is the share given to the right answer, and the penalty is how surprising that share was. When the target is a number, square each gap and average them.'],
+  '2': ['简写里，w 是脚下这一站，η 是这一步肯迈多远，∂L/∂w 是脚下的坡，∇L 是每个方向的坡排成的一排。新的一站等于旧的减去步子乘坡。', 'In the short line, w is the spot underfoot, eta is how far this step will go, the partial is the slope underfoot, and the gradient is those slopes lined up. The next spot is the old one minus the step times the slope.'],
+  '3': ['简写里，W 和 b 都是旋钮。先乘再弯，弯完的结果才送去最后一排旋钮，收成一个数。', 'In the short line, W and b are knobs. Multiply, then bend, and only the bent result goes to the last row of knobs and comes out as one number.'],
+  '4': ['简写里，坡是一层层乘回去的。残差把原稿原样加回去，所以总有一条坡不会越乘越小的直路。', 'In the short line, the slope is multiplied back layer by layer. A residual adds the original back unchanged, so one path of the slope never shrinks.'],
+  '5': ['简写里，β 是上一小步还留着多少，g 是这一小袋估出来的坡，η 是这一步肯迈多远。每颗旋钮按自己最近的晃动来迈。', 'In the short line, beta is how much of the last little step is kept, g is the slope estimated from this small bag, and eta is how far this step will go. Each knob steps by its own recent wobble.'],
+  '6': ['简写里，两排数对应位相乘再相加，就是它们的方向齐不齐。猜周围会出现什么，最后仍把分数收成加起来等于 1 的份额。', 'In the short line, multiplying matching places in two rows and adding says how aligned the directions are. Guessing the words around one word still turns the scores into shares that add to 1.'],
+  '7': ['简写里，a 是每个词分到的份额，h 是那个词带着的内容。份额乘上内容再加起来，就是这一步听进来的东西。', 'In the short line, a is the share each word receives, and h is the content that word carries. Multiply share by content and add, and that is what this step took in.'],
+  '8a': ['简写里，Q 是“它”自己的需求，K 是别的词的名牌，V 是那些词的内容。对上的程度决定从内容里取多少。', 'In the short line, Q is the request “it” carries, K is the other words’ name tags, and V is their content. How well they match decides how much content to take.'],
+  '8b': ['简写里，每一头先各自看一遍，再拼回去。交流的结果和各自消化的结果，都加回原来的那一串数。', 'In the short line, each head looks on its own, then they join back. What they told each other, and what each one digested, is added back onto the original row of numbers.'],
+  '9': ['简写里，损失是每一次猜下一个字有多意外，再平均。温度不拧已经学好的旋钮，只把份额拧尖或者拧平。', 'In the short line, the loss is how surprising each next-character guess was, then averaged. Temperature does not turn the learned knobs. It only sharpens or flattens the shares.'],
+  E: ['简写里，把平均的意外变回“大约还在几个候选里犹豫”，那个数是困惑度。做对的次数除以总题数，是另一把尺子。', 'In the short line, turning the average surprise back into “still torn among about this many candidates” gives the perplexity. Correct answers divided by the number of questions is a different ruler.'],
+  '10': ['简写里，σ 把两份奖励的差收成 0 到 1 的可能性。训练往人挑中的那一份靠，而不是去给这份回答打一个绝对分数。', 'In the short line, sigma folds the gap between two rewards into a chance from 0 to 1. Training leans toward the one a person picked, rather than giving the answer one absolute score.'],
+  '11': ['简写里，大的那一块冻住，旁边细路 BA 上的旋钮才在拧，拧完加回去。每个数少记几位时，存的是一个整数，用的时候再乘上缩放。', 'In the short line, the big block stays frozen. Only the knobs on the thin side path BA turn, and they are added back. When each number keeps fewer bits, what is stored is an integer, scaled back up when it is used.'],
+  '12': ['简写里，已经问过的词，名牌和内容留在本子上。本子有多厚，要看有多少层、多少头，以及每个数占几位。', 'In the short line, words already asked keep their name tags and contents in the notebook. How thick the notebook gets depends on how many floors, how many heads, and how many bits each number takes.'],
+  '13': ['简写里，余弦比的是两排数的方向，不是它们有多长。问题是一排，资料块是一排，方向最齐的几块才放进提示。', 'In the short line, cosine compares the direction of two rows of numbers, not how long they are. The question is one row, each note is one row, and the closest directions go into the prompt.'],
+  '14': ['简写里，每一步都有一次失手的可能。全程都做对，是把每一步的成功率连乘，步数一多就会掉得很快。', 'In the short line, every step can slip. Succeeding all the way means multiplying each step’s success, and after enough steps that chance falls quickly.'],
+  S: ['简写里，会改数据、会花钱的动作要停下来等人点头。从外面读来的文字是资料，不是一条新的吩咐。', 'In the short line, an action that changes data or spends money stops until a person agrees. Text read in from outside is material, not a new order.'],
+  '15a': ['简写里，ε 是这一步被加进去的噪声，θ 仍是那些旋钮。图先切成小块，每块当成一个词，再和文字走同一条路。', 'In the short line, epsilon is the noise added at this step, and theta is still the knobs. A picture is cut into small patches, each patch is treated as a word, and then it walks the same path as the text.'],
+  '15b': ['简写里，同一道题多想几次，留下出现最多的那一个。窗口变长只说明这些词放得下，不说明中间那些词也被用到了。', 'In the short line, think the same question through several times and keep the answer that shows up most. A longer window only means the words fit. It does not mean the words in the middle were used.'],
+  A: ['简写里，一个能用的应用不是再加一排新旋钮，而是把已经会的续写、检索、工具和这些窗口排好顺序。', 'In the short line, a usable application is not another row of new knobs. It is the continuation, the retrieval and the tools you already have, put in order with these windows.'],
+  '16': ['简写里，进度不看翻过多少页。一次只核对一个想法，并且连着做对，才算这一站站住了。', 'In the short line, progress is not how many pages were turned. One idea is checked at a time, and it counts only when it comes out right twice in a row.'],
 };
 
 /** what the symbols mean in this station's story. No shared closer. */
@@ -176,7 +203,8 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
   const labeled = Y.pic === 'sm' || Y.pic === 'blk';
   const caps = labeled ? [] : Y.pc.filter((x) => keep(x, true));
   let stepSrc = '';
-  if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false)) { stepSrc = c; break; }
+  const earlyTerm = /[θΘηΗ∇∂σΣλμαβ]|参数|拟合|梯度|向量|张量|权重|parameter|gradient|vector|tensor|\bweights?\b/i;
+  if (key !== '2') for (const c of [...Y.num, ...S.x]) if (keep(c, false) && !earlyTerm.test(fxPlain(c))) { stepSrc = c; break; }
   for (const f of Y.fx) note(fxPlain(f));
   const whyParas = (WHY[key] ?? WHY['0']!).map((row) => tx(row, l));
   const codeLead = l === 'en'
@@ -221,21 +249,23 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     const row = rows?.[Math.min(i, rows.length - 1)];
     return row ? tx(row, l) : symFollow;
   };
-  const formulas = displayFx.map((f, i) => {
-    const last = i === displayFx.length - 1;
-    return `<p>${esc(leadOf(i))}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>${last ? `<p>${esc(symFollow)}</p>` : ''}`;
-  }).join('');
-  const KNOB: Record<string, string> = { '0': 'line', '2': 'line', '3': 'bend', '4': 'chain' };
+  const gloss = l === 'en'
+    ? ' The symbols are not a new story. They are the picture above, written short.'
+    : '符号不是新的一件事，只是把上面那幅画面写短。';
+  const formulas = displayFx.map((f, i) => `<p>${esc(leadOf(i))}</p><p class="formula fx-line">${esc(fxPlain(f))}</p>`).join('')
+    + `<p class="ly-map">${esc(tx(MAP[key] ?? MAP['0']!, l) + gloss)}</p>`;
+  const KNOB: Record<string, string> = { '0': 'line', '2': 'line' };
+  const NET: Record<string, string> = { '3': 'curve', '4': 'colors' };
   const GPT = new Set(['8a', '8b', '9']);
   const DRILL = new Set(['9', 'E', '10', '11', '12', '13', '14', 'S', '15a', '15b', 'A']);
-  const lab = `${KNOB[key] ? `<div data-lab="knob" data-mode="${KNOB[key]}"></div>` : ''}${GPT.has(key) ? `<div data-lab="gpt"></div>` : ''}${DRILL.has(key) ? `<div data-lab="drill"></div>` : ''}`;
+  const lab = `${KNOB[key] ? `<div data-lab="knob" data-mode="${KNOB[key]}"></div>` : ''}${key === '2' ? `<div data-lab="bowl"></div>` : ''}${NET[key] ? `<div data-lab="net" data-mode="${NET[key]}"></div>` : ''}${key === '6' ? `<div data-lab="cloud"></div>` : ''}${GPT.has(key) ? `<div data-lab="gpt"></div>` : ''}${DRILL.has(key) ? `<div data-lab="drill"></div>` : ''}`;
   const lookText = tx(LOOK[key] ?? LOOK['0']!, l);
   const choiceText = tx(CLOSE[key] ?? CLOSE['0']!, l);
   const whyOpen = whyParas.map((s) => `<p class="ly-why">${mk(s)}</p>`).join('');
   const L5 = [
     `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
     `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p>${lab}<div data-ask="num"></div>`,
-    `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div><div class="st-q" data-vf-part="check" data-vf-i="0"></div>`,
+    `${H('记个简写', 'A short note')}<div class="ly-fx" id="formula">${formulas}</div><div class="st-q" data-vf-part="check" data-vf-i="0"></div>`,
     `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div>`,
     `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>${H('写成程序', 'As a program')}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
   ];
@@ -291,6 +321,12 @@ export function wire(host: HTMLElement, page: string, l: L) {
   if (motEl) void import('./motion').then((m) => { if (motEl.isConnected) m.mount(motEl, motEl.dataset.mot ?? '', l); });
   const knob = root.querySelector<HTMLElement>('[data-lab="knob"]');
   if (knob) void import('./knob').then((m) => { if (knob.isConnected) m.mount(knob, knob.dataset.mode || 'line', l); });
+  const bowl = root.querySelector<HTMLElement>('[data-lab="bowl"]');
+  if (bowl) void import('./bowl').then((m) => { if (bowl.isConnected) m.mount(bowl, l); });
+  const net = root.querySelector<HTMLElement>('[data-lab="net"]');
+  if (net) void import('./net').then((m) => { if (net.isConnected) m.mount(net, net.dataset.mode || 'curve', l); });
+  const cloud = root.querySelector<HTMLElement>('[data-lab="cloud"]');
+  if (cloud) void import('./cloud').then((m) => { if (cloud.isConnected) m.mount(cloud, l); });
   const gpt = root.querySelector<HTMLElement>('[data-lab="gpt"]');
   if (gpt) void import('./gpt-ui').then((m) => { if (gpt.isConnected) m.mount(gpt, l); });
   const drill = root.querySelector<HTMLElement>('[data-lab="drill"]');

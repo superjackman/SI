@@ -43,7 +43,7 @@ test.describe('R56 micro-loop', () => {
     const G = ML['2']!.goals[0]!;
     await expect(page.locator('.ml-goal, .st-side, .st-tabs, .ly-dep')).toHaveCount(0);
     await expect(page.locator('.ly-l:not([hidden])')).toHaveCount(5);
-    await expect(page.locator('.st-open')).toContainText('怎么找到让损失最小的参数');
+    await expect(page.locator('.st-open')).toContainText('怎么把旋钮拧到罚分最小的地方');
     await expect(page.locator('.ml-i')).not.toContainText('留下');
     await page.locator(`[data-ml-o="${(G.a + 1) % 3}"]`).click(); await expect(page.locator('.ml-dead')).toHaveCount(1); await expect(page.locator('.ml-live')).toHaveCount(0);
     await page.locator(`[data-ml-o="${G.a}"]`).click(); await expect(page.locator('.ml-live')).toHaveCount(1);

@@ -71,7 +71,7 @@ export const NUM = {
   q7b: {
     zh: '16 位（FP16）约 14 GB，8 位约 7 GB，4 位（INT4）约 3.5 GB',
     en: '16 bits (FP16) ≈ 14 GB, 8 bits ≈ 7 GB, 4 bits (INT4) ≈ 3.5 GB',
-    ap: ['只算参数，另有少量缩放值', 'parameters only, plus a few scale values'],
+    ap: ['只算那些旋钮，另有少量用来还原的小数', 'the knobs only, plus a few small numbers used to scale them back'],
     cards: ['KC13'], st: [11],
     ban: [/\b14\s*GB|\b3\.5\s*GB|(?<![\d.])7\s*GB/],
   },

@@ -84,11 +84,11 @@ export const DV_NM: readonly (readonly [string, string])[] = [
 ];
 export const DV_E: readonly (readonly [string, string])[] = [
   ['怎么用概率描述“下一个字”？', 'How do we describe “the next word” with probability?'],
-  ['怎么判断参数好不好？', 'How do we tell good parameters from bad?'],
-  ['怎么找到让损失最小的参数？', 'How do we find the parameters with the lowest loss?'],
+  ['怎么判断旋钮拧得好不好？', 'How do we tell a well-turned knob from a poor one?'],
+  ['怎么把旋钮拧到罚分最小的地方？', 'How do we turn the knobs until the penalty is smallest?'],
   ['线性模型能力不够', 'A linear model is not powerful enough'],
-  ['多层网络的梯度怎么求？', 'How do we get gradients through many layers?'],
-  ['训练又慢又不稳，还会过拟合', 'Training is slow, unstable and overfits'],
+  ['前面那些旋钮的坡怎么求？', 'How do we find the slope for the earlier knobs?'],
+  ['训练又慢又不稳，还会把练习册背下来', 'Training is slow, unsteady, and can memorise the workbook'],
   ['文字这类离散符号怎么输入？', 'How do discrete symbols like words go in?'],
   ['词义固定；序列怎么处理？', 'One fixed meaning per word; how to handle sequences?'],
   ['不能并行，长依赖仍然难', 'No parallelism; long-range links are still hard'],

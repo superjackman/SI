@@ -79,6 +79,7 @@ export function mount(host: HTMLElement, mode: string, l: L) {
     svg.innerHTML = `${plot}${knobs}`;
     const loss = m === 'chain' ? (at(v, 0) * at(v, 1) * at(v, 2) - 3) ** 2 : m === 'bend' ? lossBend(at(v, 0), at(v, 1), at(v, 2)) : lossLine(at(v, 0), at(v, 1));
     read.textContent = `${z('损失', 'loss')} ${loss.toFixed(3)}`;
+    host.dispatchEvent(new CustomEvent('knob-move', { bubbles: true, detail: { mode: m, v: v.slice(), loss } }));
   };
   const drag = (i: number, clientY: number, top: number) => {
     const [lo, hi] = RANGE[m];

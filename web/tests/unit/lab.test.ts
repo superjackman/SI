@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { knobStep } from '../../src/dv/knob';
+import { netInit, netStep } from '../../src/dv/net';
 import { alphabet, makeNet, trainStep, windows, CORPUS } from '../../src/dv/tiny-gpt';
 
 describe('knob lab', () => {
@@ -18,6 +19,28 @@ describe('knob lab', () => {
     let v = [1, 1, 1];
     for (let i = 0; i < 40; i++) v = knobStep('chain', v, 0.05).v;
     expect(Math.abs((v[0] ?? 0) * (v[1] ?? 0) * (v[2] ?? 0) - 3)).toBeLessThan(0.3);
+  });
+});
+
+describe('network knobs', () => {
+  it('auto-turn fits the rise-and-fall curve', () => {
+    const p = netInit('curve');
+    let loss = 99;
+    for (let i = 0; i < 160; i++) loss = netStep('curve', p, 0.2);
+    expect(loss).toBeLessThan(0.02);
+  });
+  it('auto-turn separates the two colours', () => {
+    const p = netInit('colors');
+    for (let i = 0; i < 80; i++) netStep('colors', p, 0.3);
+    const y = (x: number, b: number) => {
+      let h = 0;
+      for (let i = 0; i < 4; i++) {
+        const z = p.W1[i]![0]! * x + p.W1[i]![1]! * b + p.b1[i]!;
+        h += p.W2[i]! * Math.max(0, z);
+      }
+      return p.b2 + h;
+    };
+    expect(y(0, 0) < 0.5 && y(1, 1) < 0.5 && y(1, 0) >= 0.5 && y(0, 1) >= 0.5).toBe(true);
   });
 });
 
