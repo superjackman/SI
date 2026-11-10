@@ -102,7 +102,7 @@ export function mount(host: HTMLElement, mode: string, l: L) {
       let n = 0;
       timer = window.setInterval(() => {
         if (!host.isConnected || n++ > 80) { window.clearInterval(timer); return; }
-        v = knobStep(m, v, m === 'chain' ? 0.05 : 0.05).v;
+        v = knobStep(m, v, m === 'bend' ? 0.08 : 0.05).v;
         paint();
       }, 50);
       return;

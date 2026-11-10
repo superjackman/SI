@@ -122,7 +122,7 @@
   .ly-anim:not(.rm) .ly-af { animation: ly-in .6s ease-out both; }
   .ly-anim:not(.rm) .ly-grow { transform-box: fill-box; transform-origin: left center; animation: ly-grow .9s ease-out both; }
 }
-@keyframes ly-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ly-in { from { transform: translateY(6px); } to { transform: none; } }
 @keyframes ly-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* on-demand pictures (dv/motion.ts): last frame is the resting state; motion only while .play */
