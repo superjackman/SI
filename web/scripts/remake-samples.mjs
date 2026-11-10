@@ -48,7 +48,6 @@ const BOARDS = {
     { say: '每迈一小步，球就沿着碗壁滚下去，身后留下一串点。', scene: 'roll' },
     { say: '步子要是太大，球会冲过最低的那一圈，再荡回来。', scene: 'over' },
     { say: '把步子收小，球就停进那一圈。旋钮这时停在罚分最小的地方。', scene: 'rest' },
-    { say: '绿圈标出碗底。球停在圈里，身后的点就是它滚过的路。', scene: 'rest2' },
   ],
   '3': [
     { say: '左边送进一个数。这些点先往上升，再往下降。', scene: 'rise' },
@@ -101,8 +100,8 @@ function dial(cx,cy,r,value,min,max,name,on){
   const t=clamp((value-min)/(max-min),0,1);
   const ang=(-140+t*280)*Math.PI/180;
   const x2=cx+Math.sin(ang)*(r-6), y2=cy-Math.cos(ang)*(r-6);
-  const op=on?1:0.35;
-  return '<g opacity="'+op+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+CARD+'" stroke="'+NAVY+'" stroke-width="6"/>'
+  const ring=on?NAVY:LINE;
+  return '<g><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+CARD+'" stroke="'+ring+'" stroke-width="6"/>'
     +'<line x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+HL+'" stroke-width="10" stroke-linecap="round"/>'
     +'<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+HL+'"/>'
     +'<text x="'+cx+'" y="'+(cy+r+36)+'" text-anchor="middle" fill="'+INK+'" font-size="28" font-family="sans-serif">'+name+' '+value.toFixed(2)+'</text></g>';
@@ -133,7 +132,8 @@ function chart(w,b,nPoints,showLine){
   }
   if(showLine){
     const x2=lerp(0.4, 3.6, showLine);
-    s+='<line x1="'+X(0.4)+'" y1="'+Y(w*0.4+b)+'" x2="'+X(x2)+'" y2="'+Y(w*x2+b)+'" stroke="'+NAVY+'" stroke-width="6" stroke-linecap="round"/>';
+    s+='<line x1="'+X(0.4)+'" y1="'+Y(w*0.4+b)+'" x2="'+X(x2)+'" y2="'+Y(w*x2+b)+'" stroke="'+NAVY+'" stroke-width="8" stroke-linecap="round"/>';
+    if(showLine<1) s+='<circle cx="'+X(x2)+'" cy="'+Y(w*x2+b)+'" r="11" fill="'+NAVY+'"/>';
   }
   if(fall>=0.98 && nPoints){
     const i=Math.min(2,nPoints-1);
@@ -339,11 +339,11 @@ function writeVtt(spans, path) {
   writeFileSync(path, `WEBVTT\n\n${body}`);
 }
 
-function modelFor(key, scene, t, cap) {
+function modelFor(key, scene, t, cap, dur) {
   const e = ease(t);
   if (key === '2') {
     if (scene === 'drop') return { kind: 'chart', w: 0, b: 0, points: 3, fall: t, line: 0, loss: lossNum(0, 0), hot: '', cap };
-    if (scene === 'flat') { const b = Math.sin(t * Math.PI * 2) * 0.15; return { kind: 'chart', w: 0, b, points: 3, fall: 1, line: t, loss: lossNum(0, b), hot: '', cap }; }
+    if (scene === 'flat') return { kind: 'chart', w: 0, b: 0, points: 3, fall: 1, line: t, loss: lossNum(0, 0), hot: '', cap };
     if (scene === 'steep') { const w = lerp(0, 2, t); return { kind: 'chart', w, b: 0, points: 3, fall: 1, line: 1, loss: lossNum(w, 0), hot: 'w', cap }; }
     if (scene === 'shift') { const b = lerp(0, 1, t); return { kind: 'chart', w: 2, b, points: 3, fall: 1, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
     if (scene === 'fit') { const w = lerp(1.2, 2, t), b = lerp(0.3, 1, t); return { kind: 'chart', w, b, points: 3, fall: 1, line: 1, loss: lossNum(w, b), hot: 'both', cap }; }
@@ -363,10 +363,11 @@ function modelFor(key, scene, t, cap) {
       return { kind: 'bowl', bx: x, trail: [-30, 80, x], ring: true, ...atBall(x), cap };
     }
     if (scene === 'rest') {
-      const x = t < 0.6 ? lerp(-30, 0, t / 0.6) : 0;
+      const hold = Math.min(0.5, 1.3 / Math.max(dur || 5, 0.1));
+      const u = t < 1 - hold ? t / (1 - hold) : 1;
+      const x = lerp(-30, 0, u);
       return { kind: 'bowl', bx: x, trail: [80, 30, x], ring: true, ...atBall(x), cap };
     }
-    if (scene === 'rest2') return { kind: 'bowl', bx: 0, trail: [-160, -80, -20, 0], ring: true, mark: lerp(-180, 0, t), kw: 2, kb: 1, cap };
     const x = lerp(-160, 0, e);
     return { kind: 'bowl', bx: x, trail: [-200, -120, x], ring: true, kw: lerp(0.4, 2, e), kb: lerp(0.2, 1, e), cap };
   }
@@ -440,7 +441,7 @@ for (const key of (only.length ? only : ['2', '3'])) {
     for (const s of spans) if (time >= s.a) beat = s;
     const local = time >= beat.b ? 1 : beat.b > beat.a ? clamp((time - beat.a) / (beat.b - beat.a), 0, 1) : 0;
     const cap = beat.say.replace(/。$/, '');
-    await page.evaluate((m) => window.render(m), modelFor(key, beat.scene, local, cap));
+    await page.evaluate((m) => window.render(m), modelFor(key, beat.scene, local, cap, beat.b - beat.a));
     await page.locator('#s').screenshot({ path: join(work, String(i).padStart(4, '0') + '.png') });
     if (i % 150 === 0) console.log(key, 'frame', i, '/', n);
   }
