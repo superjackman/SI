@@ -7,7 +7,7 @@ import { UI, tx, type L } from '../l4/txt';
 import { cards, type Card } from '../l4/c/kc';
 import type { PxApi } from '../px/view';
 import type { Dv } from './types';
-import { DV_ALIAS, DV_BORN, DV_EX, DV_FOCUS, DV_LV, DV_N, DV_SEEN, cardLv, dvI, dvK, posLabel } from './links';
+import { DV_ALIAS, DV_AT, DV_BORN, DV_EX, DV_FOCUS, DV_LV, DV_N, DV_SEEN, cardLv, dvI, dvK, posLabel } from './links';
 import { ROUTES, goalGet, routeNext, routeOf } from './routes';
 import { LBG } from '../l4/progress';
 import { vfDone, vfStat, vfStages } from '../vf/ids';
@@ -33,7 +33,7 @@ export const content = async (l: L) => {
 export const seenKeys = (v: unknown): string[] => !Array.isArray(v) ? [] : [...new Set(v.flatMap((x): string[] => typeof x === 'number' ? (x === 8 ? ['8a', '8b'] : x === 15 ? ['15a', '15b'] : [String(x)]) : typeof x === 'string' ? [x] : []))].filter((k) => dvI(k) >= 0);
 /** the stations read, as indices */
 const seenGet = (): number[] => { try { return seenKeys(JSON.parse(localStorage.getItem(DV_SEEN) || '[]')).map(dvI); } catch { return []; } };
-const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b).map(dvK))); } catch { /* private mode */ } };
+const seenAdd = (i: number) => { const s = new Set(seenGet()); s.add(i); try { localStorage.setItem(DV_SEEN, JSON.stringify([...s].sort((a, b) => a - b).map(dvK))); localStorage.setItem(DV_AT, dvK(i)); } catch { /* private mode */ } };
 const lvT = (i: number, l: L) => { const n = DV_LV[i]!; return `<span class="l4-lt" style="${cv(i)}">${n ? tx(UI.lv[n - 1]!, l) : tx(['回顾', 'Recap'], l)}</span>`; };
 const stepNo = (i: number, l: L) => posLabel(i, l === 'en' ? 'en' : 'zh');
 /** #D/<key> of station i */

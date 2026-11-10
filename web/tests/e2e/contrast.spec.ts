@@ -170,9 +170,9 @@ test('1440 light and dark: every visible string clears its own background', asyn
       await page.waitForFunction((hash) => {
         const id = document.getElementById('l4')?.dataset.page || '';
         const want = hash.replace(/^#/, '');
+        if (want === 'home') return !!document.querySelector('.st-article .st-h');
         if (id !== want && !location.hash.endsWith(want)) return false;
         if (id.startsWith('D/')) return !!document.querySelector('.dv-sp');
-        if (id === 'home') return !!document.querySelector('.hm-cta');
         if (id === 'settings' || id === 'review' || id === 'me' || id === 'search') return !!document.querySelector('.hm-desk');
         if (id === 'tools' || id.startsWith('tools')) return !!document.querySelector('.hb, [data-pane="tools"]');
         if (id === 'news' || id.startsWith('news')) return !!document.querySelector('.hb, [data-pane="news"]');

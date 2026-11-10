@@ -24,7 +24,7 @@ import { LBG, LCOL, layerStats, pageLayer, pbar, pushRecent } from './progress';
 import { navInit, navNote, navTo } from './hnav';
 import { DV_ALIAS, isDv } from '../dv/links';
 import { layerMastery, masteredSt } from '../dv/prog';
-import { redirectTo } from './go';
+import { lessonHash, redirectTo } from './go';
 
 const LS = { get: <T>(k: string, d: T): T => { try { const v = localStorage.getItem(k); return v ? (JSON.parse(v) as T) : d; } catch { return d; } }, set: (k: string, v: unknown) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private */ } } };
 const isPx = (id: string) => /^(P|R|S|Q|W)(\/[A-Za-z0-9.]+)?$/.test(id) || isDv(id);
@@ -192,8 +192,8 @@ export function start(doc: Document = document, win: Window = window) {
     if (foot) {
       foot.hidden = !showFoot;
       foot.innerHTML = zh
-        ? `<div><h2>SI</h2><p>一个数学函数，搭到大模型、安全与应用。23 站都在这个页面里。</p></div><div><h2>学习</h2><p><a href="#home">从第 1 站开始</a><br><a href="#review">复习</a><br><a href="#me">我的进度</a></p></div><div><h2>旁边</h2><p><a href="#tools">工具</a><br><a href="#news">资讯</a><br><a href="#W">项目</a></p></div>`
-        : `<div><h2>SI</h2><p>From one function, up to models, safety and use. All 23 stops live here.</p></div><div><h2>Learn</h2><p><a href="#home">Start at stop 1</a><br><a href="#review">Review</a><br><a href="#me">Progress</a></p></div><div><h2>Also</h2><p><a href="#tools">Tools</a><br><a href="#news">News</a><br><a href="#W">Projects</a></p></div>`;
+        ? `<div><h2>SI</h2><p>一个数学函数，搭到大模型、安全与应用。23 站都在这个页面里。</p></div><div><h2>学习</h2><p><a href="#home">进入课文</a><br><a href="#review">复习</a><br><a href="#me">我的进度</a></p></div><div><h2>旁边</h2><p><a href="#tools">工具</a><br><a href="#news">资讯</a><br><a href="#W">项目</a></p></div>`
+        : `<div><h2>SI</h2><p>From one function, up to models, safety and use. All 23 stops live here.</p></div><div><h2>Learn</h2><p><a href="#home">Open the lesson</a><br><a href="#review">Review</a><br><a href="#me">Progress</a></p></div><div><h2>Also</h2><p><a href="#tools">Tools</a><br><a href="#news">News</a><br><a href="#W">Projects</a></p></div>`;
     }
   }
   const isDesk = (id: string) => id === 'review' || id === 'me' || id === 'search' || id === 'settings';
@@ -338,7 +338,13 @@ export function start(doc: Document = document, win: Window = window) {
     /* R51: an old single-step link (#D/8) opens the station that replaced it, rewriting the address (no new entry) */
     const al = DV_ALIAS[id]; if (al) { navTo(win, `#${al}`); return; }
     const wAt = /^W\/([A-Za-z0-9]+)$/.exec(id); if (wAt) { try { sessionStorage.setItem('si.w.at', wAt[1]!); } catch { /* private mode */ } }
-    const jumped = redirectTo(id); if (jumped) { navTo(win, `#${jumped}`); return; }
+    const raw = win.location.hash;
+    const jumped = redirectTo(id);
+    /* Root and the old home address open the lesson. replaceState, so Back does not return to a landing. */
+    if (!raw || raw === '#' || id === 'home' || jumped === 'home') {
+      const dest = lessonHash();
+      if (raw !== dest) { navTo(win, dest); return; }
+    } else if (jumped) { navTo(win, `#${jumped}`); return; }
     if (lid) id = LIVE.includes(layerOf(lid)) ? lid : 'L' + layerOf(lid);
     if (id.startsWith('X:') && !validX(id.slice(2))) id = 'L4';
     if (!(lid || id === 'home' || isDesk(id) || isHub(id) || id === 'map' || id === 'L4' || ORDER.includes(id) || id.startsWith('X:') || /^L[1235]$/.test(id) || isPx(id))) id = 'home';

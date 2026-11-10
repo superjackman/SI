@@ -1,5 +1,23 @@
-/* Old addresses stay working by landing on the nearest page in the eight-destination site. */
-import { dvI } from '../dv/links';
+/* Old addresses stay working by landing on the nearest page in the eight-destination site.
+   The old home address is not a page: the shell rewrites it to the lesson (see lessonHash). */
+import { DV_AT, DV_KEY, dvI } from '../dv/links';
+import { masteredSt, seenSt } from '../dv/prog';
+import { pathOf, routeNext } from '../dv/routes';
+
+/** Station to open when the address is the root or the old home. Last station opened, else the
+    first opened-but-unfinished stop from saved progress, else station 1 (`0`). */
+export function lessonKey(): string {
+  try {
+    const at = localStorage.getItem(DV_AT);
+    if (at && dvI(at) >= 0) return at;
+  } catch { /* private mode */ }
+  try {
+    const seen = seenSt();
+    if (seen.size) return routeNext(pathOf(), masteredSt(), seen);
+  } catch { /* private mode */ }
+  return DV_KEY[0];
+}
+export const lessonHash = () => `#D/${lessonKey()}`;
 
 const LAYER_STOP: Record<string, string> = { '1': 'D/15a', '2': 'D/13', '3': 'D/9', '4': 'D/6', '5': 'D/0' };
 
