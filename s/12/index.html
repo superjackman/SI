@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>推理效率 · 大白话拆解 AI</title>
-<meta name="description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。">
+<meta name="description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。字只能一个一个往外写。已经算过的，别每次从头再算，本子才不会越来越厚。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/12/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/12/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/12/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="推理效率 · 大白话拆解 AI">
-<meta property="og:description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。">
+<meta property="og:description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。字只能一个一个往外写。已经算过的，别每次从头再算，本子才不会越来越厚。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/12/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/12.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="推理效率 · 大白话拆解 AI">
-<meta name="twitter:description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。">
+<meta name="twitter:description" content="自回归生成只能一个词元一个词元地输出，不能像训练那样并行。字只能一个一个往外写。已经算过的，别每次从头再算，本子才不会越来越厚。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/12.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/12/#lesson","name":"推理效率","headline":"推理效率 · 大白话拆解 AI","description":"自回归生成只能一个词元一个词元地输出，不能像训练那样并行。生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。","url":"https://superjackman.github.io/SI/s/12/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"推理效率","item":"https://superjackman.github.io/SI/s/12/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/12/#lesson","name":"推理效率","headline":"推理效率 · 大白话拆解 AI","description":"自回归生成只能一个词元一个词元地输出，不能像训练那样并行。字只能一个一个往外写。已经算过的，别每次从头再算，本子才不会越来越厚。","url":"https://superjackman.github.io/SI/s/12/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"推理效率","item":"https://superjackman.github.io/SI/s/12/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -40,9 +40,9 @@
 <p class="bd">自回归生成只能一个词元一个词元地输出，不能像训练那样并行。</p>
 <details class="ex"><summary>生成 100 个词元，不用缓存一共要算多少次 K、V？</summary><p>1 + 2 + … + 100 = 5050。有缓存只算 100 次。</p></details>
 
-<section><p>生成只能一个字一个字来。怎样少算、少占显存？KV 缓存、共享 KV、FlashAttention、投机解码、MoE。</p></section>
+<section><p>字只能一个一个往外写。已经算过的，别每次从头再算，本子才不会越来越厚。</p></section>
 
-<section><ul><li>前面的 K、V先记下来，别再重算。</li><li>多个头共用同一份 K、V；MoE 则是每个词只叫醒几个专家。</li></ul></section>
+<section><ul><li>前面看过的名牌和内容，先记在本子上，下一步不用重算。</li><li>几路可以共用同一本子。每个字也可以只叫醒其中几路，不必全部醒来。</li></ul></section>
 
 <section><ul><li>KV 缓存：前面各词元的 K、V 不变，存起来不再重算，每步只算新词元的 q、k、v。但缓存随长度线性增长，生成速度常受显存带宽限制而不是算力。</li><li>MQA / GQA：多个查询头共享 K、V（MQA 全部共享 1 组，GQA 分组共享）。MLA（DeepSeek-V2，2024）：把 K、V 压成低维潜在向量缓存，又是低秩思想。</li><li>FlashAttention（Dao 等，2022）：结果与标准注意力完全相同，优化的是访存：分块在片上内存里用“在线 softmax”算完，不把 n × n 矩阵写回显存。</li><li>投机解码：小模型先猜 k 个词，大模型一次并行验证，按接受规则保留正确前缀，输出分布与大模型单独生成一致。</li><li>MoE：FFN 换成很多“专家”，路由器为每个词元只选 top-k 个，总参数大、每个词元实际动用的少；代价是显存依然大，还要做负载均衡。</li></ul></section>
 

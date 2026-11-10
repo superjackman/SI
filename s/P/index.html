@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>概率基础 · 大白话拆解 AI</title>
-<meta name="description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。">
+<meta name="description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。每猜下一个字，其实是在说「接下来每个字有多大可能」。可能性就是给每个候选打的分。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/P/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/P/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/P/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="概率基础 · 大白话拆解 AI">
-<meta property="og:description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。">
+<meta property="og:description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。每猜下一个字，其实是在说「接下来每个字有多大可能」。可能性就是给每个候选打的分。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/P/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/P.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="概率基础 · 大白话拆解 AI">
-<meta name="twitter:description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。">
+<meta name="twitter:description" content="语言模型要预测「下一个字」，就必须先会说「可能性」。每猜下一个字，其实是在说「接下来每个字有多大可能」。可能性就是给每个候选打的分。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/P.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/P/#lesson","name":"概率基础","headline":"概率基础 · 大白话拆解 AI","description":"语言模型要预测「下一个字」，就必须先会说「可能性」。AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。","url":"https://superjackman.github.io/SI/s/P/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"概率基础","item":"https://superjackman.github.io/SI/s/P/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/P/#lesson","name":"概率基础","headline":"概率基础 · 大白话拆解 AI","description":"语言模型要预测「下一个字」，就必须先会说「可能性」。每猜下一个字，其实是在说「接下来每个字有多大可能」。可能性就是给每个候选打的分。","url":"https://superjackman.github.io/SI/s/P/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"概率基础","item":"https://superjackman.github.io/SI/s/P/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/#D/P">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">语言模型要预测「下一个字」，就必须先会说「可能性」。</p>
 
-<section><p>AI 每猜一个字，其实是在说「接下来每个字有多大可能」。概率就是给可能性打分的语言。</p></section>
+<section><p>每猜下一个字，其实是在说「接下来每个字有多大可能」。可能性就是给每个候选打的分。</p></section>
 
-<section><ul><li>掷骰子：六点朝上的可能性是 1/6。所有朝向加起来必须是 1——这叫分布。</li><li>已知「今天是晴天」，再问「要不要带伞」——这叫条件概率：在已知信息下重新分配可能性。</li><li>语言模型就是在算：已知前文，下一个词元分别有多大可能。</li></ul></section>
+<section><ul><li>掷骰子：六点朝上是六种朝向里的一种。六种朝向加起来必须是 1，这是一份完整的可能。</li><li>已经知道今天是晴天，再问要不要带伞。已知的事变了，各种可能要重新分一遍。</li><li>猜下一个字也是这样：看过前面的字，再给每个后选的字分一份可能。</li></ul></section>
 
 <section><ul><li>分布：每个候选一个 0～1 的概率，全部加起来 = 1。</li><li>条件概率 P(下一个字 | 前文)：已知前面的话，下一个字分别有多大可能。大模型做的就是这件事。</li><li>均值是一堆数的中心，方差是散开程度。后面注意力里「除以 √d」就用到「方差相加」。</li><li>高斯（正态）分布：中间高、两边低的钟形曲线。下一步会看到：假设噪声是高斯时，极大似然正好推出均方误差。</li></ul></section>
 

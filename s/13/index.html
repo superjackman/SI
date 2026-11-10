@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>RAG · 大白话拆解 AI</title>
-<meta name="description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。模型会过期、会编。别逼它背——开卷考试：先检索再生成。">
+<meta name="description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。它会过期，也会编。别逼它把资料背下来。先去资料里找出相关的一段，再根据这段来答。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/13/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/13/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/13/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="RAG · 大白话拆解 AI">
-<meta property="og:description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。模型会过期、会编。别逼它背——开卷考试：先检索再生成。">
+<meta property="og:description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。它会过期，也会编。别逼它把资料背下来。先去资料里找出相关的一段，再根据这段来答。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/13/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/13.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="RAG · 大白话拆解 AI">
-<meta name="twitter:description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。模型会过期、会编。别逼它背——开卷考试：先检索再生成。">
+<meta name="twitter:description" content="知识过期、缺私有知识、幻觉，以及回答没法溯源。它会过期，也会编。别逼它把资料背下来。先去资料里找出相关的一段，再根据这段来答。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/13.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/13/#lesson","name":"RAG","headline":"RAG · 大白话拆解 AI","description":"知识过期、缺私有知识、幻觉，以及回答没法溯源。模型会过期、会编。别逼它背——开卷考试：先检索再生成。","url":"https://superjackman.github.io/SI/s/13/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"RAG","item":"https://superjackman.github.io/SI/s/13/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/13/#lesson","name":"RAG","headline":"RAG · 大白话拆解 AI","description":"知识过期、缺私有知识、幻觉，以及回答没法溯源。它会过期，也会编。别逼它把资料背下来。先去资料里找出相关的一段，再根据这段来答。","url":"https://superjackman.github.io/SI/s/13/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"RAG","item":"https://superjackman.github.io/SI/s/13/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/#D/13">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">知识过期、缺私有知识、幻觉，以及回答没法溯源。</p>
 
-<section><p>模型会过期、会编。别逼它背——开卷考试：先检索再生成。</p></section>
+<section><p>它会过期，也会编。别逼它把资料背下来。先去资料里找出相关的一段，再根据这段来答。</p></section>
 
-<section><ul><li>资料切成块，每块记成一排数放进库。</li><li>问题也记成一排数，找方向最像的几块拼进提示。</li><li>模型看着资料回答并标出处。</li></ul></section>
+<section><ul><li>资料先切成一块一块，每块记成一排能比较方向的数。</li><li>问题也记成一排数，找出方向最像的几块。</li><li>然后看着这几块来答，并且说出是哪一块。</li></ul></section>
 
 <section><ul><li>不要求模型“背下来”，而是“开卷考试”：先检索资料放进提示词，再生成回答。权重里的知识和外部库里的知识分工合作。</li><li>流水线：① 切分成块（几百个词元一块、相邻留些重叠）② 用嵌入模型把块变成向量存进向量库（「词向量」思想的延续）③ 问题也变成向量，按余弦相似度取 top-k（数据大时用 HNSW 等近似最近邻，常与 BM25 关键词检索混合）④ 用交叉编码器重排序，先粗筛后精排 ⑤ 提示词写明“只根据以下资料回答并标注出处”。</li><li>块太大检索不准，太小上下文不够。</li></ul></section>
 

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>低成本适配 · 大白话拆解 AI</title>
-<meta name="description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。全量微调太贵。能不能只动一小块？LoRA…">
+<meta name="description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。把整块都解开再拧，太贵。…">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/11/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/11/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/11/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="低成本适配 · 大白话拆解 AI">
-<meta property="og:description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。全量微调太贵。能不能只动一小块？LoRA…">
+<meta property="og:description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。把整块都解开再拧，太贵。…">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/11/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/11.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="低成本适配 · 大白话拆解 AI">
-<meta name="twitter:description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。全量微调太贵。能不能只动一小块？LoRA…">
+<meta name="twitter:description" content="全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。把整块都解开再拧，太贵。…">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/11.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/11/#lesson","name":"低成本适配","headline":"低成本适配 · 大白话拆解 AI","description":"全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。全量微调太贵。能不能只动一小块？LoRA…","url":"https://superjackman.github.io/SI/s/11/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"低成本适配","item":"https://superjackman.github.io/SI/s/11/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/11/#lesson","name":"低成本适配","headline":"低成本适配 · 大白话拆解 AI","description":"全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。把整块都解开再拧，太贵。…","url":"https://superjackman.github.io/SI/s/11/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"低成本适配","item":"https://superjackman.github.io/SI/s/11/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/#D/11">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">全量微调要为每个参数存梯度和优化器状态：按混合精度 + Adam 粗估每参数约 16 字节 粗略估算，7B 模型约 112GB 显存，还不算激活值；每个任务还要另存一整份模型。</p>
 
-<section><p>全量微调太贵。能不能只动一小块？LoRA；能不能把每个数存短一点？量化。</p></section>
+<section><p>把整块都解开再拧，太贵。可以只动旁边一小条，也可以让每个数少记几位。</p></section>
 
-<section><ul><li>原矩阵 W 冻住，旁边加一条细支路 B×A。</li><li>量化：每个旋钮少记几位，换一点精细。</li></ul></section>
+<section><ul><li>原来的大块冻住，旁边加一条细路，拧完再加回去。</li><li>每个数少记几位，占的地方小了，精细也少了一点。</li></ul></section>
 
 <section><ul><li>LoRA（Hu 等，2021）：微调带来的权重变化量 ΔW 往往是低秩的 经验观察，所以冻结 W，只学两个细长矩阵 B、A。训练完可把 B × A 合并回 W，推理不增加开销；每个任务只存自己的小矩阵。</li><li>SVD 直觉：矩阵 = U × Σ × V^T，只留前 r 个最大奇异值就是最好的秩 r 近似。</li><li>量化：用更少的比特存权重。FP16 每参数 2 字节，INT8 1 字节，INT4 0.5 字节；会有精度损失，要实验评估。</li><li>QLoRA（Dettmers 等，2023）：底座 4 比特存储，再在上面训练 LoRA，单张显卡也能微调较大的模型。</li></ul></section>
 

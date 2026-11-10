@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>反向传播 · 大白话拆解 AI</title>
-<meta name="description" content="高效地求出所有参数的梯度。多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。">
+<meta name="description" content="高效地求出所有参数的梯度。前面那颗旋钮怎么拧？不能靠猜。先看最后的罚分是谁弄大的，再把这个原因从后往前传。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/4/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/4/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/4/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="反向传播 · 大白话拆解 AI">
-<meta property="og:description" content="高效地求出所有参数的梯度。多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。">
+<meta property="og:description" content="高效地求出所有参数的梯度。前面那颗旋钮怎么拧？不能靠猜。先看最后的罚分是谁弄大的，再把这个原因从后往前传。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/4/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/4.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="反向传播 · 大白话拆解 AI">
-<meta name="twitter:description" content="高效地求出所有参数的梯度。多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。">
+<meta name="twitter:description" content="高效地求出所有参数的梯度。前面那颗旋钮怎么拧？不能靠猜。先看最后的罚分是谁弄大的，再把这个原因从后往前传。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/4.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/4/#lesson","name":"反向传播","headline":"反向传播 · 大白话拆解 AI","description":"高效地求出所有参数的梯度。多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。","url":"https://superjackman.github.io/SI/s/4/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"反向传播","item":"https://superjackman.github.io/SI/s/4/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/4/#lesson","name":"反向传播","headline":"反向传播 · 大白话拆解 AI","description":"高效地求出所有参数的梯度。前面那颗旋钮怎么拧？不能靠猜。先看最后的罚分是谁弄大的，再把这个原因从后往前传。","url":"https://superjackman.github.io/SI/s/4/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"反向传播","item":"https://superjackman.github.io/SI/s/4/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/#D/4">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">高效地求出所有参数的梯度。</p>
 
-<section><p>多层网络里，前面一层的旋钮怎么调？不能靠猜——要用链式法则从后往前传「谁害损失变大」。</p></section>
+<section><p>前面那颗旋钮怎么拧？不能靠猜。先看最后的罚分是谁弄大的，再把这个原因从后往前传。</p></section>
 
-<section><ul><li>像一排齿轮：最后一片转了多少，可以反推前面每一片该怎么调。</li><li>反向传播就是自动、高效地做这件事。</li><li>路太长会信号消失：用 ReLU、残差、归一化保住通路。</li></ul></section>
+<section><ul><li>像一排齿轮：最后一片转了多少，可以反推前面每一片该怎么调。</li><li>从最后一层往前传，每颗旋钮都知道自己该拧多少。这件事可以自动做。</li><li>路一长，前面就听不见。小于 0 的先当成 0，并且留一条把原来的数加回去的直路。</li></ul></section>
 
 <section><ul><li>网络是函数的嵌套 L = f3(f2(f1(x)))，链式法则把各层的局部导数连乘起来。</li><li>反向传播：先前向算出每层的值，再从输出往回逐层传“上游梯度 × 本层局部导数”。中间结果复用，一次反向的代价和一次前向差不多（1986 年 Rumelhart、Hinton、Williams 让它广为人知），这就是框架里“自动求导”的本质。</li><li>新问题梯度消失/爆炸：sigmoid 导数最大 0.25，10 层连乘 0.25^10 ≈ 0.00000095。对策：ReLU（正区间导数为 1）、残差（y = x + F(x)，总有一条导数为 1 的直通路，ResNet，He 等 2015）、归一化（LayerNorm 等）、按层宽缩放的初始化（参数不能全为 0）。</li></ul></section>
 

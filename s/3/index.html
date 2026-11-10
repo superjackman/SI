@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>多层 + 非线性 · 大白话拆解 AI</title>
-<meta name="description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。">
+<meta name="description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。四个点坐在对角上，一条直线怎么画都有一个站错队。要分得开，就得再加一层，并且让中间弯一下。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/3/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/3/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/3/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="多层 + 非线性 · 大白话拆解 AI">
-<meta property="og:description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。">
+<meta property="og:description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。四个点坐在对角上，一条直线怎么画都有一个站错队。要分得开，就得再加一层，并且让中间弯一下。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/3/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/3.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="多层 + 非线性 · 大白话拆解 AI">
-<meta name="twitter:description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。">
+<meta name="twitter:description" content="线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。四个点坐在对角上，一条直线怎么画都有一个站错队。要分得开，就得再加一层，并且让中间弯一下。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/3.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/3/#lesson","name":"多层 + 非线性","headline":"多层 + 非线性 · 大白话拆解 AI","description":"线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。","url":"https://superjackman.github.io/SI/s/3/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"多层 + 非线性","item":"https://superjackman.github.io/SI/s/3/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/3/#lesson","name":"多层 + 非线性","headline":"多层 + 非线性 · 大白话拆解 AI","description":"线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。四个点坐在对角上，一条直线怎么画都有一个站错队。要分得开，就得再加一层，并且让中间弯一下。","url":"https://superjackman.github.io/SI/s/3/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"多层 + 非线性","item":"https://superjackman.github.io/SI/s/3/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,13 +39,13 @@
 <p class="open"><a href="/SI/#D/3">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">线性模型（包括单个感知机）只能用一条直线（高维是一个超平面）把两类分开。</p>
 
-<section><p>只会画直线的模型，分不开「异或」这种题。要更强，就得加层，并且加上弯曲。</p></section>
+<section><p>四个点坐在对角上，一条直线怎么画都有一个站错队。要分得开，就得再加一层，并且让中间弯一下。</p></section>
 
-<section><ul><li>一张纸上四个点，直线怎么也切不开 XOR。</li><li>先折一下纸（隐藏层 + 非线性），在新空间里就好切了。</li><li>如果只叠直线变换、不弯曲，一百层还是一条直线。</li></ul></section>
+<section><ul><li>一张纸上四个点，直线怎么切都有一个站错队。</li><li>先折出一条痕，在折过的纸上就好切了。</li><li>如果只把纸挪来挪去、不折出痕，叠一百层还是平的。</li></ul></section>
 
 <section><ul><li>XOR：(0,0)→0，(0,1)→1，(1,0)→1，(1,1)→0，画不出一条直线分开它们（Minsky 与 Papert 1969 年对单层感知机局限的分析是著名的历史节点）。</li><li>加隐藏层：先把输入变换到新空间，问题在新空间里就变得可分。</li><li>必须加非线性：线性层叠起来还是线性，W2 × (W1 × x + b1) + b2 = (W2 × W1) × x + (W2 × b1 + b2)，叠一百层也只等于一层。</li><li>万能近似定理：隐藏单元足够多时，单隐藏层网络能以任意精度逼近连续函数。它只保证“存在”，不保证训练得出来。</li></ul></section>
 
-<section><ul><li>四个 XOR 点；一条直线分不开；两层 + ReLU 后可以。</li></ul></section>
+<section><ul><li>四个对角的点，一条直线分不开。中间弯一下之后才分得开。</li></ul></section>
 
 <section><ul><li>右边四个小方框里，各是一颗神经元弯出来的那一段，用加号叠进最下面的总曲线。</li><li>两条弯写成白话：第一条把两个数相加，小于 0 就当成 0；第二条先减 1 再同样处理；最后用第一条减去第二条的两倍。</li><li>(0,0)：0；(0,1)：1；(1,0)：1；(1,1)：2 − 2 × 1 = 0 ✓</li></ul></section>
 

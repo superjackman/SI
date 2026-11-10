@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>训练工程 · 大白话拆解 AI</title>
-<meta name="description" content="训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防把练习册背下来。">
+<meta name="description" content="训练要快、要稳、还要能泛化。数据有上百万条时，每一步看完全部太慢。还得防着把练习册背下来，新例子上反而变差。">
 <link rel="canonical" href="https://superjackman.github.io/SI/s/5/">
 <link rel="alternate" hreflang="zh-CN" href="https://superjackman.github.io/SI/s/5/">
 <link rel="alternate" hreflang="en" href="https://superjackman.github.io/SI/en/s/5/">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="大白话拆解 AI">
 <meta property="og:title" content="训练工程 · 大白话拆解 AI">
-<meta property="og:description" content="训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防把练习册背下来。">
+<meta property="og:description" content="训练要快、要稳、还要能泛化。数据有上百万条时，每一步看完全部太慢。还得防着把练习册背下来，新例子上反而变差。">
 <meta property="og:url" content="https://superjackman.github.io/SI/s/5/">
 <meta property="og:image" content="https://superjackman.github.io/SI/og-st/5.png">
 <meta property="og:image:width" content="1200">
@@ -22,11 +22,11 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="训练工程 · 大白话拆解 AI">
-<meta name="twitter:description" content="训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防把练习册背下来。">
+<meta name="twitter:description" content="训练要快、要稳、还要能泛化。数据有上百万条时，每一步看完全部太慢。还得防着把练习册背下来，新例子上反而变差。">
 <meta name="twitter:image" content="https://superjackman.github.io/SI/og-st/5.png">
 <meta name="theme-color" content="#15202b">
 <link rel="icon" href="/SI/icon-192.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/5/#lesson","name":"训练工程","headline":"训练工程 · 大白话拆解 AI","description":"训练要快、要稳、还要能泛化。数据上百万时，每步看完全部太慢；还要防把练习册背下来。","url":"https://superjackman.github.io/SI/s/5/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"训练工程","item":"https://superjackman.github.io/SI/s/5/"}]}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://superjackman.github.io/SI/#website","name":"大白话拆解 AI","alternateName":"AI, explained plainly","url":"https://superjackman.github.io/SI/","inLanguage":"zh-CN"},{"@type":"LearningResource","@id":"https://superjackman.github.io/SI/s/5/#lesson","name":"训练工程","headline":"训练工程 · 大白话拆解 AI","description":"训练要快、要稳、还要能泛化。数据有上百万条时，每一步看完全部太慢。还得防着把练习册背下来，新例子上反而变差。","url":"https://superjackman.github.io/SI/s/5/","inLanguage":"zh-CN","isAccessibleForFree":true,"isPartOf":{"@type":"Course","@id":"https://superjackman.github.io/SI/s/#course","name":"大白话拆解 AI：从样本到 Agent"},"learningResourceType":"Lesson"},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"首页","item":"https://superjackman.github.io/SI/"},{"@type":"ListItem","position":2,"name":"全部站点目录","item":"https://superjackman.github.io/SI/s/"},{"@type":"ListItem","position":3,"name":"训练工程","item":"https://superjackman.github.io/SI/s/5/"}]}]}</script>
 <style>body{margin:0;font:16px/1.65 "WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",sans-serif;color:#1c1915;background:#f3f1eb}header,main,footer,.bc{max-width:760px;margin:0 auto;padding:12px 16px}header{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}a{color:#1a4a6b}h1{font-size:1.6em;margin:.2em 0}h2{font-size:1.2em;margin-top:1.4em}.lv,.bc{color:#3e382f;font-size:.9em}.bc ol{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}.bc li+li:before{content:"› ";color:#3e382f}.lead{font-size:1.15em;font-weight:600}.open a{display:inline-block;background:#15202b;color:#fff;padding:10px 14px;border-radius:2px;text-decoration:none;font-weight:600}.bd{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px}.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:1.5em 0}ul,ol{padding-left:1.3em}li{margin:.35em 0}footer{color:#3e382f;font-size:.85em}details.ex{background:#fffcf7;border:1px solid #d9d3c7;border-radius:2px;padding:8px 12px;margin:12px 0}details.ex summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center}details.ex p{margin:.4em 0 0}</style>
 </head>
 <body>
@@ -39,9 +39,9 @@
 <p class="open"><a href="/SI/#D/5">▶ 打开互动版（能点图、做实验、做小测）</a></p>
 <p class="bd">训练要快、要稳、还要能泛化。</p>
 
-<section><p>数据上百万时，每步看完全部太慢；还要防把练习册背下来。</p></section>
+<section><p>数据有上百万条时，每一步看完全部太慢。还得防着把练习册背下来，新例子上反而变差。</p></section>
 
-<section><ul><li>小批量：每次抽一小袋样本估计坡度，又快又有点噪声。</li><li>Adam：每个旋钮自己的步长。</li><li>正则化 / 早停：别背训练集。</li></ul></section>
+<section><ul><li>每次只抽一小袋来估坡，又快，还有一点晃动能帮你离开坏坑。</li><li>每颗旋钮自己的步长：陡的迈小一点，平的迈大一点。</li><li>别背练习册：留一份没拿来拧旋钮的例子，变差了就停。</li></ul></section>
 
 <section><ul><li>小批量 SGD：每次随机取一小批（如 256 条）估计梯度，便宜得多，噪声有时还能帮着跳出坏区域。</li><li>动量累积历史梯度，减少来回震荡；Adam（Kingma 与 Ba，2014）让每个参数有自适应步长，大模型常用变体 AdamW，配合学习率预热和衰减。</li><li>过拟合：训练损失还在降，新数据上却变差。正则化：L2、Dropout、数据增强、早停。</li><li>数据划分：训练集调参数，验证集选超参数、决定何时停，测试集只在最后评估一次。</li></ul></section>
 
