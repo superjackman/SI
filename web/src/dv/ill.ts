@@ -16,7 +16,7 @@ export const LIFE_CAP: Record<string, readonly [string, string]> = {
   '4': ['三块一块比一块小。人把最后一块的变化沿着虚线指回第一块。', 'Three blocks, each smaller. The person points the last block’s change back along the dotted line to the first.'],
   '5': ['面板上三个旋钮拧向不同的角度，旁边的小袋是这一步抽出来的样本。', 'Three knobs on the panel point different ways, and the little bag is the sample drawn for this step.'],
   '13': ['书架上抽出一本，人把那一页拉到眼前，另一页留在桌上没被选中。', 'One book is pulled from the shelf and the page is drawn close. The other page stays on the desk, unchosen.'],
-  '14': ['工具箱打开，扳手拿在外面，旁边的环还在转：写下一个调用，再看它带回什么。', 'The toolbox is open, the wrench is out, and the loop beside it is still turning: write one call, then see what it brings back.'],
+  '14': ['工具箱打开，扳手拿在外面，旁边的环还在转：写下要办的一件事，再看它带回什么。', 'The toolbox is open, the wrench is out, and the ring beside it is still turning: write the one job, then see what it brings back.'],
   S: ['门上了锁。纸条停在门外，不能当成新的吩咐放进来。', 'The gate is locked. The note stops outside and is not let in as a new order.'],
   '15a': ['眼睛被切成小方块，方块排好，才和文字走同一条路。', 'The eye is cut into small squares. Once the squares line up, they walk the same path as the words.'],
   '15b': ['想法一节比一节长，最长的那一节上打了勾：留下出现最多的那个。', 'Each thought is longer than the last, and the longest one is ticked: keep the answer that shows up most.'],
@@ -63,7 +63,7 @@ const SCENE: Record<string, readonly [string, string, string]> = {
 <rect x="142" y="36" width="36" height="106" fill="${G}"/><rect x="182" y="48" width="36" height="94" fill="${R}"/>
 <rect x="228" y="18" width="64" height="86" rx="6" fill="var(--card)" stroke="${Y}" stroke-width="4"/><path d="M240 40 h40 M240 58 h32 M240 76 h36" stroke="${Y}" stroke-width="3"/>
 <rect x="236" y="112" width="52" height="26" rx="4" fill="var(--card)" stroke="${D}" stroke-width="3"/>`],
-  '14': ['一个工具箱，旁边一个来回的环', 'A toolbox, and a loop beside it',
+  '14': ['一个工具箱，旁边一个来回的环', 'A toolbox, and a ring beside it',
     `<rect x="4" y="4" width="292" height="142" rx="10" fill="var(--bg)"/>
 <rect x="12" y="48" width="150" height="90" rx="10" fill="var(--card)" stroke="${Y}" stroke-width="6"/>
 <path d="M48 48 V22 H124 V48" fill="none" stroke="${Y}" stroke-width="8"/>
@@ -126,7 +126,7 @@ const MATH: Record<string, readonly [string, string, string]> = {
     `<circle cx="70" cy="66" r="22" fill="none" stroke="${B}" stroke-width="6"/><circle cx="150" cy="66" r="22" fill="none" stroke="${G}" stroke-width="6"/><circle cx="230" cy="66" r="22" fill="none" stroke="${P}" stroke-width="6"/>`],
   '13': ['问题指向抽出的那一本', 'The question points at the book that was pulled',
     `<rect x="40" y="40" width="22" height="60" fill="${B}"/><rect x="70" y="24" width="22" height="76" fill="${Y}"/><rect x="100" y="40" width="22" height="60" fill="${G}"/><path d="M150 66 H240" stroke="${R}" stroke-width="3"/>`],
-  '14': ['写下调用，环在旁边转', 'Write the call; the loop sits beside it',
+  '14': ['写下要办的事，环在旁边转', 'Write the job; the ring sits beside it',
     `<rect x="36" y="46" width="90" height="40" fill="none" stroke="${Y}" stroke-width="3"/><path d="M170 90 C220 90 230 40 190 40 C160 40 160 72 188 74" fill="none" stroke="${G}" stroke-width="3"/>`],
   S: ['门关着，纸条停在门外', 'The gate is shut; the note stops outside',
     `<rect x="150" y="28" width="14" height="80" fill="${D}"/><rect x="40" y="52" width="70" height="28" fill="${R}"/><path d="M170 66 H250" stroke="${G}" stroke-width="3" stroke-dasharray="4 3"/>`],

@@ -184,7 +184,7 @@ export const ML_C = {
     pic: { e: '🔧', t: ['你写下“查上海明天的雨”，真正去查的是旁边的程序。', 'You write “check tomorrow’s rain in Shanghai”. The program next to you is what actually checks.'], s: ['步数一多，每步 95% 成功，二十步全对只剩大约三成。', 'Enough steps, and 95% each time, twenty in a row is only about a third.'] },
     goals: [
       { t: ['步数一多，成功率连乘', 'Enough steps, and the success rates multiply'],
-        pv: ['Agent 是一个循环：想一步、调用、看结果、再想。每步都可能错。', 'An agent is a loop: think one step, call, read the result, think again. Every step can be wrong.'],
+        pv: ['帮手是来回做：想一步、请人去做、看结果、再想。每步都可能错。', 'A helper works in laps: think one step, ask for the action, read the result, think again. Every step can be wrong.'],
         q: ['每步 95% 成功。20 步都成功的概率，你会怎么算？', 'Each step succeeds 95% of the time. How would you compute the chance all 20 succeed?'],
         o: [['0.95 × 20', '0.95 × 20'], ['0.95^20', '0.95^20'], ['1 − 0.95 = 0.05', '1 − 0.95 = 0.05']], a: 1,
         why: [['19 已经比 1 还大，不可能是概率。步数不是拿来加或乘在外面的。', '19 is already above 1, so it cannot be a probability. The step count is not added or multiplied on the outside.'],
@@ -212,7 +212,7 @@ export const ML_C = {
         why: [['改日历是写操作。模型决定调用，不代表它可以闷头执行。', 'Changing the calendar is a write. The model deciding to call does not mean it may just run.'],
           ['4 − 1 = 3。查天气、查日历、生成修改可以自己走；真正写入要人确认。', '4 − 1 = 3. Weather, calendar lookup and drafting the change can run alone. The actual write waits for a person.'],
           ['1 是要问的那次，不是不用问的。', '1 is the call that asks, not the ones that do not.']],
-        rz: [['模型只输出调用。程序执行。', 'The model only writes the call. The program runs it.'], ['读可以自己做，写、付钱、外发要人在回路。', 'Reads can run alone. Writes, payments and sending stay with a person in the loop.'], ['下一步专门谈：网页里藏的一句话，怎么会变成指令。', 'Next: how a sentence hidden in a web page becomes an instruction.']],
+        rz: [['模型只写下要办的事。旁边的人去办。', 'The model only writes the job. The person beside it does the work.'], ['查可以自己做，改、付钱、外发要有人看着。', 'Lookups can run alone. Changes, payments and sending stay with a person watching.'], ['下一步专门谈：网页里藏的一句话，怎么会变成指令。', 'Next: how a sentence hidden in a web page becomes an instruction.']],
         ly: [1, 5],
         pr: { q: ['6 次调用，2 次要确认。不用问的有几次？', '6 calls, 2 need confirmation. How many run without asking?'], o: [['4', '4'], ['2', '2'], ['6', '6']], a: 0, why: ['6 − 2 = 4。', '6 − 2 = 4.'] },
         vk: 'freen', nx: ['会做事了。网页、邮件里的一句话，可能在下命令。', 'It can act. A sentence in a web page or an email may be giving orders.'] },

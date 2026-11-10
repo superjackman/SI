@@ -232,8 +232,8 @@ export function html(S: Stage & { ly: Ly }, page: string, l: L, mk: Mk, exK: str
     `<div data-ask="by"></div>${H('这一步在做什么', 'What this step is doing')}<p class="ly-hook">${mk(Y.hook)}</p>${flow(an)}`,
     `${H('看一看', 'Look')}${figure}<p>${mk(lookText)}</p><div data-ask="num"></div>`,
     `${H('用符号写下来', 'In symbols')}<div class="ly-fx" id="formula">${formulas}</div><div class="st-q" data-vf-part="check" data-vf-i="0"></div>`,
-    `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div><p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
-    `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>`,
+    `${H('另外的办法为什么不行', 'Why the other ways fail')}${whyOpen}<div data-ask="pred"></div>`,
+    `${H('换种办法会怎样', 'What if you chose another way')}<p>${mk(choiceText)}</p><div data-ask="choice"></div>${H('写成程序', 'As a program')}<p>${esc(codeLead)}</p><pre class="st-code" id="code"><code>${code}</code></pre>`,
   ];
   const secs = L5.map((b, k) => `<section class="ly-l" data-ly="${k + 1}"><h3 class="ly-h" tabindex="-1"></h3>${b}</section>`).join('');
   return `<div class="ly" data-ly-page="${page}" lang="${l === 'en' ? 'en' : 'zh-CN'}">${secs}<div class="ly-nx"></div></div>`;

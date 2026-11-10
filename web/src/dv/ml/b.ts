@@ -79,7 +79,7 @@ export const ML_B = {
         rz: [['权重 aᵢ = e^(分数ᵢ) / Σ e^(分数)。', 'Weight aᵢ = e^(scoreᵢ) / Σ e^(score).'], ['然后上下文 = Σ 权重ᵢ × 那个位置的向量。', 'Then the context = Σ weightᵢ × that position’s vector.'], ['权重是这次输入现算的，不是一组背下来的参数。', 'The weights are computed for this input. They are not a memorised set of parameters.']],
         ly: [2, 4],
         pr: { q: ['分数都是 0 时，softmax 给每个词？', 'If every score is 0, softmax gives each word?'], o: [['一样大', 'The same share'], ['第一个独占', 'The first takes all'], ['全是 0', 'All zeros']], a: 0, why: ['e^0 = 1，三个一样，各约 0.333。', 'e^0 = 1, three equals, about 0.333 each.'] },
-        vk: 'smw', nx: ['注意力还挂在 RNN 上，仍然要排队。下一步把循环拿掉，只留注意力。', 'Attention is still bolted to an RNN, so the queue remains. Next: drop the loop and keep only attention.'] },
+        vk: 'smw', nx: ['注意力还挂在必须排队的记忆上。下一步把排队拿掉，只留注意力。', 'Attention is still stuck to a memory that has to wait in line. Next: drop the queue and keep only attention.'] },
     ],
     take: [['RNN 靠一张小纸条往下传：一词一步，不能并行，开头传远了会淡。', 'An RNN passes a small note forward: one word per step, no parallelism, and the opening fades.'], ['注意力让每一步直接回看所有位置：打分、softmax、按权重混合。', 'Attention lets each step look back at every position: score, softmax, mix by the weights.'], ['权重是这次现算的，不是一组背下来的固定参数。', 'The weights are computed fresh for this input. They are not a fixed memorised set of parameters.']],
     tpic: ['📝 纸条接力会淡；发言前先看所有人的名牌。', '📝 A relay of notes fades; glance at every name tag before you speak.'],

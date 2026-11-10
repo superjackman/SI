@@ -7,7 +7,7 @@
       "n": "Learn a function from examples",
       "s": "A model with parameters + supervised learning",
       "e": "How do we describe “the next word” with probability?",
-      "q": "Some tasks have no writable rules: “is there a cat in this picture?”, “what comes next in this sentence?”. You could never finish the if-else.",
+      "q": "Some tasks have no list you can finish ahead of time: “is there a cat in this picture?”, “what comes next in this sentence?”. Line by line, the list never ends.",
       "i": [
         "Instead of rules, take a family of functions with knobs (the **parameters** θ) and turn the knobs using many “input → right answer” examples. This is a **parametric model + supervised learning**.",
         "The goal is to **generalise**: be right on inputs it has never seen.",
@@ -24,7 +24,7 @@
       "lo": "Text and classification need “likelihood”. Next: nail **probability**, then loss.",
       "h": "With NumPy, make samples of y = 2x + 1 plus a little noise and plot them.",
       "ly": {
-        "hook": "Some tasks beat if-else: “is this a cat?”, “what comes next?”. Give a tunable function, then twist its knobs with examples.",
+        "hook": "Some jobs cannot be finished as a list written ahead of time: “is this a cat?”, “what comes next?”. Start with a row of knobs, then turn them with the examples you can see.",
         "an": [
           "Like a radio: ⟦q:knobs⟧ are parameters; ⟦k:reception⟧ is tuned by many samples.",
           "The goal is ⟦v:songs you have not heard⟧ still come through — generalisation."
@@ -828,11 +828,11 @@
       "lo": "It can call tools. Next: **safety** — injection, jailbreaks, permissions, confirmation.",
       "h": "Write a minimal agent loop: parse the model’s JSON → run a local function → put the result back; then try a prompt injection and see the safety problem.",
       "ly": {
-        "hook": "Talking is not enough — **act**: call tools. The model writes the call; a program runs it.",
+        "hook": "Talking is not enough. It also has to **act**: check the weather, move a meeting. The model only writes what should be done. Someone beside it does the work.",
         "an": [
-          "Show ⟦q:tool schemas⟧ first.",
-          "It emits ⟦k:call JSON⟧; the program runs and returns results.",
-          "⟦v:Loop⟧ observe → think → act until done."
+          "First show the model ⟦q:what can be done⟧.",
+          "It writes ⟦k:the one job⟧. The person beside it does that job and writes the result back.",
+          "⟦v:Lap⟧: look, think, do, look again, until it stops."
         ],
         "jv": "Function calling; ReAct; MCP.",
         "pic": "tools",
@@ -1017,7 +1017,7 @@
           "Goal → pick stations → finish the job."
         ],
         "num": [
-          "Same bugfix chain: retrieve → edit → test → loop."
+          "Same bugfix chain: retrieve → edit → test → go around again."
         ],
         "fx": [
           "`app = orchestrate(...)`"
@@ -1049,7 +1049,7 @@
         "jv": "Jump any station; switch to the pyramid anytime.",
         "pic": "thread",
         "pc": [
-          "0→…→A as one loop; recap = map + next action."
+          "0→…→A as one chain; recap = map + next action."
         ],
         "num": [
           "From y=2x+1 to multimodal agents, same loss and gradients."

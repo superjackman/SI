@@ -7,7 +7,7 @@ export const ML_A = {
     pic: { e: '📻', t: ['调收音机：旋钮是参数，听得清不清楚靠大量试听。', 'Tuning a radio: the knobs are the parameters, and lots of listening tells you if they are right.'], s: ['目标不是背下听过的歌，而是没听过的也能收清楚。', 'The aim is not to memorise songs you already heard, but to tune in ones you have not.'] },
     goals: [
       { t: ['斜率：x 走 1，y 走多少', 'Slope: y per one step of x'],
-        pv: ['有些事写不出 if-else。先从最简单的函数开始：一条直线 `y = w × x + b`。', 'Some jobs have no if-else. Start with the simplest function: a straight line, `y = w × x + b`.'],
+        pv: ['有些事没法事先列成死表。先从最简单的一条直线开始：`y = w × x + b`。', 'Some jobs cannot be listed ahead of time. Start with the simplest straight line: `y = w × x + b`.'],
         q: ['换两个点：(4, 11) 和 (6, 17) 也在一条直线上。斜率 w 你会怎么求？', 'Two other points, (4, 11) and (6, 17), also sit on one line. How would you find the slope w?'],
         o: [['把两个 y 加起来', 'Add the two y values'], ['看 x 每加 1，y 加多少', 'See how much y grows when x grows by 1'], ['只看第一个点的 y', 'Look only at the first point’s y']], a: 1,
         why: [['11 + 17 = 28，和“陡不陡”没关系。', '11 + 17 = 28, which says nothing about how steep the line is.'],
