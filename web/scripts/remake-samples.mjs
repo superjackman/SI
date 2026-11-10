@@ -100,11 +100,19 @@ function pathOf(fn, x0,y0,w,h,lo,hi,until){
 function dial(cx,cy,r,value,min,max,name,on){
   const t=clamp((value-min)/(max-min),0,1);
   const ang=(-140+t*280)*Math.PI/180;
-  const x2=cx+Math.sin(ang)*(r-8), y2=cy-Math.cos(ang)*(r-8);
-  const op=on?1:0.25;
+  const x2=cx+Math.sin(ang)*(r-6), y2=cy-Math.cos(ang)*(r-6);
+  const op=on?1:0.35;
   return '<g opacity="'+op+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="'+CARD+'" stroke="'+NAVY+'" stroke-width="6"/>'
-    +'<line x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+NAVY+'" stroke-width="6" stroke-linecap="round"/>'
+    +'<line x1="'+cx+'" y1="'+cy+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="'+HL+'" stroke-width="10" stroke-linecap="round"/>'
+    +'<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+HL+'"/>'
     +'<text x="'+cx+'" y="'+(cy+r+36)+'" text-anchor="middle" fill="'+INK+'" font-size="28" font-family="sans-serif">'+name+' '+value.toFixed(2)+'</text></g>';
+}
+function lossBar(loss){
+  const h=28+clamp(loss/28,0,1)*320;
+  const top=500-h;
+  return '<rect x="790" y="'+top.toFixed(1)+'" width="44" height="'+h.toFixed(1)+'" fill="'+HL+'"/>'
+    +'<text x="812" y="108" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">'+loss.toFixed(2)+'</text>'
+    +'<text x="756" y="400" text-anchor="middle" fill="'+INK+'" font-size="24" font-family="sans-serif" transform="rotate(-90 756 400)">罚分</text>';
 }
 function axes(x,y,w,h){
   return '<line x1="'+x+'" y1="'+(y+h)+'" x2="'+(x+w)+'" y2="'+(y+h)+'" stroke="'+LINE+'" stroke-width="3"/>'
@@ -158,6 +166,10 @@ function bowl(bx, trail, ring, draw){
   }
   const [px,py]=at(bx);
   s+='<circle cx="'+px.toFixed(1)+'" cy="'+(py-16).toFixed(1)+'" r="18" fill="'+HL+'"/>';
+  if(arguments[4]!=null){
+    const [mx,my]=at(arguments[4]);
+    s+='<circle cx="'+mx.toFixed(1)+'" cy="'+(my-16).toFixed(1)+'" r="22" fill="none" stroke="'+NAVY+'" stroke-width="10"/>';
+  }
   return s;
 }
 function net(neurons, flow, bends, sumP, steep, shift, colors, modelPlot, missLine){
@@ -226,19 +238,14 @@ function frame(model){
   let body='';
   if(model.kind==='chart'){
     body+=chart(model.w, model.b, model.points, model.line, model.fall==null?1:model.fall);
+    body+=lossBar(model.loss);
     body+=dial(980,220,70,model.w,-1,4,'左边 陡', model.hot==='w'||model.hot==='both');
     body+=dial(980,480,70,model.b,-1,4,'右边 起步', model.hot==='b'||model.hot==='both');
-    if(model.bar!=null){
-      const h=lerp(360, 48, model.bar);
-      const top=110+(360-h);
-      body+='<rect x="800" y="'+top.toFixed(1)+'" width="48" height="'+h.toFixed(1)+'" fill="'+HL+'"/>';
-      body+='<text x="824" y="'+(top-14).toFixed(1)+'" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">'+model.loss.toFixed(1)+'</text>';
-      body+='<text x="824" y="530" text-anchor="middle" fill="'+INK+'" font-size="24" font-family="sans-serif">罚分</text>';
-    } else if(model.loss!=null) body+='<text x="160" y="120" fill="'+INK+'" font-size="36" font-family="sans-serif">罚分 '+model.loss.toFixed(2)+'</text>';
   } else if(model.kind==='bowl'){
-    body+=bowl(model.bx, model.trail, model.ring, model.draw);
+    body+=bowl(model.bx, model.trail, model.ring, model.draw, model.mark);
     body+=dial(1000,180,62, model.kw, -1, 4, '左边 陡', true);
     body+=dial(1180,460,62, model.kb, -1, 4, '右边 起步', true);
+    if(model.note) body+='<text x="1090" y="72" text-anchor="middle" fill="'+INK+'" font-size="28" font-family="sans-serif">'+model.note+'</text>';
   } else if(model.kind==='stack'){
     const slopes=[0.25,0.7,0.4];
     slopes.forEach((m,i)=>{
@@ -335,30 +342,31 @@ function writeVtt(spans, path) {
 function modelFor(key, scene, t, cap) {
   const e = ease(t);
   if (key === '2') {
-    if (scene === 'drop') return { kind: 'chart', w: 0, b: 0, points: 3, fall: t, line: 0, loss: null, hot: '', cap };
-    if (scene === 'flat') return { kind: 'chart', w: 0, b: Math.sin(t * Math.PI * 2) * 0.15, points: 3, fall: 1, line: t, loss: lossNum(0, 0), hot: '', cap };
+    if (scene === 'drop') return { kind: 'chart', w: 0, b: 0, points: 3, fall: t, line: 0, loss: lossNum(0, 0), hot: '', cap };
+    if (scene === 'flat') { const b = Math.sin(t * Math.PI * 2) * 0.15; return { kind: 'chart', w: 0, b, points: 3, fall: 1, line: t, loss: lossNum(0, b), hot: '', cap }; }
     if (scene === 'steep') { const w = lerp(0, 2, t); return { kind: 'chart', w, b: 0, points: 3, fall: 1, line: 1, loss: lossNum(w, 0), hot: 'w', cap }; }
     if (scene === 'shift') { const b = lerp(0, 1, t); return { kind: 'chart', w: 2, b, points: 3, fall: 1, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
     if (scene === 'fit') { const w = lerp(1.2, 2, t), b = lerp(0.3, 1, t); return { kind: 'chart', w, b, points: 3, fall: 1, line: 1, loss: lossNum(w, b), hot: 'both', cap }; }
-    if (scene === 'dropLoss') { const loss = lerp(8, 0.2, t); return { kind: 'chart', w: 2, b: 1, points: 3, fall: 1, line: 1, loss, bar: t, hot: 'both', cap }; }
+    if (scene === 'dropLoss') { const w = lerp(0, 2, t), b = lerp(0, 1, t); return { kind: 'chart', w, b, points: 3, fall: 1, line: 1, loss: lossNum(w, b), hot: 'both', cap }; }
     if (scene === 'replayW') { const w = lerp(0, 2, t); return { kind: 'chart', w, b: 1, points: 3, line: 1, loss: lossNum(w, 1), hot: 'w', cap }; }
     if (scene === 'replayB') { const b = lerp(0, 1, t); return { kind: 'chart', w: 2, b, points: 3, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
-    if (scene === 'bowl') return { kind: 'bowl', bx: -200 + Math.sin(t * Math.PI * 4) * 18, trail: [], ring: false, kw: 2, kb: 1, draw: 1, cap };
+    const atBall = (x) => ({ kw: 2 * (x + 210) / 210, kb: (x + 210) / 210 });
+    if (scene === 'bowl') { const x = -210 + Math.sin(t * Math.PI * 4) * 14; return { kind: 'bowl', bx: x, trail: [], ring: false, ...atBall(x), draw: 1, note: '从远处重新出发', cap }; }
     if (scene === 'roll') {
-      const x = lerp(-200, -20, e);
+      const x = lerp(-210, -30, e);
       const trail = [];
-      for (let i = 0; i < 8; i++) if (e > (i + 1) / 9) trail.push(lerp(-200, x, i / 8));
-      return { kind: 'bowl', bx: x, trail, ring: true, kw: 2, kb: 1, cap };
+      for (let i = 0; i < 8; i++) if (e > (i + 1) / 9) trail.push(lerp(-210, x, i / 8));
+      return { kind: 'bowl', bx: x, trail, ring: true, ...atBall(x), cap };
     }
     if (scene === 'over') {
-      const x = Math.sin(e * Math.PI * 2) * 160;
-      return { kind: 'bowl', bx: x, trail: [-80, 40, x], ring: true, kw: 2, kb: 1, cap };
+      const x = -30 + Math.sin(e * Math.PI) * 180;
+      return { kind: 'bowl', bx: x, trail: [-30, 80, x], ring: true, ...atBall(x), cap };
     }
     if (scene === 'rest') {
-      const x = lerp(90, 0, e);
-      return { kind: 'bowl', bx: x, trail: [120, 60, x], ring: true, kw: 2, kb: 1, cap };
+      const x = t < 0.6 ? lerp(-30, 0, t / 0.6) : 0;
+      return { kind: 'bowl', bx: x, trail: [80, 30, x], ring: true, ...atBall(x), cap };
     }
-    if (scene === 'rest2') return { kind: 'bowl', bx: Math.sin(t * Math.PI * 2) * 70, trail: [-120, -40, 30, Math.sin(t * Math.PI * 2) * 70], ring: true, kw: 2, kb: 1, cap };
+    if (scene === 'rest2') return { kind: 'bowl', bx: 0, trail: [-160, -80, -20, 0], ring: true, mark: lerp(-180, 0, t), kw: 2, kb: 1, cap };
     const x = lerp(-160, 0, e);
     return { kind: 'bowl', bx: x, trail: [-200, -120, x], ring: true, kw: lerp(0.4, 2, e), kb: lerp(0.2, 1, e), cap };
   }
