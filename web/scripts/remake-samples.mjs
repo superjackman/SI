@@ -40,7 +40,8 @@ const BOARDS = {
     { say: '两颗旋钮还停在零。线是平的，离这些点很远。', scene: 'flat' },
     { say: '顺着坡去拧左边那颗。线跟着变陡，点就离线近了一些。', scene: 'steep' },
     { say: '再拧右边那颗。它管整条线从哪里起步，线就上下挪。', scene: 'shift' },
-    { say: '两颗一起拧，线坐到点上。罚分从高处掉下来。', scene: 'fit' },
+    { say: '两颗一起拧，线坐到点上。', scene: 'fit' },
+    { say: '罚分从高处掉下来。', scene: 'dropLoss' },
     { say: '再看左边这颗旋钮。针从一侧转到另一侧，线就从平的变成斜的。', scene: 'replayW' },
     { say: '右边这颗旋钮管起步的高度。它转的时候，整条线跟着上下挪，陡的程度先别动。', scene: 'replayB' },
     { say: '同一件事可以看成一只圆碗。球现在还在碗边上。', scene: 'bowl' },
@@ -57,10 +58,10 @@ const BOARDS = {
     { say: '第三颗是一截往上的斜坡。第四颗在后半段拐下来。', scene: 'n4' },
     { say: '四个方框用加号叠在一起。最下面加起来的那条线，才贴住这些点。', scene: 'add' },
     { say: '点是一颗一颗落上去的。总曲线画到哪里，点就坐到哪里。', scene: 'sit' },
-    { say: '线上的旋钮一转，弯就变陡。圆圈里的旋钮一转，弯从别的地方开始。', scene: 'turn' },
+    { say: '线上的旋钮一转，弯就变陡。', scene: 'turn' },
+    { say: '圆圈里的旋钮一转，弯从别的地方开始。', scene: 'turnShift' },
     { say: '对角上还有两种颜色的点。只留一条弯，总有一个点站错队。', scene: 'color' },
-    { say: '四条弯都留下，两种颜色才分开。没有这些弯，叠再多层也还是一条直线。', scene: 'back' },
-    { say: '数沿着线从左流到右。四条弯不一样，再叠成一条。', scene: 'flow2' },
+    { say: '没有这些弯，把几层直线叠在一起，出来的还是一条直线。', scene: 'stack' },
   ],
 };
 
@@ -79,7 +80,11 @@ const piece=[
   (x)=>0.08+x*0.55,
   (x)=>Math.max(0,0.85-x)*1.05,
 ];
-function sumAt(x,n,steep){let s=0;for(let i=0;i<n;i++)s+=piece[i](x)*(i===1||i===3?steep:1);return s}
+function bendAt(i,x,steep,shift){
+  const xx=clamp(x+(i===0?0:(shift||0))*0.45,0,1);
+  return piece[i](xx)*(i===0?1:steep);
+}
+function sumAt(x,n,steep,shift){let s=0;for(let i=0;i<n;i++)s+=bendAt(i,x,steep,shift);return s}
 function pathOf(fn, x0,y0,w,h,lo,hi,until){
   let d='';
   const n=24;
@@ -111,18 +116,20 @@ function chart(w,b,nPoints,showLine){
   s+='<text x="700" y="560" fill="'+INK+'" font-size="24" font-family="sans-serif">输入</text>';
   s+='<text x="100" y="150" fill="'+INK+'" font-size="24" font-family="sans-serif">结果</text>';
   const pts=[[1,3],[2,5],[3,7]];
-  for(let i=0;i<nPoints;i++){
-    const drop=i===nPoints-1?0.15:0;
-    s+='<circle cx="'+X(pts[i][0])+'" cy="'+(Y(pts[i][1])+drop*0)+'" r="12" fill="'+HL+'"/>';
+  const fall=arguments[4]==null?1:arguments[4];
+  for(let i=0;i<pts.length;i++){
+    const p=clamp((fall-i*0.22)/0.3,0,1);
+    if(p<=0) continue;
+    const y=lerp(70, Y(pts[i][1]), p);
+    s+='<circle cx="'+X(pts[i][0])+'" cy="'+y.toFixed(1)+'" r="14" fill="'+HL+'"/>';
   }
   if(showLine){
     const x2=lerp(0.4, 3.6, showLine);
     s+='<line x1="'+X(0.4)+'" y1="'+Y(w*0.4+b)+'" x2="'+X(x2)+'" y2="'+Y(w*x2+b)+'" stroke="'+NAVY+'" stroke-width="6" stroke-linecap="round"/>';
   }
-  if(nPoints){
-    const i=nPoints-1;
-    const ring=14+4*Math.sin((showLine===true?1:showLine)*12);
-    s+='<circle cx="'+X(pts[i][0])+'" cy="'+Y(pts[i][1])+'" r="'+ring.toFixed(1)+'" fill="none" stroke="'+HL+'" stroke-width="3"/>';
+  if(fall>=0.98 && nPoints){
+    const i=Math.min(2,nPoints-1);
+    s+='<circle cx="'+X(pts[i][0])+'" cy="'+Y(pts[i][1])+'" r="20" fill="none" stroke="'+HL+'" stroke-width="3"/>';
   }
   return s;
 }
@@ -131,7 +138,7 @@ function lossOf(w,b){
   return pts.reduce((s,[x,y])=>s+(w*x+b-y)**2,0)/3;
 }
 function bowl(bx, trail, ring, draw){
-  const at=(x)=>{ const y=180 + (1 - (x/240)**2) * 280; return [640+x, y]; };
+  const at=(x)=>{ const y=180 + (1 - (x/240)**2) * 280; return [500+x, y]; };
   let d='';
   const n=Math.max(2, Math.round(40*(draw==null?1:draw)));
   for(let i=0;i<=n;i++){
@@ -141,8 +148,6 @@ function bowl(bx, trail, ring, draw){
   }
   let s='<path d="'+d+'" fill="none" stroke="'+LINK+'" stroke-width="8" stroke-linecap="round"/>';
   s+='<text x="70" y="200" fill="'+INK+'" font-size="28" font-family="sans-serif" transform="rotate(-90 70 360)">罚分</text>';
-  s+='<text x="360" y="200" fill="'+INK+'" font-size="26" font-family="sans-serif">碗边</text>';
-  s+='<text x="860" y="200" fill="'+INK+'" font-size="26" font-family="sans-serif">碗边</text>';
   if(ring){
     const [rx,ry]=at(0);
     s+='<ellipse cx="'+rx+'" cy="'+(ry-6)+'" rx="54" ry="16" fill="none" stroke="'+GOOD+'" stroke-width="6"/>';
@@ -170,25 +175,25 @@ function net(neurons, flow, bends, sumP, steep, shift, colors, modelPlot, missLi
     const fx=lerp(ix,hx,flow), fy=lerp(iy,y,flow);
     s+='<circle cx="'+fx.toFixed(1)+'" cy="'+fy.toFixed(1)+'" r="8" fill="'+col+'"/>';
     s+='<circle cx="'+hx+'" cy="'+y+'" r="28" fill="'+CARD+'" stroke="'+col+'" stroke-width="4"/>';
-    const ang=(-40+steep*80+i*15)*Math.PI/180;
-    s+='<line x1="'+hx+'" y1="'+y+'" x2="'+(hx+Math.sin(ang)*16).toFixed(1)+'" y2="'+(y-Math.cos(ang)*16).toFixed(1)+'" stroke="'+NAVY+'" stroke-width="4"/>';
+    const ang=(-50+steep*70+i*18)*Math.PI/180;
+    s+='<line x1="'+hx+'" y1="'+y+'" x2="'+(hx+Math.sin(ang)*22).toFixed(1)+'" y2="'+(y-Math.cos(ang)*22).toFixed(1)+'" stroke="'+NAVY+'" stroke-width="6" stroke-linecap="round"/>';
   }
   if(neurons) s+='<circle cx="'+ox+'" cy="'+iy+'" r="28" fill="none" stroke="'+INK+'" stroke-width="4"/>';
   const boxX=760, boxW=200, boxH=78;
   for(let i=0;i<bends;i++){
     const y=120+i*100;
-    const fn=(x)=>piece[i](clamp(x+shift*0.2,0,1))*(i===1||i===3?steep:1);
+    const fn=(x)=>bendAt(i,x,steep,shift);
     const d=pathOf(fn, boxX, y, boxW, boxH, -0.05, 1.3, 1);
     s+='<path d="M'+boxX+' '+y+' h'+boxW+' v'+boxH+' h'+(-boxW)+' z" fill="none" stroke="'+COLS[i]+'" stroke-width="3"/>';
-    s+='<path d="'+d+'" fill="none" stroke="'+COLS[i]+'" stroke-width="4"/>';
+    s+='<path d="'+d+'" fill="none" stroke="'+COLS[i]+'" stroke-width="8" stroke-linecap="round"/>';
     if(i<bends-1 && bends>1) s+='<text x="'+(boxX+boxW/2)+'" y="'+(y+boxH+28)+'" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">＋</text>';
   }
   if(sumP>0){
     const y=560;
     s+='<text x="'+(boxX+boxW/2)+'" y="'+(y-8)+'" text-anchor="middle" fill="'+INK+'" font-size="26" font-family="sans-serif">加起来</text>';
-    const d=pathOf((x)=>sumAt(x,4,steep)*0.55, boxX, y, boxW, 90, 0, 1.6, sumP);
+    const d=pathOf((x)=>sumAt(x,4,steep,shift)*0.42, boxX, y, boxW, 90, 0, 1.6, sumP);
     s+='<path d="M'+boxX+' '+y+' h'+boxW+' v90 h'+(-boxW)+' z" fill="none" stroke="'+NAVY+'" stroke-width="3"/>';
-    s+='<path d="'+d+'" fill="none" stroke="'+NAVY+'" stroke-width="4"/>';
+    s+='<path d="'+d+'" fill="none" stroke="'+NAVY+'" stroke-width="8" stroke-linecap="round"/>';
     const pts=[[0.1,0.15],[0.35,0.7],[0.55,0.85],[0.8,0.35],[0.95,0.08]];
     for(let i=0;i<5;i++){
       if(sumP<0.15+i*0.1) continue;
@@ -209,29 +214,46 @@ function net(neurons, flow, bends, sumP, steep, shift, colors, modelPlot, missLi
     }
   }
   if(colors>0){
-    const dots=[[0,0,MARK],[120,0,LINK],[0,120,LINK],[120,120,MARK]];
-    s+='<g transform="translate(70,520)">';
-    dots.forEach(([x,y,c],i)=>{ if(colors>i*0.15) s+='<circle cx="'+x+'" cy="'+y+'" r="14" fill="'+c+'"/>'; });
-    if(colors<0.7){
-      s+='<line x1="0" y1="120" x2="120" y2="0" stroke="'+NAVY+'" stroke-width="4" opacity="0.8"/>';
-    } else {
-      s+='<path d="M0 80 Q60 8 120 80" fill="none" stroke="'+NAVY+'" stroke-width="4"/>';
-    }
-    s+='</g>';
+    const x0=430, y0=500;
+    s+='<rect x="'+x0+'" y="'+y0+'" width="156" height="156" fill="'+CARD+'" stroke="'+LINE+'" stroke-width="3"/>';
+    const dots=[[24,24,MARK],[132,24,LINK],[24,132,LINK],[132,132,MARK]];
+    dots.forEach(([x,y,c])=>{ s+='<circle cx="'+(x0+x)+'" cy="'+(y0+y)+'" r="12" fill="'+c+'"/>'; });
+    s+='<line x1="'+(x0+22)+'" y1="'+(y0+128)+'" x2="'+(x0+134)+'" y2="'+(y0+22)+'" stroke="'+NAVY+'" stroke-width="6"/>';
   }
   return s;
 }
 function frame(model){
   let body='';
   if(model.kind==='chart'){
-    body+=chart(model.w, model.b, model.points, model.line);
+    body+=chart(model.w, model.b, model.points, model.line, model.fall==null?1:model.fall);
     body+=dial(980,220,70,model.w,-1,4,'左边 陡', model.hot==='w'||model.hot==='both');
     body+=dial(980,480,70,model.b,-1,4,'右边 起步', model.hot==='b'||model.hot==='both');
-    if(model.loss!=null) body+='<text x="160" y="120" fill="'+INK+'" font-size="36" font-family="sans-serif">罚分 '+model.loss.toFixed(2)+'</text>';
+    if(model.bar!=null){
+      const h=lerp(360, 48, model.bar);
+      const top=110+(360-h);
+      body+='<rect x="800" y="'+top.toFixed(1)+'" width="48" height="'+h.toFixed(1)+'" fill="'+HL+'"/>';
+      body+='<text x="824" y="'+(top-14).toFixed(1)+'" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">'+model.loss.toFixed(1)+'</text>';
+      body+='<text x="824" y="530" text-anchor="middle" fill="'+INK+'" font-size="24" font-family="sans-serif">罚分</text>';
+    } else if(model.loss!=null) body+='<text x="160" y="120" fill="'+INK+'" font-size="36" font-family="sans-serif">罚分 '+model.loss.toFixed(2)+'</text>';
   } else if(model.kind==='bowl'){
     body+=bowl(model.bx, model.trail, model.ring, model.draw);
-    body+=dial(1040,240,64, model.kw, -1, 4, '旋钮 w', true);
-    body+=dial(1040,480,64, model.kb, -1, 4, '旋钮 b', true);
+    body+=dial(1000,180,62, model.kw, -1, 4, '左边 陡', true);
+    body+=dial(1180,460,62, model.kb, -1, 4, '右边 起步', true);
+  } else if(model.kind==='stack'){
+    const slopes=[0.25,0.7,0.4];
+    slopes.forEach((m,i)=>{
+      const p=clamp((model.t-i*0.06)/0.2,0,1);
+      if(p<=0) return;
+      const y=70+i*160;
+      body+='<rect x="70" y="'+y+'" width="360" height="120" fill="none" stroke="'+COLS[i]+'" stroke-width="4"/>';
+      body+='<text x="90" y="'+(y+34)+'" fill="'+INK+'" font-size="26" font-family="sans-serif">第'+(i+1)+'层 直线</text>';
+      body+='<line x1="100" y1="'+(y+100)+'" x2="'+(100+300*p).toFixed(1)+'" y2="'+(y+100-m*70*p).toFixed(1)+'" stroke="'+COLS[i]+'" stroke-width="8" stroke-linecap="round"/>';
+      if(i<2) body+='<text x="250" y="'+(y+152)+'" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">＋</text>';
+    });
+    const u=clamp((model.t-0.22)/0.7,0,1);
+    body+='<text x="920" y="150" text-anchor="middle" fill="'+INK+'" font-size="32" font-family="sans-serif">叠起来</text>';
+    body+='<rect x="640" y="180" width="560" height="300" fill="none" stroke="'+NAVY+'" stroke-width="4"/>';
+    body+='<line x1="690" y1="430" x2="'+(690+460*u).toFixed(1)+'" y2="'+(430-180*u).toFixed(1)+'" stroke="'+NAVY+'" stroke-width="8" stroke-linecap="round"/>';
   } else {
     body+=net(model.neurons, model.flow, model.bends, model.sum, model.steep, model.shift, model.colors, model.plot||0, model.miss||0);
   }
@@ -265,29 +287,35 @@ function duration(file) {
 }
 
 const GAP = 0.2;
+const SHOT = { drop: 'chart', flat: 'chart', steep: 'chart', shift: 'chart', fit: 'chart', dropLoss: 'chart', replayW: 'chart', replayB: 'chart', bowl: 'bowl', roll: 'bowl', over: 'bowl', rest: 'bowl', rest2: 'bowl', rise: 'net', miss: 'net', n1: 'net', n2: 'net', n4: 'net', add: 'net', sit: 'net', turn: 'net', turnShift: 'net', color: 'net', stack: 'stack' };
+function gapOf(prev, next) { return !prev || SHOT[prev] === SHOT[next] ? GAP : 0.5; }
 
 function speak(beats, work) {
   const spans = [];
   const files = [];
   let t = 0;
   beats.forEach((b, i) => {
+    if (i > 0) {
+      const g = gapOf(beats[i - 1].scene, b.scene);
+      const sil = join(work, `g${i}.m4a`);
+      const silR = spawnSync('ffmpeg', ['-y', '-f', 'lavfi', '-t', String(g), '-i', 'anullsrc=r=24000:cl=mono', '-c:a', 'aac', '-b:a', '64k', sil], { encoding: 'utf8' });
+      if (silR.status !== 0) throw new Error('silence');
+      files.push(sil);
+      t += g;
+    }
     const mp3 = join(work, `s${i}.mp3`);
     tts(b.say, mp3);
     const d = duration(mp3);
     spans.push({ ...b, a: t, b: t + d, heard: b.say });
     files.push(mp3);
     t += d;
-    if (i < beats.length - 1) { files.push('GAP'); t += GAP; }
   });
   return { spans, files, total: t };
 }
 
 function concatAudio(files, out) {
   const args = ['-y'];
-  files.forEach((f) => {
-    if (f === 'GAP') args.push('-f', 'lavfi', '-t', String(GAP), '-i', 'anullsrc=r=24000:cl=mono');
-    else args.push('-i', f);
-  });
+  files.forEach((f) => args.push('-i', f));
   const parts = files.map((_, i) => `[${i}:a]aresample=24000,aformat=sample_fmts=fltp:channel_layouts=mono[a${i}]`).join(';');
   const cat = files.map((_, i) => `[a${i}]`).join('');
   args.push('-filter_complex', `${parts};${cat}concat=n=${files.length}:v=0:a=1[a]`, '-map', '[a]', '-c:a', 'aac', '-b:a', '64k', out);
@@ -307,44 +335,45 @@ function writeVtt(spans, path) {
 function modelFor(key, scene, t, cap) {
   const e = ease(t);
   if (key === '2') {
-    if (scene === 'drop') return { kind: 'chart', w: 0, b: 0, points: Math.min(3, 1 + Math.floor(t * 2.2)), line: t, loss: null, hot: '', cap };
-    if (scene === 'flat') return { kind: 'chart', w: 0, b: Math.sin(t * Math.PI * 2) * 0.15, points: 3, line: t, loss: lossNum(0, 0), hot: '', cap };
-    if (scene === 'steep') { const w = lerp(0, 2, e); return { kind: 'chart', w, b: 0, points: 3, line: 1, loss: lossNum(w, 0), hot: 'w', cap }; }
-    if (scene === 'shift') { const b = lerp(0, 1, e); return { kind: 'chart', w: 2, b, points: 3, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
-    if (scene === 'fit') { const w = lerp(1.2, 2, e), b = lerp(0.3, 1, e); return { kind: 'chart', w, b, points: 3, line: 1, loss: lossNum(w, b), hot: 'both', cap }; }
+    if (scene === 'drop') return { kind: 'chart', w: 0, b: 0, points: 3, fall: t, line: 0, loss: null, hot: '', cap };
+    if (scene === 'flat') return { kind: 'chart', w: 0, b: Math.sin(t * Math.PI * 2) * 0.15, points: 3, fall: 1, line: t, loss: lossNum(0, 0), hot: '', cap };
+    if (scene === 'steep') { const w = lerp(0, 2, t); return { kind: 'chart', w, b: 0, points: 3, fall: 1, line: 1, loss: lossNum(w, 0), hot: 'w', cap }; }
+    if (scene === 'shift') { const b = lerp(0, 1, t); return { kind: 'chart', w: 2, b, points: 3, fall: 1, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
+    if (scene === 'fit') { const w = lerp(1.2, 2, t), b = lerp(0.3, 1, t); return { kind: 'chart', w, b, points: 3, fall: 1, line: 1, loss: lossNum(w, b), hot: 'both', cap }; }
+    if (scene === 'dropLoss') { const loss = lerp(8, 0.2, t); return { kind: 'chart', w: 2, b: 1, points: 3, fall: 1, line: 1, loss, bar: t, hot: 'both', cap }; }
     if (scene === 'replayW') { const w = lerp(0, 2, t); return { kind: 'chart', w, b: 1, points: 3, line: 1, loss: lossNum(w, 1), hot: 'w', cap }; }
     if (scene === 'replayB') { const b = lerp(0, 1, t); return { kind: 'chart', w: 2, b, points: 3, line: 1, loss: lossNum(2, b), hot: 'b', cap }; }
-    if (scene === 'bowl') return { kind: 'bowl', bx: -210 + Math.sin(t * Math.PI * 4) * 12, trail: [], ring: false, kw: 0, kb: 0, draw: e, cap };
+    if (scene === 'bowl') return { kind: 'bowl', bx: -200 + Math.sin(t * Math.PI * 4) * 18, trail: [], ring: false, kw: 2, kb: 1, draw: 1, cap };
     if (scene === 'roll') {
-      const x = lerp(-210, -30, e);
+      const x = lerp(-200, -20, e);
       const trail = [];
-      for (let i = 0; i < 8; i++) if (e > (i + 1) / 9) trail.push(lerp(-210, x, i / 8));
-      return { kind: 'bowl', bx: x, trail, ring: true, kw: lerp(0, 1.4, e), kb: lerp(0, 0.6, e), cap };
+      for (let i = 0; i < 8; i++) if (e > (i + 1) / 9) trail.push(lerp(-200, x, i / 8));
+      return { kind: 'bowl', bx: x, trail, ring: true, kw: 2, kb: 1, cap };
     }
     if (scene === 'over') {
       const x = Math.sin(e * Math.PI * 2) * 160;
-      return { kind: 'bowl', bx: x, trail: [-80, 40, x], ring: true, kw: 2.4, kb: 1.6, cap };
+      return { kind: 'bowl', bx: x, trail: [-80, 40, x], ring: true, kw: 2, kb: 1, cap };
     }
     if (scene === 'rest') {
       const x = lerp(90, 0, e);
-      return { kind: 'bowl', bx: x, trail: [120, 60, x], ring: true, kw: lerp(2.4, 2, e), kb: lerp(1.6, 1, e), cap };
+      return { kind: 'bowl', bx: x, trail: [120, 60, x], ring: true, kw: 2, kb: 1, cap };
     }
-    if (scene === 'rest2') return { kind: 'bowl', bx: Math.sin(t * Math.PI * 2) * 90, trail: [-120, -40, 30, Math.sin(t * Math.PI * 2) * 90], ring: true, kw: 2 + Math.sin(t * Math.PI * 2) * 0.6, kb: 1, cap };
+    if (scene === 'rest2') return { kind: 'bowl', bx: Math.sin(t * Math.PI * 2) * 70, trail: [-120, -40, 30, Math.sin(t * Math.PI * 2) * 70], ring: true, kw: 2, kb: 1, cap };
     const x = lerp(-160, 0, e);
     return { kind: 'bowl', bx: x, trail: [-200, -120, x], ring: true, kw: lerp(0.4, 2, e), kb: lerp(0.2, 1, e), cap };
   }
   const base = { kind: 'net', neurons: 0, flow: 0, bends: 0, sum: 0, steep: 1, shift: 0, colors: 0, cap };
   if (scene === 'rise') return { ...base, neurons: 1, flow: (t * 1.3) % 1, bends: 0, plot: e };
-  if (scene === 'miss') return { ...base, neurons: 1, flow: (t * 1.3) % 1, bends: 0, plot: 1, miss: e };
+  if (scene === 'miss') return { ...base, neurons: 1, flow: (t * 1.3) % 1, bends: 0, plot: 1, miss: Math.min(1, t * 2.5) };
   if (scene === 'n1') return { ...base, neurons: 1, flow: (t * 1.3) % 1, bends: 1 };
   if (scene === 'n2') return { ...base, neurons: 2, flow: (t * 1.3) % 1, bends: 2 };
   if (scene === 'n4') return { ...base, neurons: Math.min(4, 2 + Math.floor(t * 2.01)), flow: (t * 1.3) % 1, bends: Math.min(4, 2 + Math.floor(t * 2.01)) };
   if (scene === 'add') return { ...base, neurons: 4, flow: (t * 1.3) % 1, bends: 4, sum: e };
   if (scene === 'sit') return { ...base, neurons: 4, flow: (t * 1.3) % 1, bends: 4, sum: 0.35 + 0.65 * t };
-  if (scene === 'turn') return { ...base, neurons: 4, flow: (t * 1.5) % 1, bends: 4, sum: 1, steep: lerp(0.55, 1.6, (Math.sin(t * Math.PI * 2) + 1) / 2), shift: Math.sin(t * Math.PI * 2) * 0.9 };
-  if (scene === 'flow2') return { ...base, neurons: 4, flow: (t * 1.6) % 1, bends: 4, sum: 0.2 + 0.8 * t, steep: 0.8 + 0.5 * Math.sin(t * Math.PI * 2) };
-  if (scene === 'color') return { ...base, neurons: 4, flow: (t * 1.3) % 1, bends: 4, sum: 1, colors: e, steep: 1 };
-  return { ...base, neurons: t < 0.55 ? 4 : 2, flow: t, bends: t < 0.55 ? 4 : 1, sum: t < 0.55 ? 1 : 0, steep: t < 0.55 ? 1 : 0.15, colors: t < 0.55 ? 0.2 : 0 };
+  if (scene === 'turn') return { ...base, neurons: 4, flow: (t * 1.4) % 1, bends: 4, sum: 1, steep: lerp(0.35, 1.8, t), shift: 0 };
+  if (scene === 'turnShift') return { ...base, neurons: 4, flow: (t * 1.4) % 1, bends: 4, sum: 1, steep: 1.5, shift: lerp(-0.8, 0.9, t) };
+  if (scene === 'color') return { ...base, neurons: 4, flow: (t * 1.4) % 1, bends: 4, sum: 1, colors: Math.max(0.2, t), steep: 1 };
+  return { kind: 'stack', t, cap };
 }
 
 function lossNum(w, b) {
@@ -382,7 +411,8 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
 await page.setContent(html);
 
-for (const key of ['2', '3']) {
+const only = process.argv.slice(2);
+for (const key of (only.length ? only : ['2', '3'])) {
   const beats = BOARDS[key];
   const work = join(tmpdir(), 'si-sample-' + key);
   rmSync(work, { recursive: true, force: true });
@@ -398,8 +428,9 @@ for (const key of ['2', '3']) {
   const n = Math.ceil(dur * fps);
   for (let i = 0; i < n; i++) {
     const time = i / fps;
-    let beat = spans.find((s) => time >= s.a && time < s.b) || spans[spans.length - 1];
-    const local = beat.b > beat.a ? clamp((time - beat.a) / (beat.b - beat.a), 0, 1) : 0;
+    let beat = spans[0];
+    for (const s of spans) if (time >= s.a) beat = s;
+    const local = time >= beat.b ? 1 : beat.b > beat.a ? clamp((time - beat.a) / (beat.b - beat.a), 0, 1) : 0;
     const cap = beat.say.replace(/。$/, '');
     await page.evaluate((m) => window.render(m), modelFor(key, beat.scene, local, cap));
     await page.locator('#s').screenshot({ path: join(work, String(i).padStart(4, '0') + '.png') });
@@ -415,10 +446,28 @@ for (const key of ['2', '3']) {
   writeVtt(spans, join(outDir, key + '.vtt'));
   const report = motion(mp4);
   console.log(key, 'motion', JSON.stringify(report));
-  if (report.worstSec >= 5) throw new Error(key + ' has ' + report.worstSec.toFixed(1) + 's still');
+  if (report.worstSec >= 3) throw new Error(key + ' has ' + report.worstSec.toFixed(1) + 's still');
+  const vttCues = parseVtt(readFileSync(join(outDir, key + '.vtt'), 'utf8'));
+  spans.forEach((s, i) => {
+    const cue = vttCues[i];
+    if (!cue) throw new Error(key + ' missing cue ' + i);
+    if (Math.abs(cue.a - s.a) > 0.3) throw new Error(key + ' scene ' + s.scene + ' off by ' + (cue.a - s.a).toFixed(2) + 's');
+  });
   if (report.median < 18) throw new Error(key + ' median changed pixels ' + report.median);
   const size = Number(spawnSync('stat', ['-c', '%s', mp4], { encoding: 'utf8' }).stdout.trim());
   console.log(key, dur.toFixed(1) + 's', (size / 1048576).toFixed(2) + 'MB');
   if (size > 6 * 1048576) throw new Error(key + ' too big');
+  const tiles = spans.map((s, i) => {
+    const png = join(work, `cue${i}.png`);
+    const at = Math.min(s.a + 0.35, (s.a + s.b) / 2);
+    const shot = spawnSync('ffmpeg', ['-y', '-ss', at.toFixed(3), '-i', mp4, '-frames:v', '1', png], { encoding: 'utf8' });
+    if (shot.status !== 0) throw new Error('cue frame');
+    return png;
+  });
+  const sheet = join(outDir, key + '-sheet.png');
+  const chain = tiles.map((p, i) => `[${i}:v]scale=640:-2[v${i}]`).join(';') + ';' + tiles.map((_, i) => `[v${i}]`).join('') + `vstack=inputs=${tiles.length}`;
+  const mont = spawnSync('ffmpeg', ['-y', ...tiles.flatMap((p) => ['-i', p]), '-filter_complex', chain, sheet], { encoding: 'utf8' });
+  if (mont.status !== 0) throw new Error((mont.stderr || '').split('\n').slice(-12).join('\n'));
+  console.log(key, 'sheet', sheet);
 }
 await browser.close();
